@@ -6,6 +6,7 @@
 		<Import root=".\" file="Pd3d.xpj"/>
 		<Import root=".\" file="RenderDebugPd3d.xpj"/>
 		<Import root=".\" file="MeshImport.xpj"/>
+		<Import root=".\" file="MeshImportAssimp.xpj"/>
 		<Import root=".\" file="MeshImportEzm.xpj"/>
 		<Import root=".\" file="MeshImportFbx.xpj"/>
 		<Import root=".\" file="MeshImportLeveller.xpj"/>

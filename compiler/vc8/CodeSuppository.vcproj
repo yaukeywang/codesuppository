@@ -1202,6 +1202,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\src\common\snippets\crc.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\common\snippets\crc.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\src\common\snippets\encryption.h"
 					>
 				</File>
@@ -1506,6 +1514,22 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\common\MemoryServices\He.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\MemoryServices\HeSimpleTypes.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\MemoryServices\htmltable.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\MemoryServices\htmltable.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\common\MemoryServices\memalloc.cpp"
 					>
 				</File>
@@ -1530,7 +1554,19 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\common\MemoryServices\SendTextMessage.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\MemoryServices\simplevector.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\common\MemoryServices\simuhash_linux.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\MemoryServices\streamer.h"
 					>
 				</File>
 			</Filter>

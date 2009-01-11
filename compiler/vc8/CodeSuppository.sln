@@ -23,6 +23,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MeshImport", ".\/../vc8/Mes
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MeshImportAssimp", ".\/../vc8/MeshImportAssimp.vcproj", "{757D17B6-103C-9414-9113-D8122C7B8A33}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MeshImportEzm", ".\/../vc8/MeshImportEzm.vcproj", "{3454184B-5C28-0EE8-A994-F7B09BF0879C}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
@@ -65,6 +69,10 @@ Global
 		{082FBBBD-9532-5712-DF18-A054AE91C0F0}.debug|Win32.Build.0 = debug|Win32
 		{082FBBBD-9532-5712-DF18-A054AE91C0F0}.release|Win32.ActiveCfg = release|Win32
 		{082FBBBD-9532-5712-DF18-A054AE91C0F0}.release|Win32.Build.0 = release|Win32
+		{757D17B6-103C-9414-9113-D8122C7B8A33}.debug|Win32.ActiveCfg = debug|Win32
+		{757D17B6-103C-9414-9113-D8122C7B8A33}.debug|Win32.Build.0 = debug|Win32
+		{757D17B6-103C-9414-9113-D8122C7B8A33}.release|Win32.ActiveCfg = release|Win32
+		{757D17B6-103C-9414-9113-D8122C7B8A33}.release|Win32.Build.0 = release|Win32
 		{3454184B-5C28-0EE8-A994-F7B09BF0879C}.debug|Win32.ActiveCfg = debug|Win32
 		{3454184B-5C28-0EE8-A994-F7B09BF0879C}.debug|Win32.Build.0 = debug|Win32
 		{3454184B-5C28-0EE8-A994-F7B09BF0879C}.release|Win32.ActiveCfg = release|Win32

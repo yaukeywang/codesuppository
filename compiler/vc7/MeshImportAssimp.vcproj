@@ -116,7 +116,6 @@ Name="MeshImportAssimp"
       <File RelativePath="..\..\include\common\MemoryServices\simplevector.h"/>
       <File RelativePath="..\..\include\common\MemoryServices\simuhash_linux.h"/>
       <File RelativePath="..\..\include\common\MemoryServices\streamer.h"/>
-      <File RelativePath="..\..\include\common\MemoryServices\UserMemAlloc.h"/>
     </Filter>
   </Filter>
 </Files>

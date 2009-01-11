@@ -1,0 +1,129 @@
+<XPJ version="4">
+
+	<Project name="Pd3d" version="1">
+		<Export platform="win32" tool="vc8">../vc8</Export>
+		<Export platform="win32" tool="vc7">../vc7</Export>
+
+		<Target name="Pd3d">
+			<Export platform="win32" tool="vc8">../vc8</Export>
+			<Export platform="win32" tool="vc7">../vc7</Export>
+
+			<Configuration name="default" platform="Win32" type="dll">
+				<Preprocessor type="define">
+					WIN32
+					_WINDOWS
+					UNICODE=1
+          PD3D_EXPORTS
+          USE_MEMORY_TRAPPING=1
+				</Preprocessor>
+				<Files name="Source Files" root="../../src/Pd3d" type="source">
+					*.cpp
+				</Files>
+				<Files name="Internal Header Files" root="../../src/Pd3d" type="header">
+					*.h
+				</Files>
+				<Files name="Public Header Files" root="../../include/Pd3d" type="header">
+					*.h
+				</Files>
+				<Files name="DirectX Header Files" root="../../ext/DirectX_October2006" type="header">
+          *.h
+				</Files>
+				<Files name="Common Include-Binding Files" root="../../include/common" type="header">
+         ResourceInterface/*.h
+         ResourceInterface/*.cpp
+         ResourceInterface/*.c
+         FileInterface/*.cpp
+         FileInterface/*.h
+         MemoryServices/*.cpp
+         MemoryServices/*.c
+         MemoryServices/*.h
+         snippets/FloatMath.cpp
+         snippets/FloatMath.inl
+         snippets/FloatMath.h
+         snippets/inparser.cpp
+         snippets/inparser.h
+         snippets/keyvalueini.cpp
+         snippets/keyvalueini.h
+         snippets/keyvalue.cpp
+         snippets/keyvalue.h
+         snippets/sutil.cpp
+         snippets/sutil.h
+         snippets/stringdict.cpp
+         snippets/stringdict.h
+         snippets/stable.h
+         snippets/cparser.cpp
+         snippets/cparser.h
+         snippets/timedevent.cpp
+         snippets/timedevent.h
+         snippets/gauss.cpp
+         snippets/gauss.h
+         snippets/memory.cpp
+         snippets/memory.h
+         snippets/KdTree.h
+         snippets/filesystem.cpp
+         snippets/filesystem.h
+				</Files>
+				<Files name="Common Source Files" root="../../src/common" type="header">
+          comlayer/*.c
+          comlayer/*.cpp
+          comlayer/*.h
+				</Files>
+				<OutDir>../../bin/win32</OutDir>
+				<ImpDir>../../lib/win32</ImpDir>
+				<SearchPaths type="header">
+        ../../ext/DirectX_October2006
+          ../../include
+          ../../src
+				"C:/Program Files/Microsoft DirectX SDK (October 2006)/Include"
+				</SearchPaths>
+				<SearchPaths type="library">
+          ../../ext/DirectX_October2006
+					"C:/Program Files/Microsoft DirectX SDK (October 2006)/Lib/x86"
+				</SearchPaths>
+				<Dependencies>
+				</Dependencies>
+				<Libraries>
+				odbc32.lib
+				odbccp32.lib
+				winmm.lib
+				comctl32.lib
+				pdh.lib
+				shlwapi.lib
+				OpenGL32.lib
+				GLU32.lib
+				Ws2_32.lib
+				dbghelp.lib
+				d3d9.lib
+				d3dx9.lib
+				dxerr9.lib
+				dxguid.lib
+				dinput8.lib
+				dsound.lib
+        Strmiids.lib
+        Quartz.lib
+				</Libraries>
+ 				<LFlags tool="vc8">/NODEFAULTLIB:libcp.lib</LFlags>
+			</Configuration>
+
+			<Configuration name="debug">
+				<OutFile>Pd3d.dll</OutFile>
+				<CFlags>/WX /W4 /fp:fast /WX /MDd /ZI  </CFlags>
+				<LFlags>/DEBUG</LFlags>
+				<Preprocessor type="define">
+					_DEBUG
+				</Preprocessor>
+			</Configuration>
+
+			<Configuration name="release">
+				<OutFile>Pd3d.dll</OutFile>
+				<CFlags>/WX /W4 /fp:fast /WX /O2 /MD  </CFlags>
+				<LFlags>/DEBUG</LFlags>
+				<Preprocessor type="define">
+					NDEBUG
+				</Preprocessor>
+			</Configuration>
+
+		</Target>
+	</Project>
+
+</XPJ>

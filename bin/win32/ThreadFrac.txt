@@ -1,0 +1,5 @@
+ThreadFrac initialized.
+Setting Floating Point Resolution to: false
+Setting Floating Point Resolution to: SMALL
+Setting Floating Point Resolution to: SMALL
+Fractal took: 0.75 seconds to process.

@@ -1,0 +1,12 @@
+cd include
+cd common
+cd snippets
+copy \JobSwarm\JobSwarm.cpp
+copy \JobSwarm\JobSwarm.h
+copy \JobSwarm\ThreadConfig.cpp
+copy \JobSwarm\ThreadConfig.h
+copy \JobSwarm\LockFreeQ.cpp
+copy \JobSwarm\LockFreeQ.h
+cd ..
+cd ..
+cd ..

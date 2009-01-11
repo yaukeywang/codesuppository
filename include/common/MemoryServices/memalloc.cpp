@@ -2691,14 +2691,15 @@ void MemAlloc::summaryReport(HTML_TABLE::HtmlTable *table,const char *header) //
   // 6 MicroAllocationSize
   // 7 MicroAllocationCount
   // 8 TotalMicroAllocationCount
-
-  // 9 / 12 Object Pool Micro-Allocation Count
-  // 10 / 13 Global New Memory
-  // 11 / 14 Global New Allocation Count
-  // 12 / 15 Global New Array memory
-  // 13 / 16 Global New Array Allocation Count
+  // 9  Object Pool Micro-Allocation Count
+  // 10 Global New Memory
+  // 11 Global New Allocation Count
+  // 12 Global New Array memory
+  // 13 Global New Array Allocation Count
 
   table->addColumn(header);
+  table->addColumn(mMemSize);
+  table->addColumn(mMemCount);
 
   table->addColumn(general_size);
   table->addColumn(general_count);

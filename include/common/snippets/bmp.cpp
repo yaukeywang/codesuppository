@@ -8,7 +8,11 @@
 #define WIN32_LEAN_AND_MEAN
 #define VC_EXTRALEAN
 #define WIN32_EXTRA_LEAN
+#if defined(WIN32)
 #include <windows.h>
+#else
+#include "linux_compat.h"
+#endif
 
 void * loadFileBMP(const char *fname, HeI32 &wid, HeI32 &hit, HeI32 &bpp)
 {

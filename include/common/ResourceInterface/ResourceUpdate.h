@@ -2,13 +2,13 @@
 
 #define RESOURCE_UPDATE_H
 
-namespace FIRE_STORM_RESOURCE
+namespace RESOURCE_INTERFACE
 {
 
-class FireStormResourceInterface;
+class ResourceInterfaceCallback;
 
-void registerResourceUpdate(const char *fqn,FireStormResourceInterface *iface);
-void registerResourceCancel(FIRE_STORM_RESOURCE::FireStormResourceInterface *iface);
+void registerResourceUpdate(const char *fqn,ResourceInterfaceCallback *iface);
+void registerResourceCancel(RESOURCE_INTERFACE::ResourceInterfaceCallback *iface);
 void processResourceUpdate(const char *fqn);
 
 }; // end of namespace

@@ -587,11 +587,6 @@ Name="CodeSuppository"
       <File RelativePath="..\..\include\common\snippets\wildcard.h"/>
       <File RelativePath="..\..\include\common\snippets\winmsg.cpp"/>
       <File RelativePath="..\..\include\common\snippets\winmsg.h"/>
-      <File RelativePath="..\..\include\common\snippets\wstable.h"/>
-      <File RelativePath="..\..\include\common\snippets\wstring.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\wstring.h"/>
-      <File RelativePath="..\..\include\common\snippets\wstringdict.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\wstringdict.h"/>
     </Filter>
     <Filter Name="compression" Filter="">
       <File RelativePath="..\..\include\common\compression\adler32.c"/>

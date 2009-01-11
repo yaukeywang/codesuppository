@@ -61,7 +61,7 @@ public:
     {
       MeshImporter *mi = (*i);
       const char *e = mi->getExtension();
-      if ( strstr(scratch,e) )
+      if ( e && strstr(scratch,e) )
       {
         ret = mi;
         break;
@@ -72,7 +72,8 @@ public:
 
   virtual void addImporter(MeshImporter *importer)  // add an additional importer
   {
-    mImporters.push_back(importer);
+    if ( importer)
+      mImporters.push_back(importer);
   }
 
   bool importMesh(const char *meshName,const void *data,unsigned int dlen,MeshImportInterface *callback,const char *options)

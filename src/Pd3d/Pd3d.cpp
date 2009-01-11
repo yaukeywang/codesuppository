@@ -82,7 +82,7 @@
 #include "shader.h"
 #include "common/ResourceInterface/ResourceInterface.h"
 
-FIRE_STORM_RESOURCE::ResourceInterface *gResourceInterface=0;
+RESOURCE_INTERFACE::ResourceInterface *gResourceInterface=0;
 PD3D::Pd3d *gPd3d=0;
 
 #ifdef WIN32
@@ -168,19 +168,17 @@ public:
     }
     else
     {
-      FIRE_STORM_RESOURCE::FS_RESOURCE_HANDLE rhandle = 0;
+      RESOURCE_INTERFACE::RESOURCE_HANDLE rhandle = 0;
       HeU32 len = 0;
       void *mem        = 0;
 
       if ( gResourceInterface && strlen(mName.Get()) )
       {
-        wchar_t scratch[512];
-     	  mbstowcs(scratch,mName.Get(), 512 );
-        rhandle = gResourceInterface->getResource(scratch,0,0,FIRE_STORM_RESOURCE::RIF_NONE);
+        rhandle = gResourceInterface->getResource(mName.Get(),0,0,RESOURCE_INTERFACE::RIF_NONE);
         if ( rhandle )
         {
-          FIRE_STORM_RESOURCE::FireStormResourceInfo info;
-          gResourceInterface->getFireStormResourceInfo(rhandle,info);
+          RESOURCE_INTERFACE::ResourceInfo info;
+          gResourceInterface->getResourceInfo(rhandle,info);
           if ( info.mData )
           {
             mem = info.mData;
@@ -207,7 +205,7 @@ public:
 
       if ( rhandle )
       {
-        gResourceInterface->releaseResource(rhandle,FIRE_STORM_RESOURCE::FSRU_RELEASE_NO_UPDATE);
+        gResourceInterface->releaseResource(rhandle,RESOURCE_INTERFACE::RU_RELEASE_NO_UPDATE);
       }
 
       if ( mIsOk )
@@ -1246,7 +1244,7 @@ public:
   }
 
 
-  void setResourceInterface(FIRE_STORM_RESOURCE::ResourceInterface *ri)
+  void setResourceInterface(RESOURCE_INTERFACE::ResourceInterface *ri)
   {
     gResourceInterface = ri;
   }

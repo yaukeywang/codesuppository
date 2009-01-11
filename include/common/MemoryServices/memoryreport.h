@@ -99,6 +99,16 @@ public:
     return mDocument->saveExcel(fname);
   }
 
+  const char * getDocument(size_t & len, HTML_TABLE::HtmlSaveType type)
+  {
+    return mDocument->saveDocument(len,type);
+  }
+
+  void releaseDocumentMemory(const char * data)
+  {
+    mDocument->releaseDocumentMemory(data);
+  }
+
   void saveFile(const char *fname,HTML_TABLE::HtmlSaveType type)
   {
     size_t len;

@@ -39,7 +39,7 @@ static HeU32 gScreenHeight=768;
 //#define DEBUG_VS   // Uncomment this line to debug vertex shaders
 //#define DEBUG_PS   // Uncomment this line to debug pixel shaders
 
-FIRE_STORM_RESOURCE::ResourceInterface *gResourceInterface=0;
+RESOURCE_INTERFACE::ResourceInterface *gResourceInterface=0;
 
 SendTextMessage *gSendTextMessage=0;
 

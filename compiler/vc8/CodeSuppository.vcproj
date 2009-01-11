@@ -2113,26 +2113,6 @@
 					RelativePath="..\..\include\common\snippets\winmsg.h"
 					>
 				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\wstable.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\wstring.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\wstring.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\wstringdict.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\wstringdict.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="compression"

@@ -96,5 +96,4 @@ void           normalizeFQN(const wchar_t *source,wchar_t *dest);
 void           normalizeFQN(const char *source,char *dest);
 
 
-
 #endif

@@ -28,21 +28,21 @@ copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\CodeSuppository.exe
 cd ..
 cd ..
 
-md ext
-cd ext
-md assimp
-cd assimp
-xcopy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\ext\assimp\*.* /s
-cd ..
-cd ..
+rem md ext
+rem cd ext
+rem md assimp
+rem cd assimp
+rem xcopy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\ext\assimp\*.* /s
+rem cd ..
+rem cd ..
 
-md ext
-cd ext
-md DirectX_October2006
-cd DirectX_October2006
-xcopy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\ext\DirectX_October2006\*.* /s
-cd ..
-cd ..
+rem md ext
+rem cd ext
+rem md DirectX_October2006
+rem cd DirectX_October2006
+rem xcopy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\ext\DirectX_October2006\*.* /s
+rem cd ..
+rem cd ..
 
 md media
 cd media
@@ -77,6 +77,11 @@ copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\include\Pd3d\*.cpp
 copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\include\Pd3d\*.dds
 copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\include\Pd3d\*.fx
 copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\include\Pd3d\FileCode.exe
+cd ..
+
+md PathSystem
+cd PathSystem
+copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\include\PathSystem\*.h
 cd ..
 
 md MeshImport
@@ -206,35 +211,36 @@ md compiler
 cd compiler
 md vc8
 cd vc8
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\TestMeshImport.sln
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\TestMeshImport.vcproj
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImport.sln
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImport.vcproj
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImportAssimp.sln
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImportAssimp.vcproj
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImportEzm.sln
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImportEzm.vcproj
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImportFbx.sln
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImportFbx.vcproj
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImportLeveller.sln
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImportLeveller.vcproj
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImportObj.sln
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImportObj.vcproj
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImportPsk.sln
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImportPsk.vcproj
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImportOgre.sln
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImportOgre.vcproj
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\CodeSuppository.sln
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\CodeSuppository.vcproj
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\ThreadFrac.sln
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\ThreadFrac.vcproj
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\RenderDebugPd3d.sln
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\RenderDebugPd3d.vcproj
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\Pd3d.sln
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\Pd3d.vcproj
+REM copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\TestMeshImport.sln
+REM copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\TestMeshImport.vcproj
+REM copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImport.sln
+REM copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImport.vcproj
+REM copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImportAssimp.sln
+REM copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImportAssimp.vcproj
+REM copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImportEzm.sln
+REM copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImportEzm.vcproj
+REM copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImportFbx.sln
+REM copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImportFbx.vcproj
+REM copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImportLeveller.sln
+REM copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImportLeveller.vcproj
+REM copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImportObj.sln
+REM copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImportObj.vcproj
+REM copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImportPsk.sln
+REM copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImportPsk.vcproj
+REM copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImportOgre.sln
+REM copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\MeshImportOgre.vcproj
+REM copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\CodeSuppository.sln
+REM copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\CodeSuppository.vcproj
+REM copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\ThreadFrac.sln
+REM copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\ThreadFrac.vcproj
+REM copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\RenderDebugPd3d.sln
+REM copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\RenderDebugPd3d.vcproj
+REM copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\Pd3d.sln
+REM copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\vc8\Pd3d.vcproj
 cd ..
 md xpj
 cd xpj
+copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\xpj\PathSystem.xpj
 copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\xpj\CodeSuppository.xpj
 copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\xpj\ThreadFrac.xpj
 copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\compiler\xpj\RenderDebugPd3d.xpj
@@ -464,6 +470,13 @@ cd MeshImportOgre
 copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\src\MeshImportOgre\*.h
 copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\src\MeshImportOgre\*.cpp
 copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\src\MeshImportOgre\*.c
+cd ..
+
+md PathSystem
+cd PathSystem
+copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\src\PathSystem\*.h
+copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\src\PathSystem\*.cpp
+copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\src\PathSystem\*.c
 cd ..
 
 cd ..

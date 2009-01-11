@@ -9,21 +9,21 @@
 #include <list>
 #include <map>
 
-namespace FIRE_STORM_RESOURCE
+namespace RESOURCE_INTERFACE
 {
 
-typedef USER_STL::list< FireStormResourceInterface * > FireStormResourceInterfaceList;
+typedef USER_STL::list< ResourceInterfaceCallback * > ResourceInterfaceList;
 
-class ResourceUpdate
+class MyResourceUpdate
 {
 public:
 
-  bool cancel(FireStormResourceInterface *iface)
+  bool cancel(ResourceInterfaceCallback *iface)
   {
     bool ret = false;
     if ( !mInterfaces.empty() )
     {
-      FireStormResourceInterfaceList::iterator i = mInterfaces.begin();
+      ResourceInterfaceList::iterator i = mInterfaces.begin();
       while ( i != mInterfaces.end() )
       {
         if ( (*i) == iface )
@@ -45,27 +45,25 @@ public:
     return mInterfaces.empty();
   }
 
-  void add(FireStormResourceInterface *iface)
+  void add(ResourceInterfaceCallback *iface)
   {
     mInterfaces.push_back(iface);
   }
 
   void notify(const std::string &str)
   {
-    wchar_t scratch[512];
-    CharToWide(str.c_str(),scratch,512);
-    FireStormResourceInterfaceList::iterator i;
+    ResourceInterfaceList::iterator i;
     for (i=mInterfaces.begin(); i!=mInterfaces.end(); ++i)
     {
-      (*i)->notifyResourceChanged(scratch);
+      (*i)->notifyResourceChanged(str.c_str());
     }
   }
 
-  FireStormResourceInterfaceList mInterfaces;
+  ResourceInterfaceList mInterfaces;
 };
 
 
-typedef USER_STL::map< std::string, ResourceUpdate > ResourceUpdateMap;
+typedef USER_STL::map< std::string, MyResourceUpdate > ResourceUpdateMap;
 
 class ResourceUpdateSystem
 {
@@ -79,7 +77,7 @@ public:
   }
 
 
-  void registerUpdate(const char *_fqn,FireStormResourceInterface *iface)
+  void registerUpdate(const char *_fqn,ResourceInterfaceCallback *iface)
   {
     char fqn[512];
     normalizeFQN(_fqn,fqn);
@@ -91,13 +89,13 @@ public:
     }
     else
     {
-      ResourceUpdate r;
+      MyResourceUpdate r;
       r.add(iface);
       mResources[str] = r;
     }
   }
 
-  void cancel(FIRE_STORM_RESOURCE::FireStormResourceInterface *iface)
+  void cancel(RESOURCE_INTERFACE::ResourceInterfaceCallback *iface)
   {
     if ( !mResources.empty() )
     {
@@ -105,7 +103,7 @@ public:
       ResourceUpdateMap::iterator itemp;
       while ( i != mResources.end() )
       {
-        ResourceUpdate &r = (*i).second;
+        MyResourceUpdate &r = (*i).second;
         if ( r.cancel(iface) )
         {
           if ( r.empty() )
@@ -146,12 +144,12 @@ private:
 
 static ResourceUpdateSystem gUpdateSystem;
 
-void registerResourceUpdate(const char *fqn,FireStormResourceInterface *iface)
+void registerResourceUpdate(const char *fqn,ResourceInterfaceCallback *iface)
 {
   gUpdateSystem.registerUpdate(fqn,iface);
 }
 
-void registerResourceCancel(FIRE_STORM_RESOURCE::FireStormResourceInterface *iface)
+void registerResourceCancel(RESOURCE_INTERFACE::ResourceInterfaceCallback *iface)
 {
   gUpdateSystem.cancel(iface);
 }

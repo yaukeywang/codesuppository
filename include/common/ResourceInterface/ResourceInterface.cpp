@@ -61,16 +61,10 @@
 #pragma warning(disable:4100)
 
 
-namespace FIRE_STORM_RESOURCE
+namespace RESOURCE_INTERFACE
 {
 
-static bool WideToChar(const wchar_t *source,char *dest,HeI32 maxlen)
-{
-	wcstombs(dest, (const wchar_t *) source, maxlen );
-	return true;
-}
-
-class LocalResourceHandle : public FireStormResourceInfo
+class LocalResourceHandle : public ResourceInfo
 {
 public:
   LocalResourceHandle(void)
@@ -89,11 +83,11 @@ public:
     release();
   }
 
-  void init(const wchar_t *fqn,void *userData,const void *mem,HeU32 len,FireStormResourceInterface *iface,const char *options)
+  void init(const char *fqn,void *userData,const void *mem,HeU32 len,ResourceInterfaceCallback *iface,const char *options)
   {
-    HeU32 wlen = wcslen(fqn);
-    mFQN = MEMALLOC_NEW_ARRAY(wchar_t,wlen+1)[wlen+1];
-    wcscpy((wchar_t *)mFQN,fqn);
+    HeU32 wlen = strlen(fqn);
+    mFQN = MEMALLOC_NEW_ARRAY(char,wlen+1)[wlen+1];
+    strcpy((char *)mFQN,fqn);
     mUserData = userData;
     mData     = (void *)mem;
     mLen      = len;
@@ -109,7 +103,7 @@ public:
 
   void release(void)
   {
-    delete mFQN;
+    delete[]mFQN;
     delete mData;
     MEMALLOC_FREE(mOptions);
     mOptions = 0;
@@ -125,7 +119,7 @@ public:
 
   LocalResourceHandle  *mNext;
   LocalResourceHandle  *mPrevious;
-  FireStormResourceInterface *mCallback;
+  ResourceInterfaceCallback *mCallback;
   void *mUserData;
   char *mOptions;
 };
@@ -140,7 +134,7 @@ class FileResourceInterface : public ResourceInterface
 public:
   FileResourceInterface(void)
   {
-    mHandles.Set(START_HANDLES,GROW_HANDLES,MAX_HANDLES,"FireStormResource->ResourceHandle",__FILE__,__LINE__);
+    mHandles.Set(START_HANDLES,GROW_HANDLES,MAX_HANDLES,"Resource->ResourceHandle",__FILE__,__LINE__);
   }
   ~FileResourceInterface(void)
   {
@@ -157,13 +151,13 @@ public:
     }
   }
 
-	FS_RESOURCE_HANDLE  getResource(const wchar_t *fqn,void *userData,FireStormResourceInterface *iface,ResourceInterfaceFlag flag,const char *options);
-  bool                putResource(const wchar_t *fqn,const void *data,size_t len,void *userData,const wchar_t *comment,ResourceInterfaceFlag flag,const char *options);
-  bool                releaseResource(FS_RESOURCE_HANDLE handle,FIRE_STORM_RESOURCE::FireStormResourceUpdate update);
-  bool                getFireStormResourceInfo(FS_RESOURCE_HANDLE handle,FireStormResourceInfo &info);
+	RESOURCE_HANDLE     getResource(const char *fqn,void *userData,ResourceInterfaceCallback *iface,ResourceInterfaceFlag flag,const char *options);
+  bool                putResource(const char *fqn,const void *data,size_t len,void *userData,const char *comment,ResourceInterfaceFlag flag,const char *options);
+  bool                releaseResource(RESOURCE_HANDLE handle,RESOURCE_INTERFACE::ResourceUpdate update);
+  bool                getResourceInfo(RESOURCE_HANDLE handle,ResourceInfo &info);
   void                pump(void);
 
-  HeI32                 releaseResourceHandles(FireStormResourceInterface *iface) // release all resources that were registered with this callback address, returns number that were released.  Useful in destructors for guaranteed cleanup.
+  HeI32               releaseResourceHandles(ResourceInterfaceCallback *iface) // release all resources that were registered with this callback address, returns number that were released.  Useful in destructors for guaranteed cleanup.
   {
     HeI32 ret = 0;
 
@@ -190,15 +184,13 @@ private:
 
 };
 
-FS_RESOURCE_HANDLE  FileResourceInterface::getResource(const wchar_t *fqn,void *userData,FireStormResourceInterface *iface,ResourceInterfaceFlag flag,const char *options)
+RESOURCE_HANDLE  FileResourceInterface::getResource(const char *fqn,void *userData,ResourceInterfaceCallback *iface,ResourceInterfaceFlag flag,const char *options)
 {
   void *ret = 0;
   HeU32 len=0;
   if ( fqn )
   {
-    char scratch[512];
-    WideToChar(fqn,scratch,512);
-    const char *fname = scratch;
+    const char *fname = fqn;
 
 #if LOCAL_STRING
     fname = localString(fname);
@@ -209,12 +201,10 @@ FS_RESOURCE_HANDLE  FileResourceInterface::getResource(const wchar_t *fqn,void *
     }
 #endif
 
-
-
     FILE *fph = fopen(fname,"rb");
     if ( fph == 0 )
     {
-      fph = fopen(scratch,"rb");
+      fph = fopen(fqn,"rb");
     }
 
 
@@ -258,9 +248,9 @@ FS_RESOURCE_HANDLE  FileResourceInterface::getResource(const wchar_t *fqn,void *
       ret = rd;
       if ( iface )
       {
-        FireStormResourceUpdate update = iface->notifyResource(rd, rd->mData, (HeU32)rd->mLen, rd->mUserData, rd->mOptions, 0 );
-        assert(update != FSRU_DO_NOT_RELEASE );
-        if ( update != FSRU_DO_NOT_RELEASE )
+        ResourceUpdate update = iface->notifyResource(rd, rd->mData, (HeU32)rd->mLen, rd->mUserData, rd->mOptions, 0 );
+        assert(update != RU_DO_NOT_RELEASE );
+        if ( update != RU_DO_NOT_RELEASE )
         {
           releaseResource(rd,update);
           ret = 0;
@@ -277,9 +267,9 @@ FS_RESOURCE_HANDLE  FileResourceInterface::getResource(const wchar_t *fqn,void *
       if ( rd )
       {
         rd->init(fqn,userData,0,0,iface, options);
-        FireStormResourceUpdate update = iface->notifyResource(rd, rd->mData, (HeU32)rd->mLen, rd->mUserData, rd->mOptions, 0 );
-        assert( update != FSRU_DO_NOT_RELEASE );
-        if ( update != FSRU_DO_NOT_RELEASE )
+        ResourceUpdate update = iface->notifyResource(rd, rd->mData, (HeU32)rd->mLen, rd->mUserData, rd->mOptions, 0 );
+        assert( update != RU_DO_NOT_RELEASE );
+        if ( update != RU_DO_NOT_RELEASE )
         {
           releaseResource(rd,update);
           ret = 0;
@@ -296,7 +286,7 @@ FS_RESOURCE_HANDLE  FileResourceInterface::getResource(const wchar_t *fqn,void *
   return ret;
 }
 
-bool FileResourceInterface::releaseResource(FS_RESOURCE_HANDLE mem,FIRE_STORM_RESOURCE::FireStormResourceUpdate update)
+bool FileResourceInterface::releaseResource(RESOURCE_HANDLE mem,RESOURCE_INTERFACE::ResourceUpdate update)
 {
   bool ret = false;
 
@@ -312,7 +302,7 @@ bool FileResourceInterface::releaseResource(FS_RESOURCE_HANDLE mem,FIRE_STORM_RE
 }
 
 
-bool  FileResourceInterface::getFireStormResourceInfo(FS_RESOURCE_HANDLE handle,FireStormResourceInfo &info)
+bool  FileResourceInterface::getResourceInfo(RESOURCE_HANDLE handle,ResourceInfo &info)
 {
   bool ret = false;
   if ( handle )
@@ -327,15 +317,12 @@ bool  FileResourceInterface::getFireStormResourceInfo(FS_RESOURCE_HANDLE handle,
   return ret;
 }
 
-bool FileResourceInterface::putResource(const wchar_t *fqn,const void *data,size_t len,void * userData,const wchar_t * comment,ResourceInterfaceFlag flag,const char *options)
+bool FileResourceInterface::putResource(const char *fqn,const void *data,size_t len,void * userData,const char * comment,ResourceInterfaceFlag flag,const char *options)
 {
   bool ret = false;
   if ( fqn && data && len )
   {
-    char scratch[512];
-    WideToChar(fqn,scratch,512);
-
-    const char *fname = scratch;
+    const char *fname = fqn;
 
 #if LOCAL_STRING
     fname = localString(fname);
@@ -368,9 +355,9 @@ void FileResourceInterface::pump(void)
 }; // end of namespace
 
 
-static FIRE_STORM_RESOURCE::FileResourceInterface *gFileResourceInterface=0;
+static RESOURCE_INTERFACE::FileResourceInterface *gFileResourceInterface=0;
 
-using namespace FIRE_STORM_RESOURCE;
+using namespace RESOURCE_INTERFACE;
 
 ResourceInterface * createDefaultResourceInterface(void) // will create a default class that just uses standard file IO routines to the current directory.  Good for testing.  Requires the CPP to be included.
 {
@@ -397,19 +384,17 @@ void * getFileSynchronous(const char *fname,HeU32 &len)
 
   if ( gResourceInterface )
   {
-    wchar_t wfname[512];
-  	mbstowcs(wfname,fname,512);
-    FIRE_STORM_RESOURCE::FS_RESOURCE_HANDLE handle = gResourceInterface->getResource(wfname,0,0,RIF_NONE);
+    RESOURCE_INTERFACE::RESOURCE_HANDLE handle = gResourceInterface->getResource(fname,0,0,RIF_NONE);
     if ( handle )
     {
-      FIRE_STORM_RESOURCE::FireStormResourceInfo info;
-      bool ok = gResourceInterface->getFireStormResourceInfo(handle,info);
+      RESOURCE_INTERFACE::ResourceInfo info;
+      bool ok = gResourceInterface->getResourceInfo(handle,info);
       if ( ok && info.mLen )
       {
         len = (HeU32) info.mLen;
         char *mem = MEMALLOC_NEW_ARRAY(char,len)[len];
         memcpy(mem,info.mData,len);
-        gResourceInterface->releaseResource(handle,FIRE_STORM_RESOURCE::FSRU_RELEASE_NO_UPDATE);
+        gResourceInterface->releaseResource(handle,RESOURCE_INTERFACE::RU_RELEASE_NO_UPDATE);
         ret = mem;
       }
     }

@@ -67,7 +67,7 @@ namespace BINKVIDEO
 class BinkVideo;
 };
 
-namespace FIRE_STORM_RESOURCE
+namespace RESOURCE_INTERFACE
 {
 class ResourceInterface;
 };
@@ -285,7 +285,7 @@ public:
 
 	virtual void   preserveRenderState(void) = 0;
 	virtual void   restoreRenderState(void) = 0;
-  virtual void   setResourceInterface(FIRE_STORM_RESOURCE::ResourceInterface *ri) = 0;
+  virtual void   setResourceInterface(RESOURCE_INTERFACE::ResourceInterface *ri) = 0;
 	virtual void   setDevice(void *d3device)=0;
   virtual void * getDevice(void)=0;
 	virtual void   onDeviceReset(void *d3device)=0;

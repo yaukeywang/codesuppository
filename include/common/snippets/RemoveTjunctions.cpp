@@ -34,7 +34,7 @@ size_t gCount=0;
 
 const double EPSILON = 0.001f;
 
-typedef std::vector< size_t > size_tVector;
+typedef USER_STL::vector< size_t > size_tVector;
 
 class Triangle
 {
@@ -234,7 +234,7 @@ public:
 };
 
 
-typedef std::vector< Triangle * > TriangleVector;
+typedef USER_STL::vector< Triangle * > TriangleVector;
 typedef USER_STL::hash_map< size_t, Edge * > EdgeMap;
 
 class MyRemoveTjunctions : public RemoveTjunctions

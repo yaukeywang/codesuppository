@@ -31,6 +31,7 @@
 
 
 #include "viewtest.h"
+#include "UserMemAlloc.h"
 
 #include <float.h>
 #include <assert.h>
@@ -95,7 +96,7 @@ private:
 
 class BoundingVolumeSystem;
 
-typedef std::vector< BoundingVolume * > BoundingVolumeVector;
+typedef USER_STL::vector< BoundingVolume * > BoundingVolumeVector;
 
 class BoundingVolumeAABV
 {

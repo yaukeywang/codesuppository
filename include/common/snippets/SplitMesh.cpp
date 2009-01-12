@@ -51,7 +51,7 @@ static float ranf(void)
 //************************************************************************************
 //************************************************************************************
 
-typedef std::vector< size_t > size_tVector;
+typedef USER_STL::vector< size_t > size_tVector;
 
 class MyRobustMesh : public RobustMesh
 {
@@ -275,7 +275,7 @@ void         releaseRobustMesh(RobustMesh *mesh)
 //************************************************************************************
 
 
-typedef std::vector< double >  doubleVector;
+typedef USER_STL::vector< double >  doubleVector;
 
 class Edge
 {
@@ -293,12 +293,12 @@ public:
 
 };
 
-typedef std::vector< Edge > EdgeVector;
-typedef std::vector< Edge *> EdgePtrVector;
+typedef USER_STL::vector< Edge > EdgeVector;
+typedef USER_STL::vector< Edge *> EdgePtrVector;
 
 typedef USER_STL::hash_map<size_t, Edge *> EdgeIndexMap;
-typedef std::vector< size_t > SizeTVector;
-typedef std::vector< int > intVector;
+typedef USER_STL::vector< size_t > SizeTVector;
+typedef USER_STL::vector< int > intVector;
 
 
 class Ring
@@ -515,7 +515,7 @@ public:
   SizeTVector mPoints;
 };
 
-typedef std::vector< Ring > RingVector;
+typedef USER_STL::vector< Ring > RingVector;
 
 class LineSegment
 {
@@ -593,7 +593,7 @@ public:
   double  mP2[3];
 };
 
-typedef std::vector< LineSegment > LineSegmentVector;
+typedef USER_STL::vector< LineSegment > LineSegmentVector;
 
 class MyRingSystem : public RingSystem
 {

@@ -12,6 +12,7 @@
 #pragma warning(push,3)
 
 #define NOMINMAX
+#include "plugins.h"
 #include "common/dxut/dxstdafx.h"
 #include "resource.h"
 #include "menu.h"
@@ -92,8 +93,6 @@ HeF32 gFPS=60.0f;
 
 IDirect3DDevice9*    gDevice=0;
 HINSTANCE            gInstance=0;
-PD3D::Pd3d                 *gPd3d=0;
-RENDER_DEBUG::RenderDebug          *gRenderDebug=0;
 
 HeI32 mLastIndex=0;
 HeF32 mSpeed=2.0f;
@@ -194,10 +193,9 @@ INT WINAPI WinMain( HINSTANCE instance, HINSTANCE, LPSTR, HeI32 )
 
 		gInstance = instance;
 
-		gPd3d = (PD3D::Pd3d *)getBindingInterface("pd3d.dll",PD3D_VERSION);
-		gRenderDebug = (RENDER_DEBUG::RenderDebug *)getBindingInterface("RenderDebugPd3d.dll",RENDER_DEBUG_VERSION);
+    bool ok = loadPlugins();
 
-    if ( gPd3d && gRenderDebug )
+    if ( ok )
     {
 
       openDebug();

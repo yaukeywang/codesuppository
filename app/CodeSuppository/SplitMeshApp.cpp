@@ -978,7 +978,7 @@ public:
     mProject[2] = 0;
 
 
-    typedef std::vector< fm_LineSegment > LineSegmentVector;
+    typedef USER_STL::vector< fm_LineSegment > LineSegmentVector;
 
     SPLIT_MESH::VertexPool *vpool = SPLIT_MESH::Vl_createVertexPool(DEFAULT_GRANULARITY,true);
 

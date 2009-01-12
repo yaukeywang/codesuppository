@@ -334,10 +334,11 @@ void        releaseSplitMesh(SplitMesh *sm);
 
 #include <stdio.h>
 #include <vector>
+#include "UserMemAlloc.h"
 #include "FloatMath.h"
 
 
-typedef std::vector< size_t > size_tVector;
+typedef USER_STL::vector< size_t > size_tVector;
 
 class EdgeWalk
 {
@@ -390,8 +391,8 @@ private:
 
 };
 
-typedef std::vector< EdgeWalk >   EdgeWalkVector;
-typedef std::vector< EdgeWalk * > EdgeWalkPtrVector;
+typedef USER_STL::vector< EdgeWalk >   EdgeWalkVector;
+typedef USER_STL::vector< EdgeWalk * > EdgeWalkPtrVector;
 
 class EdgeWalker
 {

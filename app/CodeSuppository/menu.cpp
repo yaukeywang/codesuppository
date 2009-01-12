@@ -22,8 +22,10 @@
 #include "common/snippets/ImportHeightMap.h"
 #include "common/HeMath/HeVec3.h"
 #include "RenderDebug/RenderDebug.h"
+#include "Pd3d/Pd3d.h"
 #include "CodeSuppository.h"
 #include "PhysX.h"
+#include "common/MemoryServices/MemoryReport.h"
 #include <direct.h>
 
 enum MenuOptions
@@ -41,6 +43,7 @@ enum MyCommand
 	MC_PSLOOKAT,
   MC_PLANE,
   MC_TRIANGULATE_TYPE,
+  MC_MEMORY_REPORT,
 };
 
 
@@ -51,6 +54,7 @@ public:
   {
   	mMainMenu = CreateMenu();
     mCommandOk = true;
+    mStartup = true;
 
     gCodeSuppository = createCodeSuppository();
 
@@ -69,6 +73,8 @@ public:
 	  gTheCommandParser = MEMALLOC_NEW(TheCommandParser);
 		gTui              = MEMALLOC_NEW(TextUserInterface)("CodeSuppository.tui");
 
+
+   createButton("MEMORY_REPORT", MC_MEMORY_REPORT, "MC_MEMORY_REPORT");
 
    createButton("BEST_FIT_OBB",  CSC_BEST_FIT_OBB,  "CSC_BEST_FIT_OBB");
    createButton("BEST_FIT_PLANE",  CSC_BEST_FIT_PLANE,  "CSC_BEST_FIT_PLANE");
@@ -153,6 +159,7 @@ public:
 
 
     CPARSER.Parse("TuiPageBegin CodeSuppository");
+    CPARSER.Parse("TuiElement MC_MEMORY_REPORT");
     CPARSER.Parse("TuiElement CSC_BEST_FIT_OBB");
     CPARSER.Parse("TuiElement CSC_BEST_FIT_PLANE");
     CPARSER.Parse("TuiElement CSC_STAN_HULL");
@@ -251,6 +258,8 @@ public:
 //    CPARSER.Parse("TuiLoad PhysXViewer.psc");
 
 		gLog->Display("Menu System Initialized\r\n");
+
+    mStartup = false;
 
   }
 
@@ -487,6 +496,15 @@ public:
   	return ret;
   }
 
+  void report(MemoryReport &mr,MemoryReport &summary,const char *header,MemoryServices *mservice)
+  {
+    mr.summaryReport(header,mservice);
+    summary.summaryReport(header,mservice);
+    mr.reportByClass(header,mservice);
+    mr.reportBySourceFile(header,mservice);
+    mr.fixedPoolReport(header,mservice);
+  }
+
   int CommandCallback(int token,int count,const char **arglist)
   {
   	int ret = 0;
@@ -505,6 +523,21 @@ public:
 
 		switch ( token )
 		{
+      case MC_MEMORY_REPORT:
+        if ( !mStartup )
+        {
+          MemoryReport summary;
+          MemoryReport mr;
+          report(mr,summary,"CodeSuppository",0);
+          report(mr,summary,"Pd3d",gPd3d);
+          report(mr,summary,"RenderDebug",gRenderDebug);
+
+          summary.echoText(gSendTextMessage,HTML_TABLE::HST_TEXT);
+          SEND_TEXT_MESSAGE(0,"Saving detailed memory report to 'memory_report.txt'\r\n");
+          mr.saveFile("memory_report.txt",HTML_TABLE::HST_TEXT);
+
+        }
+        break;
       case MC_TRIANGULATE_TYPE:
         if ( count == 2 )
         {
@@ -713,6 +746,8 @@ public:
   }
 
   bool  mCommandOk:1;
+  bool  mStartup:1;
+
   HMENU	mMainMenu;
   HMENU mFileMenu;
 };

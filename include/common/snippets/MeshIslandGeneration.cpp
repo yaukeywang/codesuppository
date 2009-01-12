@@ -23,7 +23,7 @@
 namespace MESH_ISLAND_GENERATION
 {
 
-typedef std::vector< size_t > size_tVector;
+typedef USER_STL::vector< size_t > size_tVector;
 
 class Edge;
 class Island;
@@ -125,7 +125,7 @@ public:
 };
 
 typedef USER_STL::hash_map< size_t, Edge * > EdgeHashMap;
-typedef std::vector< Triangle * > TriangleVector;
+typedef USER_STL::vector< Triangle * > TriangleVector;
 
 class EdgeCheck
 {
@@ -299,7 +299,7 @@ void Triangle::buildBox(const float *vertices_f,const double *vertices_d,size_t 
 }
 
 
-typedef std::vector< Island * > IslandVector;
+typedef USER_STL::vector< Island * > IslandVector;
 
 class MyMeshIslandGeneration : public MeshIslandGeneration
 {

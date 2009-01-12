@@ -593,7 +593,7 @@ static void removePolyPoint(Edge *p,Edge **polyPoints)
 
 #define SPLIT_EPSILON 0.000001f
 
-typedef std::vector< size_t > size_tVector;
+typedef USER_STL::vector< size_t > size_tVector;
 typedef USER_STL::hash_map< size_t, Polygon * > PolygonHashMap;
 
 class MyConsolidateMesh : public ConsolidateMesh

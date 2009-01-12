@@ -10,7 +10,7 @@
 namespace OPEN_CLOSED_MESH
 {
 
-typedef std::vector< size_t > size_tVector;
+typedef USER_STL::vector< size_t > size_tVector;
 
 class Edge
 {

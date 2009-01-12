@@ -10,13 +10,14 @@
 #include <vector>
 
 
-
+#include "UserMemAlloc.h"
 #include "ConvexDecomposition.h"
 #include "MeshIslandGeneration.h"
 #include "cd_hull.h"
 #include "FloatMath.h"
 #include "SplitMesh.h"
 #include "RemoveTjunctions.h"
+
 
 #pragma warning(disable:4996)
 #pragma warning(disable:4267)
@@ -32,7 +33,7 @@ static const double EPSILON=0.0001;
 
 using namespace ConvexDecomposition;
 
-typedef std::vector< unsigned int > UintVector;
+typedef USER_STL::vector< unsigned int > UintVector;
 
 
 namespace ConvexDecomposition
@@ -156,7 +157,7 @@ public:
   double           mWeight;
 };
 
-typedef std::vector< Wpoint > WpointVector;
+typedef USER_STL::vector< Wpoint > WpointVector;
 
 
 class CTri
@@ -397,7 +398,7 @@ public:
   int             mProcessed; // already been added...
 };
 
-typedef std::vector< CTri > CTriVector;
+typedef USER_STL::vector< CTri > CTriVector;
 
 bool featureMatch(CTri &m,const CTriVector &tris,ConvexDecompInterface * /* callback */,const CTriVector & /* input_mesh */)
 {
@@ -770,7 +771,7 @@ class CHullSort
 };
 
 
-typedef std::vector< CHull * > CHullVector;
+typedef USER_STL::vector< CHull * > CHullVector;
 
 
 class ConvexBuilder : public ConvexDecompInterface
@@ -1498,7 +1499,7 @@ unsigned int performConvexDecomposition(const DecompDesc &_desc)
   // so we must re-index it here!
 
   fm_VertexIndex *vindex = fm_createVertexIndex( (double) SPLIT_EPSILON, false );
-  typedef std::vector< size_t > size_tVector;
+  typedef USER_STL::vector< size_t > size_tVector;
 
   size_tVector indices;
 

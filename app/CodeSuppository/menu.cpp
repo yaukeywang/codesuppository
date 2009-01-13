@@ -9,6 +9,8 @@
 #include "common/dxut/dxstdafx.h"
 #include "resource.h"
 #include "menu.h"
+#include "MeshImport/MeshImport.h"
+#include "MeshImport/MeshSystem.h"
 #include "common/snippets/cparser.h"
 #include "common/snippets/filesystem.h"
 #include "common/snippets/log.h"
@@ -31,8 +33,7 @@
 enum MenuOptions
 {
   MO_RUN_SCRIPT = 10000,
-  MO_IMPORT_OBJ,
-  MO_IMPORT_TER,
+  MO_IMPORT_MESH,
 	MO_EXIT,
 };
 
@@ -46,6 +47,7 @@ enum MyCommand
   MC_MEMORY_REPORT,
 };
 
+typedef USER_STL::vector< std::string > StringVector;
 
 class MyMenu : public FileSystem, public CommandParserInterface
 {
@@ -62,9 +64,7 @@ public:
 		mFileMenu = m;
 
   	AppendMenu( mMainMenu, MF_POPUP, (UINT_PTR)m, L"&File" );
-  	  AppendMenu( m, MF_STRING, MO_RUN_SCRIPT,  L"Run Demo Script");
-      AppendMenu( m, MF_STRING, MO_IMPORT_OBJ, L"Import Wavefront OBJ");
-      AppendMenu( m, MF_STRING, MO_IMPORT_TER, L"Import Leveller TER file");
+      AppendMenu( m, MF_STRING, MO_IMPORT_MESH, L"Import Mesh Data");
   	  AppendMenu( m, MF_STRING, MO_EXIT, L"E&xit");
 
 	  // ok, now initialize the scripted menu interface.
@@ -318,14 +318,15 @@ public:
       wchar_t c = 0;
       dest[index++] = c;
     }
+    assert(index<512);
   }
 
 
-  const char * getFileName(const char *fileType,const char *initial,const char *description,bool saveMode) // allows the application the opportunity to present a file save dialog box.
+  const char * getFileName(const StringVector &specs,const char *title,const char *initial,bool saveMode) // allows the application the opportunity to present a file save dialog box.
   {
   	const char *ret = initial;
 
-  	const char *extension = fileType;
+//  	const char *extension = fileType;
 
   	static int sWhichFileType = 1;
   	char curdir[512];
@@ -345,33 +346,43 @@ public:
     if ( initial )
       strcpy(exportName,initial);
 
-    assert(extension);
+//    assert(extension);
 
-    wchar_t _filter[512];
-
-    wchar_t _ext[512];
-    wchar_t _desc[512];
-
-    CharToWide(description,_desc,512);
-    CharToWide(extension,_ext,512);
+    wchar_t _filter[4096];
 
     unsigned int index = 0;
     _filter[0] = 0;
 
-    add(_filter,_desc,index);
-    add(_filter,L" (*",index);
-    add(_filter,_ext,index);
-    add(_filter,L")",index);
-    add(_filter,0,index);
-    add(_filter,L"*",index);
-    add(_filter,_ext,index);
-    add(_filter,0,index);
+    int count = specs.size()/2;
+    for (int i=0; i<count; i++)
+    {
+      const std::string &desc = specs[i*2];
+      const std::string &spec = specs[i*2+1];
+
+      wchar_t _ext[512];
+      wchar_t _desc[512];
+
+      CharToWide(desc.c_str(),_desc,512);
+      CharToWide(spec.c_str(),_ext,512);
+
+      add(_filter,_desc,index);
+      add(_filter,L" (*",index);
+      add(_filter,_ext,index);
+      add(_filter,L")",index);
+      add(_filter,0,index);
+      add(_filter,L"*",index);
+      add(_filter,_ext,index);
+      add(_filter,0,index);
+    }
+
     add(_filter,0,index);
     add(_filter,0,index);
 
+    wchar_t _title[512];
+    CharToWide(title,_title,512);
 
     f.lpstrFilter = _filter;
-    f.lpstrTitle =  _desc;
+    f.lpstrTitle =  _title;
 
   	f.lpstrInitialDir = NULL;
 
@@ -393,12 +404,6 @@ public:
 
   		static char tmp[512];
   		wcstombs( tmp, buffer, 512 );
-
- 			char *ext = stristr(tmp,extension);
- 			if ( ext == 0 )
- 			{
- 				strcat(tmp,extension);
-  		}
 
   		bool ok = true;
 
@@ -465,24 +470,49 @@ public:
 
   	switch ( cmd )
   	{
-      case MO_IMPORT_TER:
+      case MO_IMPORT_MESH:
+        if ( gMeshImport )
         {
-          const char * fname = getFileName(".ter", 0, "Select Leveller TER.", false );
-          if ( fname && gPhysX )
+          StringVector specs;
+          int count = gMeshImport->getImporterCount();
+          if ( count )
           {
-            gPhysX->importHeightMap(fname);
-//            appImportTer(fname);
+            for (int i=0; i<count; i++)
+            {
+              MESHIMPORT::MeshImporter *imp = gMeshImport->getImporter(i);
+              assert(imp);
+              if ( imp )
+              {
+                const char *spec = imp->getExtension();
+                const char *desc = imp->getDescription();
+                assert(spec);
+                assert(desc);
+                if ( spec && desc )
+                {
+                  std::string _spec(spec);
+                  std::string _desc(desc);
+                  specs.push_back(_desc);
+                  specs.push_back(_spec);
+                }
+              }
+            }
+
+            const char * fname = getFileName(specs,"MeshImport compatible data files", 0, false );
+            if ( fname )
+            {
+              SEND_TEXT_MESSAGE(0,"Processing mesh '%s'\r\n", fname );
+              gCodeSuppository->importMesh(fname);
+            }
+
+          }
+          else
+          {
+            SEND_TEXT_MESSAGE(0,"No mesh importers found!\r\n");
           }
         }
-        break;
-
-      case MO_IMPORT_OBJ:
+        else
         {
-          const char * fname = getFileName(".obj", 0, "Select Wavefront OBJ file to import.", false );
-          if ( fname )
-          {
-            appImportWavefront(fname);
-          }
+          SEND_TEXT_MESSAGE(0,"MeshImport plugin not found.\r\n");
         }
         break;
   		case MO_RUN_SCRIPT:

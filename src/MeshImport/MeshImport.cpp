@@ -61,7 +61,7 @@ public:
     {
       MeshImporter *mi = (*i);
       const char *e = mi->getExtension();
-      if ( e && strstr(scratch,e) )
+      if ( strstr(scratch,e) )
       {
         ret = mi;
         break;
@@ -72,8 +72,7 @@ public:
 
   virtual void addImporter(MeshImporter *importer)  // add an additional importer
   {
-    if ( importer)
-      mImporters.push_back(importer);
+    mImporters.push_back(importer);
   }
 
   bool importMesh(const char *meshName,const void *data,unsigned int dlen,MeshImportInterface *callback,const char *options)
@@ -96,7 +95,7 @@ public:
     MeshImporter *mi = locateMeshImporter(meshName);
     if ( mi )
     {
-      MeshImportBuilder *b = createMeshImportBuilder(meshName,data,dlen,mi,options);
+      MeshBuilder *b = createMeshBuilder(meshName,data,dlen,mi,options);
       if ( b )
       {
         ret = static_cast< MeshSystem * >(b);
@@ -108,10 +107,26 @@ public:
 
   virtual void             releaseMeshSystem(MeshSystem *mesh)
   {
-    MeshImportBuilder *b = static_cast< MeshImportBuilder *>(mesh);
-    releaseMeshImportBuilder(b);
+    MeshBuilder *b = static_cast< MeshBuilder *>(mesh);
+    releaseMeshBuilder(b);
   }
 
+
+  virtual int              getImporterCount(void)
+  {
+    return mImporters.size();
+  }
+
+  virtual MeshImporter    *getImporter(int index)
+  {
+    MeshImporter *ret = 0;
+    assert( index >=0 && index < (int)mImporters.size() );
+    if ( index >= 0 && index < (int)mImporters.size() )
+    {
+      ret = mImporters[index];
+    }
+    return ret;
+  }
 
 private:
   MeshImporterVector  mImporters;

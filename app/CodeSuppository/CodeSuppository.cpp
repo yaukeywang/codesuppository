@@ -4,6 +4,10 @@
 #include <assert.h>
 
 #include "common/snippets/UserMemAlloc.h"
+#include "common/snippets/fmem.h"
+#include "common/snippets/SendTextMessage.h"
+#include "MeshImport/MeshImport.h"
+#include "MeshImport/MeshSystem.h"
 #include "CodeSuppository.h"
 
 #include "TestBestFitOBB.h"
@@ -42,6 +46,20 @@ CodeSuppository *gCodeSuppository=0;
 class MyCodeSuppository : public CodeSuppository
 {
 public:
+  MyCodeSuppository(void)
+  {
+    mMeshSystem = 0;
+  }
+
+  ~MyCodeSuppository(void)
+  {
+    if ( mMeshSystem )
+    {
+      gMeshImport->releaseMeshSystem(mMeshSystem);
+      mMeshSystem = 0;
+    }
+  }
+
   void processCommand(CodeSuppositoryCommand command,bool /*state*/,const float * /*data*/)
   {
     switch ( command )
@@ -143,6 +161,32 @@ public:
   {
   }
 
+  virtual void importMesh(const char *fname)
+  {
+    if ( mMeshSystem )
+    {
+      gMeshImport->releaseMeshSystem(mMeshSystem);
+      mMeshSystem = 0;
+    }
+    unsigned int len;
+    unsigned char *data = getLocalFile(fname,len);
+    if ( data )
+    {
+      mMeshSystem = gMeshImport->createMeshSystem(fname,data,len,0);
+      if ( mMeshSystem )
+      {
+        SEND_TEXT_MESSAGE(0,"Successfully imported mesh '%s'\r\n", fname );
+      }
+    }
+    else
+    {
+      SEND_TEXT_MESSAGE(0,"Failed to load file '%s'\r\n", fname );
+    }
+
+  }
+
+private:
+  MESHIMPORT::MeshSystem  *mMeshSystem;
 };
 
 CodeSuppository * createCodeSuppository(void)

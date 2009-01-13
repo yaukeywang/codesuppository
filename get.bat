@@ -6,23 +6,23 @@ cd bin
 md win32
 cd win32
 
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\*.pal
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\TestMeshImport.exe
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\TestMeshImport.exe.manifest
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\Assimp32.dll
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\MeshImport.dll
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\MeshImportAssimp.dll
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\MeshImportEzm.dll
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\MeshImportFbx.dll
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\MeshImportLeveller.dll
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\MeshImportObj.dll
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\MeshImportPsk.dll
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\MeshImportOgre.dll
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\MSVCP80.dll
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\MSVCR80.dll
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\d3dx*.dll
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\ThreadFrac.exe
-copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\CodeSuppository.exe
+rem copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\*.pal
+rem copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\TestMeshImport.exe
+rem copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\TestMeshImport.exe.manifest
+rem copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\Assimp32.dll
+rem copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\MeshImport.dll
+rem copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\MeshImportAssimp.dll
+rem copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\MeshImportEzm.dll
+rem copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\MeshImportFbx.dll
+rem copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\MeshImportLeveller.dll
+rem copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\MeshImportObj.dll
+rem copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\MeshImportPsk.dll
+rem copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\MeshImportOgre.dll
+rem copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\MSVCP80.dll
+rem copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\MSVCR80.dll
+rem copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\d3dx*.dll
+rem copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\ThreadFrac.exe
+rem copy \p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\bin\win32\CodeSuppository.exe
 
 
 cd ..

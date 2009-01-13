@@ -31,6 +31,10 @@
 #include "CodeSuppository.h"
 #include "PhysX.h"
 
+#ifndef OPEN_SOURCE
+#include "HeGrDriver/HeGrDriver.h"
+#endif
+
 extern HeI32 gWINDOW_WIDE;
 extern HeI32 gWINDOW_TALL;
 
@@ -136,10 +140,30 @@ void    InitApp();
 HRESULT LoadMesh( IDirect3DDevice9* pd3dDevice, WCHAR* strFileName, ID3DXMesh** ppMesh );
 void    RenderText( HeF64 fTime );
 
+#ifndef OPEN_SOURCE
+bool deviceInit=false;
+
+void BuildDriverConfig(HEGRDRIVER::SConfig& config )
+{
+  // determine the configuration for the graphics device.
+  config.window = DXUTGetHWNDFocus();
+  config.device = DXUTGetD3DDevice();
+  config.deviceId = 0;
+  config.swapChainWidth = 0;
+  config.swapChainHeight = 0;
+  config.type = HEGRDRIVER::SCT_DONT_CARE;
+  config.colorTargetFormat = HEGRDRIVER::IF_DONTCARE;
+  config.depthTargetFormat = HEGRDRIVER::IF_DONTCARE;
+  config.msQuality = 0;
+  config.waitForVSync = false;
+}
+#endif
 
 void myOnDeviceReset(void *device)
 {
+#ifdef OPEN_SOURCE
   if ( gPd3d          ) gPd3d->onDeviceReset(0);
+#endif
 }
 
 //--------------------------------------------------------------------------------------
@@ -200,6 +224,7 @@ INT WINAPI WinMain( HINSTANCE instance, HINSTANCE, LPSTR, HeI32 )
 
       openDebug();
 
+
       gRenderDebug->setPd3d(gPd3d); // set the graphics interface.
 
       InitApp();
@@ -218,6 +243,18 @@ INT WINAPI WinMain( HINSTANCE instance, HINSTANCE, LPSTR, HeI32 )
 
       DXUTCreateDevice( D3DADAPTER_DEFAULT, true, gWINDOW_WIDE, gWINDOW_TALL+20, IsDeviceAcceptable, ModifyDeviceSettings );
 
+#ifndef OPEN_SOURCE
+      HEGRDRIVER::SConfig config;
+      BuildDriverConfig( config );
+
+      // now start the graphics device.
+      if ( gHeGrDriver )
+      {
+        gHeGrDriver->init( config );
+      }
+      deviceInit = true;
+#endif
+
       // Pass control to DXUT for handling the message pump and
       // dispatching render calls. DXUT will call your FrameMove
       // and FrameRender callback when there is idle time between handling window messages.
@@ -232,6 +269,14 @@ INT WINAPI WinMain( HINSTANCE instance, HINSTANCE, LPSTR, HeI32 )
 
   		delete gGuiTui;
   		gGuiTui = 0;
+
+#ifndef OPEN_SOURCE
+      if ( gHeGrDriver )
+      {
+        gHeGrDriver->shutdown();
+        gHeGrDriver = 0;
+      }
+#endif
 
       // Perform any application-level cleanup here. Direct3D device resources are released within the
       // appropriate callback functions and therefore don't require any cleanup code here.
@@ -464,6 +509,16 @@ HRESULT CALLBACK OnResetDevice( IDirect3DDevice9* pd3dDevice,
 
     myOnDeviceReset(pd3dDevice);
 
+#ifndef OPEN_SOURCE
+    if ( deviceInit && gHeGrDriver )
+    {
+      HEGRDRIVER::SConfig config;
+      BuildDriverConfig( config );
+      gHeGrDriver->preDeviceReset();
+      gHeGrDriver->postDeviceReset( config );
+    }
+#endif
+
     V_RETURN( g_DialogResourceManager.OnResetDevice() );
     V_RETURN( g_SettingsDlg.OnResetDevice() );
 
@@ -612,7 +667,6 @@ void CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, HeF64 fTime, HeF32 fE
     return;
   }
 
-  HRESULT hr;
   D3DXMATRIXA16 mWorldViewProjection;
   D3DXMATRIXA16 mWorld;
   D3DXMATRIXA16 mView;
@@ -623,16 +677,20 @@ void CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, HeF64 fTime, HeF32 fE
 	HeF32 g = 153.0f / 255.0f;
 	HeF32 b = 181.0f / 255.0f;
 
+  // Get the projection & view matrix from the camera class
+  mWorld = g_mCenterWorld * *g_Camera.GetWorldMatrix();
+  mProj = *g_Camera.GetProjMatrix();
+  mView = *g_Camera.GetViewMatrix();
+  mWorldViewProjection = mWorld * mView * mProj;
+
+#ifdef OPEN_SOURCE
+  HRESULT hr;
+
   V( pd3dDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DXCOLOR(r,g,b,0.5f), 1.0f, 0) );
 
   // Render the scene
   if( SUCCEEDED( pd3dDevice->BeginScene() ) )
   {
-    // Get the projection & view matrix from the camera class
-    mWorld = g_mCenterWorld * *g_Camera.GetWorldMatrix();
-    mProj = *g_Camera.GetProjMatrix();
-    mView = *g_Camera.GetViewMatrix();
-    mWorldViewProjection = mWorld * mView * mProj;
 
     gPd3d->setDevice( pd3dDevice );
 		gPd3d->preserveRenderState();
@@ -656,13 +714,6 @@ void CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, HeF64 fTime, HeF32 fE
     processDebug();
 
 		PD3D::Pd3dTexture *texture = 	gPd3d->locateTexture("white.dds");
-
-    if ( g_bShowHelp && gScreenCapture == 0 )
-    {
-//			gPd3d->flush();
-//      gPd3d->renderScreenQuad(texture,0,0,1.0f,gScreenWidth,gScreenHeight,0xA0000000);
-//      gPd3d->flush();
-    }
 
     if ( gPhysX )
     {
@@ -694,6 +745,71 @@ void CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, HeF64 fTime, HeF32 fE
       gLog->Display("Saved screenshot as 'DFRAC%03d.JPG'.\r\n", gMovieFrame);
     }
   }
+#else
+
+  gHeGrDriver->clear( HEGRDRIVER::WM_RGBA | HEGRDRIVER::WM_DEPTH, HEGRDRIVER::HeGrColor( r, g, b ), 1.0f, 0 );
+
+
+  // Render the scene
+  if( gHeGrDriver->beginFrame() )
+  {
+    // configure our shader.
+
+    // draw the object.
+
+    // Get the projection & view matrix from the camera class
+    mWorld = g_mCenterWorld * *g_Camera.GetWorldMatrix();
+    mProj = *g_Camera.GetProjMatrix();
+    mView = *g_Camera.GetViewMatrix();
+    mWorldViewProjection = mWorld * mView * mProj;
+
+    gRenderDebug->setViewProjectionMatrix((const HeF32 *)g_Camera.GetViewMatrix(),(const HeF32 *)g_Camera.GetProjMatrix());
+
+    const char *page = gGuiTui->getCurrentPage();
+    if ( strcmp(page,"CodeSuppository") == 0 )
+    {
+      gCodeSuppository->render(fElapsedTime);
+    }
+    else
+    {
+      appRender();
+    }
+
+
+    gHeGrDriver->pushRenderState();
+    gHeGrDriver->initStates();
+
+    gRenderDebug->drawGrid(false);
+
+    processDebug();
+
+
+    //ok..now let's render the debug visualization data.
+    gRenderDebug->Render(fElapsedTime, true, true);   // do the z-buffered pass
+    gRenderDebug->Render(fElapsedTime, true, false);   // do the non-zbuffered pass
+
+    if ( gScreenCapture == 0 )
+    {
+      #if USE_HUD
+      g_HUD.OnRender( fElapsedTime );
+      #endif
+  		gGuiTui->Render();
+    }
+
+    gHeGrDriver->popRenderState();
+
+    gHeGrDriver->endFrame();
+
+		if ( gScreenCapture )
+		{
+			gMovieFrame++;
+ 			ScreenGrab(pd3dDevice,"DFRAC",gMovieFrame,true);
+      gScreenCapture = 0;
+      gLog->Display("Saved screenshot as 'DFRAC%03d.JPG'.\r\n", gMovieFrame);
+    }
+  }
+
+#endif
 }
 
 
@@ -888,6 +1004,7 @@ void CALLBACK OnGUIEvent( UINT nEvent, HeI32 nControlID, CDXUTControl* pControl,
 //--------------------------------------------------------------------------------------
 void CALLBACK OnLostDevice( void* pUserContext )
 {
+#ifdef OPEN_SOURCE
   myOnDeviceReset(0);
   g_DialogResourceManager.OnLostDevice();
   g_SettingsDlg.OnLostDevice();
@@ -896,8 +1013,18 @@ void CALLBACK OnLostDevice( void* pUserContext )
       g_pFont->OnLostDevice();
   SAFE_RELEASE(g_pSprite);
   gGuiTui->onLostDevice();
+#else
 
-
+  g_DialogResourceManager.OnLostDevice();
+  g_SettingsDlg.OnLostDevice();
+  CDXUTDirectionWidget::StaticOnLostDevice();
+  if( g_pFont )
+      g_pFont->OnLostDevice();
+  SAFE_RELEASE(g_pSprite);
+  gGuiTui->onLostDevice();
+  if ( deviceInit && gHeGrDriver )
+    gHeGrDriver->preDeviceReset();
+#endif
 }
 
 

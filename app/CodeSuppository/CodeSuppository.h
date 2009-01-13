@@ -41,6 +41,7 @@ class CodeSuppository
 public:
   virtual void processCommand(CodeSuppositoryCommand command,bool state=true,const float *data=0) = 0;
   virtual void render(float dtime) = 0;
+  virtual void importMesh(const char *fname) = 0;
 };
 
 CodeSuppository * createCodeSuppository(void);

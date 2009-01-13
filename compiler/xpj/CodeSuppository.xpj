@@ -11,6 +11,7 @@
 		<Import root=".\" file="MeshImportFbx.xpj"/>
 		<Import root=".\" file="MeshImportLeveller.xpj"/>
 		<Import root=".\" file="MeshImportObj.xpj"/>
+		<Import root=".\" file="MeshImportOgre.xpj"/>
 		<Import root=".\" file="MeshImportPsk.xpj"/>
 
 		<Target name="CodeSuppository">
@@ -170,6 +171,7 @@
     		MeshImportFbx
     		MeshImportLeveller
     		MeshImportObj
+    		MeshImportOgre
     		MeshImportPsk
 			</Dependencies>
 

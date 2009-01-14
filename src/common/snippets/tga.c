@@ -4,7 +4,7 @@
 /* The GIMP -- an image manipulation program
  * Copyright (C) 1995 Spencer Kimball and Peter Mattis
  *
- * $Id: //depot/HeroEngine/JOHNR-MAIN/he_plugins/src/common/snippets/tga.c#14 $
+ * $Id: //depot/HeroEngine/RENDERING-REFACTOR-MAIN/he_plugins/src/common/snippets/tga.c#1 $
  * TrueVision Targa loading and saving file filter for the Gimp.
  * Targa code Copyright (C) 1997 Raphael FRANCOIS and Gordon Matzigkeit
  *

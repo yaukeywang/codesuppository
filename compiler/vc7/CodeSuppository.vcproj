@@ -3,6 +3,9 @@
 ProjectType="Visual C++"
 Version="7.00"
 Name="CodeSuppository"
+SccProjectName="Perforce Project"
+SccLocalPath="."
+SccProvider="MSCCI:Perforce SCM"
 >
 <Platforms>
 <Platform Name="Win32"/>
@@ -17,7 +20,7 @@ Name="CodeSuppository"
     >
     <Tool
       Name="VCCLCompilerTool"
-      AdditionalIncludeDirectories="&quot;../../app/CodeSuppository&quot;;&quot;../../src&quot;;&quot;../../include&quot;;&quot;../../ext/DirectX_October2006&quot;;&quot;../../include&quot;;&quot;../../app/shared/debugmsg&quot;;&quot;../../ext/deja_insight&quot;;&quot;../../ext/boost/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/Physics/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/Cooking/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/NxCharacter/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/PhysXLoader/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/Foundation/include&quot;;"
+      AdditionalIncludeDirectories="&quot;../../app/CodeSuppository&quot;;&quot;../../src&quot;;&quot;../../include&quot;;&quot;../../ext/DirectX_October2006&quot;;&quot;../../include&quot;;&quot;../../app&quot;;&quot;../../ext/deja_insight&quot;;&quot;../../ext/boost/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/Physics/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/Cooking/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/NxCharacter/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/PhysXLoader/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/Foundation/include&quot;;"
       PreprocessorDefinitions="WIN32;_WINDOWS;UNICODE=1;_CRT_SECURE_NO_DEPRECATE;DEBUG_SERVER;USE_MEMORY_TRAPPING=1;OPEN_SOURCE=1;_DEBUG;"
       WarningLevel="3"
       Optimization="4"
@@ -56,7 +59,7 @@ Name="CodeSuppository"
     >
     <Tool
       Name="VCCLCompilerTool"
-      AdditionalIncludeDirectories="&quot;../../app/CodeSuppository&quot;;&quot;../../src&quot;;&quot;../../include&quot;;&quot;../../ext/DirectX_October2006&quot;;&quot;../../include&quot;;&quot;../../app/shared/debugmsg&quot;;&quot;../../ext/deja_insight&quot;;&quot;../../ext/boost/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/Physics/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/Cooking/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/NxCharacter/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/PhysXLoader/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/Foundation/include&quot;;"
+      AdditionalIncludeDirectories="&quot;../../app/CodeSuppository&quot;;&quot;../../src&quot;;&quot;../../include&quot;;&quot;../../ext/DirectX_October2006&quot;;&quot;../../include&quot;;&quot;../../app&quot;;&quot;../../ext/deja_insight&quot;;&quot;../../ext/boost/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/Physics/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/Cooking/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/NxCharacter/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/PhysXLoader/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/Foundation/include&quot;;"
       PreprocessorDefinitions="WIN32;_WINDOWS;UNICODE=1;_CRT_SECURE_NO_DEPRECATE;DEBUG_SERVER;USE_MEMORY_TRAPPING=1;OPEN_SOURCE=1;NDEBUG;"
       WarningLevel="3"
       Optimization="4"
@@ -266,6 +269,7 @@ Name="CodeSuppository"
     <File RelativePath="..\..\app\CodeSuppository\MyFluid.h"/>
     <File RelativePath="..\..\app\CodeSuppository\PhysX.h"/>
     <File RelativePath="..\..\app\CodeSuppository\PlotTexture.h"/>
+    <File RelativePath="..\..\app\CodeSuppository\plugins.h"/>
     <File RelativePath="..\..\app\CodeSuppository\resource.h"/>
     <File RelativePath="..\..\app\CodeSuppository\SplitMeshApp.h"/>
     <File RelativePath="..\..\app\CodeSuppository\SplitMeshMain.h"/>
@@ -302,9 +306,15 @@ Name="CodeSuppository"
     <File RelativePath="..\..\app\CodeSuppository\TestWildCard.h"/>
     <File RelativePath="..\..\app\CodeSuppository\TestWinMsg.h"/>
   </Filter>
-  <Filter Name="DebugMsg" Filter="">
-    <File RelativePath="..\..\app\shared\debugmsg\debugmsg.cpp"/>
-    <File RelativePath="..\..\app\shared\debugmsg\debugmsg.h"/>
+  <Filter Name="Shared Application Source" Filter="">
+    <Filter Name="debugmsg" Filter="">
+      <File RelativePath="..\..\app\shared\debugmsg\debugmsg.cpp"/>
+      <File RelativePath="..\..\app\shared\debugmsg\debugmsg.h"/>
+    </Filter>
+    <Filter Name="MeshSystem" Filter="">
+      <File RelativePath="..\..\app\shared\MeshSystem\MeshSystemHelper.cpp"/>
+      <File RelativePath="..\..\app\shared\MeshSystem\MeshSystemHelper.h"/>
+    </Filter>
   </Filter>
   <Filter Name="Source Files" Filter="">
     <File RelativePath="..\..\app\CodeSuppository\CodeSuppository.cpp"/>
@@ -313,6 +323,7 @@ Name="CodeSuppository"
     <File RelativePath="..\..\app\CodeSuppository\MyFluid.cpp"/>
     <File RelativePath="..\..\app\CodeSuppository\PhysX.cpp"/>
     <File RelativePath="..\..\app\CodeSuppository\PlotTexture.cpp"/>
+    <File RelativePath="..\..\app\CodeSuppository\plugins.cpp"/>
     <File RelativePath="..\..\app\CodeSuppository\SplitMeshApp.cpp"/>
     <File RelativePath="..\..\app\CodeSuppository\terrain.cpp"/>
     <File RelativePath="..\..\app\CodeSuppository\TestArrowHead.cpp"/>

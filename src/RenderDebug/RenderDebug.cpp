@@ -79,6 +79,7 @@ using namespace HETEXTUREMANAGER;
 
 #ifndef PLUGINS_EMBEDDED
 SendTextMessage *gSendTextMessage=0;
+JOB_SWARM::JobSwarmContext *gJobSwarmContext=0;
 #endif
 
 bool doShutdown(void);

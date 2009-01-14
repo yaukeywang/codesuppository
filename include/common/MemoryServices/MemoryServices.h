@@ -11,6 +11,7 @@
 
 #include "../snippets/SendTextMessage.h"
 #include "../snippets/UserMemAlloc.h"
+#include "../snippets/JobSwarm.h"
 
 #pragma warning(push)
 #pragma warning(disable:4100)
@@ -25,6 +26,12 @@ class MemoryServices : public SendTextMessage
 public:
   virtual bool         shutdown(void) { return false; };
   virtual const char * isBadState(HeU32 &lineNo) const { lineNo = 0; return 0; };
+
+  virtual void         setJobSwarmContext(JOB_SWARM::JobSwarmContext *context)
+  {
+    gJobSwarmContext = context;
+  }
+
   virtual void         setSendTextMessage(SendTextMessage *stm)
   {
     gSendTextMessage = stm;

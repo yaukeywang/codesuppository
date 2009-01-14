@@ -7,6 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CodeSuppository", "CodeSupp
 		{285507B1-ED5C-5646-8C30-665A8583D9F8} = {285507B1-ED5C-5646-8C30-665A8583D9F8}
 		{439FE316-A384-B433-12BF-A4CA1BF47F37} = {439FE316-A384-B433-12BF-A4CA1BF47F37}
 		{23550C12-8028-7C24-92CC-C9BAD660CFD0} = {23550C12-8028-7C24-92CC-C9BAD660CFD0}
+		{95616A0F-1651-8B98-68B7-3678C9EA5ACB} = {95616A0F-1651-8B98-68B7-3678C9EA5ACB}
 		{365282D5-8212-907C-DC34-15FF964683A6} = {365282D5-8212-907C-DC34-15FF964683A6}
 	EndProjectSection
 EndProject
@@ -42,11 +43,23 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MeshImportObj", ".\/../vc7/
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MeshImportOgre", ".\/../vc7/MeshImportOgre.vcproj", "{95616A0F-1651-8B98-68B7-3678C9EA5ACB}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MeshImportPsk", ".\/../vc7/MeshImportPsk.vcproj", "{365282D5-8212-907C-DC34-15FF964683A6}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
 Global
+GlobalSection(SourceCodeControl) = preSolution
+  SccNumberOfProjects = 2
+  SccLocalPath0 = .
+  SccProjectUniqueName0 = debug.vcproj
+  SccLocalPath1 = .
+  SccProjectUniqueName1 = release.vcproj
+  SccLocalPath2 = .
+  EndGlobalSection
 	GlobalSection(SolutionConfiguration) = preSolution
 		debug = debug
 		release = release
@@ -88,6 +101,10 @@ Global
 		{23550C12-8028-7C24-92CC-C9BAD660CFD0}.debug.Build.0 = debug|Win32
 		{23550C12-8028-7C24-92CC-C9BAD660CFD0}.release.ActiveCfg = release|Win32
 		{23550C12-8028-7C24-92CC-C9BAD660CFD0}.release.Build.0 = release|Win32
+		{95616A0F-1651-8B98-68B7-3678C9EA5ACB}.debug.ActiveCfg = debug|Win32
+		{95616A0F-1651-8B98-68B7-3678C9EA5ACB}.debug.Build.0 = debug|Win32
+		{95616A0F-1651-8B98-68B7-3678C9EA5ACB}.release.ActiveCfg = release|Win32
+		{95616A0F-1651-8B98-68B7-3678C9EA5ACB}.release.Build.0 = release|Win32
 		{365282D5-8212-907C-DC34-15FF964683A6}.debug.ActiveCfg = debug|Win32
 		{365282D5-8212-907C-DC34-15FF964683A6}.debug.Build.0 = debug|Win32
 		{365282D5-8212-907C-DC34-15FF964683A6}.release.ActiveCfg = release|Win32
@@ -97,4 +114,7 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityAddins) = postSolution
 	EndGlobalSection
+GlobalSection(SolutionProperties) = preSolution
+  HideSolutionNode = FALSE
+  EndGlobalSection
 EndGlobal

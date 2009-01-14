@@ -6,8 +6,7 @@
 #include "common/snippets/UserMemAlloc.h"
 #include "common/snippets/fmem.h"
 #include "common/snippets/SendTextMessage.h"
-#include "MeshImport/MeshImport.h"
-#include "MeshImport/MeshSystem.h"
+#include "shared/MeshSystem/MeshSystemHelper.h"
 #include "CodeSuppository.h"
 
 #include "TestBestFitOBB.h"
@@ -48,15 +47,20 @@ class MyCodeSuppository : public CodeSuppository
 public:
   MyCodeSuppository(void)
   {
-    mMeshSystem = 0;
+    mMeshSystemHelper = 0;
   }
 
   ~MyCodeSuppository(void)
   {
-    if ( mMeshSystem )
+    resetMeshSystem();
+  }
+
+  void resetMeshSystem(void)
+  {
+    if ( mMeshSystemHelper )
     {
-      gMeshImport->releaseMeshSystem(mMeshSystem);
-      mMeshSystem = 0;
+      releaseMeshSystemHelper(mMeshSystemHelper);
+      mMeshSystemHelper = 0;
     }
   }
 
@@ -159,34 +163,23 @@ public:
 
   void render(float /*dtime*/)
   {
+    if ( mMeshSystemHelper )
+    {
+      mMeshSystemHelper->debugRender();
+    }
   }
 
   virtual void importMesh(const char *fname)
   {
-    if ( mMeshSystem )
+    if ( mMeshSystemHelper == 0 )
     {
-      gMeshImport->releaseMeshSystem(mMeshSystem);
-      mMeshSystem = 0;
+      mMeshSystemHelper = createMeshSystemHelper();
     }
-    unsigned int len;
-    unsigned char *data = getLocalFile(fname,len);
-    if ( data )
-    {
-      mMeshSystem = gMeshImport->createMeshSystem(fname,data,len,0);
-      if ( mMeshSystem )
-      {
-        SEND_TEXT_MESSAGE(0,"Successfully imported mesh '%s'\r\n", fname );
-      }
-    }
-    else
-    {
-      SEND_TEXT_MESSAGE(0,"Failed to load file '%s'\r\n", fname );
-    }
-
+    mMeshSystemHelper->importMesh(fname);
   }
 
 private:
-  MESHIMPORT::MeshSystem  *mMeshSystem;
+  MeshSystemHelper  *mMeshSystemHelper;
 };
 
 CodeSuppository * createCodeSuppository(void)

@@ -1,5 +1,5 @@
 #include "common/snippets/UserMemAlloc.h"
-
+#include "common/snippets/JobSwarm.h"
 #include "comlayer.h"
 
 /*!
@@ -105,7 +105,7 @@
 #pragma warning(disable:4189)
 
 SendTextMessage        *gSendTextMessage=0;
-
+JOB_SWARM::JobSwarmContext *gJobSwarmContext=0;
 
 bool gBadState=false;
 

@@ -2,7 +2,7 @@
 
 #define DEBUG_MSG_H
 
-#include "../../include/common/snippets/UserMemAlloc.h"
+#include "common/snippets/UserMemAlloc.h"
 
 #ifdef DEBUG_SERVER
 

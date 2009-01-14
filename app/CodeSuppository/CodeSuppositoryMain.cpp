@@ -20,7 +20,7 @@
 #include "Shlwapi.h"
 #include "common/snippets/log.h"
 #include "common/snippets/sutil.h"
-#include "debugmsg.h"
+#include "shared/debugmsg/debugmsg.h"
 #include <direct.h>
 #include "common/tui/tui.h"
 #include "common/binding/binding.h"

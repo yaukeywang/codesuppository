@@ -1,9 +1,7 @@
 Menu System Initialized
-Demonstrating the best fit OBB algorithm, originally published on June 16, 2006
-Demonstration of Best Fit Plane to a set of points, originally published on March 23, 2006
-Demonstrating how to perform Convex Decomposition
-Not yet implemented.
-Demonstrating StanHull code snippet, originally published on March 4, 2006
-Loaded wavefront OBJ file 'bunny.obj' which has 4968 triangles.
-Output Hull contains 126 triangle faces.
-Fly the camera inside the hull to see the mesh details.
+Processing mesh 'C:\p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\media\PhysXViewer\character.ezm'
+Successfully imported mesh 'C:\p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\media\PhysXViewer\character.ezm'
+Processing mesh 'C:\p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\media\PhysXViewer\beshon.ezm'
+Successfully imported mesh 'C:\p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\media\PhysXViewer\beshon.ezm'
+Processing mesh 'C:\p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\media\PhysXViewer\deer_bound.ezm'
+Successfully imported mesh 'C:\p4\depot\HeroEngine\JOHNR-MAIN\he_plugins\media\PhysXViewer\deer_bound.ezm'

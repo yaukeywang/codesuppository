@@ -4,7 +4,6 @@
 #include <assert.h>
 
 #include "MeshImportBuilder.h"
-#include "MeshImport/MeshSystem.h"
 #include "common/snippets/UserMemAlloc.h"
 #include "common/snippets/stringdict.h"
 
@@ -13,8 +12,12 @@
 namespace MESHIMPORT
 {
 
-typedef USER_STL::vector< MeshVertex > MeshVertexVector;
+typedef USER_STL::vector< MeshVertex >   MeshVertexVector;
 typedef USER_STL::vector< unsigned int > MeshIndexVector;
+typedef USER_STL::vector< SubMesh * >    SubMeshVector;
+typedef USER_STL::vector< Mesh * >       MeshVector;
+typedef USER_STL::vector< MeshAnimation * > MeshAnimationVector;
+typedef USER_STL::vector< MeshSkeleton * > MeshSkeletonVector;
 
 class MySubMesh : public SubMesh
 {
@@ -53,6 +56,8 @@ public:
     mTriCount    = tcount;
     mVertices    = MEMALLOC_NEW_ARRAY(MeshVertex,vcount)[vcount];
     mIndices     = MEMALLOC_NEW_ARRAY(unsigned int,tcount*3)[tcount*3];
+    memcpy(mVertices,vertices,sizeof(MeshVertex)*vcount);
+    memcpy(mIndices,indices,sizeof(unsigned int)*tcount*3);
   }
 
   void gather(void)
@@ -68,9 +73,15 @@ public:
   void add(const MeshVertex verts[3])
   {
     unsigned int index = mMyVertices.size();
+
+    mAABB.include(verts[0].mPos);
+    mAABB.include(verts[1].mPos);
+    mAABB.include(verts[2].mPos);
+
     mMyVertices.push_back(verts[0]);
     mMyVertices.push_back(verts[1]);
     mMyVertices.push_back(verts[2]);
+
     mMyIndices.push_back(index);
     mMyIndices.push_back(index+1);
     mMyIndices.push_back(index+2);
@@ -79,8 +90,6 @@ public:
   MeshVertexVector  mMyVertices;
   MeshIndexVector   mMyIndices;
 };
-
-typedef USER_STL::vector< MySubMesh * > MySubMeshVector;
 
 class MyMesh : public Mesh
 {
@@ -102,10 +111,10 @@ public:
     MEMALLOC_DELETE_ARRAY(SubMesh,mSubMeshes);
     mSubMeshes = 0;
     mSubMeshCount = 0;
-    MySubMeshVector::iterator i;
+    SubMeshVector::iterator i;
     for (i=mMySubMeshes.begin(); i!=mMySubMeshes.end(); ++i)
     {
-      MySubMesh *s = (*i);
+      MySubMesh *s = static_cast<MySubMesh *>((*i));
       delete s;
     }
     mMySubMeshes.clear();
@@ -126,10 +135,10 @@ public:
     if ( mCurrent == 0 || !mCurrent->isSame(materialName,vertexFlags) )
     {
       mCurrent =0;
-      MySubMeshVector::iterator i;
+      SubMeshVector::iterator i;
       for (i=mMySubMeshes.begin(); i!=mMySubMeshes.end(); ++i)
       {
-        MySubMesh *s = (*i);
+        MySubMesh *s = static_cast< MySubMesh *>((*i));
         if ( s->isSame(materialName,vertexFlags) )
         {
           mCurrent = s;
@@ -168,6 +177,7 @@ public:
     }
     mCurrent = MEMALLOC_NEW(MySubMesh)(materialName,vertexFlags);
     mCurrent->set(vcount,vertices,tcount,indices);
+    mMySubMeshes.push_back(mCurrent);
     mCurrent = 0;
   }
 
@@ -177,27 +187,12 @@ public:
     if ( !mMySubMeshes.empty() )
     {
       mSubMeshCount = mMySubMeshes.size();
-      mSubMeshes = MEMALLOC_NEW_ARRAY(SubMesh,mSubMeshCount)[mSubMeshCount];
-      MySubMeshVector::iterator i;
-      SubMesh *dst = mSubMeshes;
-      for (i=mMySubMeshes.begin(); i!=mMySubMeshes.end(); ++i)
-      {
-        MySubMesh *src = (*i);      // copy into a linear array, be we still 'own' the memory.
-        dst->mMaterialName = src->mMaterialName;
-        dst->mMaterial     = src->mMaterial;
-        dst->mAABB         = src->mAABB;
-        dst->mVertexFlags  = src->mVertexFlags;
-        dst->mVertexCount  = src->mVertexCount;
-        dst->mVertices     = src->mVertices;
-        dst->mTriCount     = src->mTriCount;
-        dst->mIndices      = src->mIndices;
-        dst++;
-      }
+      mSubMeshes    = &mMySubMeshes[0];
     }
   }
 
   MySubMesh        *mCurrent;
-  MySubMeshVector   mMySubMeshes;
+  SubMeshVector   mMySubMeshes;
 };
 
 typedef USER_STL::map< StringRef, StringRef > StringRefMap;
@@ -225,23 +220,25 @@ public:
     if ( mMeshInstanceCount )
       mMeshInstances = &mMyMeshInstances[0];
 
+    mAnimationCount = mMyAnimations.size();
+    if ( mAnimationCount )
+      mAnimations = &mMyAnimations[0];
+
+    mSkeletonCount = mMySkeletons.size();
+    if ( mSkeletonCount )
+      mSkeletons = &mMySkeletons[0];
+
     if ( !mMyMeshes.empty() )
     {
       mMeshCount = mMyMeshes.size();
-      mMeshes    = MEMALLOC_NEW_ARRAY(Mesh,mMeshCount)[mMeshCount];
-      Mesh *dst = mMeshes;
-
+      mMeshes    = MEMALLOC_NEW_ARRAY(Mesh *,mMeshCount)[mMeshCount];
+      Mesh **dst = mMeshes;
       MyMeshMap::iterator i;
       for (i=mMyMeshes.begin(); i!=mMyMeshes.end(); ++i)
       {
         MyMesh *src = (*i).second;
         src->gather();
-        dst->mMeshName = src->mMeshName;
-        dst->mSkeletonName = src->mSkeletonName;
-        dst->mSkeleton = src->mSkeleton;
-        dst->mSubMeshCount = src->mSubMeshCount;
-        dst->mSubMeshes = src->mSubMeshes;
-        dst++;
+        *dst++ = static_cast< Mesh *>(src);
       }
     }
 
@@ -249,11 +246,30 @@ public:
 
   ~MyMeshBuilder(void)
   {
+    MEMALLOC_DELETE_ARRAY(Mesh *,mMeshes);
     MyMeshMap::iterator i;
     for (i=mMyMeshes.begin(); i!=mMyMeshes.end(); ++i)
     {
       MyMesh *src = (*i).second;
       delete src;
+    }
+    if ( !mMyAnimations.empty() )
+    {
+      MeshAnimationVector::iterator i;
+      for (i=mMyAnimations.begin(); i!=mMyAnimations.end(); ++i)
+      {
+        MeshAnimation *a = (*i);
+        delete a;
+      }
+    }
+    if ( !mMySkeletons.empty() )
+    {
+      MeshSkeletonVector::iterator i;
+      for (i=mMySkeletons.begin(); i!=mMySkeletons.end(); ++i)
+      {
+        MeshSkeleton *s = (*i);
+        delete s;
+      }
     }
   }
 
@@ -314,6 +330,7 @@ public:
     else
     {
       mCurrentMesh = (*found).second;
+      mCurrentMesh->mSkeletonName = s1.Get();
     }
   }
 
@@ -359,12 +376,14 @@ public:
 
   virtual void        importAnimation(const MeshAnimation &animation)
   {
-    assert(0); // not yet implemented
+    MeshAnimation *a = MEMALLOC_NEW(MeshAnimation)(animation);
+    mMyAnimations.push_back(a);
   }
 
   virtual void        importSkeleton(const MeshSkeleton &skeleton)
   {
-//    assert(0); // not yet implemented
+    MeshSkeleton *sk = MEMALLOC_NEW(MeshSkeleton)(skeleton);
+    mMySkeletons.push_back(sk);
   }
 
   virtual void        importRawTexture(const char *textureName,const unsigned char *pixels,unsigned int wid,unsigned int hit)
@@ -398,6 +417,8 @@ private:
   MeshInstanceVector       mMyMeshInstances;
   MyMesh                  *mCurrentMesh;
   MyMeshMap                mMyMeshes;
+  MeshAnimationVector      mMyAnimations;
+  MeshSkeletonVector       mMySkeletons;
 };
 
 MeshBuilder * createMeshBuilder(const char *meshName,const void *data,unsigned int dlen,MeshImporter *mi,const char *options)

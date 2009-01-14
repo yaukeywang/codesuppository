@@ -1,7 +1,7 @@
 #ifndef MESHIMPORT_H
 #define MESHIMPORT_H
 
-#include "MeshSystem.h"
+#include "MeshImport/MeshSystem.h"
 #include "MeshImport/MeshImport.h"
 
 #pragma warning(push)
@@ -22,7 +22,38 @@
 namespace MESHIMPORT
 {
 
-class MeshImportInterface;
+class MeshImportInterface
+{
+public:
+  virtual void        importMaterial(const char *matName,const char *metaData) = 0;        // one material
+  virtual void        importUserData(const char *userKey,const char *userValue) = 0;       // carry along raw user data as ASCII strings only..
+  virtual void        importUserBinaryData(const char *name,unsigned int len,const unsigned char *data) = 0;
+  virtual void        importTetraMesh(const char *tetraName,const char *meshName,unsigned int tcount,const float *tetraData) = 0;
+
+  virtual void        importAssetName(const char *assetName,const char *info) = 0;         // name of the overall asset.
+  virtual void        importMesh(const char *meshName,const char *skeletonName) = 0;       // name of a mesh and the skeleton it refers to.
+
+  virtual void        importTriangle(const char *meshName,
+                                     const char *materialName,
+                                     unsigned int vertexFlags,
+                                     const MeshVertex verts[3]) = 0;
+
+  virtual void        importIndexedTriangleList(const char *meshName,
+                                                const char *materialName,
+                                                unsigned int vertexFlags,
+                                                unsigned int vcount,
+                                                const MeshVertex *vertices,
+                                                unsigned int tcount,
+                                                const unsigned int *indices) = 0;
+
+  virtual void        importAnimation(const MeshAnimation &animation) = 0;
+  virtual void        importSkeleton(const MeshSkeleton &skeleton) = 0;
+  virtual void        importRawTexture(const char *textureName,const unsigned char *pixels,unsigned int wid,unsigned int hit) = 0;
+  virtual void        importMeshInstance(const char *meshName,const float pos[3],const float rotation[4],const float scale[3])= 0;
+
+};
+
+
 
 class MeshImporter
 {

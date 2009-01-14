@@ -168,7 +168,7 @@ public:
 
   virtual void batchTriangles(EmbedTexture texture,const GraphicsVertex *vertices,HeU32 vcount,bool wireframe,bool overlay) = 0;
 
-  virtual HeU32 getDebugColor(void)
+  virtual HeU32 getDebugColor(bool reset_index=false)
   {
     HeU32 colors[8] =
     {
@@ -183,6 +183,9 @@ public:
     };
 
     static HeU32 cindex = 0;
+
+    if ( reset_index )
+      cindex = 0;
 
     HeU32 color = colors[cindex];
     cindex++;

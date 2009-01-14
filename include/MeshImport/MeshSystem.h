@@ -664,25 +664,25 @@ class MeshAABB
 public:
   MeshAABB(void)
   {
-    mBmin[0] = FLT_MAX;
-    mBmin[1] = FLT_MAX;
-    mBmin[2] = FLT_MAX;
-    mBmax[0] = FLT_MIN;
-    mBmax[1] = FLT_MIN;
-    mBmax[2] = FLT_MIN;
+    mMin[0] = FLT_MAX;
+    mMin[1] = FLT_MAX;
+    mMin[2] = FLT_MAX;
+    mMax[0] = FLT_MIN;
+    mMax[1] = FLT_MIN;
+    mMax[2] = FLT_MIN;
   }
 
   void include(const float pos[3])
   {
-    if ( pos[0] < mBmin[0] ) mBmin[0] = pos[0];
-    if ( pos[1] < mBmin[1] ) mBmin[1] = pos[1];
-    if ( pos[2] < mBmin[2] ) mBmin[2] = pos[2];
-    if ( pos[0] > mBmax[0] ) mBmax[0] = pos[0];
-    if ( pos[1] > mBmax[1] ) mBmax[1] = pos[1];
-    if ( pos[2] > mBmax[2] ) mBmax[2] = pos[2];
+    if ( pos[0] < mMin[0] ) mMin[0] = pos[0];
+    if ( pos[1] < mMin[1] ) mMin[1] = pos[1];
+    if ( pos[2] < mMin[2] ) mMin[2] = pos[2];
+    if ( pos[0] > mMax[0] ) mMax[0] = pos[0];
+    if ( pos[1] > mMax[1] ) mMax[1] = pos[1];
+    if ( pos[2] > mMax[2] ) mMax[2] = pos[2];
   }
-  float mBmin[3];
-  float mBmax[3];
+  float mMin[3];
+  float mMax[3];
 };
 
 class SubMesh
@@ -725,7 +725,7 @@ public:
   MeshSkeleton       *mSkeleton; // the skeleton used by this mesh system.
   MeshAABB            mAABB;
   unsigned int        mSubMeshCount;
-  SubMesh            *mSubMeshes;
+  SubMesh           **mSubMeshes;
 };
 
 class MeshRawTexture
@@ -815,6 +815,8 @@ class MeshSystem
 public:
   MeshSystem(void)
   {
+    mAssetName           = 0;
+    mAssetInfo           = 0;
     mTextureCount        = 0;
     mTextures            = 0;
     mSkeletonCount       = 0;
@@ -850,58 +852,26 @@ public:
   MeshTetra            *mTetraMeshes;           // tetraheadral meshes
 
   unsigned int          mSkeletonCount;         // number of skeletons
-  MeshSkeleton         *mSkeletons;             // the skeletons.
+  MeshSkeleton        **mSkeletons;             // the skeletons.
 
   unsigned int          mAnimationCount;
-  MeshAnimation        *mAnimations;
+  MeshAnimation       **mAnimations;
 
   unsigned int          mMaterialCount;         // Materials are owned by this list, merely referenced later.
   MeshMaterial         *mMaterials;
 
   unsigned int          mUserDataCount;
-  MeshUserData         *mUserData;
+  MeshUserData        **mUserData;
 
   unsigned int          mUserBinaryDataCount;
-  MeshUserBinaryData   *mUserBinaryData;
+  MeshUserBinaryData  **mUserBinaryData;
 
   unsigned int          mMeshCount;
-  Mesh                 *mMeshes;
+  Mesh                **mMeshes;
 
   unsigned int          mMeshInstanceCount;
   MeshInstance         *mMeshInstances;
 };
-
-class MeshImportInterface
-{
-public:
-  virtual void        importMaterial(const char *matName,const char *metaData) = 0;        // one material
-  virtual void        importUserData(const char *userKey,const char *userValue) = 0;       // carry along raw user data as ASCII strings only..
-  virtual void        importUserBinaryData(const char *name,unsigned int len,const unsigned char *data) = 0;
-  virtual void        importTetraMesh(const char *tetraName,const char *meshName,unsigned int tcount,const float *tetraData) = 0;
-
-  virtual void        importAssetName(const char *assetName,const char *info) = 0;         // name of the overall asset.
-  virtual void        importMesh(const char *meshName,const char *skeletonName) = 0;       // name of a mesh and the skeleton it refers to.
-
-  virtual void        importTriangle(const char *meshName,
-                                     const char *materialName,
-                                     unsigned int vertexFlags,
-                                     const MeshVertex verts[3]) = 0;
-
-  virtual void        importIndexedTriangleList(const char *meshName,
-                                                const char *materialName,
-                                                unsigned int vertexFlags,
-                                                unsigned int vcount,
-                                                const MeshVertex *vertices,
-                                                unsigned int tcount,
-                                                const unsigned int *indices) = 0;
-
-  virtual void        importAnimation(const MeshAnimation &animation) = 0;
-  virtual void        importSkeleton(const MeshSkeleton &skeleton) = 0;
-  virtual void        importRawTexture(const char *textureName,const unsigned char *pixels,unsigned int wid,unsigned int hit) = 0;
-  virtual void        importMeshInstance(const char *meshName,const float pos[3],const float rotation[4],const float scale[3])= 0;
-
-};
-
 
 
 

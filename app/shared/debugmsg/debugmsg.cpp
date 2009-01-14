@@ -1,4 +1,3 @@
-#pragma warning(disable:4702)
 #include "debugmsg.h"
 #include "common/snippets/winmsg.h"
 #include <assert.h>

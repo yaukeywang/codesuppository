@@ -64,7 +64,8 @@
 #include "MeshImport/MeshSystem.h"
 #include "MeshImport/MeshImport.h"
 #include "ImportEZM.h"
-
+#include "common/snippets/SendTextMessage.h"
+#include "common/snippets/StringDict.h"
 #include "common/snippets/stable.h"
 #include "common/snippets/asc2bin.h"
 #include "common/TinyXML/tinyxml.h"
@@ -475,7 +476,7 @@ public:
                 getVertex(tvtx[1],vtx[1]);
                 getVertex(tvtx[2],vtx[2]);
 
-                mCallback->importTriangle("foo","foo",MIVF_POSITION | MIVF_NORMAL | MIVF_TEXEL1 | MIVF_TEXEL2 | MIVF_BONE_WEIGHTING,vtx);
+                mCallback->importTriangle(mCurrentMesh.Get(),mCurrentMaterial.Get(),MIVF_POSITION | MIVF_NORMAL | MIVF_TEXEL1 | MIVF_TEXEL2 | MIVF_BONE_WEIGHTING,vtx);
 
 							}
 							else if ( stricmp(mSemantic,"position normal texcoord texcoord") == 0 )
@@ -487,7 +488,7 @@ public:
 								getVertex(&buffer[10],vtx[1]);
 								getVertex(&buffer[20],vtx[2]);
 
-                mCallback->importTriangle("foo","foo",MIVF_POSITION | MIVF_NORMAL | MIVF_TEXEL1 | MIVF_TEXEL2,vtx);
+                mCallback->importTriangle(mCurrentMesh.Get(),mCurrentMaterial.Get(),MIVF_POSITION | MIVF_NORMAL | MIVF_TEXEL1 | MIVF_TEXEL2,vtx);
 							}
 							mCtype = 0;
 							mSemantic = 0;
@@ -556,17 +557,8 @@ public:
 
 								}
 
-								unsigned int *idx = (unsigned int *) mIndexBuffer;
+                mCallback->importIndexedTriangleList(mCurrentMesh.Get(),mCurrentMaterial.Get(),MIVF_POSITION | MIVF_NORMAL | MIVF_TEXEL1 | MIVF_TEXEL2 | MIVF_BONE_WEIGHTING,mVertexCount,vtx,mIndexCount,(const unsigned int *)mIndexBuffer );
 
-								for (int i=0; i<mIndexCount; i++)
-								{
-                  MeshVertex v[3];
-                  v[0] = vtx[*idx++];
-                  v[1] = vtx[*idx++];
-                  v[2] = vtx[*idx++];
-									mCallback->importTriangle("foo","foo",MIVF_POSITION | MIVF_NORMAL | MIVF_TEXEL1 | MIVF_TEXEL2 | MIVF_BONE_WEIGHTING,v);
-
-								}
                 MEMALLOC_DELETE_ARRAY(MeshVertex,vtx);
 							}
 							else if ( stricmp(mSemantic,"position blendweights blendindices normal texcoord tangent binormal") == 0 )
@@ -597,9 +589,6 @@ public:
 									dest->mTexel1[0]  = source->mTexel[0];
 									dest->mTexel1[1]  = source->mTexel[1];
 
-									dest->mTexel2[0]  = source->mTexel[0];
-									dest->mTexel2[1]  = source->mTexel[1];
-
 									dest->mWeight[0] = source->mWeight[0];
 									dest->mWeight[1] = source->mWeight[1];
 									dest->mWeight[2] = source->mWeight[2];
@@ -615,17 +604,9 @@ public:
 
 								}
 
-								unsigned int *idx = (unsigned int *) mIndexBuffer;
 
-								for (int i=0; i<mIndexCount; i++)
-								{
-                  MeshVertex v[3];
-                  v[0] = vtx[*idx++];
-                  v[1] = vtx[*idx++];
-                  v[2] = vtx[*idx++];
-									mCallback->importTriangle("foo","foo",MIVF_ALL,v);
+                mCallback->importIndexedTriangleList(mCurrentMesh.Get(),mCurrentMaterial.Get(),MIVF_POSITION | MIVF_NORMAL | MIVF_TEXEL1 | MIVF_TANGENT | MIVF_BINORMAL | MIVF_BONE_WEIGHTING,mVertexCount,vtx,mIndexCount,(const unsigned int *)mIndexBuffer );
 
-								}
                 MEMALLOC_DELETE_ARRAY(MeshVertex,vtx);
 							}
 							else if ( stricmp(mSemantic,"position normal texcoord texcoord") == 0 )
@@ -658,16 +639,8 @@ public:
 
 								}
 
-								unsigned int *idx = (unsigned int *) mIndexBuffer;
+                mCallback->importIndexedTriangleList(mCurrentMesh.Get(),mCurrentMaterial.Get(),MIVF_POSITION | MIVF_NORMAL | MIVF_TEXEL1 | MIVF_TEXEL2,mVertexCount,vtx,mIndexCount,(const unsigned int *)mIndexBuffer );
 
-								for (int i=0; i<mIndexCount; i++)
-								{
-									MeshVertex v[3];
-                  v[0] = vtx[*idx++];
-									v[1] = vtx[*idx++];
-									v[2] = vtx[*idx++];
-									mCallback->importTriangle("foo","foo",MIVF_POSITION | MIVF_NORMAL | MIVF_TEXEL1 | MIVF_TEXEL2,v);
-								}
                 MEMALLOC_DELETE_ARRAY(MeshVertex,vtx);
 							}
 						}
@@ -762,6 +735,7 @@ public:
 				switch ( mType )
 				{
 					case NT_MESH:
+            mCurrentMesh = mStrings.Get(savalue);
             mCallback->importMesh(savalue,0);
 						break;
 					case NT_SKELETON:
@@ -814,6 +788,7 @@ public:
 				if ( mType == NT_MESH_SECTION )
 				{
 					mCallback->importMaterial(savalue,0);
+          mCurrentMaterial = mStrings.Get(savalue);
 				}
 				break;
 			case AT_CTYPE:
@@ -831,11 +806,11 @@ public:
 #if DEBUG_LOG
 		for (int i=0; i<depth; i++)
 		{
-			printf("  ");
+			SEND_TEXT_MESSAGE(0,"  ");
 		}
 		char wbuff[8192];
 		vsnprintf(wbuff, 8191, fmt, (char *)(&fmt+1));
-		printf("%s", wbuff);
+		SEND_TEXT_MESSAGE(0,"%s", wbuff);
 #endif
 	}
 
@@ -872,6 +847,10 @@ private:
 	int          mIndexCount;
 	void       * mVertexBuffer;
 	void       * mIndexBuffer;
+
+  StringRef    mCurrentMesh;
+  StringRef    mCurrentMaterial;
+  StringDict   mStrings;
 
 
 };

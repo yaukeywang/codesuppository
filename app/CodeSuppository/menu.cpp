@@ -7,10 +7,10 @@
 
 #define NOMINMAX
 #include "common/dxut/dxstdafx.h"
+#include "ClientPhysics/ClientPhysics.h"
 #include "resource.h"
 #include "menu.h"
 #include "MeshImport/MeshImport.h"
-#include "MeshImport/MeshSystem.h"
 #include "common/snippets/cparser.h"
 #include "common/snippets/filesystem.h"
 #include "common/snippets/log.h"
@@ -26,7 +26,6 @@
 #include "RenderDebug/RenderDebug.h"
 #include "Pd3d/Pd3d.h"
 #include "CodeSuppository.h"
-#include "PhysX.h"
 #include "common/MemoryServices/MemoryReport.h"
 #include <direct.h>
 
@@ -34,6 +33,10 @@ enum MenuOptions
 {
   MO_RUN_SCRIPT = 10000,
   MO_IMPORT_MESH,
+  MO_EXPORT_OBJ,
+  MO_EXPORT_EZM,
+  MO_EXPORT_OGRE,
+  MO_VISUALIZE_NONE,
 	MO_EXIT,
 };
 
@@ -45,6 +48,20 @@ enum MyCommand
   MC_PLANE,
   MC_TRIANGULATE_TYPE,
   MC_MEMORY_REPORT,
+};
+
+class MenuItem
+{
+public:
+    void set(HeU32 p,const char *name)
+    {
+      mParameter = p;
+      mName = name;
+      mState = false;
+    }
+  HeU32 mParameter;
+  const char *mName;
+  bool  mState;
 };
 
 typedef USER_STL::vector< std::string > StringVector;
@@ -65,7 +82,34 @@ public:
 
   	AppendMenu( mMainMenu, MF_POPUP, (UINT_PTR)m, L"&File" );
       AppendMenu( m, MF_STRING, MO_IMPORT_MESH, L"Import Mesh Data");
+      AppendMenu( m, MF_STRING, MO_EXPORT_EZM,  L"Export as EZ-Mesh");
+      AppendMenu( m, MF_STRING, MO_EXPORT_OBJ,  L"Export as Wavefront OBJ");
+      AppendMenu( m, MF_STRING, MO_EXPORT_OGRE, L"Export as Ogre3D XML");
   	  AppendMenu( m, MF_STRING, MO_EXIT, L"E&xit");
+
+    mVisualizationMenu = 0;
+
+    if ( gClientPhysics )
+    {
+      m = CreatePopupMenu();
+      mVisualizationMenu = m;
+      AppendMenu(mMainMenu,MF_POPUP, (UINT_PTR)m,L"&Apex Debug Visualization");
+      AppendMenu(m,MF_STRING, MO_VISUALIZE_NONE, L"VISUALIZE_NONE");
+      CLIENT_PHYSICS::Apex *apex = gClientPhysics->getApex();
+      HeU32 pcount = apex->getNxParameterCount();
+      mMenuItems = MEMALLOC_NEW_ARRAY(MenuItem,pcount)[pcount];
+      mMenuCount = 0;
+      for (HeU32 i=0; i<pcount; i++)
+      {
+        const char *str = apex->getNxParameterString(i);
+        if ( str )
+        {
+          AppendMenuA(m, MF_STRING | MF_UNCHECKED, mMenuCount+1, str );
+          mMenuItems[mMenuCount].set(i,str);
+          mMenuCount++;
+        }
+      }
+    }
 
 	  // ok, now initialize the scripted menu interface.
 	  gFileSystem       = this;
@@ -75,9 +119,22 @@ public:
 
 
    createButton("MEMORY_REPORT", MC_MEMORY_REPORT, "MC_MEMORY_REPORT");
+   createCheckbox("Show Skeleton", CSC_SHOW_SKELETON, "ShowSkeleton", true );
+   createCheckbox("Show Mesh", CSC_SHOW_MESH, "ShowMesh", true );
+   createCheckbox("Show Collision", CSC_SHOW_COLLISION, "ShowCollision", true );
+   createCheckbox("Show Wireframe", CSC_SHOW_WIREFRAME, "ShowWireframe", false );
+   createCheckbox("Flip Winding Order", CSC_FLIP_WINDING,"FlipWinding", false );
+   createCheckbox("Play Animation", CSC_PLAY_ANIMATION, "PlayAnimation", false );
+   createButton("Create Apex Cloth", CSC_APEX_CLOTH, "CreateApexCloth" );
+
+   createSlider("Animation Speed",CSC_ANIMATION_SPEED,"AnimationSpeed",0,100,4,false);
+
+   createButton("Clear Mesh", CSC_CLEAR_MESH, "ClearMesh");
+   createButton("AutoGenerate Collision Mesh", CSC_AUTO_GEOMETRY,"AutoGeometry");
 
    createButton("BEST_FIT_OBB",  CSC_BEST_FIT_OBB,  "CSC_BEST_FIT_OBB");
    createButton("BEST_FIT_PLANE",  CSC_BEST_FIT_PLANE,  "CSC_BEST_FIT_PLANE");
+
    createButton("STAN_HULL",  CSC_STAN_HULL,  "CSC_STAN_HULL");
    createButton("CONVEX_DECOMPOSITION",  CSC_CONVEX_DECOMPOSITION,  "CSC_CONVEX_DECOMPOSITION");
 
@@ -160,11 +217,21 @@ public:
 
     CPARSER.Parse("TuiPageBegin CodeSuppository");
     CPARSER.Parse("TuiElement MC_MEMORY_REPORT");
+    CPARSER.Parse("TuiElement ShowSkeleton");
+    CPARSER.Parse("TuiElement ShowMesh");
+    CPARSER.Parse("TuiElement ShowCollision");
+    if ( gClientPhysics ) CPARSER.Parse("TuiElement CreateApexCloth");
+    CPARSER.Parse("TuiElement PlayAnimation");
+    CPARSER.Parse("TuiElement AnimationSpeed");
+    CPARSER.Parse("TuiElement FlipWinding");
+    CPARSER.Parse("TuiElement ShowWireframe");
+    CPARSER.Parse("TuiElement ClearMesh");
+    CPARSER.Parse("TuiElement AutoGeometry");
     CPARSER.Parse("TuiElement CSC_BEST_FIT_OBB");
     CPARSER.Parse("TuiElement CSC_BEST_FIT_PLANE");
     CPARSER.Parse("TuiElement CSC_STAN_HULL");
-    CPARSER.Parse("TuiElement CSC_CONVEX_DECOMPOSITION");
-
+    CPARSER.Parse("TuiElement ConvexDecomposition");
+#if 0
     CPARSER.Parse("TuiElement CSC_INPARSER");
     CPARSER.Parse("TuiElement CSC_CLIPPER");
     CPARSER.Parse("TuiElement CSC_FRUSTUM");
@@ -186,11 +253,13 @@ public:
     CPARSER.Parse("TuiElement CSC_FAST_ASTAR");
     CPARSER.Parse("TuiElement CSC_SAS");
     CPARSER.Parse("TuiElement CSC_COMPRESSION");
-    CPARSER.Parse("TuiElement CSC_SPLIT_MESH");
+    
     CPARSER.Parse("TuiElement CSC_ARROW_HEAD");
     CPARSER.Parse("TuiElement CSC_SEND_MAIL");
     CPARSER.Parse("TuiElement CSC_SEND_AIM");
     CPARSER.Parse("TuiElement CSC_EROSION");
+#endif
+    CPARSER.Parse("TuiElement SplitMesh");
     CPARSER.Parse("TuiPageEnd");
 
     CPARSER.Parse("TuiPageBegin SplitMesh");
@@ -246,6 +315,36 @@ public:
     CPARSER.Parse("TuiElement ErodeThreshold");
     CPARSER.Parse("TuiElement ErodeSedimentation");
     CPARSER.Parse("TuiPageEnd");
+
+
+    createSlider("Decompose Depth",CSC_DEPTH,"DecomposeDepth",1,40,1,true);
+    createSlider("Max Vertices", CSC_MAX_VERTICES,"MaxVertices",8,512,32,true);
+    createSlider("Merge Percentage",CSC_MERGE_PERCENTAGE,"MergePercentage",0,100,3,false);
+    createSlider("Concavity Percentage",CSC_CONCAVITY_PERCENTAGE,"ConcavityPercentage",0,100,1,false);
+    createSlider("Volume Percentage",CSC_VOLUME_PERCENTAGE,"VolumePercentage",0,100,1,false);
+    createSlider("Skin Width", CSC_SKIN_WIDTH,"SkinWidth", 0,1,0,false);
+
+    createCheckbox("Fit OBB", CSC_FIT_OBB, "FitObb", false );
+    createCheckbox("Remove Tjunctions", CSC_REMOVE_TJUNCTIONS, "CsRemoveTjunctions", false );
+    createCheckbox("Initial Island Generation", CSC_INITIAL_ISLAND_GENERATION, "InitialIslandGeneration", false );
+    createCheckbox("Island Generation", CSC_ISLAND_GENERATION, "IslandGeneration", false );
+
+    createButton("Perform Decomposition", CSC_CONVEX_DECOMPOSITION, "PerformDecomposition" );
+
+    CPARSER.Parse("TuiPageBegin ConvexDecomposition");
+    CPARSER.Parse("TuiElement CodeSuppository");
+    CPARSER.Parse("TuiElement DecomposeDepth");
+    CPARSER.Parse("TuiElement MaxVertices");
+    CPARSER.Parse("TuiElement MergePercentage");
+    CPARSER.Parse("TuiElement ConcavityPercentage");
+    CPARSER.Parse("TuiElement VolumePercentage");
+    CPARSER.Parse("TuiElement SkinWidth");
+    CPARSER.Parse("TuiElement CsRemoveTjunctions");
+    CPARSER.Parse("TuiElement InitialIslandGeneration");
+    CPARSER.Parse("TuiElement IslandGeneration");
+    CPARSER.Parse("TuiElement FitObb");
+    CPARSER.Parse("TuiElement PerformDecomposition");
+
 
     CPARSER.Parse("TuiPage CodeSuppository");
 
@@ -322,11 +421,9 @@ public:
   }
 
 
-  const char * getFileName(const StringVector &specs,const char *title,const char *initial,bool saveMode) // allows the application the opportunity to present a file save dialog box.
+  const char * getFileName(const char *fileSpec,const char *title,const char *initial,bool saveMode) // allows the application the opportunity to present a file save dialog box.
   {
   	const char *ret = initial;
-
-//  	const char *extension = fileType;
 
   	static int sWhichFileType = 1;
   	char curdir[512];
@@ -350,36 +447,20 @@ public:
 
     wchar_t _filter[4096];
 
-    unsigned int index = 0;
-    _filter[0] = 0;
-
-    int count = specs.size()/2;
-    for (int i=0; i<count; i++)
-    {
-      const std::string &desc = specs[i*2];
-      const std::string &spec = specs[i*2+1];
-
-      wchar_t _ext[512];
-      wchar_t _desc[512];
-
-      CharToWide(desc.c_str(),_desc,512);
-      CharToWide(spec.c_str(),_ext,512);
-
-      add(_filter,_desc,index);
-      add(_filter,L" (*",index);
-      add(_filter,_ext,index);
-      add(_filter,L")",index);
-      add(_filter,0,index);
-      add(_filter,L"*",index);
-      add(_filter,_ext,index);
-      add(_filter,0,index);
-    }
-
-    add(_filter,0,index);
-    add(_filter,0,index);
+    CharToWide(fileSpec,_filter,4096);
 
     wchar_t _title[512];
     CharToWide(title,_title,512);
+
+    wchar_t *scan = _filter;
+    while ( *scan )
+    {
+      if ( *scan == L'|' )
+        *scan = 0;
+      scan++;
+    }
+    scan++;
+    *scan = 0;
 
     f.lpstrFilter = _filter;
     f.lpstrTitle =  _title;
@@ -470,40 +551,39 @@ public:
 
   	switch ( cmd )
   	{
+      case MO_VISUALIZE_NONE:
+        {
+          gApexScene->fetchResults();
+          CLIENT_PHYSICS::Apex *a = gClientPhysics->getApex();
+          for (HeU32 i=0; i<mMenuCount; i++)
+          {
+            a->setDebugState(mMenuItems[i].mName, 0 );
+            CheckMenuItem(mVisualizationMenu, i+1, MF_BYPOSITION | MF_UNCHECKED );
+            mMenuItems[i].mState = false;
+          }
+        }
+        break;
+      case MO_EXPORT_EZM:
+        gCodeSuppository->processCommand(CSC_EXPORT_EZM);
+        break;
+      case MO_EXPORT_OBJ:
+        gCodeSuppository->processCommand(CSC_EXPORT_OBJ);
+        break;
+      case MO_EXPORT_OGRE:
+        gCodeSuppository->processCommand(CSC_EXPORT_OGRE);
+        break;
       case MO_IMPORT_MESH:
         if ( gMeshImport )
         {
-          StringVector specs;
-          int count = gMeshImport->getImporterCount();
-          if ( count )
+          const char *filespec = gMeshImport->getFileRequestDialogString();
+          if ( filespec )
           {
-            for (int i=0; i<count; i++)
-            {
-              MESHIMPORT::MeshImporter *imp = gMeshImport->getImporter(i);
-              assert(imp);
-              if ( imp )
-              {
-                const char *spec = imp->getExtension();
-                const char *desc = imp->getDescription();
-                assert(spec);
-                assert(desc);
-                if ( spec && desc )
-                {
-                  std::string _spec(spec);
-                  std::string _desc(desc);
-                  specs.push_back(_desc);
-                  specs.push_back(_spec);
-                }
-              }
-            }
-
-            const char * fname = getFileName(specs,"MeshImport compatible data files", 0, false );
+            const char * fname = getFileName(filespec,"MeshImport compatible data files", 0, false );
             if ( fname )
             {
               SEND_TEXT_MESSAGE(0,"Processing mesh '%s'\r\n", fname );
               gCodeSuppository->importMesh(fname);
             }
-
           }
           else
           {
@@ -521,18 +601,40 @@ public:
     	case MO_EXIT:
     		SendMessage(hwnd,WM_CLOSE,0,0);
   		  break;
+      default:
+        if ( cmd >= 1 && cmd <= mMenuCount )
+        {
+          gApexScene->fetchResults();
+          CLIENT_PHYSICS::Apex *a = gClientPhysics->getApex();
+          MenuItem &mi = mMenuItems[cmd-1];
+          if ( mi.mState )
+          {
+            a->setDebugState(mi.mName,0);
+            mi.mState = false;
+            CheckMenuItem(mVisualizationMenu,cmd,MF_BYPOSITION | MF_UNCHECKED);
+          }
+          else
+          {
+            a->setDebugState(mi.mName,1);
+            mi.mState = true;
+            CheckMenuItem(mVisualizationMenu,cmd,MF_BYPOSITION | MF_CHECKED);
+          }
+        }
+        break;
   	}
 
   	return ret;
   }
 
-  void report(MemoryReport &mr,MemoryReport &summary,const char *header,MemoryServices *mservice)
+  void report(MemoryReport &mr,MemoryReport &summary,const char *header)
   {
-    mr.summaryReport(header,mservice);
-    summary.summaryReport(header,mservice);
-    mr.reportByClass(header,mservice);
-    mr.reportBySourceFile(header,mservice);
-    mr.fixedPoolReport(header,mservice);
+#if HE_USE_MEMORY_TRACKING
+    mr.summaryReport(header);
+    summary.summaryReport(header);
+    mr.reportByClass(header);
+    mr.reportBySourceFile(header);
+    mr.fixedPoolReport(header);
+#endif
   }
 
   int CommandCallback(int token,int count,const char **arglist)
@@ -558,10 +660,7 @@ public:
         {
           MemoryReport summary;
           MemoryReport mr;
-          report(mr,summary,"CodeSuppository",0);
-          report(mr,summary,"Pd3d",gPd3d);
-          report(mr,summary,"RenderDebug",gRenderDebug);
-
+          report(mr,summary,"CodeSuppository");
           summary.echoText(gSendTextMessage,HTML_TABLE::HST_TEXT);
           SEND_TEXT_MESSAGE(0,"Saving detailed memory report to 'memory_report.txt'\r\n");
           mr.saveFile("memory_report.txt",HTML_TABLE::HST_TEXT);
@@ -644,6 +743,26 @@ public:
       case CSC_SEND_AIM:
       case CSC_EROSION:
       case CSC_SPLIT_MESH:
+      case CSC_SHOW_SKELETON:
+      case CSC_SHOW_MESH:
+      case CSC_CLEAR_MESH:
+      case CSC_SHOW_WIREFRAME:
+      case CSC_PLAY_ANIMATION:
+      case CSC_FLIP_WINDING:
+      case CSC_AUTO_GEOMETRY:
+      case CSC_SHOW_COLLISION:
+      case CSC_APEX_CLOTH:
+      case CSC_ANIMATION_SPEED:
+      case CSC_MERGE_PERCENTAGE:
+      case CSC_CONCAVITY_PERCENTAGE:
+      case CSC_FIT_OBB:
+      case CSC_DEPTH:
+      case CSC_VOLUME_PERCENTAGE:
+      case CSC_MAX_VERTICES:
+      case CSC_SKIN_WIDTH:
+      case CSC_REMOVE_TJUNCTIONS:
+      case CSC_INITIAL_ISLAND_GENERATION:
+      case CSC_ISLAND_GENERATION:
         gCodeSuppository->processCommand( (CodeSuppositoryCommand)token, state, data );
         break;
       case SMC_WIREFRAME:
@@ -780,6 +899,9 @@ public:
 
   HMENU	mMainMenu;
   HMENU mFileMenu;
+  HMENU mVisualizationMenu;
+  HeU32 mMenuCount;
+  MenuItem *mMenuItems;
 };
 
 static class MyMenu *gMyMenu=0;

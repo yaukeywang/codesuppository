@@ -5,6 +5,7 @@
 
 #include "PlotTexture.h"
 #include "Pd3d/pd3d.h"
+#include "common/snippets/UserMemAlloc.h"
 
 class PlotTexture
 {

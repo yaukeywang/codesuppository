@@ -15,7 +15,63 @@
 #include "../snippets/SendTextMessage.h"
 #include "../snippets/UserMemAlloc.h"
 #include "../snippets/htmltable.h"
-#include "MemoryServices.h" 
+#include "memalloc.h"
+
+class MemoryServices
+{
+public:
+
+  virtual unsigned int getMemoryUsed(unsigned int &unused)
+  {
+    return MEMALLOC::getMemoryUsed(MEMALLOC::gMemAlloc,unused);
+  }
+
+  virtual void memorySummaryReport(HTML_TABLE::HtmlTable *table,const char *header,MemoryServices * /*ms*/)
+  {
+    MEMALLOC::summaryReport(table,0,header);
+  }
+
+  virtual void reportByClass(const char *header,HTML_TABLE::HtmlDocument *document)
+  {
+    MEMALLOC::reportByClass(header,document);
+  }
+
+  virtual void reportBySourceFile(const char *header,HTML_TABLE::HtmlDocument *document)
+  {
+    MEMALLOC::reportBySourceFile(header,document);
+  }
+
+  virtual void processReport(const char *header,HTML_TABLE::HtmlDocument *document)
+  {
+    MEMALLOC::processReport(header,document);
+  }
+
+  virtual void fixedPoolReport(const char *header,HTML_TABLE::HtmlDocument *document)
+  {
+    MEMALLOC::fixedPoolReport(header,document);
+  }
+
+  virtual void setMaxFixedMemorySize(HeU32 fsize)
+  {
+    MEMALLOC::setMaxFixedMemorySize(fsize);
+  }
+
+  virtual void  getMemoryStatistics(HeU32 &mcount,            // number of non-fixed memory allocation.
+    HeU32 &msize,             // size of non-fixed memory allocations
+    HeU32 &fmcount,           // fixed memory allocation count.
+    HeU32 &fmsize)           // fixed memory size
+  {
+    MEMALLOC::getMemoryStatistics(mcount,msize,fmcount,fmsize);
+  }
+
+  virtual void reportResources(const char * /*header*/,HTML_TABLE::HtmlDocument * /*document*/)
+  {
+    // optional report of resource utilization.
+  }
+
+
+};
+
 
 
 class MemoryReport
@@ -40,20 +96,16 @@ public:
     mTable = MEMALLOC::summaryHeader(mDocument);
   }
 
-  void summaryReport(const char *header,MemoryServices *mservice)
+  void summaryReport(const char *header,MemoryServices *ms=0)
   {
     if ( !mTable )
     {
       beginSummaryReport();
     }
-    if ( mservice )
-    {
-      mservice->memorySummaryReport(mTable,header);
-    }
+    if ( ms )
+      ms->memorySummaryReport(mTable,header,0);
     else
-    {
       MEMALLOC::summaryReport(mTable,0,header);
-    }
   }
 #endif /* HE_USE_MEMORY_TRACKING */
 
@@ -127,44 +179,36 @@ public:
   }
 
 #if HE_USE_MEMORY_TRACKING
-  void processReport(const char *header,MemoryServices *mservice)
+  void processReport(const char *header,MemoryServices *ms=0)
   {
-    if ( mservice )
-      mservice->processReport(header,mDocument);
+    if ( ms )
+      ms->processReport(header,mDocument);
     else
       MEMALLOC::processReport(header,mDocument);
   }
 
-  void fixedPoolReport(const char *header,MemoryServices *mservice)
+  void fixedPoolReport(const char *header,MemoryServices *ms=0)
   {
-    if ( mservice )
-      mservice->fixedPoolReport(header,mDocument);
+    if ( ms )
+      ms->fixedPoolReport(header,mDocument);
     else
       MEMALLOC::fixedPoolReport(header,mDocument);
   }
 
-  void reportByClass(const char *header,MemoryServices *mservice)
+  void reportByClass(const char *header,MemoryServices *ms=0)
   {
-    if ( mservice )
-    {
-      mservice->reportByClass(header,mDocument);
-    }
+    if ( ms )
+      ms->reportByClass(header,mDocument);
     else
-    {
       MEMALLOC::reportByClass(header,mDocument);
-    }
   }
 
-  void reportBySourceFile(const char *header,MemoryServices *mservice)
+  void reportBySourceFile(const char *header,MemoryServices *ms=0)
   {
-    if ( mservice )
-    {
-      mservice->reportBySourceFile(header,mDocument);
-    }
+    if ( ms )
+      ms->reportBySourceFile(header,mDocument);
     else
-    {
       MEMALLOC::reportBySourceFile(header,mDocument);
-    }
   }
 
 #endif /* HE_USE_MEMORY_TRACKING */

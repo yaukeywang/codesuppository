@@ -47,7 +47,9 @@ enum SplitMeshCommand
   SMC_ERODE_SEDIMENTATION,
 };
 
-void appImportWavefront(const char *fname);
+class MeshSystemHelper;
+
+void appSetMeshSystemHelper(MeshSystemHelper *msh);
 void appRender(void);
 void appCommand(SplitMeshCommand command,bool state=true,const float *data=0);
 void appImportTer(const char *fname);

@@ -6,6 +6,8 @@
 
 #include "../../common/snippets/UserMemAlloc.h"
 
+#define MAXARGS 512
+
 /*!  
 ** 
 ** Copyright (c) 2007 by John W. Ratcliff mailto:jratcliff@infiniplex.net
@@ -250,6 +252,7 @@ private:
 	SeparatorType  mHard[256];
 	char   mHardString[256*2];
 	char           mQuoteChar;
+	const char *argv[MAXARGS];
 };
 
 #endif

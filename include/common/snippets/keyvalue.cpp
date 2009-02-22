@@ -53,8 +53,6 @@
 
 #pragma warning(disable:4996)
 
-static char *keyValue[MAXKEYVALUE*2];
-static char  keyBuffer[MAXKEYVALUEBUFFER];
 
 static char *skipSoft(char *scan,char &quote)
 {
@@ -95,7 +93,7 @@ static bool endQuote(char c,char quote)
   return ret;
 }
 
-const char ** getKeyValues(const char *userProperties,HeU32 &count)
+const char ** KeyValue::getKeyValues(const char *userProperties,HeU32 &count)
 {
 	const char **ret = 0;
 	count = 0;
@@ -169,7 +167,7 @@ const char ** getKeyValues(const char *userProperties,HeU32 &count)
 }
 
 
-const char *  getKeyValue(const char *userProperties,const char *_key,bool caseSensitive)  //
+const char *  KeyValue::getKeyValue(const char *userProperties,const char *_key,bool caseSensitive)  //
 {
   const char *ret = 0;
 
@@ -195,4 +193,5 @@ const char *  getKeyValue(const char *userProperties,const char *_key,bool caseS
   }
   return ret;
 }
+
 

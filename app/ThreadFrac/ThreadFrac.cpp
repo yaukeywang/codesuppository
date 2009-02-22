@@ -71,8 +71,6 @@ HeF32 mSpeed=2.0f;
 static HeI32 gMovieCapture=0;
 static HeI32 gScreenCapture=0;
 static HeI32 gMovieFrame=0;
-FIRE_STORM_RESOURCE::ResourceInterface *gResourceInterface=0;
-
 
 TfracSettings gSettings;
 Tfrac *gTfrac=0;
@@ -169,8 +167,8 @@ INT WINAPI WinMain( HINSTANCE instance, HINSTANCE, LPSTR, HeI32 )
 
 		gInstance = instance;
 
-		gPd3d = (PD3D::Pd3d *)getBindingInterface("pd3d.dll",PD3D_VERSION);
-		gRenderDebug = (RENDER_DEBUG::RenderDebug *)getBindingInterface("RenderDebugPd3d.dll",RENDER_DEBUG_VERSION);
+    gPd3d = (PD3D::Pd3d *)getBindingInterface("pd3d.dll","pd3d",PD3D_VERSION,SYSTEM_SERVICES::gSystemServices,0);
+		gRenderDebug = (RENDER_DEBUG::RenderDebug *)getBindingInterface("RenderDebugPd3d.dll","RenderDebugPd3d",RENDER_DEBUG_VERSION,SYSTEM_SERVICES::gSystemServices,0);
 
     if ( gPd3d && gRenderDebug )
     {

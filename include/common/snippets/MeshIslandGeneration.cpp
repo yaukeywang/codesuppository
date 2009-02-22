@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <hash_map>
 
 #pragma warning(disable:4100 4288)
 
@@ -124,7 +125,7 @@ public:
   Triangle *mParent;
 };
 
-typedef USER_STL::hash_map< size_t, Edge * > EdgeHashMap;
+typedef USER_STL_EXT::hash_map< size_t, Edge * > EdgeHashMap;
 typedef USER_STL::vector< Triangle * > TriangleVector;
 
 class EdgeCheck

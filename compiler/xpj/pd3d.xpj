@@ -34,9 +34,10 @@
          ResourceInterface/*.c
          FileInterface/*.cpp
          FileInterface/*.h
-         MemoryServices/*.cpp
-         MemoryServices/*.c
-         MemoryServices/*.h
+         MemoryServices/MemoryContainer.cpp
+         MemoryServices/MemoryContainer.h
+         MemoryServices/GlobalNewDelete.cpp
+         MemoryServices/GlobalNewDelete.h
          snippets/FloatMath.cpp
          snippets/FloatMath.inl
          snippets/FloatMath.h
@@ -62,6 +63,8 @@
          snippets/KdTree.h
          snippets/filesystem.cpp
          snippets/filesystem.h
+         snippets/SystemServices.h
+         snippets/SystemServices.cpp
 				</Files>
 				<Files name="Common Source Files" root="../../src/common" type="header">
           comlayer/*.c

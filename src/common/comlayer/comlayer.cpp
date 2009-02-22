@@ -105,7 +105,6 @@
 #pragma warning(disable:4189)
 
 SendTextMessage        *gSendTextMessage=0;
-JOB_SWARM::JobSwarmContext *gJobSwarmContext=0;
 
 bool gBadState=false;
 
@@ -160,15 +159,6 @@ ComLayer::~ComLayer(void)
 }
 
 
-HeU32 getHeapSize(HeU32 &unused)
-
-{
-
-  return MEMALLOC_GET_HEAP_SIZE(unused);
-
-}
-
-
 HeI32 ComLayer::CommandCallback(HeI32 token,HeI32 /* count */,const char ** /* arglist */)
 
 {
@@ -179,41 +169,11 @@ HeI32 ComLayer::CommandCallback(HeI32 token,HeI32 /* count */,const char ** /* a
   SendTextMessage *stm = gSendTextMessage;
 
 
-  switch ( token )
-
-  {
-
-    case CLC_MEMORY_REPORT:
-
-      MEMALLOC_REPORT(mDescription.Get(), stm, true);
-
-      break;
-
-  }
-
 
   return ret;
 
 }
 
 
-
-
-void ComLayer::frameBegin(SendTextMessage *stm)
-
-{
-
-  MEMALLOC_FRAME_BEGIN(stm);
-
-}
-
-
-void ComLayer::frameEnd(SendTextMessage *stm,const char *header)
-
-{
-
-  MEMALLOC_FRAME_END(stm,header);
-
-}
 
 

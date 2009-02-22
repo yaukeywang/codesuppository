@@ -6,6 +6,7 @@
 #include "OpenClosedMesh.h"
 #include "UserMemAlloc.h"
 #include <vector>
+#include <hash_map>
 
 namespace OPEN_CLOSED_MESH
 {
@@ -43,7 +44,7 @@ public:
   Edge  *mNextEdge;
 };
 
-typedef USER_STL::hash_map< size_t, Edge * > EdgeMap;
+typedef USER_STL_EXT::hash_map< size_t, Edge * > EdgeMap;
 
 class MyOpenClosedMesh : public OpenClosedMesh
 {

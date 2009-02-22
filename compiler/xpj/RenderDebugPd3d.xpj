@@ -19,14 +19,18 @@
           USE_MEMORY_TRAPPING=1
           USE_PD3D=1
 				</Preprocessor>
-				<Files name="Common Source Files" root="../../src/common" type="source">
-          snippets/quat.cpp
-          snippets/quat.h
-          snippets/vector.cpp
-          snippets/vector.h
-          snippets/matrix.cpp
-          snippets/matrix.h
-          snippets/pool.h
+				<Files name="Common Source Files" root="../../include/common" type="source">
+          snippets/SystemServices.h
+          snippets/SystemServices.cpp
+          snippets/FloatMath.cpp
+          snippets/FloatMath.h
+          snippets/FloatMath.inl
+          HeMath/*.cpp
+          HeMath/*.h
+          MemoryServices/MemoryContainer.h
+          MemoryServices/MemoryContainer.cpp
+         MemoryServices/GlobalNewDelete.cpp
+         MemoryServices/GlobalNewDelete.h
 				</Files>
 				<Files name="Source Files" root="../../src/RenderDebug" type="source">
 					*.cpp
@@ -36,16 +40,6 @@
 				</Files>
 				<Files name="Public Header Files" root="../../include/RenderDebug" type="header">
 					*.h
-				</Files>
-				<Files name="MemoryServices" root="../../include/common/MemoryServices" type="header">
-					*.c
-					*.cpp
-					*.h
-				</Files>
-				<Files name="snippets" root="../../include/common/snippets" type="header">
-          FloatMath.cpp
-          FloatMath.inl
-          FloatMath.h
 				</Files>
 				<Files name="Public Dependencies" root="../../include" type="header">
 				</Files>

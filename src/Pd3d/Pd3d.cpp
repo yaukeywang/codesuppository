@@ -9,7 +9,7 @@
 #include <assert.h>
 
 #include "common/snippets/UserMemAlloc.h"
-#include "./pd3d/pd3d.h"
+#include "pd3d/pd3d.h"
 #include "zvidcap.h"
 #include "AgScreenPipe.h"
 #include "common/snippets/stringdict.h"
@@ -1518,35 +1518,6 @@ public:
     return ret;
   }
 
-  void frameBegin(SendTextMessage *stm)
-  {
-    MEMALLOC_FRAME_BEGIN(stm);
-  }
-
-  void frameEnd(SendTextMessage *stm,const char *header)
-  {
-    MEMALLOC_FRAME_END(stm,header);
-  }
-
-
-  HeU32 getHeapSize(HeU32 &unused)
-  {
-    return MEMALLOC_GET_HEAP_SIZE(unused);
-  }
-
-  HeU32 executeCommand(SendTextMessage *tmessage,const char *cmd )
-  {
-    HeU32 ret  = 0;
-    gSendTextMessage = tmessage;
-
-    if ( stricmp(cmd,"ClcMemoryReport") == 0 )
-    {
-      MEMALLOC_REPORT("Pd3d", tmessage, true );
-    }
-
-    return ret;
-  }
-
   void          setClampConstants(HeF32 clampLow,HeF32 clampHigh,HeF32 clampScale)
   {
     if ( mClampLowHandle )   mEffect->SetFloat(mClampLowHandle,   clampLow );
@@ -1638,9 +1609,15 @@ using namespace PD3D;
 
 extern "C"
 {
-PD3D_API Pd3d * getInterface(HeI32 version_number)
+  PD3D_API Pd3d * getInterface(HeI32 version_number,SYSTEM_SERVICES::SystemServices *services)
 {
   Pd3d *ret = 0;
+
+  if ( services )
+  {
+    SYSTEM_SERVICES::gSystemServices = services;
+  }
+
   assert( gInterface == 0 );
   if ( gInterface == 0 && version_number == PD3D_VERSION )
   {

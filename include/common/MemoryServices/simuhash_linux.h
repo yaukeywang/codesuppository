@@ -2,6 +2,19 @@
 #define _SIMU_HASH_LINUX_H
 
 #include <functional>
+#include <vector>
+#include <set>
+#include <map>
+#ifndef ORA_PROC
+#include <ext/hash_set>
+#include <ext/hash_map>
+#endif
+#include <deque>
+#include <stack>
+#include <queue>
+#include <string>
+#include "../snippets/HeSimpleTypes.h"
+
 #define _STD_BEGIN namespace std {
 #define _STD_END }
 #define _STD ::std::
@@ -108,10 +121,46 @@ template<> struct hash<std::basic_string<char, std::char_traits<char>, std::allo
 	 return (hash & 0x7FFFFFFF);
 	}	
 };
+
+template<> struct hash<USER_STL::string>
+{
+	typedef USER_STL::string value_type;
+	size_t operator ()(value_type const & __x) const
+	{ 
+	 unsigned int b = 378551;
+	 unsigned int a = 63689;
+	 unsigned int hash = 0;
+
+	 for(value_type::const_iterator ii = __x.begin(), ee = __x.end(); ii != ee; ++ii)
+	 {
+	  hash = hash * a + *ii;
+	  a = a * b;
+	 }
+	 return (hash & 0x7FFFFFFF);
+	}	
+};
+
+template<> struct hash<USER_STL::wstring>
+{
+	typedef USER_STL::wstring value_type;
+	size_t operator ()(value_type const & __x) const
+	{ 
+	 unsigned int b = 378551;
+	 unsigned int a = 63689;
+	 unsigned int hash = 0;
+
+	 for(value_type::const_iterator ii = __x.begin(), ee = __x.end(); ii != ee; ++ii)
+	 {
+	  hash = hash * a + *ii;
+	  a = a * b;
+	 }
+	 return (hash & 0x7FFFFFFF);
+	}	
+};
 } //end namespace __gnu_cxx
 
 
-namespace Simutronics
+namespace MemoryContainer
 {
 
 using std::equal_to;
@@ -236,7 +285,7 @@ protected:
 	  _Ha hashp;
   };
 
-  template <typename TK, typename TV, class _Class = GlobalMemoryPool/*, class HC = stdext::hash_compare<T>*/ >
+  template <typename TK, typename TV, class _Class = USER_STL::GlobalMemoryPool/*, class HC = stdext::hash_compare<T>*/ >
   class hash_map;
 
   template<typename TK, typename TV, class _Class>
@@ -268,7 +317,7 @@ template <typename TK, typename TV, class _Class/*, hash<TK>*/ >
 	#if defined(HE_USE_SIMUTRONICS_MEMORY_POOLING)
 	  USER_STL::simu_allocator< std::pair< TK, TV>, _Class > 
 	#else
-	  GlobalMemoryPool
+	  USER_STL::GlobalMemoryPool
 	#endif
 	  allocator_type;
 	typedef typename _Mybase::iterator iterator;
@@ -367,7 +416,7 @@ swap(const hash_map<TK, TV, _Class>& __hm1,
 	{
 		__hm1.swap(__hm2);
 	}
-  template <typename TK, typename TV, class _Class = GlobalMemoryPool/*, class HC = stdext::hash_compare<TK>*/ >
+  template <typename TK, typename TV, class _Class = USER_STL::GlobalMemoryPool/*, class HC = stdext::hash_compare<TK>*/ >
   class hash_multimap: public __gnu_cxx::hash_multimap<TK, TV, hash_compare<TK>, hash_compare<TK>
 #if defined(HE_USE_SIMUTRONICS_MEMORY_POOLING)
 	  , USER_STL::simu_allocator< std::pair< TK, TV>, _Class > 
@@ -388,7 +437,7 @@ swap(const hash_map<TK, TV, _Class>& __hm1,
 #if defined(HE_USE_SIMUTRONICS_MEMORY_POOLING)
 	  USER_STL::simu_allocator< std::pair< TK, TV>, _Class > 
 #else
-	  GlobalMemoryPool
+	  USER_STL::GlobalMemoryPool
 #endif
 	  allocator_type;
   allocator_type MyAlloc;
@@ -404,7 +453,7 @@ swap(const hash_map<TK, TV, _Class>& __hm1,
   };
 
   template <typename TK, typename TV, int _Bucket_size = 4, int _Min_buckets = 4096, 
-  class _Class = GlobalMemoryPool/*, class HC = USER_STL::configured_hash_compare<TK, _Bucket_size, _Min_buckets>*/ >
+  class _Class = USER_STL::GlobalMemoryPool/*, class HC = USER_STL::configured_hash_compare<TK, _Bucket_size, _Min_buckets>*/ >
   class large_hash_map
   {
 
@@ -422,7 +471,7 @@ swap(const hash_map<TK, TV, _Class>& __hm1,
 #if defined(HE_USE_SIMUTRONICS_MEMORY_POOLING)
 		  USER_STL::simu_allocator< std::pair< TK, TV>, _Class > 
 #else
-		  GlobalMemoryPool
+		  USER_STL::GlobalMemoryPool
 #endif
 		  allocator_type;
 	  typedef typename _Mybase::iterator iterator;
@@ -441,7 +490,7 @@ swap(const hash_map<TK, TV, _Class>& __hm1,
 };
 
   template <typename TK, typename TV, int _Bucket_size = 4, int _Min_buckets = 4096, 
-  class _Class = GlobalMemoryPool/*, class HC = USER_STL::configured_hash_compare<TK, _Bucket_size, _Min_buckets>*/ >
+  class _Class = USER_STL::GlobalMemoryPool/*, class HC = USER_STL::configured_hash_compare<TK, _Bucket_size, _Min_buckets>*/ >
   class large_hash_multimap: public __gnu_cxx::hash_multimap<TK, TV, USER_STL::configured_hash_compare<TK, _Bucket_size, _Min_buckets>, USER_STL::configured_hash_compare<TK, _Bucket_size, _Min_buckets>
 #if defined(HE_USE_SIMUTRONICS_MEMORY_POOLING)
 	  , USER_STL::simu_allocator< std::pair< TK, TV>, _Class >
@@ -462,7 +511,7 @@ swap(const hash_map<TK, TV, _Class>& __hm1,
 #if defined(HE_USE_SIMUTRONICS_MEMORY_POOLING)
 		  USER_STL::simu_allocator< std::pair< TK, TV>, _Class > 
 #else
-		  GlobalMemoryPool
+		  USER_STL::GlobalMemoryPool
 #endif
 		  allocator_type;
   	  allocator_type MyAlloc;
@@ -476,7 +525,7 @@ swap(const hash_map<TK, TV, _Class>& __hm1,
 
   };
 
-  template <typename T, class _Class = GlobalMemoryPool/*, class HC = stdext::hash_compare<T>*/ >
+  template <typename T, class _Class = USER_STL::GlobalMemoryPool/*, class HC = stdext::hash_compare<T>*/ >
   class hash_set;
 
   template<typename T, class _Class>
@@ -511,7 +560,7 @@ swap(const hash_map<TK, TV, _Class>& __hm1,
 #if defined(HE_USE_SIMUTRONICS_MEMORY_POOLING)
 		  USER_STL::simu_allocator<T, _Class > 
 #else
-		  GlobalMemoryPool
+		  USER_STL::GlobalMemoryPool
 #endif
 		  allocator_type;
 	  typedef typename _Mybase::iterator iterator;

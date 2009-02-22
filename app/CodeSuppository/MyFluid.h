@@ -8,10 +8,6 @@
 #ifndef MYFLUID_H
 #define MYFLUID_H
 
-#ifndef PHYSX
-#define PHYSX
-#endif
-
 #ifdef PHYSX
 
 #include "NxPhysics.h"

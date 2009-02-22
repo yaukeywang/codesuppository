@@ -1,6 +1,8 @@
 #ifndef TEST_BEST_FIT_PLANE_H
 #define TEST_BEST_FIT_PLANE_H
 
-void testBestFitPlane(void);
+class MeshSystemHelper;
+
+void testBestFitPlane(MeshSystemHelper *ms);
 
 #endif

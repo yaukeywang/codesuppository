@@ -42,7 +42,7 @@ typedef struct _PROCESS_MEMORY_COUNTERS {
 #pragma warning(disable:4267)
 #pragma warning(disable:4390)
 
-#include "../snippets/UserMemAlloc.h"
+#include "memalloc.h"
 
 #define DEFAULT_PAGE_SIZE 8192
 #define LOG 0
@@ -2730,7 +2730,7 @@ void MemAlloc::reportBySourceFile(const char *header,HTML_TABLE::HtmlDocument *d
 
   table->addHeader("Source/File,Line/Number,Class/Tag,Alloc/Count,Alloc/Size,Full Source File Path Name");
   table->addSort("Sorted by Allocation Size",5,false,0,false);
-  table->addSort("Sorted by Source File and Line Number",1,true,2,true);
+//  table->addSort("Sorted by Source File and Line Number",1,true,2,true);
 
 	MemHeader *mh = mUsed;
 
@@ -2779,7 +2779,7 @@ void MemAlloc::reportByClass(const char *header,HTML_TABLE::HtmlDocument *docume
 
   table->addHeader("Class-Tag/Source File,Alloc/Count,Alloc/Size,Full Source File Path Name");
   table->addSort("Sorted by Class Size",3,false,0,false);
-  table->addSort("Sorted by Class Name",1,true,0,false);
+//  table->addSort("Sorted by Class Name",1,true,0,false);
 
 
 	MemHeader *mh = mUsed;

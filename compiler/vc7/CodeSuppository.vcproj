@@ -20,7 +20,7 @@ SccProvider="MSCCI:Perforce SCM"
     >
     <Tool
       Name="VCCLCompilerTool"
-      AdditionalIncludeDirectories="&quot;../../app/CodeSuppository&quot;;&quot;../../src&quot;;&quot;../../include&quot;;&quot;../../ext/DirectX_October2006&quot;;&quot;../../include&quot;;&quot;../../app&quot;;&quot;../../ext/deja_insight&quot;;&quot;../../ext/boost/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/Physics/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/Cooking/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/NxCharacter/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/PhysXLoader/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/Foundation/include&quot;;"
+      AdditionalIncludeDirectories="&quot;../../app/CodeSuppository&quot;;&quot;../../src&quot;;&quot;../../include&quot;;&quot;../../ext/DirectX_October2006&quot;;&quot;../../include&quot;;&quot;../../app&quot;;&quot;../../ext/boost/include&quot;;"
       PreprocessorDefinitions="WIN32;_WINDOWS;UNICODE=1;_CRT_SECURE_NO_DEPRECATE;DEBUG_SERVER;USE_MEMORY_TRAPPING=1;OPEN_SOURCE=1;_DEBUG;"
       WarningLevel="3"
       Optimization="4"
@@ -34,7 +34,7 @@ SccProvider="MSCCI:Perforce SCM"
       ProgramDatabaseFile="$(OutDir)/CodeSuppositoryDEBUG.exe.pdb" 
       AdditionalOptions="/DEBUG "
       AdditionalDependencies="&quot;odbc32.lib&quot; &quot;odbccp32.lib&quot; &quot;winmm.lib&quot; &quot;comctl32.lib&quot; &quot;pdh.lib&quot; &quot;shlwapi.lib&quot; &quot;OpenGL32.lib&quot; &quot;GLU32.lib&quot; &quot;Ws2_32.lib&quot; &quot;dbghelp.lib&quot; &quot;d3d9.lib&quot; &quot;d3dx9.lib&quot; &quot;dxerr9.lib&quot; &quot;dxguid.lib&quot; &quot;dinput8.lib&quot; &quot;dsound.lib&quot; "
-      AdditionalLibraryDirectories="&quot;../../ext/DirectX_October2006&quot;;&quot;../../ext/deja_insight/lib/win32&quot;;&quot;../../ext/boost/lib&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/lib/win32&quot;;"
+      AdditionalLibraryDirectories="&quot;../../ext/DirectX_October2006&quot;;"
       GenerateMapFile="TRUE"
       MapFileName="$(OutDir)/CodeSuppositoryDEBUG.exe.map"
       SubSystem="2"
@@ -59,7 +59,7 @@ SccProvider="MSCCI:Perforce SCM"
     >
     <Tool
       Name="VCCLCompilerTool"
-      AdditionalIncludeDirectories="&quot;../../app/CodeSuppository&quot;;&quot;../../src&quot;;&quot;../../include&quot;;&quot;../../ext/DirectX_October2006&quot;;&quot;../../include&quot;;&quot;../../app&quot;;&quot;../../ext/deja_insight&quot;;&quot;../../ext/boost/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/Physics/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/Cooking/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/NxCharacter/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/PhysXLoader/include&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/Foundation/include&quot;;"
+      AdditionalIncludeDirectories="&quot;../../app/CodeSuppository&quot;;&quot;../../src&quot;;&quot;../../include&quot;;&quot;../../ext/DirectX_October2006&quot;;&quot;../../include&quot;;&quot;../../app&quot;;"
       PreprocessorDefinitions="WIN32;_WINDOWS;UNICODE=1;_CRT_SECURE_NO_DEPRECATE;DEBUG_SERVER;USE_MEMORY_TRAPPING=1;OPEN_SOURCE=1;NDEBUG;"
       WarningLevel="3"
       Optimization="4"
@@ -73,7 +73,7 @@ SccProvider="MSCCI:Perforce SCM"
       ProgramDatabaseFile="$(OutDir)/CodeSuppository.exe.pdb" 
       AdditionalOptions="/DEBUG "
       AdditionalDependencies="&quot;odbc32.lib&quot; &quot;odbccp32.lib&quot; &quot;winmm.lib&quot; &quot;comctl32.lib&quot; &quot;pdh.lib&quot; &quot;shlwapi.lib&quot; &quot;OpenGL32.lib&quot; &quot;GLU32.lib&quot; &quot;Ws2_32.lib&quot; &quot;dbghelp.lib&quot; &quot;d3d9.lib&quot; &quot;d3dx9.lib&quot; &quot;dxerr9.lib&quot; &quot;dxguid.lib&quot; &quot;dinput8.lib&quot; &quot;dsound.lib&quot; "
-      AdditionalLibraryDirectories="&quot;../../ext/DirectX_October2006&quot;;&quot;../../ext/deja_insight/lib/win32&quot;;&quot;../../ext/boost/lib&quot;;&quot;C:/Program Files/NVIDIA Corporation/NVIDIA PhysX SDK/v2.8.1/SDKs/lib/win32&quot;;"
+      AdditionalLibraryDirectories="&quot;../../ext/DirectX_October2006&quot;;"
       GenerateMapFile="TRUE"
       MapFileName="$(OutDir)/CodeSuppository.exe.map"
       SubSystem="2"
@@ -264,6 +264,7 @@ SccProvider="MSCCI:Perforce SCM"
     <File RelativePath="..\..\app\CodeSuppository\ThreadFrac.rc"/>
   </Filter>
   <Filter Name="Internal Header Files" Filter="">
+    <File RelativePath="..\..\app\CodeSuppository\ApexRenderInterface.h"/>
     <File RelativePath="..\..\app\CodeSuppository\CodeSuppository.h"/>
     <File RelativePath="..\..\app\CodeSuppository\menu.h"/>
     <File RelativePath="..\..\app\CodeSuppository\MyFluid.h"/>
@@ -277,6 +278,7 @@ SccProvider="MSCCI:Perforce SCM"
     <File RelativePath="..\..\app\CodeSuppository\terrain.h"/>
     <File RelativePath="..\..\app\CodeSuppository\TestArrowHead.h"/>
     <File RelativePath="..\..\app\CodeSuppository\TestAsc2Bin.h"/>
+    <File RelativePath="..\..\app\CodeSuppository\TestAutoGeometry.h"/>
     <File RelativePath="..\..\app\CodeSuppository\TestBestFitOBB.h"/>
     <File RelativePath="..\..\app\CodeSuppository\TestBestFitPlane.h"/>
     <File RelativePath="..\..\app\CodeSuppository\TestClipper.h"/>
@@ -317,6 +319,7 @@ SccProvider="MSCCI:Perforce SCM"
     </Filter>
   </Filter>
   <Filter Name="Source Files" Filter="">
+    <File RelativePath="..\..\app\CodeSuppository\ApexRenderInterface.cpp"/>
     <File RelativePath="..\..\app\CodeSuppository\CodeSuppository.cpp"/>
     <File RelativePath="..\..\app\CodeSuppository\CodeSuppositoryMain.cpp"/>
     <File RelativePath="..\..\app\CodeSuppository\menu.cpp"/>
@@ -328,6 +331,7 @@ SccProvider="MSCCI:Perforce SCM"
     <File RelativePath="..\..\app\CodeSuppository\terrain.cpp"/>
     <File RelativePath="..\..\app\CodeSuppository\TestArrowHead.cpp"/>
     <File RelativePath="..\..\app\CodeSuppository\TestAsc2Bin.cpp"/>
+    <File RelativePath="..\..\app\CodeSuppository\TestAutoGeometry.cpp"/>
     <File RelativePath="..\..\app\CodeSuppository\TestBestFitOBB.cpp"/>
     <File RelativePath="..\..\app\CodeSuppository\TestBestFitPlane.cpp"/>
     <File RelativePath="..\..\app\CodeSuppository\TestClipper.cpp"/>
@@ -357,14 +361,17 @@ SccProvider="MSCCI:Perforce SCM"
     <File RelativePath="..\..\app\CodeSuppository\TestWildCard.cpp"/>
     <File RelativePath="..\..\app\CodeSuppository\TestWinMsg.cpp"/>
   </Filter>
+  <Filter Name="MeshImport Files" Filter="">
+    <File RelativePath="..\..\include\MeshImport\MeshImport.cpp"/>
+    <File RelativePath="..\..\include\MeshImport\MeshImport.h"/>
+    <File RelativePath="..\..\include\MeshImport\MeshSystem.h"/>
+  </Filter>
   <Filter Name="Common Source Files" Filter="">
     <Filter Name="snippets" Filter="">
       <File RelativePath="..\..\src\common\snippets\animation.h"/>
       <File RelativePath="..\..\src\common\snippets\bitmap.cpp"/>
       <File RelativePath="..\..\src\common\snippets\bitmap.h"/>
       <File RelativePath="..\..\src\common\snippets\bonebinding.h"/>
-      <File RelativePath="..\..\src\common\snippets\crc.cpp"/>
-      <File RelativePath="..\..\src\common\snippets\crc.h"/>
       <File RelativePath="..\..\src\common\snippets\encryption.h"/>
       <File RelativePath="..\..\src\common\snippets\geometry.cpp"/>
       <File RelativePath="..\..\src\common\snippets\geometry.h"/>
@@ -444,6 +451,8 @@ SccProvider="MSCCI:Perforce SCM"
       <File RelativePath="..\..\include\common\ResourceInterface\ResourceUpdate.h"/>
     </Filter>
     <Filter Name="MemoryServices" Filter="">
+      <File RelativePath="..\..\include\common\MemoryServices\ApplicationSystemServices.cpp"/>
+      <File RelativePath="..\..\include\common\MemoryServices\ApplicationSystemServices.h"/>
       <File RelativePath="..\..\include\common\MemoryServices\dlmalloc.cpp"/>
       <File RelativePath="..\..\include\common\MemoryServices\dlmalloc.h"/>
       <File RelativePath="..\..\include\common\MemoryServices\GlobalNewDelete.cpp"/>
@@ -463,55 +472,24 @@ SccProvider="MSCCI:Perforce SCM"
       <File RelativePath="..\..\include\common\MemoryServices\streamer.h"/>
     </Filter>
     <Filter Name="snippets" Filter="">
-      <File RelativePath="..\..\include\common\snippets\ArrowHead.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\ArrowHead.h"/>
       <File RelativePath="..\..\include\common\snippets\asc2bin.cpp"/>
       <File RelativePath="..\..\include\common\snippets\asc2bin.h"/>
-      <File RelativePath="..\..\include\common\snippets\AsciiPath.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\AsciiPath.h"/>
-      <File RelativePath="..\..\include\common\snippets\bmp.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\bmp.h"/>
-      <File RelativePath="..\..\include\common\snippets\boundingvolume.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\boundingvolume.h"/>
       <File RelativePath="..\..\include\common\snippets\cd_hull.cpp"/>
       <File RelativePath="..\..\include\common\snippets\cd_hull.h"/>
-      <File RelativePath="..\..\include\common\snippets\circlejerk.h"/>
-      <File RelativePath="..\..\include\common\snippets\clipper.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\clipper.h"/>
-      <File RelativePath="..\..\include\common\snippets\clock.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\clock.h"/>
-      <File RelativePath="..\..\include\common\snippets\ConsolidateMesh.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\ConsolidateMesh.h"/>
       <File RelativePath="..\..\include\common\snippets\ConvexDecomposition.cpp"/>
       <File RelativePath="..\..\include\common\snippets\ConvexDecomposition.h"/>
       <File RelativePath="..\..\include\common\snippets\cparser.cpp"/>
       <File RelativePath="..\..\include\common\snippets\cparser.h"/>
-      <File RelativePath="..\..\include\common\snippets\crc.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\crc.h"/>
-      <File RelativePath="..\..\include\common\snippets\creg.c"/>
-      <File RelativePath="..\..\include\common\snippets\creg.h"/>
-      <File RelativePath="..\..\include\common\snippets\cycle.h"/>
       <File RelativePath="..\..\include\common\snippets\erode.cpp"/>
       <File RelativePath="..\..\include\common\snippets\erode.h"/>
-      <File RelativePath="..\..\include\common\snippets\ffind.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\ffind.h"/>
       <File RelativePath="..\..\include\common\snippets\filesystem.cpp"/>
       <File RelativePath="..\..\include\common\snippets\filesystem.h"/>
       <File RelativePath="..\..\include\common\snippets\FloatMath.cpp"/>
       <File RelativePath="..\..\include\common\snippets\FloatMath.h"/>
-      <File RelativePath="..\..\include\common\snippets\fmem.h"/>
-      <File RelativePath="..\..\include\common\snippets\frustum.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\frustum.h"/>
+      <File RelativePath="..\..\include\common\snippets\gauss.cpp"/>
       <File RelativePath="..\..\include\common\snippets\gauss.cpp"/>
       <File RelativePath="..\..\include\common\snippets\gauss.h"/>
-      <File RelativePath="..\..\include\common\snippets\gestalt.c"/>
-      <File RelativePath="..\..\include\common\snippets\gestalt.h"/>
-      <File RelativePath="..\..\include\common\snippets\HashFunction.h"/>
-      <File RelativePath="..\..\include\common\snippets\HashSet.h"/>
-      <File RelativePath="..\..\include\common\snippets\He.h"/>
-      <File RelativePath="..\..\include\common\snippets\HeAstar.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\HeAstar.h"/>
-      <File RelativePath="..\..\include\common\snippets\HeSimpleTypes.h"/>
+      <File RelativePath="..\..\include\common\snippets\gauss.h"/>
       <File RelativePath="..\..\include\common\snippets\HexMem.cpp"/>
       <File RelativePath="..\..\include\common\snippets\HexMem.h"/>
       <File RelativePath="..\..\include\common\snippets\htmltable.cpp"/>
@@ -520,82 +498,37 @@ SccProvider="MSCCI:Perforce SCM"
       <File RelativePath="..\..\include\common\snippets\ImportHeightMap.h"/>
       <File RelativePath="..\..\include\common\snippets\inparser.cpp"/>
       <File RelativePath="..\..\include\common\snippets\inparser.h"/>
-      <File RelativePath="..\..\include\common\snippets\JobSwarm.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\JobSwarm.h"/>
-      <File RelativePath="..\..\include\common\snippets\KdTree.h"/>
       <File RelativePath="..\..\include\common\snippets\keyvalue.cpp"/>
       <File RelativePath="..\..\include\common\snippets\keyvalue.h"/>
       <File RelativePath="..\..\include\common\snippets\KeyValueIni.cpp"/>
       <File RelativePath="..\..\include\common\snippets\KeyValueIni.h"/>
       <File RelativePath="..\..\include\common\snippets\KeyValueSpec.cpp"/>
       <File RelativePath="..\..\include\common\snippets\KeyValueSpec.h"/>
-      <File RelativePath="..\..\include\common\snippets\LockFreeQ.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\LockFreeQ.h"/>
       <File RelativePath="..\..\include\common\snippets\log.cpp"/>
       <File RelativePath="..\..\include\common\snippets\log.h"/>
-      <File RelativePath="..\..\include\common\snippets\memory.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\memory.h"/>
-      <File RelativePath="..\..\include\common\snippets\MemoryGuard.h"/>
-      <File RelativePath="..\..\include\common\snippets\MemoryModule.c"/>
-      <File RelativePath="..\..\include\common\snippets\MemoryModule.h"/>
-      <File RelativePath="..\..\include\common\snippets\MergedPath.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\MergedPath.h"/>
-      <File RelativePath="..\..\include\common\snippets\MeshCleanup.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\MeshCleanup.h"/>
       <File RelativePath="..\..\include\common\snippets\MeshIslandGeneration.cpp"/>
       <File RelativePath="..\..\include\common\snippets\MeshIslandGeneration.h"/>
-      <File RelativePath="..\..\include\common\snippets\MyMessageBox.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\MyMessageBox.h"/>
       <File RelativePath="..\..\include\common\snippets\OpenClosedMesh.cpp"/>
       <File RelativePath="..\..\include\common\snippets\OpenClosedMesh.h"/>
       <File RelativePath="..\..\include\common\snippets\perlin4.cpp"/>
       <File RelativePath="..\..\include\common\snippets\perlin4.h"/>
-      <File RelativePath="..\..\include\common\snippets\PhysXHeightfield.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\PhysXHeightfield.h"/>
-      <File RelativePath="..\..\include\common\snippets\pool.h"/>
-      <File RelativePath="..\..\include\common\snippets\qsortp.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\qsortp.h"/>
-      <File RelativePath="..\..\include\common\snippets\radixsort.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\radixsort.h"/>
       <File RelativePath="..\..\include\common\snippets\rand.cpp"/>
       <File RelativePath="..\..\include\common\snippets\rand.h"/>
-      <File RelativePath="..\..\include\common\snippets\regexp.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\regexp.h"/>
       <File RelativePath="..\..\include\common\snippets\RemoveTjunctions.cpp"/>
       <File RelativePath="..\..\include\common\snippets\RemoveTjunctions.h"/>
-      <File RelativePath="..\..\include\common\snippets\sendmail.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\sendmail.h"/>
-      <File RelativePath="..\..\include\common\snippets\SendTextMessage.h"/>
-      <File RelativePath="..\..\include\common\snippets\SimplePool.h"/>
-      <File RelativePath="..\..\include\common\snippets\simplevector.h"/>
-      <File RelativePath="..\..\include\common\snippets\SmoothPath.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\SmoothPath.h"/>
-      <File RelativePath="..\..\include\common\snippets\SortedSet.h"/>
       <File RelativePath="..\..\include\common\snippets\SplitMesh.cpp"/>
       <File RelativePath="..\..\include\common\snippets\SplitMesh.h"/>
       <File RelativePath="..\..\include\common\snippets\stable.h"/>
       <File RelativePath="..\..\include\common\snippets\StanHull.cpp"/>
       <File RelativePath="..\..\include\common\snippets\StanHull.h"/>
-      <File RelativePath="..\..\include\common\snippets\streamer.h"/>
       <File RelativePath="..\..\include\common\snippets\stringdict.cpp"/>
       <File RelativePath="..\..\include\common\snippets\stringdict.h"/>
       <File RelativePath="..\..\include\common\snippets\sutil.cpp"/>
       <File RelativePath="..\..\include\common\snippets\sutil.h"/>
-      <File RelativePath="..\..\include\common\snippets\systemcall.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\systemcall.h"/>
-      <File RelativePath="..\..\include\common\snippets\ThreadConfig.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\ThreadConfig.h"/>
       <File RelativePath="..\..\include\common\snippets\timedevent.cpp"/>
       <File RelativePath="..\..\include\common\snippets\timedevent.h"/>
-      <File RelativePath="..\..\include\common\snippets\timelog.h"/>
-      <File RelativePath="..\..\include\common\snippets\tritri.c"/>
-      <File RelativePath="..\..\include\common\snippets\tritri.h"/>
-      <File RelativePath="..\..\include\common\snippets\UserMemAlloc.h"/>
-      <File RelativePath="..\..\include\common\snippets\viewtest.h"/>
       <File RelativePath="..\..\include\common\snippets\wavefront.cpp"/>
       <File RelativePath="..\..\include\common\snippets\wavefront.h"/>
-      <File RelativePath="..\..\include\common\snippets\wildcard.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\wildcard.h"/>
       <File RelativePath="..\..\include\common\snippets\winmsg.cpp"/>
       <File RelativePath="..\..\include\common\snippets\winmsg.h"/>
     </Filter>
@@ -628,6 +561,10 @@ SccProvider="MSCCI:Perforce SCM"
     <Filter Name="FileInterface" Filter="">
       <File RelativePath="..\..\include\common\FileInterface\FileInterface.cpp"/>
       <File RelativePath="..\..\include\common\FileInterface\FileInterface.h"/>
+    </Filter>
+    <Filter Name="AutoGeometry" Filter="">
+      <File RelativePath="..\..\include\common\AutoGeometry\AutoGeometry.cpp"/>
+      <File RelativePath="..\..\include\common\AutoGeometry\AutoGeometry.h"/>
     </Filter>
   </Filter>
   <Filter Name="Plugin Dependencies" Filter="">

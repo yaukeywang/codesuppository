@@ -6,8 +6,10 @@
 #include "ResourceUpdate.h"
 #include "ResourceInterface.h"
 #include "../snippets/sutil.h"
+
 #include <list>
 #include <map>
+#include <string>
 
 namespace RESOURCE_INTERFACE
 {
@@ -17,10 +19,14 @@ typedef USER_STL::list< ResourceInterfaceCallback * > ResourceInterfaceList;
 class MyResourceUpdate
 {
 public:
+  MyResourceUpdate(void)
+  {
+  }
 
   bool cancel(ResourceInterfaceCallback *iface)
   {
     bool ret = false;
+
     if ( !mInterfaces.empty() )
     {
       ResourceInterfaceList::iterator i = mInterfaces.begin();
@@ -47,13 +53,29 @@ public:
 
   void add(ResourceInterfaceCallback *iface)
   {
-    mInterfaces.push_back(iface);
-  }
+    bool added = false;
 
-  void notify(const std::string &str)
-  {
     ResourceInterfaceList::iterator i;
     for (i=mInterfaces.begin(); i!=mInterfaces.end(); ++i)
+    {
+      ResourceInterfaceCallback *c = (*i);
+      if ( c ) 
+      {
+        added = true;
+        break;
+      }
+    }
+    if ( !added )
+    {
+      mInterfaces.push_back(iface);
+    }
+  }
+
+  void notify(const USER_STL::string &str)
+  {
+    ResourceInterfaceList temp = mInterfaces;
+    ResourceInterfaceList::iterator i;
+    for (i=temp.begin(); i!=temp.end(); ++i)
     {
       (*i)->notifyResourceChanged(str.c_str());
     }
@@ -63,7 +85,8 @@ public:
 };
 
 
-typedef USER_STL::map< std::string, MyResourceUpdate > ResourceUpdateMap;
+
+typedef USER_STL::map< USER_STL::string, MyResourceUpdate > ResourceUpdateMap;
 
 class ResourceUpdateSystem
 {
@@ -76,12 +99,11 @@ public:
   {
   }
 
-
   void registerUpdate(const char *_fqn,ResourceInterfaceCallback *iface)
   {
     char fqn[512];
     normalizeFQN(_fqn,fqn);
-    std::string str = fqn;
+    USER_STL::string str = fqn;
     ResourceUpdateMap::iterator found = mResources.find(str);
     if ( found != mResources.end() )
     {
@@ -130,7 +152,7 @@ public:
   {
     char fqn[512];
     normalizeFQN(_fqn,fqn);
-    std::string str = fqn;
+    USER_STL::string str = fqn;
     ResourceUpdateMap::iterator found = mResources.find(str);
     if ( found != mResources.end() )
     {
@@ -142,23 +164,33 @@ private:
   ResourceUpdateMap mResources;
 };
 
-static ResourceUpdateSystem gUpdateSystem;
+static ResourceUpdateSystem *gUpdateSystem=0;
+
+static void init(void)
+{
+  if ( gUpdateSystem == 0 )
+  {
+    gUpdateSystem = MEMALLOC_NEW(ResourceUpdateSystem);
+  }
+}
 
 void registerResourceUpdate(const char *fqn,ResourceInterfaceCallback *iface)
 {
-  gUpdateSystem.registerUpdate(fqn,iface);
+  init();
+  gUpdateSystem->registerUpdate(fqn,iface);
 }
 
 void registerResourceCancel(RESOURCE_INTERFACE::ResourceInterfaceCallback *iface)
 {
-  gUpdateSystem.cancel(iface);
+  init();
+  gUpdateSystem->cancel(iface);
 }
 
 void processResourceUpdate(const char *fqn)
 {
-  gUpdateSystem.process(fqn);
+  init();
+  gUpdateSystem->process(fqn);
 }
-
 
 };
 

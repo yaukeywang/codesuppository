@@ -112,6 +112,15 @@ const float FM_RAD_TO_DEG = (360.0f / (2.0f * FM_PI));
 FM_Axis fm_getDominantAxis(const float normal[3]);
 FM_Axis fm_getDominantAxis(const double normal[3]);
 
+void fm_decomposeTransform(const float local_transform[16],float trans[3],float rot[4],float scale[3]);
+void fm_decomposeTransform(const double local_transform[16],double trans[3],double rot[4],double scale[3]);
+
+void  fm_multiplyTransform(const float *pA,const float *pB,float *pM);
+void  fm_multiplyTransform(const double *pA,const double *pB,double *pM);
+
+void  fm_inverseTransform(const float matrix[16],float inverse_matrix[16]);
+void  fm_inverseTransform(const double matrix[16],double inverse_matrix[16]);
+
 void  fm_identity(float matrix[16]); // set 4x4 matrix to identity.
 void  fm_identity(double matrix[16]); // set 4x4 matrix to identity.
 
@@ -120,6 +129,12 @@ void  fm_inverseRT(const double matrix[16],const double pos[3],double t[3]); // 
 
 void  fm_transform(const float matrix[16], const float pos[3], float t[3]); // rotate and translate this point.
 void  fm_transform(const double matrix[16],const double pos[3],double t[3]); // rotate and translate this point.
+
+float  fm_getDeterminant(const float matrix[16]);
+double fm_getDeterminant(const double matrix[16]);
+
+void fm_getSubMatrix(int ki,int kj,float pDst[16],const float matrix[16]);
+void fm_getSubMatrix(int ki,int kj,double pDst[16],const float matrix[16]);
 
 void  fm_rotate(const float matrix[16],const float pos[3],float t[3]); // only rotate the point by a 4x4 matrix, don't translate.
 void  fm_rotate(const double matri[16],const double pos[3],double t[3]); // only rotate the point by a 4x4 matrix, don't translate.

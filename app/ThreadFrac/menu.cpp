@@ -25,8 +25,6 @@
 #include "common/MemoryServices/MemoryReport.h"
 #include "common/snippets/MyMessageBox.h"
 
-SendTextMessage *gSendTextMessage=0;
-
 extern Tfrac *gTfrac;
 
 bool gView3d=false;
@@ -318,9 +316,6 @@ public:
           MemoryReport summary;
           MemoryReport mr;
           report(mr,summary,"ThreadFrac",0);
-          report(mr,summary,"Pd3d",gPd3d);
-          report(mr,summary,"RenderDebug",gRenderDebug);
-
           summary.echoText(this,HTML_TABLE::HST_TEXT);
           SEND_TEXT_MESSAGE(0,"Saving detailed memory report to 'memory_report.txt'\r\n");
           mr.saveFile("memory_report.txt",HTML_TABLE::HST_TEXT);

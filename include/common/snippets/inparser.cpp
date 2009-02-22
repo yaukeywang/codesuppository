@@ -153,8 +153,6 @@ InPlaceParser::~InPlaceParser(void)
 	}
 }
 
-#define MAXARGS 512
-
 //==================================================================================
 bool InPlaceParser::IsHard(char c)
 {
@@ -376,7 +374,6 @@ const char ** InPlaceParser::GetArglist(char *line,HeI32 &count)
 {
 	const char **ret = 0;
 
-	static const char *argv[MAXARGS];
 	HeI32 argc = 0;
 
 	char *foo = line;

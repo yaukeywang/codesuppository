@@ -222,6 +222,14 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<File
+				RelativePath="..\..\include\common\MemoryServices\ApplicationSystemServices.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\common\MemoryServices\ApplicationSystemServices.h"
+				>
+			</File>
+			<File
 				RelativePath=".\clock.cpp"
 				>
 			</File>

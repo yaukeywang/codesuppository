@@ -23,6 +23,7 @@
 #include "common/snippets/erode.h"
 #include "common/HeMath/HeFoundation.h"
 #include "common/compression/compression.h"
+#include "shared/MeshSystem/MeshSystemHelper.h"
 
 static const HeF64 EPSILON=0.0001;
 
@@ -177,25 +178,28 @@ public:
 
   }
 
-  void importWavefront(const char *fname)
+  void setMeshSystemHelper(MeshSystemHelper *ms)
   {
     release();
-    WavefrontObj obj;
-    unsigned int tcount = obj.loadObj(fname);
-    if ( tcount > 0 )
+    if ( ms )
     {
-      mRobustMesh = SPLIT_MESH::createRobustMesh(0);
-      for (int i=0; i<obj.mTriCount; i++)
+      MeshSystemRaw *mr = ms->getMeshSystemRaw();
+      if ( mr && mr->mVcount )
       {
-        int i1 = obj.mIndices[i*3+0];
-        int i2 = obj.mIndices[i*3+1];
-        int i3 = obj.mIndices[i*3+2];
-        const float *p1 = &obj.mVertices[i1*3];
-        const float *p2 = &obj.mVertices[i2*3];
-        const float *p3 = &obj.mVertices[i3*3];
-        mRobustMesh->addTriangle(p1,p2,p3,0);
+        mRobustMesh = SPLIT_MESH::createRobustMesh(0);
+        for (unsigned int i=0; i<mr->mTcount; i++)
+        {
+          int i1 = mr->mIndices[i*3+0];
+          int i2 = mr->mIndices[i*3+1];
+          int i3 = mr->mIndices[i*3+2];
+          const float *p1 = &mr->mVertices[i1*3];
+          const float *p2 = &mr->mVertices[i2*3];
+          const float *p3 = &mr->mVertices[i3*3];
+          mRobustMesh->addTriangle(p1,p2,p3,0);
+        }
+        rebuild();
       }
-      rebuild();
+      ms->releaseMeshSystemRaw(mr);
     }
   }
 
@@ -2887,9 +2891,9 @@ private:
 static SplitMeshApp gApp;
 
 
-void appImportWavefront(const char *fname)
+void appSetMeshSystemHelper(MeshSystemHelper *ms)
 {
-  gApp.importWavefront(fname);
+  gApp.setMeshSystemHelper(ms);
 }
 
 void appRender(void)

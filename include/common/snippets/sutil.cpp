@@ -298,22 +298,22 @@ HeI32          GetIntValue(const char *str,const char **next)
 }
 
 
-bool CharToWide(const char *source,void *dest,HeI32 maxlen)
+bool CharToWide(const char *source,wchar_t *dest,HeI32 maxlen)
 {
 	bool ret = false;
 
 	ret = true;
-	mbstowcs( (wchar_t *) dest, source, maxlen );
+	mbstowcs(dest, source, maxlen );
 
 	return ret;
 }
 
-bool WideToChar(const void *source,char *dest,HeI32 maxlen)
+bool WideToChar(const wchar_t *source,char *dest,HeI32 maxlen)
 {
 	bool ret = false;
 
 	ret = true;
-	wcstombs(dest, (const wchar_t *) source, maxlen );
+	wcstombs(dest, source, maxlen );
 
 	return ret;
 }
@@ -800,3 +800,30 @@ void  normalizeFQN(const char *source,char *dest)
 
 
 
+bool           endsWith(const char *str,const char *ends,bool caseSensitive)
+{
+  bool ret = false;
+
+  int l1 = strlen(str);
+  int l2 = strlen(ends);
+  if ( l1 >= l2 )
+  {
+    int diff = l1-l2;
+    const char *echeck = &str[diff];
+    if ( caseSensitive )
+    {
+      if ( strcmp(echeck,ends) == 0 )
+      {
+        ret = true;
+      }
+    }
+    else
+    {
+      if ( stricmp(echeck,ends) == 0 )
+      {
+        ret = true;
+      }
+    }
+  }
+  return ret;
+}

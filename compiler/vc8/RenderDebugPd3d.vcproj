@@ -181,27 +181,135 @@
 				Name="snippets"
 				>
 				<File
-					RelativePath="..\..\src\common\snippets\matrix.cpp"
+					RelativePath="..\..\include\common\snippets\FloatMath.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\common\snippets\matrix.h"
+					RelativePath="..\..\include\common\snippets\FloatMath.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\common\snippets\quat.cpp"
+					RelativePath="..\..\include\common\snippets\FloatMath.inl"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\common\snippets\quat.h"
+					RelativePath="..\..\include\common\snippets\SystemServices.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\common\snippets\vector.cpp"
+					RelativePath="..\..\include\common\snippets\SystemServices.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="HeMath"
+				>
+				<File
+					RelativePath="..\..\include\common\HeMath\HeBitField.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\common\snippets\vector.h"
+					RelativePath="..\..\include\common\HeMath\HeBounds3.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\HeMath\HeBox.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\HeMath\HeCapsule.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\HeMath\Hef.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\HeMath\HeFoundation.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\HeMath\HeI16Vec3.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\HeMath\HeMat44.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\HeMath\HeMath.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\HeMath\HePlane.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\HeMath\HeQuat.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\HeMath\HeRay.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\HeMath\HeSegment.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\HeMath\HeSimpleTriangleMesh.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\HeMath\HeSphere.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\HeMath\HeStream.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\HeMath\HeStreaming.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\HeMath\HeStreaming.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\HeMath\HeTri.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\HeMath\HeUtilities.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\HeMath\HeVec3.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\HeMath\HeVec4.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\HeMath\HeVolumeIntegration.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="MemoryServices"
+				>
+				<File
+					RelativePath="..\..\include\common\MemoryServices\GlobalNewDelete.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\MemoryServices\MemoryContainer.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\MemoryServices\MemoryContainer.h"
 					>
 				</File>
 			</Filter>
@@ -227,94 +335,6 @@
 			</File>
 			<File
 				RelativePath="..\..\include\RenderDebug\StreamRenderDebug.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="MemoryServices"
-			>
-			<File
-				RelativePath="..\..\include\common\MemoryServices\dlmalloc.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\common\MemoryServices\dlmalloc.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\common\MemoryServices\GlobalNewDelete.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\common\MemoryServices\He.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\common\MemoryServices\HeSimpleTypes.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\common\MemoryServices\htmltable.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\common\MemoryServices\htmltable.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\common\MemoryServices\memalloc.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\common\MemoryServices\memalloc.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\common\MemoryServices\MemoryContainer.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\common\MemoryServices\MemoryContainer.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\common\MemoryServices\memoryreport.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\common\MemoryServices\MemoryServices.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\common\MemoryServices\SendTextMessage.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\common\MemoryServices\simplevector.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\common\MemoryServices\simuhash_linux.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\common\MemoryServices\streamer.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="snippets"
-			>
-			<File
-				RelativePath="..\..\include\common\snippets\FloatMath.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\common\snippets\FloatMath.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\common\snippets\FloatMath.inl"
 				>
 			</File>
 		</Filter>

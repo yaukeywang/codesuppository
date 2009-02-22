@@ -5,6 +5,7 @@
 #include <assert.h>
 #pragma warning(disable:4702)
 #include <vector>
+#include <hash_map>
 
 #define TESSELATE_SIZE 0.2
 #define NOISE_SIZE 0.2
@@ -296,7 +297,7 @@ public:
 typedef USER_STL::vector< Edge > EdgeVector;
 typedef USER_STL::vector< Edge *> EdgePtrVector;
 
-typedef USER_STL::hash_map<size_t, Edge *> EdgeIndexMap;
+typedef USER_STL_EXT::hash_map<size_t, Edge *> EdgeIndexMap;
 typedef USER_STL::vector< size_t > SizeTVector;
 typedef USER_STL::vector< int > intVector;
 

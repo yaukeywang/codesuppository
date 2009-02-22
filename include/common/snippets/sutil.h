@@ -72,8 +72,8 @@ const char *   SkipWhitespace(const char *str);
 bool           IsWhitespace(char c);
 const char *   FloatString(HeF32 v,bool binary=false);
 const char *   GetTrueFalse(HeU32 state);
-bool           CharToWide(const char *source,void *dest,HeI32 maxlen);
-bool           WideToChar(const void *source,char *dest,HeI32 maxlen);
+bool           CharToWide(const char *source,wchar_t *dest,HeI32 maxlen);
+bool           WideToChar(const wchar_t *source,char *dest,HeI32 maxlen);
 const char **  GetArgs(char *str,HeI32 &count); // destructable parser, stomps EOS markers on the input string!
 HeI32            GetUserArgs(const char *us,const char *key,const char **args);
 bool           GetUserSetting(const char *us,const char *key,HeI32 &v);
@@ -94,6 +94,7 @@ bool           needsQuote(const char *str); // if this string needs quotes aroun
 #define MAX_FQN 512 // maximum size of an FQN string
 void           normalizeFQN(const wchar_t *source,wchar_t *dest);
 void           normalizeFQN(const char *source,char *dest);
+bool           endsWith(const char *str,const char *ends,bool caseSensitive);
 
 
 #endif

@@ -60,7 +60,15 @@
 #define stricmp strcasecmp
 #endif
 
-const char ** getKeyValues(const char *userProperties,HeU32 &count);
-const char *  getKeyValue(const char *userProperties,const char *key,bool caseSensitive=false);  //
+class KeyValue
+{
+public:
+  const char ** getKeyValues(const char *userProperties,HeU32 &count);
+  const char *  getKeyValue(const char *userProperties,const char *key,bool caseSensitive=false);  //
+private:
+  char *keyValue[MAXKEYVALUE*2];
+  char  keyBuffer[MAXKEYVALUEBUFFER];
+};
+
 
 #endif

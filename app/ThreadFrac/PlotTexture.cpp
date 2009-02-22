@@ -3,6 +3,7 @@
 #include <string.h>
 #include <assert.h>
 
+#include "common/snippets/UserMemAlloc.h"
 #include "PlotTexture.h"
 #include "Pd3d/pd3d.h"
 

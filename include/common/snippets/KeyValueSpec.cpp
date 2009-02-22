@@ -713,7 +713,8 @@ public:
     if ( data )
     {
       HeU32 count;
-      const char **kv = getKeyValues(data,count);
+      KeyValue k;
+      const char **kv = k.getKeyValues(data,count);
       for (HeU32 i=0; i<count; i++)
       {
         const char *key   = kv[0];

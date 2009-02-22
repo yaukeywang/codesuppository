@@ -77,8 +77,6 @@ class ExternalEffectInterface;
 class ExternalMaterialSpec;
 
 
-#include "common/MemoryServices/MemoryServices.h"
-
 namespace PD3D
 {
 
@@ -279,7 +277,7 @@ public:
 };
 
 
-class Pd3d : public MemoryServices
+class Pd3d 
 {
 public:
 
@@ -358,7 +356,7 @@ public:
 
 }; // end of namespace
 
-#define PD3D_VERSION (6+MEMORY_SERVICES_VERSION)  // version 0.01
+#define PD3D_VERSION 6  // version 0.01
 
 extern PD3D::Pd3d *gPd3d;
 

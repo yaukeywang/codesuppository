@@ -84,6 +84,109 @@ void fm_inverseRT(const REAL matrix[16],const REAL pos[3],REAL t[3]) // inverse 
 
 }
 
+REAL fm_getDeterminant(const REAL matrix[16])
+{
+  REAL tempv[3];
+  REAL p0[3];
+  REAL p1[3];
+  REAL p2[3];
+
+
+	p0[0] = matrix[0*4+0];
+	p0[1] = matrix[0*4+1];
+	p0[2] = matrix[0*4+2];
+
+	p1[0] = matrix[1*4+0];
+	p1[1] = matrix[1*4+1];
+	p1[2] = matrix[1*4+2];
+
+	p2[0] = matrix[2*4+0];
+	p2[1] = matrix[2*4+1];
+	p2[2] = matrix[2*4+2];
+
+  fm_cross(tempv,p1,p2);
+
+  return fm_dot(p0,tempv);
+
+}
+
+REAL fm_squared(REAL x) { return x*x; };
+
+void fm_decomposeTransform(const REAL local_transform[16],REAL trans[3],REAL rot[4],REAL scale[3])
+{
+
+  trans[0] = local_transform[12];
+  trans[1] = local_transform[13];
+  trans[2] = local_transform[14];
+
+  scale[0] = sqrt(fm_squared(local_transform[0*4+0]) + fm_squared(local_transform[0*4+1]) + fm_squared(local_transform[0*4+2]));
+  scale[1] = sqrt(fm_squared(local_transform[1*4+0]) + fm_squared(local_transform[1*4+1]) + fm_squared(local_transform[1*4+2]));
+  scale[2] = sqrt(fm_squared(local_transform[2*4+0]) + fm_squared(local_transform[2*4+1]) + fm_squared(local_transform[2*4+2]));
+
+  REAL m[16];
+  memcpy(m,local_transform,sizeof(REAL)*16);
+
+  REAL sx = 1.0f / scale[0];
+  REAL sy = 1.0f / scale[1];
+  REAL sz = 1.0f / scale[2];
+
+  m[0*4+0]*=sx;
+  m[0*4+1]*=sx;
+  m[0*4+2]*=sx;
+
+  m[1*4+0]*=sy;
+  m[1*4+1]*=sy;
+  m[1*4+2]*=sy;
+
+  m[2*4+0]*=sz;
+  m[2*4+1]*=sz;
+  m[2*4+2]*=sz;
+
+  fm_matrixToQuat(m,rot);
+
+}
+
+void fm_getSubMatrix(int ki,int kj,REAL pDst[16],const REAL matrix[16])
+{
+	int row, col;
+	int dstCol = 0, dstRow = 0;
+
+	for ( col = 0; col < 4; col++ )
+	{
+		if ( col == kj )
+		{
+			continue;
+		}
+		for ( dstRow = 0, row = 0; row < 4; row++ )
+		{
+			if ( row == ki )
+			{
+				continue;
+			}
+			pDst[dstCol*4+dstRow] = matrix[col*4+row];
+			dstRow++;
+		}
+		dstCol++;
+	}
+}
+
+void  fm_inverseTransform(const REAL matrix[16],REAL inverse_matrix[16])
+{
+	REAL determinant = fm_getDeterminant(matrix);
+	determinant = 1.0f / determinant;
+	for (int i = 0; i < 4; i++ )
+	{
+		for (int j = 0; j < 4; j++ )
+		{
+			int sign = 1 - ( ( i + j ) % 2 ) * 2;
+			REAL subMat[16];
+      fm_identity(subMat);
+			fm_getSubMatrix( i, j, subMat, matrix );
+			REAL subDeterminant = fm_getDeterminant(subMat);
+			inverse_matrix[i*4+j] = ( subDeterminant * sign ) * determinant;
+		}
+	}
+}
 
 void fm_identity(REAL matrix[16]) // set 4x4 matrix to identity.
 {
@@ -4567,6 +4670,39 @@ void fm_subtract(const REAL *A,const REAL *B,REAL *diff) // compute A-B and stor
   diff[0] = A[0]-B[0];
   diff[1] = A[1]-B[1];
   diff[2] = A[2]-B[2];
+}
+
+
+void  fm_multiplyTransform(const REAL *pA,const REAL *pB,REAL *pM)
+{
+
+  REAL a = pA[0*4+0] * pB[0*4+0] + pA[0*4+1] * pB[1*4+0] + pA[0*4+2] * pB[2*4+0] + pA[0*4+3] * pB[3*4+0];
+  REAL b = pA[0*4+0] * pB[0*4+1] + pA[0*4+1] * pB[1*4+1] + pA[0*4+2] * pB[2*4+1] + pA[0*4+3] * pB[3*4+1];
+  REAL c = pA[0*4+0] * pB[0*4+2] + pA[0*4+1] * pB[1*4+2] + pA[0*4+2] * pB[2*4+2] + pA[0*4+3] * pB[3*4+2];
+  REAL d = pA[0*4+0] * pB[0*4+3] + pA[0*4+1] * pB[1*4+3] + pA[0*4+2] * pB[2*4+3] + pA[0*4+3] * pB[3*4+3];
+
+  REAL e = pA[1*4+0] * pB[0*4+0] + pA[1*4+1] * pB[1*4+0] + pA[1*4+2] * pB[2*4+0] + pA[1*4+3] * pB[3*4+0];
+  REAL f = pA[1*4+0] * pB[0*4+1] + pA[1*4+1] * pB[1*4+1] + pA[1*4+2] * pB[2*4+1] + pA[1*4+3] * pB[3*4+1];
+  REAL g = pA[1*4+0] * pB[0*4+2] + pA[1*4+1] * pB[1*4+2] + pA[1*4+2] * pB[2*4+2] + pA[1*4+3] * pB[3*4+2];
+  REAL h = pA[1*4+0] * pB[0*4+3] + pA[1*4+1] * pB[1*4+3] + pA[1*4+2] * pB[2*4+3] + pA[1*4+3] * pB[3*4+3];
+
+  REAL i = pA[2*4+0] * pB[0*4+0] + pA[2*4+1] * pB[1*4+0] + pA[2*4+2] * pB[2*4+0] + pA[2*4+3] * pB[3*4+0];
+  REAL j = pA[2*4+0] * pB[0*4+1] + pA[2*4+1] * pB[1*4+1] + pA[2*4+2] * pB[2*4+1] + pA[2*4+3] * pB[3*4+1];
+  REAL k = pA[2*4+0] * pB[0*4+2] + pA[2*4+1] * pB[1*4+2] + pA[2*4+2] * pB[2*4+2] + pA[2*4+3] * pB[3*4+2];
+  REAL l = pA[2*4+0] * pB[0*4+3] + pA[2*4+1] * pB[1*4+3] + pA[2*4+2] * pB[2*4+3] + pA[2*4+3] * pB[3*4+3];
+
+  REAL m = pA[3*4+0] * pB[0*4+0] + pA[3*4+1] * pB[1*4+0] + pA[3*4+2] * pB[2*4+0] + pA[3*4+3] * pB[3*4+0];
+  REAL n = pA[3*4+0] * pB[0*4+1] + pA[3*4+1] * pB[1*4+1] + pA[3*4+2] * pB[2*4+1] + pA[3*4+3] * pB[3*4+1];
+  REAL o = pA[3*4+0] * pB[0*4+2] + pA[3*4+1] * pB[1*4+2] + pA[3*4+2] * pB[2*4+2] + pA[3*4+3] * pB[3*4+2];
+  REAL p = pA[3*4+0] * pB[0*4+3] + pA[3*4+1] * pB[1*4+3] + pA[3*4+2] * pB[2*4+3] + pA[3*4+3] * pB[3*4+3];
+
+  pM[0] = a;  pM[1] = b;  pM[2] = c;  pM[3] = d;
+
+  pM[4] = e;  pM[5] = f;  pM[6] = g;  pM[7] = h;
+
+  pM[8] = i;  pM[9] = j;  pM[10] = k;  pM[11] = l;
+
+  pM[12] = m;  pM[13] = n;  pM[14] = o;  pM[15] = p;
 }
 
 void fm_multiply(REAL *A,REAL scaler)

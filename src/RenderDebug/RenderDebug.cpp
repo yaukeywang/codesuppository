@@ -79,7 +79,6 @@ using namespace HETEXTUREMANAGER;
 
 #ifndef PLUGINS_EMBEDDED
 SendTextMessage *gSendTextMessage=0;
-JOB_SWARM::JobSwarmContext *gJobSwarmContext=0;
 #endif
 
 bool doShutdown(void);
@@ -1546,21 +1545,6 @@ public:
     mRenderScale = scale;
   }
 
-  HeU32 executeCommand(SendTextMessage *tmessage,const char *cmd )
-  {
-    HeU32 ret  = 0;
-
-    gSendTextMessage = tmessage;
-
-    if ( stricmp(cmd,"ClcMemoryReport") == 0 )
-    {
-      MEMALLOC_REPORT("RenderDebug", tmessage, true );
-    }
-    
-    return ret;
-  }
-
-
   void debugPlane(const float *plane,float radius1,float radius2,unsigned int color,float duration,bool useZ,bool spokes)
   {
 
@@ -1632,21 +1616,6 @@ public:
     debugPlane(plane,radius1*0.5f,  radius2*0.5f,  color,duration,useZ,false);
     debugPlane(plane,radius1*0.75f, radius2*0.75f, color,duration,useZ,false);
     debugPlane(plane,radius1*1.0f,  radius2*1.0f,  color,duration,useZ,true);
-  }
-
-  HeU32 getHeapSize(HeU32 &unused)
-  {
-    return MEMALLOC_GET_HEAP_SIZE(unused);
-  }
-
-  void frameBegin(SendTextMessage *stm)
-  {
-    MEMALLOC_FRAME_BEGIN(stm);
-  }
-
-  void frameEnd(SendTextMessage *stm,const char *header)
-  {
-    MEMALLOC_FRAME_END(stm,header);
   }
 
 #pragma warning( disable : 4100 )
@@ -2193,7 +2162,7 @@ class RenderDebug;
 
 extern "C"
 {
-RENDER_DEBUG_API RenderDebug * getInterface(HeI32 version_number);
+RENDER_DEBUG_API RenderDebug * getInterface(HeI32 version_number,SYSTEM_SERVICES::SystemServices *services);
 };
 
 
@@ -2209,11 +2178,18 @@ using namespace RENDER_DEBUG;
 extern "C"
 {
 #ifdef PLUGINS_EMBEDDED
-RenderDebug * getInterfaceRenderDebug(HeI32 version_number)
+  RenderDebug * getInterfaceRenderDebug(HeI32 version_number,SYSTEM_SERVICES::SystemServices *services)
 #else
-RENDER_DEBUG_API RenderDebug * getInterface(HeI32 version_number)
+  RENDER_DEBUG_API RenderDebug * getInterface(HeI32 version_number,SYSTEM_SERVICES::SystemServices *services)
 #endif
 {
+
+  if ( services )
+  {
+    SYSTEM_SERVICES::gSystemServices = services;
+  }
+
+
   RenderDebug *ret = 0;
   assert( gInterface == 0 );
   if ( gInterface == 0 && version_number == RENDER_DEBUG_VERSION )

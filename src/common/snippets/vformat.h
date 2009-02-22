@@ -261,7 +261,11 @@ private:
 template <class Type> class VertexPool
 {
 public:
+#if HE_USE_MEMORY_TRACKING
   typedef USER_STL::set<HeI32, USER_STL::GlobalMemoryPool, VertexLess<Type> > VertexSet;
+#else
+  typedef USER_STL::set<HeI32, VertexLess<Type> > VertexSet;
+#endif
 	typedef USER_STL::vector< Type > VertexVector;
 
 	HeI32 GetVertex(const Type& vtx)

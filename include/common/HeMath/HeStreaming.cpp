@@ -6,12 +6,12 @@
 #pragma warning(disable:4189)
 #pragma warning(disable:4996)
 
-UserStream::UserStream(const char	*filename, bool	load): fp(NULL)
+HeUserStream::HeUserStream(const char	*filename, bool	load): fp(NULL)
 {
 	fp = fopen(filename, load	?	"rb" : "wb");
 }
 
-UserStream::~UserStream()
+HeUserStream::~HeUserStream()
 {
 	if (fp)
 	{
@@ -20,7 +20,7 @@ UserStream::~UserStream()
 }
 
 // Loading API
-HeU8 UserStream::readByte()const
+HeU8 HeUserStream::readByte()const
 {
 	HeU8 b;
 	size_t r = fread(&b, sizeof(HeU8), 1,	fp);
@@ -28,7 +28,7 @@ HeU8 UserStream::readByte()const
 	return b;
 }
 
-HeU16	UserStream::readWord()const
+HeU16	HeUserStream::readWord()const
 {
 	HeU16	w;
 	size_t r = fread(&w, sizeof(HeU16),	1, fp);
@@ -36,7 +36,7 @@ HeU16	UserStream::readWord()const
 	return w;
 }
 
-HeU32	UserStream::readDword()const
+HeU32	HeUserStream::readDword()const
 {
 	HeU32	d;
 	size_t r = fread(&d, sizeof(HeU32),	1, fp);
@@ -44,7 +44,7 @@ HeU32	UserStream::readDword()const
 	return d;
 }
 
-HeF32	UserStream::readFloat()const
+HeF32	HeUserStream::readFloat()const
 {
 	HeF32 f;
 	size_t r = fread(&f, sizeof(HeF32), 1,	fp);
@@ -52,7 +52,7 @@ HeF32	UserStream::readFloat()const
 	return f;
 }
 
-HeF64 UserStream::readDouble()const
+HeF64 HeUserStream::readDouble()const
 {
 	HeF64	f;
 	size_t r = fread(&f, sizeof(HeF64),	1, fp);
@@ -60,49 +60,49 @@ HeF64 UserStream::readDouble()const
 	return f;
 }
 
-void UserStream::readBuffer(void *buffer,	HeU32	size)const
+void HeUserStream::readBuffer(void *buffer,	HeU32	size)const
 {
 	size_t w = fread(buffer, size, 1,	fp);
 	HE_ASSERT(w);
 }
 
 // Saving	API
-HeStream &UserStream::storeByte(HeU8 b)
+HeStream &HeUserStream::storeByte(HeU8 b)
 {
 	size_t w = fwrite(&b,	sizeof(HeU8),	1, fp);
 	HE_ASSERT(w);
 	return	*this;
 }
 
-HeStream &UserStream::storeWord(HeU16	w)
+HeStream &HeUserStream::storeWord(HeU16	w)
 {
 	size_t ww	=	fwrite(&w, sizeof(HeU16),	1, fp);
 	HE_ASSERT(ww);
 	return	*this;
 }
 
-HeStream &UserStream::storeDword(HeU32 d)
+HeStream &HeUserStream::storeDword(HeU32 d)
 {
 	size_t w = fwrite(&d,	sizeof(HeU32), 1,	fp);
 	HE_ASSERT(w);
 	return	*this;
 }
 
-HeStream &UserStream::storeFloat(HeF32	f)
+HeStream &HeUserStream::storeFloat(HeF32	f)
 {
 	size_t w = fwrite(&f,	sizeof(HeF32),	1, fp);
 	HE_ASSERT(w);
 	return	*this;
 }
 
-HeStream &UserStream::storeDouble(HeF64	f)
+HeStream &HeUserStream::storeDouble(HeF64	f)
 {
 	size_t w = fwrite(&f,	sizeof(HeF64), 1,	fp);
 	HE_ASSERT(w);
 	return	*this;
 }
 
-HeStream &UserStream::storeBuffer(const	void *buffer,	HeU32	size)
+HeStream &HeUserStream::storeBuffer(const	void *buffer,	HeU32	size)
 {
 	size_t w = fwrite(buffer,	size,	1, fp);
 	HE_ASSERT(w);
@@ -112,44 +112,44 @@ HeStream &UserStream::storeBuffer(const	void *buffer,	HeU32	size)
 
 
 
-MemoryWriteBuffer::MemoryWriteBuffer():	currentSize(0),	maxSize(0),	data(NULL){}
+HeMemoryWriteBuffer::HeMemoryWriteBuffer():	currentSize(0),	maxSize(0),	data(NULL){}
 
-MemoryWriteBuffer::~MemoryWriteBuffer()
+HeMemoryWriteBuffer::~HeMemoryWriteBuffer()
 {
 	MEMALLOC_FREE(data);
 }
 
-void MemoryWriteBuffer::clear()
+void HeMemoryWriteBuffer::clear()
 {
 	currentSize	=	0;
 }
 
-HeStream &MemoryWriteBuffer::storeByte(HeU8	b)
+HeStream &HeMemoryWriteBuffer::storeByte(HeU8	b)
 {
 	storeBuffer(&b,	sizeof(HeU8));
 	return	*this;
 }
-HeStream &MemoryWriteBuffer::storeWord(HeU16 w)
+HeStream &HeMemoryWriteBuffer::storeWord(HeU16 w)
 {
 	storeBuffer(&w,	sizeof(HeU16));
 	return	*this;
 }
-HeStream &MemoryWriteBuffer::storeDword(HeU32	d)
+HeStream &HeMemoryWriteBuffer::storeDword(HeU32	d)
 {
 	storeBuffer(&d,	sizeof(HeU32));
 	return	*this;
 }
-HeStream &MemoryWriteBuffer::storeFloat(HeF32 f)
+HeStream &HeMemoryWriteBuffer::storeFloat(HeF32 f)
 {
 	storeBuffer(&f,	sizeof(HeF32));
 	return	*this;
 }
-HeStream &MemoryWriteBuffer::storeDouble(HeF64 f)
+HeStream &HeMemoryWriteBuffer::storeDouble(HeF64 f)
 {
 	storeBuffer(&f,	sizeof(HeF64));
 	return	*this;
 }
-HeStream &MemoryWriteBuffer::storeBuffer(const void	*buffer, HeU32 size)
+HeStream &HeMemoryWriteBuffer::storeBuffer(const void	*buffer, HeU32 size)
 {
 	HeU32	expectedSize = currentSize + size;
 	if (expectedSize > maxSize)
@@ -172,14 +172,14 @@ HeStream &MemoryWriteBuffer::storeBuffer(const void	*buffer, HeU32 size)
 }
 
 
-MemoryReadBuffer::MemoryReadBuffer(const HeU8	*data):	buffer(data){}
+HeMemoryReadBuffer::HeMemoryReadBuffer(const HeU8	*data):	buffer(data){}
 
-MemoryReadBuffer::~MemoryReadBuffer()
+HeMemoryReadBuffer::~HeMemoryReadBuffer()
 {
 	// We	don't	own	the	data =>	no delete
 }
 
-HeU8 MemoryReadBuffer::readByte()const
+HeU8 HeMemoryReadBuffer::readByte()const
 {
 	HeU8 b;
 	memcpy(&b, buffer, sizeof(HeU8));
@@ -187,7 +187,7 @@ HeU8 MemoryReadBuffer::readByte()const
 	return b;
 }
 
-HeU16	MemoryReadBuffer::readWord()const
+HeU16	HeMemoryReadBuffer::readWord()const
 {
 	HeU16	w;
 	memcpy(&w, buffer, sizeof(HeU16));
@@ -195,7 +195,7 @@ HeU16	MemoryReadBuffer::readWord()const
 	return w;
 }
 
-HeU32	MemoryReadBuffer::readDword()const
+HeU32	HeMemoryReadBuffer::readDword()const
 {
 	HeU32	d;
 	memcpy(&d, buffer, sizeof(HeU32));
@@ -203,7 +203,7 @@ HeU32	MemoryReadBuffer::readDword()const
 	return d;
 }
 
-HeF32	MemoryReadBuffer::readFloat()const
+HeF32	HeMemoryReadBuffer::readFloat()const
 {
 	HeF32	f;
 	memcpy(&f, buffer, sizeof(HeF32));
@@ -211,7 +211,7 @@ HeF32	MemoryReadBuffer::readFloat()const
 	return f;
 }
 
-HeF64 MemoryReadBuffer::readDouble()const
+HeF64 HeMemoryReadBuffer::readDouble()const
 {
 	HeF64 f;
 	memcpy(&f, buffer, sizeof(HeF64));
@@ -219,7 +219,7 @@ HeF64 MemoryReadBuffer::readDouble()const
 	return f;
 }
 
-void MemoryReadBuffer::readBuffer(void *dest,	HeU32	size)const
+void HeMemoryReadBuffer::readBuffer(void *dest,	HeU32	size)const
 {
 	memcpy(dest, buffer, size);
 	buffer +=	size;

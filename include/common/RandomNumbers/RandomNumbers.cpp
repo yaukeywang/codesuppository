@@ -294,6 +294,18 @@ HeI32 RandomNumbers::get_int(HeI32 hi,HeI32 lo)
   return ret;
 }
 
+HeI32 RandomNumbers::get_int_inclusive( HeI32 hi,HeI32 lo )
+{
+  init();
+  HeU32 diff = hi-lo+1;
+  HeU32 ret = irand32();
+  if ( diff > 0 )
+  {
+    ret %= diff;
+  }
+  return ret+lo;
+}
+
 HeU32 RandomNumbers::get_uint(HeU32 hi,HeU32 lo)
 {
   init();
@@ -304,6 +316,18 @@ HeU32 RandomNumbers::get_uint(HeU32 hi,HeU32 lo)
     ret = (irand32()%diff)+lo;
   }
   return ret;
+}
+
+HeU32 RandomNumbers::get_uint_inclusive( HeU32 hi,HeU32 lo )
+{
+  init();
+  HeI32 diff = hi-lo+1;
+  HeI32 ret = irand32();
+  if ( diff > 0 )
+  {
+    ret %= diff;
+  }
+  return ret+lo;
 }
 
 HeI64 RandomNumbers::get_int64(HeI64 hi,HeI64 lo)
@@ -325,6 +349,21 @@ HeI64 RandomNumbers::get_int64(HeI64 hi,HeI64 lo)
   return ret;
 }
 
+HeI64 RandomNumbers::get_int64_inclusive( HeI64 hi,HeI64 lo )
+{
+  init();
+  HeU64 ret = lo;
+  HeU32 *dest = (HeU32 *)&ret;
+  dest[0] = irand32();
+  dest[1] = irand32();
+  HeU64 diff = hi-lo+1;
+  if ( diff > 0 )
+  {
+    ret %= diff;
+  }
+  return ret+lo;
+}
+
 HeU64 RandomNumbers::get_uint64(HeU64 hi,HeU64 lo)
 {
   init();
@@ -342,6 +381,21 @@ HeU64 RandomNumbers::get_uint64(HeU64 hi,HeU64 lo)
   }
   return ret;
 
+}
+
+HeU64 RandomNumbers::get_uint64_inclusive( HeU64 hi,HeU64 lo )
+{
+  init();
+  HeU64 ret = lo;
+  HeU32 *dest = (HeU32 *)&ret;
+  dest[0] = irand32();
+  dest[1] = irand32();
+  HeU64 diff = hi-lo+1;
+  if ( diff > 0 )
+  {
+    ret %= diff;
+  }
+  return ret+lo;
 }
 
 }; // end of namespace

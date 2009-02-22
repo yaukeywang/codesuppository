@@ -1,5 +1,7 @@
 /EnvironmentTexture cubemap.dds 
 /FloatingPointResolution SMALL 
+/WireframeOverlay false 
+/RectangleSubdivision false 
 /ColorPalette default.pal 
 /RotationSpeed 0.000000 
 /ClampScale 1.000000 
@@ -11,8 +13,6 @@
 /ShowNormals false 
 /UseThreading true 
 /PreviewOnly false 
-/WireframeOverlay false 
-/RectangleSubdivision false 
 /View3d false 
-FractalCoordinates -2.20321000110562866399988115 0.403209989184699708921756153 -1.20321000110562866399988115
+FractalCoordinates -2.12403999390055993655939016 0.324039981979630981481265164 -1.12403999390055993655939016
 PsLookAt 0.000000000 1.500000000 -6.000000954  0.000000000 1.416954637 -5.003455162

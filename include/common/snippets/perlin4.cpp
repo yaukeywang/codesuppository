@@ -711,7 +711,8 @@ MyPerlin4::MyPerlin4(const char * options)
   if ( options )
   {
     HeU32 count;
-    const char **kv = getKeyValues(options,count);
+    KeyValue k;
+    const char **kv = k.getKeyValues(options,count);
 
 
     HeU32 octaves1=0,octaves2=0,octaves3=0,octaves4=0;

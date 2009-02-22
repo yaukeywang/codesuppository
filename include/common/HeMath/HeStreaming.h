@@ -5,11 +5,11 @@
 #include "../snippets/HeSimpleTypes.h"
 #include <stdio.h>
 
-class	UserStream:	public HeStream
+class	HeUserStream:	public HeStream
 {
 	 public:
-		UserStream(const char	*filename, bool	load);
-		virtual	~UserStream();
+		HeUserStream(const char	*filename, bool	load);
+		virtual	~HeUserStream();
 
 		virtual	HeU8 readByte()const;
 		virtual	HeU16	readWord()const;
@@ -28,11 +28,11 @@ class	UserStream:	public HeStream
 		FILE *fp;
 };
 
-class	MemoryWriteBuffer: public	HeStream
+class	HeMemoryWriteBuffer: public	HeStream
 {
 	 public:
-		MemoryWriteBuffer();
-		virtual	~MemoryWriteBuffer();
+		HeMemoryWriteBuffer();
+		virtual	~HeMemoryWriteBuffer();
 		void clear();
 
 		virtual	HeU8 readByte()const
@@ -77,11 +77,11 @@ class	MemoryWriteBuffer: public	HeStream
 		HeU8 *data;
 };
 
-class	MemoryReadBuffer:	public HeStream
+class	HeMemoryReadBuffer:	public HeStream
 {
 	 public:
-		MemoryReadBuffer(const HeU8	*data);
-		virtual	~MemoryReadBuffer();
+		HeMemoryReadBuffer(const HeU8	*data);
+		virtual	~HeMemoryReadBuffer();
 
 		virtual	HeU8 readByte()const;
 		virtual	HeU16	readWord()const;

@@ -34,6 +34,29 @@ enum CodeSuppositoryCommand
   CSC_SEND_MAIL,
   CSC_SEND_AIM,
   CSC_EROSION,
+  CSC_SHOW_SKELETON,
+  CSC_SHOW_MESH,
+  CSC_CLEAR_MESH,
+  CSC_SHOW_WIREFRAME,
+  CSC_PLAY_ANIMATION,
+  CSC_FLIP_WINDING,
+  CSC_EXPORT_EZM,
+  CSC_EXPORT_OBJ,
+  CSC_EXPORT_OGRE,
+  CSC_AUTO_GEOMETRY,
+  CSC_SHOW_COLLISION,
+  CSC_APEX_CLOTH,
+  CSC_ANIMATION_SPEED,
+  CSC_MERGE_PERCENTAGE,
+  CSC_CONCAVITY_PERCENTAGE,
+  CSC_FIT_OBB,
+  CSC_DEPTH,
+  CSC_VOLUME_PERCENTAGE,
+  CSC_MAX_VERTICES,
+  CSC_SKIN_WIDTH,
+  CSC_REMOVE_TJUNCTIONS,
+  CSC_INITIAL_ISLAND_GENERATION,
+  CSC_ISLAND_GENERATION,
 };
 
 class CodeSuppository
@@ -47,6 +70,14 @@ public:
 CodeSuppository * createCodeSuppository(void);
 void              releaseCodeSuppository(CodeSuppository *c);
 
+namespace CLIENT_PHYSICS
+{
+  class ApexScene;
+  class Apex;
+};
+
+extern CLIENT_PHYSICS::ApexScene *gApexScene;
+extern CLIENT_PHYSICS::Apex *gApex;
 
 extern CodeSuppository *gCodeSuppository;
 

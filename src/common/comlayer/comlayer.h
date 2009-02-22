@@ -99,14 +99,6 @@ public:
   }
 
 
-  virtual HeU32 getHeapSize(HeU32 &unused)
-  {
-    return MEMALLOC_GET_HEAP_SIZE(unused);
-  }
-
-  virtual void frameBegin(SendTextMessage *stm);
-  virtual void frameEnd(SendTextMessage *stm,const char *header);
-
 protected:
   HeU32  mClient;
   bool          mProcessed;

@@ -4,6 +4,7 @@
 #include <assert.h>
 #pragma warning(disable:4702)
 #include <vector>
+#include <hash_map>
 #include "UserMemAlloc.h"
 
 #include "RemoveTjunctions.h"
@@ -235,7 +236,7 @@ public:
 
 
 typedef USER_STL::vector< Triangle * > TriangleVector;
-typedef USER_STL::hash_map< size_t, Edge * > EdgeMap;
+typedef USER_STL_EXT::hash_map< size_t, Edge * > EdgeMap;
 
 class MyRemoveTjunctions : public RemoveTjunctions
 {

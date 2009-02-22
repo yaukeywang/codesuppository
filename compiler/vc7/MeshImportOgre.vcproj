@@ -64,7 +64,7 @@ SccProvider="MSCCI:Perforce SCM"
       PreprocessorDefinitions="WIN32;_WINDOWS;UNICODE=1;_UNICODE=1;MESHIMPORTOGRE_EXPORTS;NDEBUG;"
       WarningLevel="3"
       Optimization="4"
-      AdditionalOptions="/WX /W4 /fp:fast /O2 /MD /Zi "
+      AdditionalOptions="/Zi /WX /W4 /fp:fast /WX /MD /O2 "
       ExceptionHandling="1"
       />
     <Tool Name="VCCustomBuildTool"/>
@@ -119,28 +119,25 @@ SccProvider="MSCCI:Perforce SCM"
       <File RelativePath="..\..\include\common\TinyXML\tinyxmlerror.cpp"/>
       <File RelativePath="..\..\include\common\TinyXML\tinyxmlparser.cpp"/>
     </Filter>
-    <Filter Name="MemoryServices" Filter="">
-      <File RelativePath="..\..\include\common\MemoryServices\dlmalloc.cpp"/>
-      <File RelativePath="..\..\include\common\MemoryServices\dlmalloc.h"/>
-      <File RelativePath="..\..\include\common\MemoryServices\GlobalNewDelete.cpp"/>
-      <File RelativePath="..\..\include\common\MemoryServices\He.h"/>
-      <File RelativePath="..\..\include\common\MemoryServices\HeSimpleTypes.h"/>
-      <File RelativePath="..\..\include\common\MemoryServices\htmltable.cpp"/>
-      <File RelativePath="..\..\include\common\MemoryServices\htmltable.h"/>
-      <File RelativePath="..\..\include\common\MemoryServices\memalloc.cpp"/>
-      <File RelativePath="..\..\include\common\MemoryServices\memalloc.h"/>
-      <File RelativePath="..\..\include\common\MemoryServices\MemoryContainer.cpp"/>
-      <File RelativePath="..\..\include\common\MemoryServices\MemoryContainer.h"/>
-      <File RelativePath="..\..\include\common\MemoryServices\memoryreport.h"/>
-      <File RelativePath="..\..\include\common\MemoryServices\MemoryServices.h"/>
-      <File RelativePath="..\..\include\common\MemoryServices\SendTextMessage.h"/>
-      <File RelativePath="..\..\include\common\MemoryServices\simplevector.h"/>
-      <File RelativePath="..\..\include\common\MemoryServices\simuhash_linux.h"/>
-      <File RelativePath="..\..\include\common\MemoryServices\streamer.h"/>
-    </Filter>
     <Filter Name="FileInterface" Filter="">
       <File RelativePath="..\..\include\common\FileInterface\FileInterface.cpp"/>
       <File RelativePath="..\..\include\common\FileInterface\FileInterface.h"/>
+    </Filter>
+    <Filter Name="snippets" Filter="">
+      <File RelativePath="..\..\include\common\snippets\inparser.cpp"/>
+      <File RelativePath="..\..\include\common\snippets\inparser.h"/>
+      <File RelativePath="..\..\include\common\snippets\stable.h"/>
+      <File RelativePath="..\..\include\common\snippets\stringdict.cpp"/>
+      <File RelativePath="..\..\include\common\snippets\stringdict.h"/>
+      <File RelativePath="..\..\include\common\snippets\sutil.cpp"/>
+      <File RelativePath="..\..\include\common\snippets\sutil.h"/>
+      <File RelativePath="..\..\include\common\snippets\SystemServices.cpp"/>
+      <File RelativePath="..\..\include\common\snippets\SystemServices.h"/>
+    </Filter>
+    <Filter Name="MemoryServices" Filter="">
+      <File RelativePath="..\..\include\common\MemoryServices\GlobalNewDelete.cpp"/>
+      <File RelativePath="..\..\include\common\MemoryServices\MemoryContainer.cpp"/>
+      <File RelativePath="..\..\include\common\MemoryServices\MemoryContainer.h"/>
     </Filter>
   </Filter>
 </Files>

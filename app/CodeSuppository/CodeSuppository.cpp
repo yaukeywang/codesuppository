@@ -2,13 +2,17 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <vector>
 
 #include "common/snippets/UserMemAlloc.h"
 #include "common/snippets/fmem.h"
 #include "common/snippets/SendTextMessage.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
+#include "ClientPhysics/ClientPhysics.h"
 #include "CodeSuppository.h"
-
+#include "MeshImport/MeshImport.h"
+#include "common/HeMath/HeFoundation.h"
+#include "ApexRenderInterface.h"
 #include "TestBestFitOBB.h"
 #include "TestBestFitPlane.h"
 #include "TestStanHull.h"
@@ -39,15 +43,38 @@
 #include "TestSendMail.h"
 #include "TestSendAIM.h"
 #include "TestErosion.h"
+#include "TestAutoGeometry.h"
+#include "RenderDebug/RenderDebug.h"
+#include "SplitMeshApp.h"
 
 CodeSuppository *gCodeSuppository=0;
+CLIENT_PHYSICS::ApexScene *gApexScene=0;
+CLIENT_PHYSICS::Apex *gApex=0;
 
 class MyCodeSuppository : public CodeSuppository
 {
 public:
   MyCodeSuppository(void)
   {
+    mApexCloth = 0;
     mMeshSystemHelper = 0;
+    mShowSkeleton = true;
+    mShowMesh = true;
+    mShowWireframe = false;
+    mPlayAnimation = false;
+    mShowCollision = true;
+    mFlipWinding = false;
+    mAnimationSpeed = 4;
+    mMergePercentage = 3;
+    mConcavityPercentage = 1;
+    mFitObb = false;
+    mDepth = 1;
+    mVolumePercentage = 1;
+    mMaxVertices = 32;
+    mSkinWidth = 0;
+    mRemoveTjunctions = false;
+    mInitialIslandGeneration = false;
+    mIslandGeneration = false;
   }
 
   ~MyCodeSuppository(void)
@@ -62,12 +89,88 @@ public:
       releaseMeshSystemHelper(mMeshSystemHelper);
       mMeshSystemHelper = 0;
     }
+    appSetMeshSystemHelper(0);
   }
 
-  void processCommand(CodeSuppositoryCommand command,bool /*state*/,const float * /*data*/)
+  void processCommand(CodeSuppositoryCommand command,bool state,const float * data)
   {
     switch ( command )
     {
+      case CSC_MERGE_PERCENTAGE:
+        mMergePercentage = data[0];
+        break;
+      case CSC_CONCAVITY_PERCENTAGE:
+        mConcavityPercentage = data[0];
+        break;
+      case CSC_FIT_OBB:
+        mFitObb = state;
+        break;
+      case CSC_DEPTH:
+        mDepth = (unsigned int)data[0];
+        break;
+      case CSC_VOLUME_PERCENTAGE:
+        mVolumePercentage = data[0];
+        break;
+      case CSC_MAX_VERTICES:
+        mMaxVertices = (unsigned int )data[0];
+        break;
+      case CSC_SKIN_WIDTH:
+        mSkinWidth = data[0];
+        break;
+      case CSC_REMOVE_TJUNCTIONS:
+        mRemoveTjunctions = state;
+        break;
+      case CSC_INITIAL_ISLAND_GENERATION:
+        mInitialIslandGeneration = state;
+        break;
+      case CSC_ISLAND_GENERATION:
+        mIslandGeneration = state;
+        break;
+      case CSC_ANIMATION_SPEED:
+        if ( data )
+        {
+          mAnimationSpeed = data[0];
+        }
+        break;
+      case CSC_EXPORT_EZM:
+        if ( mMeshSystemHelper )
+        {
+          mMeshSystemHelper->exportEZM();
+        }
+        break;
+      case CSC_EXPORT_OBJ:
+        if ( mMeshSystemHelper )
+        {
+          mMeshSystemHelper->exportObj();
+        }
+        break;
+      case CSC_EXPORT_OGRE:
+        if ( mMeshSystemHelper )
+        {
+          mMeshSystemHelper->exportOgre();
+        }
+        break;
+      case CSC_FLIP_WINDING:
+        mFlipWinding = state;
+        break;
+      case CSC_PLAY_ANIMATION:
+        mPlayAnimation = state;
+        break;
+      case CSC_SHOW_COLLISION:
+        mShowCollision = state;
+        break;
+      case CSC_SHOW_WIREFRAME:
+        mShowWireframe = state;
+        break;
+      case CSC_SHOW_SKELETON:
+        mShowSkeleton = state;
+        break;
+      case CSC_SHOW_MESH:
+        mShowMesh = state;
+        break;
+      case CSC_CLEAR_MESH:
+        resetMeshSystem();
+        break;
       case CSC_SPLIT_MESH:
         testSplitMesh();
         break;
@@ -123,7 +226,17 @@ public:
         testWinMsg();
         break;
       case CSC_CONVEX_DECOMPOSITION:
-        testConvexDecomposition();
+        testConvexDecomposition(mMeshSystemHelper,
+                                mDepth,
+                                mMergePercentage,
+                                mConcavityPercentage,
+                                mVolumePercentage,
+                                mMaxVertices,
+                                mSkinWidth,
+                                mFitObb,
+                                mRemoveTjunctions,
+                                mInitialIslandGeneration,
+                                mIslandGeneration);
         break;
       case CSC_DFRAC:
         testDfrac();
@@ -150,36 +263,120 @@ public:
         testInPlaceParser();
         break;
       case CSC_STAN_HULL:
-        testStanHull();
+        testStanHull(mMeshSystemHelper);
         break;
       case CSC_BEST_FIT_PLANE:
-        testBestFitPlane();
+        testBestFitPlane(mMeshSystemHelper);
         break;
       case CSC_BEST_FIT_OBB:
-        testBestFitOBB();
+        testBestFitOBB(mMeshSystemHelper);
+        break;
+      case CSC_AUTO_GEOMETRY:
+        if ( mMeshSystemHelper )
+          testAutoGeometry(mMeshSystemHelper);
+        break;
+      case CSC_APEX_CLOTH:
+        apexCloth();
         break;
     }
   }
 
-  void render(float /*dtime*/)
+  void render(float dtime)
   {
-    if ( mMeshSystemHelper )
+    if ( mApexCloth )
     {
-      mMeshSystemHelper->debugRender();
+
+      if ( mPlayAnimation )
+      {
+        unsigned int bone_count;
+        const float *matrices = mMeshSystemHelper->getCompositeTransforms(bone_count);
+        if ( matrices )
+        {
+          mApexCloth->setCompositeTransforms(bone_count,matrices);
+
+          if ( gApexScene )
+          {
+            gApexScene->fetchResults();
+            gApexScene->simulate(1.0f/60.0f,false);
+          }
+
+          mApexCloth->render();
+          mMeshSystemHelper->debugRender(mShowMesh,mShowSkeleton,mShowWireframe,mPlayAnimation,mShowCollision,mFlipWinding);
+          mMeshSystemHelper->advanceAnimation(dtime,mAnimationSpeed);
+
+        }
+      }
+    }
+    else
+    {
+      if ( mMeshSystemHelper )
+      {
+        if ( mPlayAnimation )
+        {
+          mMeshSystemHelper->advanceAnimation(dtime,mAnimationSpeed);
+        }
+        mMeshSystemHelper->debugRender(mShowMesh,mShowSkeleton,mShowWireframe,mPlayAnimation,mShowCollision,mFlipWinding);
+      }
+    }
+    if ( gApexScene )
+    {
+      gApexScene->debugRender(gRenderDebug);
     }
   }
 
   virtual void importMesh(const char *fname)
   {
+    resetMeshSystem();
     if ( mMeshSystemHelper == 0 )
     {
       mMeshSystemHelper = createMeshSystemHelper();
     }
     mMeshSystemHelper->importMesh(fname);
+    appSetMeshSystemHelper(mMeshSystemHelper);
+  }
+
+  void apexCloth(void)
+  {
+    if ( mMeshSystemHelper )
+    {
+      MESHIMPORT::MeshSystem *ms = mMeshSystemHelper->getMeshSystem();
+      if ( ms )
+      {
+        MESHIMPORT::MeshSkeletonInstance *msi = gMeshImport->createMeshSkeletonInstance(*ms->mSkeletons[0]);
+        USER_STL::vector< HeMat44 > matrices;
+        for (int i=0; i<msi->mBoneCount; i++)
+        {
+          HeMat44 m;
+          m.set( msi->mBones[i].mInverseTransform );
+          matrices.push_back(m);
+        }
+//        mApexCloth = gApexScene->createApexCloth(0,matrices.size(),(const float *)&matrices[0],"clothsim_cape__cloth.aca");
+        mApexCloth = gApexScene->createApexCloth(0,matrices.size(),(const float *)&matrices[0],"clothsim_girl2_sleeves__cloth.aca");
+        gMeshImport->releaseMeshSkeletonInstance(msi);
+      }
+    }
   }
 
 private:
+  bool               mShowSkeleton;
+  bool               mShowMesh;
+  bool               mShowWireframe;
+  bool               mPlayAnimation;
+  bool               mFlipWinding;
+  bool               mShowCollision;
+  float              mAnimationSpeed;
   MeshSystemHelper  *mMeshSystemHelper;
+  CLIENT_PHYSICS::ApexCloth         *mApexCloth;
+  float mMergePercentage;
+  float mConcavityPercentage;
+  bool  mFitObb;
+  unsigned int mDepth;
+  float mVolumePercentage;
+  unsigned int mMaxVertices;
+  float mSkinWidth;
+  bool mRemoveTjunctions;
+  bool mInitialIslandGeneration;
+  bool mIslandGeneration;
 };
 
 CodeSuppository * createCodeSuppository(void)

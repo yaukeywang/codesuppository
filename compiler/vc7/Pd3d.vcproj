@@ -295,23 +295,9 @@ SccProvider="MSCCI:Perforce SCM"
       <File RelativePath="..\..\include\common\FileInterface\FileInterface.h"/>
     </Filter>
     <Filter Name="MemoryServices" Filter="">
-      <File RelativePath="..\..\include\common\MemoryServices\dlmalloc.cpp"/>
-      <File RelativePath="..\..\include\common\MemoryServices\dlmalloc.h"/>
       <File RelativePath="..\..\include\common\MemoryServices\GlobalNewDelete.cpp"/>
-      <File RelativePath="..\..\include\common\MemoryServices\He.h"/>
-      <File RelativePath="..\..\include\common\MemoryServices\HeSimpleTypes.h"/>
-      <File RelativePath="..\..\include\common\MemoryServices\htmltable.cpp"/>
-      <File RelativePath="..\..\include\common\MemoryServices\htmltable.h"/>
-      <File RelativePath="..\..\include\common\MemoryServices\memalloc.cpp"/>
-      <File RelativePath="..\..\include\common\MemoryServices\memalloc.h"/>
       <File RelativePath="..\..\include\common\MemoryServices\MemoryContainer.cpp"/>
       <File RelativePath="..\..\include\common\MemoryServices\MemoryContainer.h"/>
-      <File RelativePath="..\..\include\common\MemoryServices\memoryreport.h"/>
-      <File RelativePath="..\..\include\common\MemoryServices\MemoryServices.h"/>
-      <File RelativePath="..\..\include\common\MemoryServices\SendTextMessage.h"/>
-      <File RelativePath="..\..\include\common\MemoryServices\simplevector.h"/>
-      <File RelativePath="..\..\include\common\MemoryServices\simuhash_linux.h"/>
-      <File RelativePath="..\..\include\common\MemoryServices\streamer.h"/>
     </Filter>
     <Filter Name="snippets" Filter="">
       <File RelativePath="..\..\include\common\snippets\cparser.cpp"/>
@@ -337,6 +323,8 @@ SccProvider="MSCCI:Perforce SCM"
       <File RelativePath="..\..\include\common\snippets\stringdict.h"/>
       <File RelativePath="..\..\include\common\snippets\sutil.cpp"/>
       <File RelativePath="..\..\include\common\snippets\sutil.h"/>
+      <File RelativePath="..\..\include\common\snippets\SystemServices.cpp"/>
+      <File RelativePath="..\..\include\common\snippets\SystemServices.h"/>
       <File RelativePath="..\..\include\common\snippets\timedevent.cpp"/>
       <File RelativePath="..\..\include\common\snippets\timedevent.h"/>
     </Filter>

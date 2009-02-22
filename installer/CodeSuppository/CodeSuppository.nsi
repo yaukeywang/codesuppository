@@ -55,34 +55,51 @@ Section "CodeSuppository Executable and Data" sec1
 ## Install the two executables.
   File "${RootDir}\bin\win32\CodeSuppository.exe"
   File "${RootDir}\bin\win32\CodeSuppository.exe.Manifest"
-
   File "${RootDir}\bin\win32\ThreadFrac.exe"
   File "${RootDir}\bin\win32\ThreadFrac.exe.Manifest"
+  File "${RootDir}\bin\win32\TestMeshImport.exe"
+  File "${RootDir}\bin\win32\TestmeshImport.exe.Manifest"
 
 ## Install the various DLL components
 
+##  File "${RootDir}\bin\win32\granny2.dll"
   File "${RootDir}\bin\win32\pd3d.dll"
+##  File "${RootDir}\bin\win32\PhysXDevice.dll"
+##  File "${RootDir}\bin\win32\physxcudart_20.dll"
   File "${RootDir}\bin\win32\RenderDebugPd3d.dll"
+##  File "${RootDir}\bin\win32\ClientPhysics.dll"
   File "${RootDir}\bin\win32\MSVCP80.dll"
   File "${RootDir}\bin\win32\MSVCR80.dll"
   File "${RootDir}\bin\win32\D3DX9*.dll"
-  File "${RootDir}\bin\win32\TestMeshImport.exe"
-  File "${RootDir}\bin\win32\TestMeshImport.exe.Manifest"
   File "${RootDir}\bin\win32\MeshImport.dll"
   File "${RootDir}\bin\win32\Assimp32.dll"
   File "${RootDir}\bin\win32\MeshImportAssimp.dll"
   File "${RootDir}\bin\win32\MeshImportEzm.dll"
-  File "${RootDir}\bin\win32\MeshImportFbx.dll"
-  File "${RootDir}\bin\win32\MeshImportLeveller.dll"
+##  File "${RootDir}\bin\win32\MeshImportGranny.dll"
   File "${RootDir}\bin\win32\MeshImportObj.dll"
-  File "${RootDir}\bin\win32\MeshImportPsk.dll"
   File "${RootDir}\bin\win32\MeshImportOgre.dll"
+##  File "${RootDir}\bin\win32\a_character03.ezm"
+##  File "${RootDir}\bin\win32\a_character03.aca"
+##  File "${RootDir}\bin\win32\PLOAD.dll"
+##  File "${RootDir}\bin\win32\PLOAD.pdb"
+##  File "${RootDir}\bin\win32\PCORE.dll"
+##  File "${RootDir}\bin\win32\PCORE.pdb"
+##  File "${RootDir}\bin\win32\PCOOK.dll"
+##  File "${RootDir}\bin\win32\PCOOK.pdb"
+##  File "${RootDir}\bin\win32\APEX_debug.dll"
+##  File "${RootDir}\bin\win32\APEX_release.dll"
+##  File "${RootDir}\bin\win32\APEX_ClothingDEBUG.dll"
+##  File "${RootDir}\bin\win32\APEX_Clothing.dll"
 
   File "${RootDir}\bin\win32\*.pal"
+##  File "${RootDir}\bin\win32\*.dds"
 
 ## Install the demo media
+  SetOutPath "$INSTDIR\media\MeshImport"
+  File "${RootDir}\media\MeshImport\*.ezm"
+
   SetOutPath "$INSTDIR\media\CodeSuppository"
-  File "${RootDir}\media\CodeSuppository\*.obj"
+  File "${RootDir}\media\CodeSuppository\*.*"
 
 ## Install the source code
 
@@ -115,32 +132,23 @@ Section "CodeSuppository Executable and Data" sec1
   File "${RootDir}\src\common\snippets\*.c"
   File "${RootDir}\src\common\snippets\*.h"
 
+##  SetOutPath "$INSTDIR\src\ClientPhysics"
+##  File "${RootDir}\src\ClientPhysics\*.cpp"
+##  File "${RootDir}\src\ClientPhysics\*.h"
+
+##  SetOutPath "$INSTDIR\src\HbPhysics"
+##  File "${RootDir}\src\HbPhysics\SingleActor.h"
+
+  SetOutPath "$INSTDIR\include\ClientPhysics"
+  File "${RootDir}\include\ClientPhysics\*.h"
+
   SetOutPath "$INSTDIR\include\common\HeMath"
   File "${RootDir}\include\common\HeMath\*.h"
+  File "${RootDir}\include\common\HeMath\*.cpp"
 
   SetOutPath "$INSTDIR\include\MeshImport"
   File "${RootDir}\include\MeshImport\*.h"
-
-  SetOutPath "$INSTDIR\include\MeshImportAssimp"
-  File "${RootDir}\include\MeshImportAssimp\*.h"
-
-  SetOutPath "$INSTDIR\include\MeshImportEzm"
-  File "${RootDir}\include\MeshImportEzm\*.h"
-
-  SetOutPath "$INSTDIR\include\MeshImportFbx"
-  File "${RootDir}\include\MeshImportFbx\*.h"
-
-  SetOutPath "$INSTDIR\include\MeshImportLeveller"
-  File "${RootDir}\include\MeshImportLeveller\*.h"
-
-  SetOutPath "$INSTDIR\include\MeshImportObj"
-  File "${RootDir}\include\MeshImportObj\*.h"
-
-  SetOutPath "$INSTDIR\include\MeshImportPsk"
-  File "${RootDir}\include\MeshImportPsk\*.h"
-
-  SetOutPath "$INSTDIR\include\MeshImportOgre"
-  File "${RootDir}\include\MeshImportOgre\*.h"
+  File "${RootDir}\include\MeshImport\*.cpp"
 
   SetOutPath "$INSTDIR\src\common\tui"
   File "${RootDir}\src\common\tui\*.cpp"
@@ -164,17 +172,12 @@ Section "CodeSuppository Executable and Data" sec1
   File "${RootDir}\src\MeshImportEzm\*.cpp"
   File "${RootDir}\src\MeshImportEzm\*.h"
 
-  SetOutPath "$INSTDIR\src\MeshImportFbx"
-  File "${RootDir}\src\MeshImportFbx\*.cpp"
-
   SetOutPath "$INSTDIR\src\MeshImportLeveller"
   File "${RootDir}\src\MeshImportLeveller\*.cpp"
 
   SetOutPath "$INSTDIR\src\MeshImportObj"
   File "${RootDir}\src\MeshImportObj\*.cpp"
-
-  SetOutPath "$INSTDIR\src\MeshImportPsk"
-  File "${RootDir}\src\MeshImportPsk\*.cpp"
+  File "${RootDir}\src\MeshImportObj\*.h"
 
   SetOutPath "$INSTDIR\src\MeshImportOgre"
   File "${RootDir}\src\MeshImportOgre\*.cpp"
@@ -202,8 +205,45 @@ Section "CodeSuppository Executable and Data" sec1
   SetOutPath "$INSTDIR\ext\assimp\Compiler\MSVC"
   File "${RootDir}\ext\assimp\Compiler\MSVC\*.h"
 
-  SetOutPath "$INSTDIR\include\_private"
-  File "${RootDir}\include\_private\*.h"
+
+##  SetOutPath "$INSTDIR\ext\APEX\framework\public"
+##  File "${RootDir}\ext\APEX\framework\public\*.h"
+
+###  SetOutPath "$INSTDIR\ext\APEX\lib\win32-PhysX_2.8.3"
+###  File "${RootDir}\ext\APEX\lib\win32-PhysX_2.8.3\*.lib"
+
+##  SetOutPath "$INSTDIR\ext\APEX\module\clothing\public"
+##  File "${RootDir}\ext\APEX\module\clothing\public\*.h"
+
+
+##  SetOutPath "$INSTDIR\ext\PhysX_2.8.3\cooking\include"
+##  File "${RootDir}\ext\PhysX_2.8.3\cooking\include\*.h"
+
+##  SetOutPath "$INSTDIR\ext\PhysX_2.8.3\Foundation\include"
+##  File "${RootDir}\ext\PhysX_2.8.3\Foundation\include\*.h"
+
+##  SetOutPath "$INSTDIR\ext\PhysX_2.8.3\lib\win32"
+##  File "${RootDir}\ext\PhysX_2.8.3\lib\win32\*.lib"
+
+##  SetOutPath "$INSTDIR\ext\PhysX_2.8.3\NxCharacter\include"
+##  File "${RootDir}\ext\PhysX_2.8.3\NxCharacter\include\*.h"
+
+##  SetOutPath "$INSTDIR\ext\PhysX_2.8.3\Physics\include"
+##  File "${RootDir}\ext\PhysX_2.8.3\Physics\include\*.h"
+
+##  SetOutPath "$INSTDIR\ext\PhysX_2.8.3\Physics\include\cloth"
+##  File "${RootDir}\ext\PhysX_2.8.3\Physics\include\cloth\*.h"
+
+##  SetOutPath "$INSTDIR\ext\PhysX_2.8.3\Physics\include\fluids"
+##  File "${RootDir}\ext\PhysX_2.8.3\Physics\include\fluids\*.h"
+
+##  SetOutPath "$INSTDIR\ext\PhysX_2.8.3\Physics\include\softbody"
+##  File "${RootDir}\ext\PhysX_2.8.3\Physics\include\softbody\*.h"
+
+
+##  SetOutPath "$INSTDIR\ext\PhysX_2.8.3\PhysXLoader\include"
+##  File "${RootDir}\ext\PhysX_2.8.3\PhysXLoader\include\*.h"
+
 
 ## Install the header files.
 
@@ -212,6 +252,10 @@ Section "CodeSuppository Executable and Data" sec1
   File "${RootDir}\include\common\snippets\*.cpp"
   File "${RootDir}\include\common\snippets\*.c"
   File "${RootDir}\include\common\snippets\*.h"
+
+
+##  SetOutPath "$INSTDIR\include\HeroWorld"
+##  File "${RootDir}\include\HeroWorld\CollisionGroupFlag.h"
 
   SetOutPath "$INSTDIR\include\common\TinyXML"
   File "${RootDir}\include\common\TinyXML\*.cpp"
@@ -233,6 +277,10 @@ Section "CodeSuppository Executable and Data" sec1
   SetOutPath "$INSTDIR\include\common\RandomNumbers"
   File "${RootDir}\include\common\RandomNumbers\*.cpp"
   File "${RootDir}\include\common\RandomNumbers\*.h"
+
+  SetOutPath "$INSTDIR\include\common\AutoGeometry"
+  File "${RootDir}\include\common\AutoGeometry\*.cpp"
+  File "${RootDir}\include\common\AutoGeometry\*.h"
 
   SetOutPath "$INSTDIR\include\common\spatial_awareness_system"
   File "${RootDir}\include\common\spatial_awareness_system\*.cpp"
@@ -261,15 +309,15 @@ Section "CodeSuppository Executable and Data" sec1
   File "${RootDir}\app\CodeSuppository\*.cpp"
   File "${RootDir}\app\CodeSuppository\*.h"
 
+  SetOutPath "$INSTDIR\app\TestMeshImport"
+  File "${RootDir}\app\TestMeshImport\*.cpp"
+
   SetOutPath "$INSTDIR\app\ThreadFrac"
   File "${RootDir}\app\ThreadFrac\*.manifest"
   File "${RootDir}\app\ThreadFrac\*.rc"
   File "${RootDir}\app\ThreadFrac\*.ico"
   File "${RootDir}\app\ThreadFrac\*.cpp"
   File "${RootDir}\app\ThreadFrac\*.h"
-
-  SetOutPath "$INSTDIR\app\TestMeshImport"
-  File "${RootDir}\app\TestMeshImport\*.cpp"
 
   SetOutPath "$INSTDIR\app\TestAwareness"
   File "${RootDir}\app\TestAwareness\*.cpp"
@@ -280,24 +328,26 @@ Section "CodeSuppository Executable and Data" sec1
   SetOutPath "$INSTDIR\app\TestAwareness\Release"
   File "${RootDir}\app\TestAwareness\Release\*.exe"
 
+
   SetOutPath "$INSTDIR\app\shared\debugmsg"
   File "${RootDir}\app\shared\debugmsg\*.cpp"
   File /nonfatal "${RootDir}\app\shared\debugmsg\*.c"
   File "${RootDir}\app\shared\debugmsg\*.h"
 
+  SetOutPath "$INSTDIR\app\shared\MeshSystem"
+  File "${RootDir}\app\shared\MeshSystem\*.cpp"
+  File "${RootDir}\app\shared\MeshSystem\*.h"
+
 # Install the project builder files
   SetOutPath "$INSTDIR\compiler\xpj"
-  File "${RootDir}\compiler\xpj\ThreadFrac.xpj"
-  File "${RootDir}\compiler\xpj\TestMeshImport.xpj"
   File "${RootDir}\compiler\xpj\MeshImport.xpj"
   File "${RootDir}\compiler\xpj\MeshImportAssimp.xpj"
   File "${RootDir}\compiler\xpj\MeshImportEzm.xpj"
-  File "${RootDir}\compiler\xpj\MeshImportFbx.xpj"
   File "${RootDir}\compiler\xpj\MeshImportLeveller.xpj"
   File "${RootDir}\compiler\xpj\MeshImportObj.xpj"
   File "${RootDir}\compiler\xpj\MeshImportOgre.xpj"
-  File "${RootDir}\compiler\xpj\MeshImportPsk.xpj"
   File "${RootDir}\compiler\xpj\CodeSuppository.xpj"
+##  File "${RootDir}\compiler\xpj\ClientPhysics.xpj"
   File "${RootDir}\compiler\xpj\Pd3d.xpj"
   File "${RootDir}\compiler\xpj\RenderDebugPd3d.xpj"
   File "${RootDir}\compiler\xpj\xpj.exe"
@@ -307,34 +357,19 @@ Section "CodeSuppository Executable and Data" sec1
   SetOutPath "$INSTDIR\compiler\VC8"
   File "${RootDir}\compiler\VC8\*.sln"
   File "${RootDir}\compiler\VC8\*.vcproj"
-
-  SetOutPath "$INSTDIR\compiler\VC7"
-  File "${RootDir}\compiler\VC7\*.sln"
-  File "${RootDir}\compiler\VC7\*.vcproj"
+##  File "${RootDir}\compiler\VC8\postbuild_clientphysics_public.bat"
+##  Rename $INSTDIR\compiler\VC8\postbuild_clientphysics_public.bat  $INSTDIR\compiler\VC8\postbuild_clientphysics.bat
 
 
   CreateDirectory "$SMPROGRAMS\CodeSuppository"
 
   # add shortcut to CodeSuppository executable
   CreateShortCut  "$SMPROGRAMS\CodeSuppository\CodeSuppository.exe.lnk" "$INSTDIR\bin\win32\CodeSuppository.exe" "" "" "" "SW_SHOWNORMAL" ""
-  CreateShortCut  "$SMPROGRAMS\CodeSuppository\ThreadFrac.exe.lnk" "$INSTDIR\bin\win32\ThreadFrac.exe" "" "" "" "SW_SHOWNORMAL" ""
-  CreateShortCut  "$SMPROGRAMS\CodeSuppository\SphereTest.exe.lnk" "$INSTDIR\app\TestAwareness\Release\SphereTest.exe" "" "" "" "SW_SHOWNORMAL" ""
 
    CreateDirectory "$SMPROGRAMS\CodeSuppository\Projects"
 
   CreateDirectory "$SMPROGRAMS\CodeSuppository\Projects\VC8"
   CreateShortCut "$SMPROGRAMS\CodeSuppository\Projects\VC8\CodeSuppository.sln.lnk" "$INSTDIR\compiler\VC8\CodeSuppository.sln" "" "" "" "SW_SHOWNORMAL" ""
-  CreateShortCut "$SMPROGRAMS\CodeSuppository\Projects\VC8\ThreadFrac.sln.lnk" "$INSTDIR\compiler\VC8\ThreadFrac.sln" "" "" "" "SW_SHOWNORMAL" ""
-  CreateShortCut "$SMPROGRAMS\CodeSuppository\Projects\VC8\TestMeshImport.sln.lnk" "$INSTDIR\compiler\VC8\TestMeshImport.sln" "" "" "" "SW_SHOWNORMAL" ""
-  CreateShortCut "$SMPROGRAMS\CodeSuppository\Projects\VC8\TestAwareness.sln.lnk" "$INSTDIR\app\TestAwareness\spheretest.sln" "" "" "" "SW_SHOWNORMAL" ""
-
-  CreateDirectory "$SMPROGRAMS\CodeSuppository\Projects\VC7"
-  CreateShortCut "$SMPROGRAMS\CodeSuppository\Projects\VC7\CodeSuppository.sln.lnk" "$INSTDIR\compiler\VC7\CodeSuppository.sln" "" "" "" "SW_SHOWNORMAL" ""
-  CreateShortCut "$SMPROGRAMS\CodeSuppository\Projects\VC7\ThreadFrac.sln.lnk" "$INSTDIR\compiler\VC7\ThreadFrac.sln" "" "" "" "SW_SHOWNORMAL" ""
-  CreateShortCut "$SMPROGRAMS\CodeSuppository\Projects\VC7\TestMeshImport.sln.lnk" "$INSTDIR\compiler\VC7\TestMeshImport.sln" "" "" "" "SW_SHOWNORMAL" ""
-
-
-
 
 SectionEnd
 

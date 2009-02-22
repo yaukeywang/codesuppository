@@ -17,7 +17,7 @@ class HeBounds3
 	public:
 	HE_INLINE HeBounds3();
 	HE_INLINE ~HeBounds3();
-  HE_INLINE HeBounds3(const HeVec3 &bmin,HeVec3 &bmax);
+  HE_INLINE HeBounds3(const HeVec3 &bmin,const HeVec3 &bmax);
 
 	/**
 	\brief Sets empty to true
@@ -313,7 +313,7 @@ HE_INLINE void HeBounds3::fatten(HeReal distance)
 	max.z += distance;
 	}
 
-HE_INLINE HeBounds3::HeBounds3(const HeVec3 &bmin,HeVec3 &bmax)
+HE_INLINE HeBounds3::HeBounds3(const HeVec3 &bmin,const HeVec3 &bmax)
 {
   min = bmin;
   max = bmax;

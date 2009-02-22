@@ -35,9 +35,13 @@
 #include <stdarg.h>
 #include <setjmp.h>
 
+#ifdef APEX_TOOLS
 #include "StanHull.h"
-
 #include "UserMemAlloc.h"
+#else
+#include "StanHull.h"
+#include "UserMemAlloc.h"
+#endif
 
 namespace STAN_HULL
 {
@@ -772,7 +776,7 @@ float3x3 Transpose( const float3x3& m )
 }
 
 
-float3 operator*(const float3& v , const float3x3 &m ) { 
+float3 operator*(const float3& v , const float3x3 &m ) {
 	return float3((m.x.x*v.x + m.y.x*v.y + m.z.x*v.z), 
 					(m.x.y*v.x + m.y.y*v.y + m.z.y*v.z), 
 					(m.x.z*v.x + m.y.z*v.y + m.z.z*v.z));
@@ -845,7 +849,7 @@ float4   operator*( const float4&   v, const float4x4& m )
 
 int operator==( const float4 &a, const float4 &b ) 
 {
-	return (a.x==b.x && a.y==b.y && a.z==b.z && a.w==b.w); 
+	return (a.x==b.x && a.y==b.y && a.z==b.z && a.w==b.w);
 }
 
 

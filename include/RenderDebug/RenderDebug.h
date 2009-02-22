@@ -14,7 +14,6 @@
 
 #define RENDERDEBUG_H
 
-#include "../common/MemoryServices/MemoryServices.h"
 #include "../common/HeMath/HeMat44.h"
 #include "BaseRenderDebug.h"
 
@@ -49,20 +48,21 @@ namespace RENDER_DEBUG
  * \see
  * Separate items with the '|' character.
  */
-class RenderDebug : public MemoryServices, public BaseRenderDebug
+class RenderDebug : public BaseRenderDebug
 {
 public:
 
   virtual void setPd3d(PD3D::Pd3d *p) = 0;
   virtual void Initialize( HEGRDRIVER::HeGrDriver* driver, HETEXTUREMANAGER::HeTextureManager* textureManager ) = 0;
   virtual void Render(HeF32 dtime, bool flush, bool zPass) = 0;
+  
 
 private:
 };
 
 }; // end of namespace
 
-#define RENDER_DEBUG_VERSION (5+MEMORY_SERVICES_VERSION)
+#define RENDER_DEBUG_VERSION 5
 
 extern RENDER_DEBUG::RenderDebug *gRenderDebug;
 

@@ -953,39 +953,7 @@
 				Name="MemoryServices"
 				>
 				<File
-					RelativePath="..\..\include\common\MemoryServices\dlmalloc.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\dlmalloc.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\include\common\MemoryServices\GlobalNewDelete.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\He.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\HeSimpleTypes.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\htmltable.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\htmltable.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\memalloc.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\memalloc.h"
 					>
 				</File>
 				<File
@@ -994,30 +962,6 @@
 				</File>
 				<File
 					RelativePath="..\..\include\common\MemoryServices\MemoryContainer.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\memoryreport.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\MemoryServices.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\SendTextMessage.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\simplevector.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\simuhash_linux.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\streamer.h"
 					>
 				</File>
 			</Filter>
@@ -1114,6 +1058,14 @@
 				</File>
 				<File
 					RelativePath="..\..\include\common\snippets\sutil.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\SystemServices.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\SystemServices.h"
 					>
 				</File>
 				<File

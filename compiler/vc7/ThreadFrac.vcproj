@@ -3,6 +3,9 @@
 ProjectType="Visual C++"
 Version="7.00"
 Name="ThreadFrac"
+SccProjectName="Perforce Project"
+SccLocalPath="."
+SccProvider="MSCCI:Perforce SCM"
 >
 <Platforms>
 <Platform Name="Win32"/>
@@ -292,8 +295,6 @@ Name="ThreadFrac"
       <File RelativePath="..\..\src\common\snippets\bitmap.cpp"/>
       <File RelativePath="..\..\src\common\snippets\bitmap.h"/>
       <File RelativePath="..\..\src\common\snippets\bonebinding.h"/>
-      <File RelativePath="..\..\src\common\snippets\crc.cpp"/>
-      <File RelativePath="..\..\src\common\snippets\crc.h"/>
       <File RelativePath="..\..\src\common\snippets\encryption.h"/>
       <File RelativePath="..\..\src\common\snippets\geometry.cpp"/>
       <File RelativePath="..\..\src\common\snippets\geometry.h"/>
@@ -391,6 +392,8 @@ Name="ThreadFrac"
       <File RelativePath="..\..\include\common\ResourceInterface\ResourceUpdate.h"/>
     </Filter>
     <Filter Name="MemoryServices" Filter="">
+      <File RelativePath="..\..\include\common\MemoryServices\ApplicationSystemServices.cpp"/>
+      <File RelativePath="..\..\include\common\MemoryServices\ApplicationSystemServices.h"/>
       <File RelativePath="..\..\include\common\MemoryServices\dlmalloc.cpp"/>
       <File RelativePath="..\..\include\common\MemoryServices\dlmalloc.h"/>
       <File RelativePath="..\..\include\common\MemoryServices\GlobalNewDelete.cpp"/>
@@ -410,6 +413,7 @@ Name="ThreadFrac"
       <File RelativePath="..\..\include\common\MemoryServices\streamer.h"/>
     </Filter>
     <Filter Name="snippets" Filter="">
+      <File RelativePath="..\..\include\common\snippets\ApexUserMemAlloc.h"/>
       <File RelativePath="..\..\include\common\snippets\ArrowHead.cpp"/>
       <File RelativePath="..\..\include\common\snippets\ArrowHead.h"/>
       <File RelativePath="..\..\include\common\snippets\asc2bin.cpp"/>
@@ -446,6 +450,7 @@ Name="ThreadFrac"
       <File RelativePath="..\..\include\common\snippets\filesystem.h"/>
       <File RelativePath="..\..\include\common\snippets\FloatMath.cpp"/>
       <File RelativePath="..\..\include\common\snippets\FloatMath.h"/>
+      <File RelativePath="..\..\include\common\snippets\FloatMath.inl"/>
       <File RelativePath="..\..\include\common\snippets\fmem.h"/>
       <File RelativePath="..\..\include\common\snippets\frustum.cpp"/>
       <File RelativePath="..\..\include\common\snippets\frustum.h"/>
@@ -489,6 +494,7 @@ Name="ThreadFrac"
       <File RelativePath="..\..\include\common\snippets\MergedPath.h"/>
       <File RelativePath="..\..\include\common\snippets\MeshCleanup.cpp"/>
       <File RelativePath="..\..\include\common\snippets\MeshCleanup.h"/>
+      <File RelativePath="..\..\include\common\snippets\MeshImportMemAlloc.h"/>
       <File RelativePath="..\..\include\common\snippets\MeshIslandGeneration.cpp"/>
       <File RelativePath="..\..\include\common\snippets\MeshIslandGeneration.h"/>
       <File RelativePath="..\..\include\common\snippets\MyMessageBox.cpp"/>
@@ -513,6 +519,7 @@ Name="ThreadFrac"
       <File RelativePath="..\..\include\common\snippets\sendmail.cpp"/>
       <File RelativePath="..\..\include\common\snippets\sendmail.h"/>
       <File RelativePath="..\..\include\common\snippets\SendTextMessage.h"/>
+      <File RelativePath="..\..\include\common\snippets\SimpleMesh.h"/>
       <File RelativePath="..\..\include\common\snippets\SimplePool.h"/>
       <File RelativePath="..\..\include\common\snippets\simplevector.h"/>
       <File RelativePath="..\..\include\common\snippets\SmoothPath.cpp"/>
@@ -545,11 +552,6 @@ Name="ThreadFrac"
       <File RelativePath="..\..\include\common\snippets\wildcard.h"/>
       <File RelativePath="..\..\include\common\snippets\winmsg.cpp"/>
       <File RelativePath="..\..\include\common\snippets\winmsg.h"/>
-      <File RelativePath="..\..\include\common\snippets\wstable.h"/>
-      <File RelativePath="..\..\include\common\snippets\wstring.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\wstring.h"/>
-      <File RelativePath="..\..\include\common\snippets\wstringdict.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\wstringdict.h"/>
     </Filter>
   </Filter>
   <Filter Name="Plugin Dependencies" Filter="">

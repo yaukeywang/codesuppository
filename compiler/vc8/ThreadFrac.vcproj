@@ -4,6 +4,9 @@
 	Version="8.00"
 	Name="ThreadFrac"
 	ProjectGUID="{D433FEBE-B07E-DBBE-C2CC-C336DE06DBE8}"
+	SccProjectName="Perforce Project"
+	SccLocalPath="."
+	SccProvider="MSCCI:Perforce SCM"
 	>
 	<Platforms>
 		<Platform
@@ -962,14 +965,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\common\snippets\crc.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\crc.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\src\common\snippets\encryption.h"
 					>
 				</File>
@@ -1326,6 +1321,14 @@
 				Name="MemoryServices"
 				>
 				<File
+					RelativePath="..\..\include\common\MemoryServices\ApplicationSystemServices.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\MemoryServices\ApplicationSystemServices.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\common\MemoryServices\dlmalloc.cpp"
 					>
 				</File>
@@ -1397,6 +1400,10 @@
 			<Filter
 				Name="snippets"
 				>
+				<File
+					RelativePath="..\..\include\common\snippets\ApexUserMemAlloc.h"
+					>
+				</File>
 				<File
 					RelativePath="..\..\include\common\snippets\ArrowHead.cpp"
 					>
@@ -1539,6 +1546,10 @@
 				</File>
 				<File
 					RelativePath="..\..\include\common\snippets\FloatMath.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\FloatMath.inl"
 					>
 				</File>
 				<File
@@ -1714,6 +1725,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\common\snippets\MeshImportMemAlloc.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\common\snippets\MeshIslandGeneration.cpp"
 					>
 				</File>
@@ -1807,6 +1822,10 @@
 				</File>
 				<File
 					RelativePath="..\..\include\common\snippets\SendTextMessage.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\SimpleMesh.h"
 					>
 				</File>
 				<File
@@ -1935,26 +1954,6 @@
 				</File>
 				<File
 					RelativePath="..\..\include\common\snippets\winmsg.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\wstable.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\wstring.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\wstring.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\wstringdict.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\wstringdict.h"
 					>
 				</File>
 			</Filter>

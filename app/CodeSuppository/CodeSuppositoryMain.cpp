@@ -21,6 +21,7 @@
 #include "common/snippets/log.h"
 #include "common/snippets/sutil.h"
 #include "shared/debugmsg/debugmsg.h"
+#include "MeshImport/MeshImport.h"
 #include <direct.h>
 #include "common/tui/tui.h"
 #include "common/binding/binding.h"
@@ -29,7 +30,8 @@
 #include "SplitMeshApp.h"
 #include "SplitMeshMain.h"
 #include "CodeSuppository.h"
-#include "PhysX.h"
+#include "common/snippets/SendTextMessage.h"
+#include "ClientPhysics/ClientPhysics.h"
 
 #ifndef OPEN_SOURCE
 #include "HeGrDriver/HeGrDriver.h"
@@ -44,9 +46,8 @@ static HeU32 gScreenHeight=768;
 //#define DEBUG_VS   // Uncomment this line to debug vertex shaders
 //#define DEBUG_PS   // Uncomment this line to debug pixel shaders
 
-RESOURCE_INTERFACE::ResourceInterface *gResourceInterface=0;
 
-SendTextMessage *gSendTextMessage=0;
+LPDIRECT3DDEVICE9 GlobalD3DDevice=0;
 
 
 class SimpleSendTextMessage : public SendTextMessage
@@ -606,6 +607,7 @@ void CALLBACK OnFrameMove( IDirect3DDevice9* pd3dDevice, HeF64 fTime, HeF32 fEla
 
 	HeF32 dtime = fElapsedTime;
 
+
 	if ( gMovieCapture == 2 ) dtime = 1.0f /60.0f;
 
 }
@@ -686,21 +688,26 @@ void CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, HeF64 fTime, HeF32 fE
 #ifdef OPEN_SOURCE
   HRESULT hr;
 
+  GlobalD3DDevice = pd3dDevice;
+
   V( pd3dDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DXCOLOR(r,g,b,0.5f), 1.0f, 0) );
+
 
   // Render the scene
   if( SUCCEEDED( pd3dDevice->BeginScene() ) )
   {
 
     gPd3d->setDevice( pd3dDevice );
+
+
 		gPd3d->preserveRenderState();
     gPd3d->setViewProjectionMatrix( &mView, &mProj );
 
 
     const char *page = gGuiTui->getCurrentPage();
-    if ( strcmp(page,"CodeSuppository") == 0 )
+    if ( strcmp(page,"CodeSuppository") == 0 || strcmp(page,"Convex Decomposition") == 0 )
     {
-      gCodeSuppository->render(fElapsedTime);
+      gCodeSuppository->render(1.0f/60.0f); //fElapsedTime);
     }
     else
     {
@@ -711,15 +718,11 @@ void CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, HeF64 fTime, HeF32 fE
 
 
 
+
     processDebug();
 
 		PD3D::Pd3dTexture *texture = 	gPd3d->locateTexture("white.dds");
 
-    if ( gPhysX )
-    {
-      gPhysX->simulate(fElapsedTime);
-      gPhysX->render(fElapsedTime);
-    }
 
     //ok..now let's render the debug visualization data.
     float dtime = fElapsedTime < 0.02f ? fElapsedTime : 0.02f;
@@ -772,6 +775,7 @@ void CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, HeF64 fTime, HeF32 fE
     }
     else
     {
+      gRenderDebug->Reset();
       appRender();
     }
 
@@ -810,6 +814,9 @@ void CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, HeF64 fTime, HeF32 fE
   }
 
 #endif
+
+
+
 }
 
 

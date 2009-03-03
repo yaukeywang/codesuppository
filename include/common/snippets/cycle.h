@@ -26,8 +26,8 @@ public:
 
   static HeU64 getRTDSC(void)
   {
-    HeU64 tm = 0;
 #if WIN32
+    HeU64 tm = 0;
   	__asm
 	  {
 		  push	edx
@@ -39,8 +39,15 @@ public:
   		pop eax
   		pop edx
   	}
-#endif
     return tm;
+#else
+     unsigned int a, d;
+     asm("cpuid");
+     asm volatile("rdtsc" : "=a" (a), "=d" (d));
+
+     return (((HeU64)a) | (((HeU64)d) << 32));
+
+#endif
   }
 
   void Begin(void)

@@ -194,6 +194,12 @@
          snippets/MeshIslandGeneration.cpp
          snippets/rand.h
          snippets/rand.cpp
+         snippets/ThreadConfig.h
+         snippets/ThreadConfig.cpp
+         snippets/LockFreeQ.h
+         snippets/LockFreeQ.cpp
+         snippets/JobSwarm.h
+         snippets/JobSwarm.cpp
         compression/*.cpp
         compression/*.c
         compression/*.h

@@ -15,6 +15,7 @@ namespace SPATIAL_AWARENESS_SYSTEM
     SAS_Log(SpatialAwarenessObserver *observer);
     ~SAS_Log(void);
 
+    virtual HeSize getMemoryUsage();
     void Pump(SecondsType time_elapsed_since_last_pump);
     bool SetActive(ActiveType new_active_flag);
     bool SetName(NameType new_name);

@@ -235,7 +235,7 @@ public:
 typedef USER_STL::map< StringRef, StringRef > StringRefMap;
 typedef USER_STL::vector< MeshMaterial >      MeshMaterialVector;
 typedef USER_STL::vector< MeshInstance >      MeshInstanceVector;
-typedef USER_STL::map< StringRef, MyMesh *>   MyMeshMap;
+typedef USER_STL::vector< MyMesh *>           MyMeshVector;
 typedef USER_STL::vector< MeshCollision * >   MeshCollisionVector;
 
 class MyMeshCollisionRepresentation : public MeshCollisionRepresentation
@@ -298,10 +298,10 @@ public:
   ~MyMeshBuilder(void)
   {
     MEMALLOC_DELETE_ARRAY(Mesh *,mMeshes);
-    MyMeshMap::iterator i;
+    MyMeshVector::iterator i;
     for (i=mMyMeshes.begin(); i!=mMyMeshes.end(); ++i)
     {
-      MyMesh *src = (*i).second;
+      MyMesh *src = (*i);
       delete src;
     }
 
@@ -384,10 +384,10 @@ public:
       MEMALLOC_DELETE_ARRAY(Mesh *,mMeshes);
       mMeshes    = MEMALLOC_NEW_ARRAY(Mesh *,mMeshCount)[mMeshCount];
       Mesh **dst = mMeshes;
-      MyMeshMap::iterator i;
+      MyMeshVector::iterator i;
       for (i=mMyMeshes.begin(); i!=mMyMeshes.end(); ++i)
       {
-        MyMesh *src = (*i).second;
+        MyMesh *src = (*i);
         src->gather(bone_count);
         *dst++ = static_cast< Mesh *>(src);
       }
@@ -463,17 +463,24 @@ public:
   {
     StringRef m1 = mStrings.Get(meshName);
     StringRef s1 = mStrings.Get(skeletonName);
-    MyMeshMap::iterator found = mMyMeshes.find(m1);
-    if ( found == mMyMeshes.end() )
+
+    mCurrentMesh = 0;
+    MyMeshVector::iterator found;
+    for (found=mMyMeshes.begin(); found != mMyMeshes.end(); found++)
+    {
+      MyMesh *mm = (*found);
+      if ( mm->mName == m1 )
+      {
+        mCurrentMesh = mm;
+        mCurrentMesh->mSkeletonName = s1.Get();
+        break;
+      }
+    }
+    if ( mCurrentMesh == 0 )
     {
       MyMesh *m = MEMALLOC_NEW(MyMesh)(m1.Get(),s1.Get());
-      mMyMeshes[m1] = m;
+      mMyMeshes.push_back(m);
       mCurrentMesh = m;
-    }
-    else
-    {
-      mCurrentMesh = (*found).second;
-      mCurrentMesh->mSkeletonName = s1.Get();
     }
   }
 
@@ -697,10 +704,10 @@ public:
     }
 
     {
-      MyMeshMap::iterator i;
+      MyMeshVector::iterator i;
       for (i=mMyMeshes.begin(); i!=mMyMeshes.end(); ++i)
       {
-        MyMesh *m = (*i).second;
+        MyMesh *m = (*i);
         unsigned int vcount = m->mVertexPool.GetSize();
         if ( vcount > 0 )
         {
@@ -748,7 +755,7 @@ private:
   MeshMaterialVector                  mMyMaterials;
   MeshInstanceVector                  mMyMeshInstances;
   MyMesh                             *mCurrentMesh;
-  MyMeshMap                           mMyMeshes;
+  MyMeshVector                        mMyMeshes;
   MeshAnimationVector                 mMyAnimations;
   MeshSkeletonVector                  mMySkeletons;
   MyMeshCollisionRepresentation      *mCurrentCollision;

@@ -14,6 +14,7 @@
 #define NOMINMAX
 #include "plugins.h"
 #include "common/dxut/dxstdafx.h"
+#include "common/snippets/JobSwarm.h"
 #include "resource.h"
 #include "menu.h"
 #include "common/dxut/GuiTui.h"
@@ -278,6 +279,8 @@ INT WINAPI WinMain( HINSTANCE instance, HINSTANCE, LPSTR, HeI32 )
         gHeGrDriver = 0;
       }
 #endif
+
+      JOB_SWARM::releaseJobSwarmContext(gJobSwarmContext);
 
       // Perform any application-level cleanup here. Direct3D device resources are released within the
       // appropriate callback functions and therefore don't require any cleanup code here.
@@ -607,6 +610,7 @@ void CALLBACK OnFrameMove( IDirect3DDevice9* pd3dDevice, HeF64 fTime, HeF32 fEla
 
 	HeF32 dtime = fElapsedTime;
 
+  gCodeSuppository->process(dtime);
 
 	if ( gMovieCapture == 2 ) dtime = 1.0f /60.0f;
 

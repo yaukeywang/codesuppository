@@ -3802,7 +3802,7 @@ public:
       if (0 >= (count--))
       {
         //** Triangulate: ERROR - probable bad polygon!
-        delete V;
+        MEMALLOC_DELETE_ARRAY(int *,V);
         return false;
       }
 
@@ -3838,7 +3838,7 @@ public:
       }
     }
 
-    delete V;
+    MEMALLOC_DELETE_ARRAY(int *,V);
 
     return true;
   }
@@ -4035,159 +4035,6 @@ REAL fm_computeBestFitAABB(size_t vcount,const REAL *points,size_t pstride,REAL 
 
 	return (REAL) sqrt( dx*dx + dy*dy + dz*dz );
 
-}
-
-
-#define BIGNUMBER 100000000.0  		/* hundred million */
-
-static inline void Set(REAL *n,REAL x,REAL y,REAL z)
-{
-	n[0] = x;
-	n[1] = y;
-	n[2] = z;
-};
-
-static inline void Copy(REAL *dest,const REAL *source)
-{
-	dest[0] = source[0];
-	dest[1] = source[1];
-	dest[2] = source[2];
-}
-
-
-REAL  fm_computeBestFitSphere(size_t vcount,const REAL *points,size_t pstride,REAL *center)
-{
-  REAL mRadius;
-  REAL mRadius2;
-
-	REAL xmin[3];
-	REAL xmax[3];
-	REAL ymin[3];
-	REAL ymax[3];
-	REAL zmin[3];
-	REAL zmax[3];
-	REAL dia1[3];
-	REAL dia2[3];
-
-  /* FIRST PASS: find 6 minima/maxima points */
-  Set(xmin,BIGNUMBER,BIGNUMBER,BIGNUMBER);
-  Set(xmax,-BIGNUMBER,-BIGNUMBER,-BIGNUMBER);
-  Set(ymin,BIGNUMBER,BIGNUMBER,BIGNUMBER);
-  Set(ymax,-BIGNUMBER,-BIGNUMBER,-BIGNUMBER);
-  Set(zmin,BIGNUMBER,BIGNUMBER,BIGNUMBER);
-  Set(zmax,-BIGNUMBER,-BIGNUMBER,-BIGNUMBER);
-
-  const char *scan = (const char *)points;
-
-
-  for (size_t i=0; i<vcount; i++)
-	{
-		const REAL *caller_p = (const REAL *)scan;
-
-   	if (caller_p[0]<xmin[0])
-  	  Copy(xmin,caller_p); /* New xminimum point */
-  	if (caller_p[0]>xmax[0])
-  	  Copy(xmax,caller_p);
-  	if (caller_p[1]<ymin[1])
-  	  Copy(ymin,caller_p);
-  	if (caller_p[1]>ymax[1])
-  	  Copy(ymax,caller_p);
-  	if (caller_p[2]<zmin[2])
-  	  Copy(zmin,caller_p);
-  	if (caller_p[2]>zmax[2])
-  	  Copy(zmax,caller_p);
-
-    scan+=pstride;
-	}
-
-  /* Set xspan = distance between the 2 points xmin & xmax (squared) */
-  REAL dx = xmax[0] - xmin[0];
-  REAL dy = xmax[1] - xmin[1];
-  REAL dz = xmax[2] - xmin[2];
-  REAL xspan = dx*dx + dy*dy + dz*dz;
-
-  /* Same for y & z spans */
-  dx = ymax[0] - ymin[0];
-  dy = ymax[1] - ymin[1];
-  dz = ymax[2] - ymin[2];
-  REAL yspan = dx*dx + dy*dy + dz*dz;
-
-  dx = zmax[0] - zmin[0];
-  dy = zmax[1] - zmin[1];
-  dz = zmax[2] - zmin[2];
-  REAL zspan = dx*dx + dy*dy + dz*dz;
-
-  /* Set points dia1 & dia2 to the maximally separated pair */
-  Copy(dia1,xmin);
-  Copy(dia2,xmax); /* assume xspan biggest */
-  REAL maxspan = xspan;
-
-  if (yspan>maxspan)
-	{
-	  maxspan = yspan;
-  	Copy(dia1,ymin);
-  	Copy(dia2,ymax);
-	}
-
-  if (zspan>maxspan)
-	{
-	  Copy(dia1,zmin);
-	  Copy(dia2,zmax);
-	}
-
-
-  /* dia1,dia2 is a diameter of initial sphere */
-  /* calc initial center */
-  center[0] = (dia1[0]+dia2[0])*0.5f;
-  center[1] = (dia1[1]+dia2[1])*0.5f;
-  center[2] = (dia1[2]+dia2[2])*0.5f;
-
-  /* calculate initial radius**2 and radius */
-
-  dx = dia2[0]-center[0]; /* x component of radius vector */
-  dy = dia2[1]-center[1]; /* y component of radius vector */
-  dz = dia2[2]-center[2]; /* z component of radius vector */
-
-  mRadius2 = dx*dx + dy*dy + dz*dz;
-  mRadius = REAL(sqrt(mRadius2));
-
-  /* SECOND PASS: increment current sphere */
-  {
-    const char *scan = (const char *)points;
-	  for (size_t i=0; i<vcount; i++)
-		{
-			const REAL *caller_p = (const REAL *)scan;
-
-  		dx = caller_p[0]-center[0];
-		  dy = caller_p[1]-center[1];
-  		dz = caller_p[2]-center[2];
-
-		  REAL old_to_p_sq = dx*dx + dy*dy + dz*dz;
-
-  		if (old_to_p_sq > mRadius2) 	/* do r**2 test first */
-			{ 	/* this point is outside of current sphere */
-	  		REAL old_to_p = REAL(sqrt(old_to_p_sq));
-			  /* calc radius of new sphere */
-  			mRadius = (mRadius + old_to_p) * 0.5f;
-	  		mRadius2 = mRadius*mRadius; 	/* for next r**2 compare */
-  			REAL old_to_new = old_to_p - mRadius;
-
-	  		/* calc center of new sphere */
-
-  		  REAL recip = 1.0f /old_to_p;
-
-  			REAL cx = (mRadius*center[0] + old_to_new*caller_p[0]) * recip;
-	  		REAL cy = (mRadius*center[1] + old_to_new*caller_p[1]) * recip;
-			  REAL cz = (mRadius*center[2] + old_to_new*caller_p[2]) * recip;
-
-		    Set(center,cx,cy,cz);
-
-        scan+=pstride;
-			}
-		}
-  }
-
-  return mRadius;
 }
 
 
@@ -5267,3 +5114,161 @@ void fm_computeMeanNormals(unsigned int vcount,       // the number of vertices
 }
 
 #endif
+
+
+#define BIGNUMBER 100000000.0  		/* hundred million */
+
+static inline void Set(REAL *n,REAL x,REAL y,REAL z)
+{
+	n[0] = x;
+	n[1] = y;
+	n[2] = z;
+};
+
+static inline void Copy(REAL *dest,const REAL *source)
+{
+	dest[0] = source[0];
+	dest[1] = source[1];
+	dest[2] = source[2];
+}
+
+
+REAL  fm_computeBestFitSphere(size_t vcount,const REAL *points,size_t pstride,REAL *center)
+{
+  REAL radius;
+  REAL radius2;
+
+	REAL xmin[3];
+	REAL xmax[3];
+	REAL ymin[3];
+	REAL ymax[3];
+	REAL zmin[3];
+	REAL zmax[3];
+	REAL dia1[3];
+	REAL dia2[3];
+
+  /* FIRST PASS: find 6 minima/maxima points */
+  Set(xmin,BIGNUMBER,BIGNUMBER,BIGNUMBER);
+  Set(xmax,-BIGNUMBER,-BIGNUMBER,-BIGNUMBER);
+  Set(ymin,BIGNUMBER,BIGNUMBER,BIGNUMBER);
+  Set(ymax,-BIGNUMBER,-BIGNUMBER,-BIGNUMBER);
+  Set(zmin,BIGNUMBER,BIGNUMBER,BIGNUMBER);
+  Set(zmax,-BIGNUMBER,-BIGNUMBER,-BIGNUMBER);
+
+  const char *scan = (const char *)points;
+
+
+  for (size_t i=0; i<vcount; i++)
+	{
+		const REAL *caller_p = (const REAL *)scan;
+
+   	if (caller_p[0]<xmin[0])
+  	  Copy(xmin,caller_p); /* New xminimum point */
+  	if (caller_p[0]>xmax[0])
+  	  Copy(xmax,caller_p);
+  	if (caller_p[1]<ymin[1])
+  	  Copy(ymin,caller_p);
+  	if (caller_p[1]>ymax[1])
+  	  Copy(ymax,caller_p);
+  	if (caller_p[2]<zmin[2])
+  	  Copy(zmin,caller_p);
+  	if (caller_p[2]>zmax[2])
+  	  Copy(zmax,caller_p);
+
+    scan+=pstride;
+	}
+
+  /* Set xspan = distance between the 2 points xmin & xmax (squared) */
+  REAL dx = xmax[0] - xmin[0];
+  REAL dy = xmax[1] - xmin[1];
+  REAL dz = xmax[2] - xmin[2];
+  REAL xspan = dx*dx + dy*dy + dz*dz;
+
+  /* Same for y & z spans */
+  dx = ymax[0] - ymin[0];
+  dy = ymax[1] - ymin[1];
+  dz = ymax[2] - ymin[2];
+  REAL yspan = dx*dx + dy*dy + dz*dz;
+
+  dx = zmax[0] - zmin[0];
+  dy = zmax[1] - zmin[1];
+  dz = zmax[2] - zmin[2];
+  REAL zspan = dx*dx + dy*dy + dz*dz;
+
+  /* Set points dia1 & dia2 to the maximally separated pair */
+  Copy(dia1,xmin);
+  Copy(dia2,xmax); /* assume xspan biggest */
+  REAL maxspan = xspan;
+
+  if (yspan>maxspan)
+	{
+	  maxspan = yspan;
+  	Copy(dia1,ymin);
+  	Copy(dia2,ymax);
+	}
+
+  if (zspan>maxspan)
+	{
+	  Copy(dia1,zmin);
+	  Copy(dia2,zmax);
+	}
+
+
+  /* dia1,dia2 is a diameter of initial sphere */
+  /* calc initial center */
+  center[0] = (dia1[0]+dia2[0])*0.5f;
+  center[1] = (dia1[1]+dia2[1])*0.5f;
+  center[2] = (dia1[2]+dia2[2])*0.5f;
+
+  /* calculate initial radius**2 and radius */
+
+  dx = dia2[0]-center[0]; /* x component of radius vector */
+  dy = dia2[1]-center[1]; /* y component of radius vector */
+  dz = dia2[2]-center[2]; /* z component of radius vector */
+
+  radius2 = dx*dx + dy*dy + dz*dz;
+  radius = REAL(sqrt(radius2));
+
+  /* SECOND PASS: increment current sphere */
+  {
+    const char *scan = (const char *)points;
+	  for (size_t i=0; i<vcount; i++)
+		{
+			const REAL *caller_p = (const REAL *)scan;
+
+  		dx = caller_p[0]-center[0];
+		  dy = caller_p[1]-center[1];
+  		dz = caller_p[2]-center[2];
+
+		  REAL old_to_p_sq = dx*dx + dy*dy + dz*dz;
+
+  		if (old_to_p_sq > radius2) 	/* do r**2 test first */
+			{ 	/* this point is outside of current sphere */
+	  		REAL old_to_p = REAL(sqrt(old_to_p_sq));
+			  /* calc radius of new sphere */
+  			radius = (radius + old_to_p) * 0.5f;
+	  		radius2 = radius*radius; 	/* for next r**2 compare */
+  			REAL old_to_new = old_to_p - radius;
+
+	  		/* calc center of new sphere */
+
+  		  REAL recip = 1.0f /old_to_p;
+
+  			REAL cx = (radius*center[0] + old_to_new*caller_p[0]) * recip;
+	  		REAL cy = (radius*center[1] + old_to_new*caller_p[1]) * recip;
+			  REAL cz = (radius*center[2] + old_to_new*caller_p[2]) * recip;
+
+		    Set(center,cx,cy,cz);
+
+        scan+=pstride;
+			}
+		}
+  }
+
+  return radius;
+}
+
+
+void fm_computeBestFitCapsule(size_t vcount,const REAL *points,size_t pstride,REAL &radius,REAL &height,REAL matrix[16],bool bruteForce)
+{
+}

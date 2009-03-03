@@ -1,11 +1,3 @@
 Menu System Initialized
-Processing mesh 'C:\GoogleCode\CodeSuppository\media\CodeSuppository\sphere.obj'
-Successfully imported mesh 'C:\GoogleCode\CodeSuppository\media\CodeSuppository\sphere.obj'
-Demonstrating StanHull code snippet, originally published on March 4, 2006
-Generating convex hull for input mesh with 114 vertices.
-Output Hull contains 116 triangle faces.
-Fly the camera inside the hull to see the mesh details.
-Demonstrating the best fit OBB algorithm, originally published on June 16, 2006
-Generating best fit obb for input mesh with 114 vertices.
-Demonstration of Best Fit Plane to a set of points, originally published on March 23, 2006
-Generating best fit plane for input mesh with 114 vertices.
+Processing mesh 'C:\GoogleCode\CodeSuppository\media\CodeSuppository\hornbug.obj'
+Successfully imported mesh 'C:\GoogleCode\CodeSuppository\media\CodeSuppository\hornbug.obj'

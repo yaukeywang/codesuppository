@@ -1486,6 +1486,11 @@ SAS_LazyKdTree::~SAS_LazyKdTree(void)
   delete mLazy;
 }
 
+HeSize SAS_LazyKdTree::getMemoryUsage()
+{
+  return sizeof *mLazy;
+}
+
 void SAS_LazyKdTree::Pump(SecondsType time_elapsed_since_last_pump)
 {
   mLazy->Pump(time_elapsed_since_last_pump);

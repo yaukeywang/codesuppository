@@ -600,7 +600,7 @@ float3 operator-( const float3& v )
 
 float3 operator*( const float3& v, float s )      
 {
-	return float3( v.x*s, v.y*s, v.z*s ); 
+	return float3( v.x*s, v.y*s, v.z*s );
 }
 
 

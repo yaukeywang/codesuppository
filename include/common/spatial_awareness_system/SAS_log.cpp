@@ -181,6 +181,10 @@ SAS_Log::~SAS_Log(void)
   }
 }
 
+HeSize SAS_Log::getMemoryUsage()
+{
+  return mParent->getMemoryUsage() + sizeof *this;
+}
 
 void SAS_Log::Pump(SecondsType time_elapsed_since_last_pump)
 {

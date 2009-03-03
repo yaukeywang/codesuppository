@@ -396,6 +396,10 @@ void fm_computeBestFitABB(size_t vcount,const float *points,size_t pstride,float
 void fm_computeBestFitABB(size_t vcount,const double *points,size_t pstride,double *sides,double pos[3]);
 
 
+void fm_computeBestFitCapsule(size_t vcount,const float *points,size_t pstride,float &radius,float &height,float matrix[16],bool bruteForce=true);
+void fm_computeBestFitCapsule(size_t vcount,const double *points,size_t pstride,float &radius,float &height,double matrix[16],bool bruteForce=true);
+
+
 void fm_planeToMatrix(const float plane[4],float matrix[16]); // convert a plane equation to a 4x4 rotation matrix.  Reference vector is 0,1,0
 void fm_planeToQuat(const float plane[4],float quat[4],float pos[3]); // convert a plane equation to a quaternion and translation
 

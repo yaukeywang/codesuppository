@@ -30,6 +30,7 @@ typedef HeF64             SecondsType;         //-ignore
 typedef bool              ActiveType;          //-ignore
 typedef const wchar_t *   NameType;            //-ignore
 typedef HeU64             FrameType;           //-ignore
+typedef size_t            HeSize;
 
 typedef std::vector< ID > IDVector; // an STL vector of a list of ID's
 
@@ -86,6 +87,8 @@ public:
 class SpatialAwarenessSystem
 {
 public:
+  virtual HeSize getMemoryUsage() = 0;
+
   //! Pump is called periodically by the host program. Returns true if the pump occurred.
   virtual void Pump(SecondsType time_elapsed_since_last_pump) = 0;
   virtual void PrePump(void) { };

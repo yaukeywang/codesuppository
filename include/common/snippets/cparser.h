@@ -4,31 +4,7 @@
 
 /*!
 **
-** Copyright (c) 2007 by John W. Ratcliff mailto:jratcliff@infiniplex.net
-**
-** Portions of this source has been released with the PhysXViewer application, as well as
-** Rocket, CreateDynamics, ODF, and as a number of sample code snippets.
-**
-** If you find this code useful or you are feeling particularily generous I would
-** ask that you please go to http://www.amillionpixels.us and make a donation
-** to Troy DeMolay.
-**
-** DeMolay is a youth group for young men between the ages of 12 and 21.
-** It teaches strong moral principles, as well as leadership skills and
-** public speaking.  The donations page uses the 'pay for pixels' paradigm
-** where, in this case, a pixel is only a single penny.  Donations can be
-** made for as small as $4 or as high as a $100 block.  Each person who donates
-** will get a link to their own site as well as acknowledgement on the
-** donations blog located here http://www.amillionpixels.blogspot.com/
-**
-** If you wish to contact me you can use the following methods:
-**
-** Skype Phone: 636-486-4040 (let it ring a long time while it goes through switches)
-** Skype ID: jratcliff63367
-** Yahoo: jratcliff63367
-** AOL: jratcliff1961
-** email: jratcliff@infiniplex.net
-**
+** Copyright (c) 2009 by John W. Ratcliff mailto:jratcliff@infiniplex.net
 **
 ** The MIT license:
 **

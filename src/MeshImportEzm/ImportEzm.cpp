@@ -69,12 +69,10 @@
 #include "common/snippets/stable.h"
 #include "common/snippets/asc2bin.h"
 #include "common/snippets/inparser.h"
-#include "common/TinyXML/tinyxml.h"
+#include "common/snippets/FastXml.h"
 
 #pragma warning(disable:4100)
 #pragma warning(disable:4996)
-
-using namespace TINYXML;
 
 namespace MESHIMPORT
 {
@@ -142,7 +140,7 @@ enum AttributeType
 	AT_LAST
 };
 
-class MeshImportEZM : public MeshImporter
+class MeshImportEZM : public MeshImporter, public FastXmlInterface
 {
 public:
 	MeshImportEZM(void)
@@ -498,19 +496,16 @@ public:
 
     if ( data && mCallback )
     {
-  		TiXmlDocument *doc = MEMALLOC_NEW(TiXmlDocument);
-  		bool ok = doc->LoadFile(meshName,data,dlen);
+      FastXml *f = createFastXml();
+      bool ok = f->processXml((const char *)data,dlen,this);
   		if ( ok )
   		{
         mCallback->importAssetName(mStrings.Get(meshName).Get(),0);
-  			Traverse(doc,0);
   			ret = true;
   		}
-
   		if ( mAnimation )
   		{
   			mCallback->importAnimation(*mAnimation);
-
         for (int i=0; i<mAnimation->mTrackCount; i++)
         {
           MeshAnimTrack *t = mAnimation->mTracks[i];
@@ -529,189 +524,124 @@ public:
       mMeshCollision = 0;
       mMeshCollisionConvex = 0;
 
-      MEMALLOC_DELETE(TiXmlDocument,doc);
+      releaseFastXml(f);
 
     }
 
     return ret;
   }
 
-	void Traverse(TiXmlNode *node,int depth)
+	void ProcessNode(const char *svalue)
 	{
-
-		Process(node,depth);
-
-		node = node->FirstChild();
-
-		while (node )
+    mType = (NodeType)mToElement.Get(svalue);
+		switch ( mType )
 		{
-
-			if ( node->NoChildren() )
-			{
-				Process(node,depth);
-			}
-			else
-			{
-				Traverse(node,depth+1);
-			}
-
-			node = node->NextSibling();
-		}
-
-	}
-
-	void Process(TiXmlNode *node,int depth)
-	{
-
-		const char *value = node->Value();
-
-		ProcessNode(node->Type(),value,depth);
-
-		TiXmlElement *element = node->ToElement(); // is there an element?  Yes, traverse it's attribute key-pair values.
-
-		if ( element )
-		{
-			TiXmlAttribute *atr = element->FirstAttribute();
-			while ( atr )
-			{
-				const char *aname  = atr->Name();
-				const char *avalue = atr->Value();
-				ProcessAttribute( node->Type(), value, depth, aname, avalue );
-				atr = atr->Next();
-			}
-		}
-	}
-
-
-	void ProcessNode(int ntype,const char *svalue,int depth)
-	{
-		char value[43];
-		value[39] = '.';
-		value[40] = '.';
-		value[41] = '.';
-		value[42] = 0;
-
-		strncpy(value,svalue,39);
-
-		switch ( ntype )
-		{
-			case TiXmlNode::ELEMENT:
-			case TiXmlNode::DOCUMENT:
+      case NT_NONE:
+        assert(0);
+        break;
+      case NT_MESH_COLLISION_REPRESENTATION:
+        MEMALLOC_DELETE(MeshCollisionRepresentation,mMeshCollisionRepresentation);
+        mMeshCollisionRepresentation = MEMALLOC_NEW(MeshCollisionRepresentation);
+        break;
+      case NT_MESH_COLLISION:
+        if ( mMeshCollisionRepresentation )
+        {
+          mCallback->importCollisionRepresentation( mMeshCollisionRepresentation->mName, mMeshCollisionRepresentation->mInfo );
+          mCollisionRepName = mMeshCollisionRepresentation->mName;
+          MEMALLOC_DELETE(MeshCollisionRepresentation,mMeshCollisionRepresentation);
+          mMeshCollisionRepresentation = 0;
+        }
+        MEMALLOC_DELETE(MeshCollision,mMeshCollision);
+        mMeshCollision = MEMALLOC_NEW(MeshCollision);
+        break;
+      case NT_MESH_COLLISION_CONVEX:
+        assert(mMeshCollision);
+        if ( mMeshCollision )
+        {
+          MEMALLOC_DELETE(MeshCollisionConvex,mMeshCollisionConvex);
+          mMeshCollisionConvex = MEMALLOC_NEW(MeshCollisionConvex);
+          MeshCollision *d = static_cast< MeshCollision *>(mMeshCollisionConvex);
+          *d = *mMeshCollision;
+          MEMALLOC_DELETE(MeshCollision,mMeshCollision);
+          mMeshCollision = 0;
+        }
+        break;
+			case NT_ANIMATION:
+				if ( mAnimation )
 				{
-					if ( ntype == TiXmlNode::DOCUMENT )
-						Display(depth,"Node(DOCUMENT): %s\n", value);
-					else
+					mCallback->importAnimation(*mAnimation);
+					MEMALLOC_DELETE(MeshAnimation,mAnimation);
+					mAnimation = 0;
+				}
+				mName       = 0;
+				mFrameCount = 0;
+				mDuration   = 0;
+				mTrackCount = 0;
+				mDtime      = 0;
+				mTrackIndex = 0;
+				break;
+			case NT_ANIM_TRACK:
+				if ( mAnimation == 0 )
+				{
+					if ( mName && mFrameCount && mDuration && mTrackCount && mDtime )
 					{
-						mType = (NodeType)mToElement.Get(svalue);
-						switch ( mType )
+						int framecount = atoi( mFrameCount );
+						float duration = (float) atof( mDuration );
+						int trackcount = atoi(mTrackCount);
+						float dtime = (float) atof(mDtime);
+						if ( trackcount >= 1 && framecount >= 1 )
 						{
-              case NT_NONE:
-                assert(0);
-                break;
-              case NT_MESH_COLLISION_REPRESENTATION:
-                MEMALLOC_DELETE(MeshCollisionRepresentation,mMeshCollisionRepresentation);
-                mMeshCollisionRepresentation = MEMALLOC_NEW(MeshCollisionRepresentation);
-                break;
-              case NT_MESH_COLLISION:
-                if ( mMeshCollisionRepresentation )
-                {
-                  mCallback->importCollisionRepresentation( mMeshCollisionRepresentation->mName, mMeshCollisionRepresentation->mInfo );
-                  mCollisionRepName = mMeshCollisionRepresentation->mName;
-                  MEMALLOC_DELETE(MeshCollisionRepresentation,mMeshCollisionRepresentation);
-                  mMeshCollisionRepresentation = 0;
-                }
-                MEMALLOC_DELETE(MeshCollision,mMeshCollision);
-                mMeshCollision = MEMALLOC_NEW(MeshCollision);
-                break;
-              case NT_MESH_COLLISION_CONVEX:
-                assert(mMeshCollision);
-                if ( mMeshCollision )
-                {
-                  MEMALLOC_DELETE(MeshCollisionConvex,mMeshCollisionConvex);
-                  mMeshCollisionConvex = MEMALLOC_NEW(MeshCollisionConvex);
-                  MeshCollision *d = static_cast< MeshCollision *>(mMeshCollisionConvex);
-                  *d = *mMeshCollision;
-                  MEMALLOC_DELETE(MeshCollision,mMeshCollision);
-                  mMeshCollision = 0;
-                }
-                break;
-							case NT_ANIMATION:
-								if ( mAnimation )
-								{
-									mCallback->importAnimation(*mAnimation);
-									MEMALLOC_DELETE(MeshAnimation,mAnimation);
-									mAnimation = 0;
-								}
-								mName       = 0;
-								mFrameCount = 0;
-								mDuration   = 0;
-								mTrackCount = 0;
-								mDtime      = 0;
-								mTrackIndex = 0;
-								break;
-							case NT_ANIM_TRACK:
-								if ( mAnimation == 0 )
-								{
-									if ( mName && mFrameCount && mDuration && mTrackCount && mDtime )
-									{
-										int framecount = atoi( mFrameCount );
-										float duration = (float) atof( mDuration );
-										int trackcount = atoi(mTrackCount);
-										float dtime = (float) atof(mDtime);
-										if ( trackcount >= 1 && framecount >= 1 )
-										{
-											mAnimation = MEMALLOC_NEW(MeshAnimation);
-                      mAnimation->mName = mName;
-                      mAnimation->mTrackCount = trackcount;
-                      mAnimation->mFrameCount = framecount;
-                      mAnimation->mDuration = duration;
-                      mAnimation->mDtime = dtime;
-                      mAnimation->mTracks = MEMALLOC_NEW_ARRAY(MeshAnimTrack *,mAnimation->mTrackCount)[mAnimation->mTrackCount];
-                      for (int i=0; i<mAnimation->mTrackCount; i++)
-                      {
-                        MeshAnimTrack *track = MEMALLOC_NEW(MeshAnimTrack);
-                        track->mDtime = mAnimation->mDuration;
-                        track->mFrameCount = mAnimation->mFrameCount;
-                        track->mDuration = mAnimation->mDuration;
-                        track->mPose = MEMALLOC_NEW_ARRAY(MeshAnimPose,track->mFrameCount)[track->mFrameCount];
-                        mAnimation->mTracks[i] = track;
-                      }
-										}
-									}
-								}
-								if ( mAnimation )
-								{
-									mAnimTrack = mAnimation->GetTrack(mTrackIndex);
-									mTrackIndex++;
-								}
-								break;
-							case NT_SKELETON:
-								{
-									MEMALLOC_DELETE(MeshSkeleton,mSkeleton);
-									mSkeleton = MEMALLOC_NEW(MeshSkeleton);
-								}
-							case NT_BONE:
-								if ( mSkeleton )
-								{
-									mBone = mSkeleton->GetBonePtr(mBoneIndex);
-								}
-								break;
+							mAnimation = MEMALLOC_NEW(MeshAnimation);
+                  mAnimation->mName = mName;
+                  mAnimation->mTrackCount = trackcount;
+                  mAnimation->mFrameCount = framecount;
+                  mAnimation->mDuration = duration;
+                  mAnimation->mDtime = dtime;
+                  mAnimation->mTracks = MEMALLOC_NEW_ARRAY(MeshAnimTrack *,mAnimation->mTrackCount)[mAnimation->mTrackCount];
+                  for (int i=0; i<mAnimation->mTrackCount; i++)
+                  {
+                    MeshAnimTrack *track = MEMALLOC_NEW(MeshAnimTrack);
+                    track->mDtime = mAnimation->mDuration;
+                    track->mFrameCount = mAnimation->mFrameCount;
+                    track->mDuration = mAnimation->mDuration;
+                    track->mPose = MEMALLOC_NEW_ARRAY(MeshAnimPose,track->mFrameCount)[track->mFrameCount];
+                    mAnimation->mTracks[i] = track;
+                  }
 						}
-						Display(depth,"Node(ELEMENT): %s\n", value);
 					}
 				}
-				break;
-			case TiXmlNode::TEXT:
-				Display(depth,"Node(TEXT): %s\n", value);
-				switch ( mType )
+				if ( mAnimation )
 				{
-					case NT_ANIM_TRACK:
-						if ( mAnimTrack )
-						{
-							mAnimTrack->SetName(mStrings.Get(mName).Get());
-							int count = atoi( mCount );
-							if ( count == mAnimTrack->GetFrameCount() )
-							{
+					mAnimTrack = mAnimation->GetTrack(mTrackIndex);
+					mTrackIndex++;
+				}
+				break;
+			case NT_SKELETON:
+				{
+					MEMALLOC_DELETE(MeshSkeleton,mSkeleton);
+					mSkeleton = MEMALLOC_NEW(MeshSkeleton);
+				}
+			case NT_BONE:
+				if ( mSkeleton )
+				{
+					mBone = mSkeleton->GetBonePtr(mBoneIndex);
+				}
+				break;
+		}
+  }
+  void ProcessData(const char *svalue)
+  {
+    if ( svalue )
+    {
+  		switch ( mType )
+  		{
+  			case NT_ANIM_TRACK:
+  				if ( mAnimTrack )
+  				{
+  					mAnimTrack->SetName(mStrings.Get(mName).Get());
+  					int count = atoi( mCount );
+  					if ( count == mAnimTrack->GetFrameCount() )
+  					{
                 if ( mHasScale )
                 {
   								float *buff = (float *) MEMALLOC_MALLOC(sizeof(float)*10*count);
@@ -758,15 +688,15 @@ public:
                     p->mScale[2] = 1;
   								}
                 }
-							}
-						}
-						break;
-					case NT_NODE_INSTANCE:
-#if 0 // TODO TODO
-						if ( mName )
-						{
-							float transform[4*4];
-							Asc2Bin(svalue, 4, "ffff", transform );
+  					}
+  				}
+  				break;
+  			case NT_NODE_INSTANCE:
+            #if 0 // TODO TODO
+  				if ( mName )
+  				{
+  					float transform[4*4];
+  					Asc2Bin(svalue, 4, "ffff", transform );
               MeshBone b;
               b.SetTransform(transform);
               float pos[3];
@@ -774,14 +704,14 @@ public:
               float scale[3] = { 1, 1, 1 };
               b.ExtractOrientation(quat);
               b.GetPos(pos);
-							mCallback->importMeshInstance(mName,pos,quat,scale);
-							mName = 0;
-						}
-#endif
-						break;
-					case NT_NODE_TRIANGLE:
-						if ( mCtype && mSemantic )
-						{
+  					mCallback->importMeshInstance(mName,pos,quat,scale);
+  					mName = 0;
+  				}
+            #endif
+  				break;
+  			case NT_NODE_TRIANGLE:
+  				if ( mCtype && mSemantic )
+  				{
               HeI32 c1,c2;
               char scratch1[2048];
               char scratch2[2048];
@@ -802,24 +732,24 @@ public:
                   mCallback->importTriangle(mCurrentMesh.Get(),mCurrentMaterial.Get(),mVertexFlags,vtx[0],vtx[1],vtx[2]);
                   MEMALLOC_FREE((void *)temp);
                 }
-							}
-							mCtype = 0;
-							mSemantic = 0;
-						}
-						break;
-					case NT_VERTEX_BUFFER:
-			      MEMALLOC_FREE( mVertexBuffer);
+  					}
+  					mCtype = 0;
+  					mSemantic = 0;
+  				}
+  				break;
+  			case NT_VERTEX_BUFFER:
+  	      MEMALLOC_FREE( mVertexBuffer);
             MEMALLOC_DELETE_ARRAY(MeshVertex,mVertices);
             mVertices = 0;
-						mVertexCount = 0;
-						mVertexBuffer = 0;
+  				mVertexCount = 0;
+  				mVertexBuffer = 0;
 
-						if ( mCtype && mCount )
-						{
-							mVertexCount  = atoi(mCount);
-							if ( mVertexCount > 0 )
-							{
-								mVertexBuffer = Asc2Bin(svalue, mVertexCount, mCtype, 0 );
+  				if ( mCtype && mCount )
+  				{
+  					mVertexCount  = atoi(mCount);
+  					if ( mVertexCount > 0 )
+  					{
+  						mVertexBuffer = Asc2Bin(svalue, mVertexCount, mCtype, 0 );
 
                 if ( mVertexBuffer )
                 {
@@ -850,23 +780,23 @@ public:
                   mVertexBuffer = 0;
                 }
 
-							}
-							mCtype = 0;
-							mCount = 0;
-						}
-						break;
-					case NT_INDEX_BUFFER:
-						if ( mCount )
-						{
-							mIndexCount = atoi(mCount);
-							if ( mIndexCount > 0 )
-							{
-								mIndexBuffer = Asc2Bin(svalue, mIndexCount, "ddd", 0 );
-							}
-						}
+  					}
+  					mCtype = 0;
+  					mCount = 0;
+  				}
+  				break;
+  			case NT_INDEX_BUFFER:
+  				if ( mCount )
+  				{
+  					mIndexCount = atoi(mCount);
+  					if ( mIndexCount > 0 )
+  					{
+  						mIndexBuffer = Asc2Bin(svalue, mIndexCount, "ddd", 0 );
+  					}
+  				}
 
-						if ( mIndexBuffer && mVertices )
-						{
+  				if ( mIndexBuffer && mVertices )
+  				{
               if ( mMeshCollisionConvex )
               {
                 float *vertices = MEMALLOC_NEW_ARRAY(float,mVertexCount*3)[mVertexCount*3];
@@ -898,43 +828,17 @@ public:
   					}
 
 
-						MEMALLOC_FREE( mIndexBuffer);
-						mIndexBuffer = 0;
-						mIndexCount = 0;
-						break;
-				}
-				break;
-			case TiXmlNode::COMMENT:
-				Display(depth,"Node(COMMENT): %s\n", value);
-				break;
-			case TiXmlNode::DECLARATION:
-				Display(depth,"Node(DECLARATION): %s\n", value);
-				break;
-			case TiXmlNode::UNKNOWN:
-				Display(depth,"Node(UNKNOWN): %s\n", value);
-				break;
-			default:
-				Display(depth,"Node(?????): %s\n", value);
-				break;
+  				MEMALLOC_FREE( mIndexBuffer);
+  				mIndexBuffer = 0;
+  				mIndexCount = 0;
+  				break;
+  		}
 		}
 	}
 
-	void ProcessAttribute(int         /* ntype */,          // enumerated type of the node
-												const char * /* nvalue */, // The node value / key
-												int         depth,          // how deeply nested we are in the XML hierachy
-												const char *aname,  // the name of the attribute
+	void ProcessAttribute(const char *aname,  // the name of the attribute
 												const char *savalue) // the value of the attribute
 	{
-		char avalue[43];
-
-		avalue[39] = '.';
-		avalue[40] = '.';
-		avalue[41] = '.';
-		avalue[42] = 0;
-
-		strncpy(avalue,savalue,39);
-		Display(depth,"  ### Attribute(%s,%s)\n", aname, avalue );
-
 		AttributeType attrib = (AttributeType) mToAttribute.Get(aname);
 		switch ( attrib )
 		{
@@ -1105,19 +1009,23 @@ public:
 
 	}
 
-	void Display(int /* depth */,const char * /* fmt */,...)
-	{
-#if DEBUG_LOG
-		for (int i=0; i<depth; i++)
-		{
-			SEND_TEXT_MESSAGE(0,"  ");
-		}
-		char wbuff[8192];
-		vsnprintf(wbuff, 8191, fmt, (char *)(&fmt+1));
-		SEND_TEXT_MESSAGE(0,"%s", wbuff);
-#endif
-	}
-
+  virtual bool processElement(const char *elementName,         // name of the element
+                              int         argc,                // number of attributes
+                              const char **argv,               // list of attributes.
+                              const char  *elementData,        // element data, null if none
+                              int         lineno)         // line number in the source XML file
+  {
+    ProcessNode(elementName);
+    int acount = argc/2;
+    for (int i=0; i<acount; i++)
+    {
+      const char *key = argv[i*2];
+      const char *value = argv[i*2+1];
+      ProcessAttribute(key,value);
+    }
+    ProcessData(elementData);
+    return true;
+  }
 
 
 

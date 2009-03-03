@@ -2,6 +2,11 @@
 
 #define AUTO_GEOMETRY_H
 
+namespace JOB_SWARM
+{
+  class JobSwarmContext;
+};
+
 namespace AUTO_GEOMETRY
 {
 
@@ -28,6 +33,14 @@ public:
   unsigned int  mTriCount;
   unsigned int *mIndices;
   float         mMeshVolume;
+  // OBB
+  float         mOBBVolume;
+  float         mLocalTransform[16];
+  float         mSides[3];
+  // sphere
+  float         mSphereVolume;
+  float         mRadius;
+  float         mCenter[3];
 };
 
 enum BoneOption
@@ -73,17 +86,22 @@ class AutoGeometry
 {
 public:
 
-  virtual SimpleHull ** createCollisionVolumes(float collapse_percentage,          // percentage volume to collapse a child into a parent
-                                               unsigned int bone_count,
-                                               const SimpleBone *bones,
-                                               const SimpleSkinnedMesh *mesh,
-                                               unsigned int &geom_count) = 0;
 
+  virtual bool createCollisionVolumes(float collapse_percentage,JOB_SWARM::JobSwarmContext *context) = 0;
+  virtual SimpleHull ** getResults(unsigned int &geom_count,bool &ready) = 0;
 
   virtual SimpleHull ** createCollisionVolumes(float collapse_percentage,unsigned int &geom_count) = 0;
 
-  virtual void addSimpleSkinnedVertex(const SimpleSkinnedVertex &vtx) = 0;
+  virtual void addSimpleSkinnedTriangle(const SimpleSkinnedVertex &v1,
+                                        const SimpleSkinnedVertex &v2,
+                                        const SimpleSkinnedVertex &v3) = 0;
+
   virtual void addSimpleBone(const SimpleBone &b) = 0;
+
+  virtual const char * stristr(const char *str,const char *match) = 0; // case insensitive ststr
+
+  virtual bool cancel(void) = 0;
+  virtual bool isFinish(void) const = 0;
 
 };
 

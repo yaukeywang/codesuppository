@@ -32,8 +32,6 @@
           MeshImport/*.h
 				</Files>
 				<Files name="Common Include-Binding Files" root="../../include/common" type="header">
-          TinyXML/*.cpp
-          TinyXML/*.h
           FileInterface/*.cpp
           FileInterface/*.h
           snippets/stable.h
@@ -43,8 +41,10 @@
           snippets/sutil.h
           snippets/inparser.cpp
           snippets/inparser.h
-         snippets/SystemServices.cpp
-         snippets/SystemServices.h
+          snippets/SystemServices.cpp
+          snippets/SystemServices.h
+          snippets/FastXml.h
+          snippets/FastXml.cpp
           MemoryServices/MemoryContainer.cpp
           MemoryServices/MemoryContainer.h
          MemoryServices/GlobalNewDelete.cpp

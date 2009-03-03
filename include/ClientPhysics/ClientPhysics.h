@@ -138,11 +138,13 @@ public:
 class ApexCloth
 {
 public:
-  virtual void setCompositeTransforms(unsigned int bone_count,const float *matrices) = 0;
+  virtual void setCompositeTransforms(unsigned int bone_count,const float *matrices,bool continuous) = 0;
   virtual void render(void) = 0;
   virtual void setWind(const float *vec) = 0;
   virtual void * getUserData(void) const = 0;
   virtual void setPriority(float priority) = 0;
+  virtual void setParallelMeshMeshSkinning(bool state) = 0;
+  virtual void setParallelPhysXMeshSkinning(bool state) = 0;
 
 };
 
@@ -197,7 +199,7 @@ public:
 
   virtual void setRenderDebug(RENDER_DEBUG::BaseRenderDebug *rd) = 0;
 
-  virtual CharacterCollision * createCharacterCollision(CharacterBoneInterface *iface) = 0;
+  virtual CharacterCollision * createCharacterCollision(HeU64 guid,CharacterBoneInterface *iface) = 0;
   virtual void                 releaseCharacterCollision(CharacterCollision *c) = 0;
 
   virtual bool pump(NxPhysicsSDK *sdk,

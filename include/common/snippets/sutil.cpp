@@ -80,8 +80,8 @@ char *stristr(const char *str,const char *key)       // case insensitive str str
 	HE_ASSERT( strlen(key) < 2048 );
 	char istr[2048];
 	char ikey[2048];
-	strcpy(istr,str);
-	strcpy(ikey,key);
+	strncpy(istr,str,2048);
+	strncpy(ikey,key,2048);
 	strlwr(istr);
 	strlwr(ikey);
 

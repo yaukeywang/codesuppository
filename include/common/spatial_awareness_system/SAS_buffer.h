@@ -81,6 +81,7 @@ typedef SimpleVector< SasEntry > SasEntryVector;
     SAS_Buffer(SpatialAwarenessObserver *observer);
     ~SAS_Buffer(void);
 
+    virtual HeSize getMemoryUsage();
     void Pump(SecondsType time_elapsed_since_last_pump);
     bool SetActive(ActiveType new_active_flag);
     bool SetName(NameType new_name);

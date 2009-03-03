@@ -33,6 +33,16 @@ SAS_Buffer::~SAS_Buffer(void)
   Factory::Destroy(mParent);
 }
 
+HeSize SAS_Buffer::getMemoryUsage()
+{
+  HeSize totalBytes = sizeof *this;
+  totalBytes += mParent->getMemoryUsage();
+  // TODO:
+  //totalBytes += mMessages.capacity() * sizeof AwareMessageVector::value_type;
+  //totalBytes += mCommands.capacity() * sizeof SasEntryVector::value_type;
+  // StringDict                  mStringDict;
+  return totalBytes;
+}
 
 void SAS_Buffer::Pump(SecondsType time_elapsed_since_last_pump)
 {

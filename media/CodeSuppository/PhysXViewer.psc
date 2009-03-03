@@ -18,11 +18,11 @@
 /FillBasin 300.000000 
 /TriangulateType EAR_SPLITTING 
 /RotateZ 0.000000 
-/RotateY 0 
-/RotateX 90 
+/RotateY 0.000000 
+/RotateX 0.000000 
 /Explode 0.200000 
-/PlaneD 0.048 
-/Plane XUP 
+/PlaneD -0.560 
+/Plane YUP 
 /EdgeIntersect true 
 /CollapseColinear false 
 /ShowSplitPlane true 
@@ -34,8 +34,9 @@
 /WireFrame true 
 /Noise false 
 /Tesselate false 
-/RemoveTjunctions true 
+/RemoveTjunctions false 
 /DebugView false 
+/SelectCollision 0.000000 
 /AnimationSpeed 4.000000 
 /PlayAnimation false 
 /FlipWinding false 

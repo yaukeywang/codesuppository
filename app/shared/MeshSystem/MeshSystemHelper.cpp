@@ -25,6 +25,7 @@ public:
 
   MyMeshSystemHelper(void)
   {
+    mSelectCollision = -1;
     mShowBounds = false;
     mFlipWinding = false;
     mMeshSystem = 0;
@@ -97,7 +98,7 @@ public:
         {
           for (HeU32 i=0; i<mMeshSystem->mMeshCollisionCount; i++)
           {
-            debugRender( mMeshSystem->mMeshCollisionRepresentations[i], mSkeleton );
+            debugRender( mMeshSystem->mMeshCollisionRepresentations[i], mSkeleton, mSelectCollision );
           }
         }
       }
@@ -135,19 +136,50 @@ public:
         {
           for (HeU32 i=0; i<mMeshSystem->mMeshCollisionCount; i++)
           {
-            debugRender( mMeshSystem->mMeshCollisionRepresentations[i],0 );
+            debugRender( mMeshSystem->mMeshCollisionRepresentations[i],0, mSelectCollision );
           }
         }
       }
     }
   }
 
-  void debugRender(MESHIMPORT::MeshCollisionRepresentation *m,MESHIMPORT::MeshSkeletonInstance *skeleton)
+  virtual void setSelectCollision(int sc)
   {
-    for (HeU32 i=0; i<m->mCollisionCount; i++)
+    if ( sc != mSelectCollision )
     {
-      MESHIMPORT::MeshCollision *c = m->mCollisionGeometry[i];
-      debugRender(c,skeleton);
+      mSelectCollision = sc;
+      if ( mMeshSystem->mMeshCollisionCount )
+      {
+        if ( mSelectCollision >= 0 )
+        {
+          MESHIMPORT::MeshCollisionRepresentation *cr = mMeshSystem->mMeshCollisionRepresentations[0];
+          if ( mSelectCollision < (HeI32)cr->mCollisionCount )
+          {
+            MESHIMPORT::MeshCollision *c = cr->mCollisionGeometry[mSelectCollision];
+            SEND_TEXT_MESSAGE(0,"Selected collision %s\r\n", c->mName );
+          }
+        }
+      }
+    }
+  }
+
+  void debugRender(MESHIMPORT::MeshCollisionRepresentation *m,MESHIMPORT::MeshSkeletonInstance *skeleton,int selectCollision)
+  {
+    if ( selectCollision >= 0 )
+    {
+      if ( selectCollision < (HeI32)m->mCollisionCount )
+      {
+        MESHIMPORT::MeshCollision *c = m->mCollisionGeometry[selectCollision];
+        debugRender(c,skeleton);
+      }
+    }
+    else
+    {
+      for (HeU32 i=0; i<m->mCollisionCount; i++)
+      {
+        MESHIMPORT::MeshCollision *c = m->mCollisionGeometry[i];
+        debugRender(c,skeleton);
+      }
     }
   }
 
@@ -510,7 +542,67 @@ public:
   virtual bool exportObj(void)
   {
     bool ret = false;
-    SEND_TEXT_MESSAGE(0,"Not implemeented yet.\r\n");
+
+    if ( mMeshSystem )
+    {
+      char scratch[512];
+      char export_name[512];
+      char material_name[512];
+
+      strncpy(scratch, mMeshSystem->mAssetName, 512 );
+
+      char *dot = (char *)lastDot(scratch);
+
+      if ( dot )
+      {
+        *dot = 0;
+        sprintf(export_name,"%s_export.obj", scratch );
+        sprintf(material_name,"%s_export.mtl", scratch );
+
+        StringRef ref = mStrings.Get(export_name);
+        SEND_TEXT_MESSAGE(0,"Serializing mesh '%s' to '%s'\r\n", mMeshSystem->mAssetName, export_name );
+        mMeshSystem->mAssetName = ref.Get(); // the new asset name...
+        MESHIMPORT::MeshSerialize ms(MESHIMPORT::MSF_WAVEFRONT);
+        ms.mSaveFileName = export_name;
+
+        bool ok = gMeshImport->serializeMeshSystem(mMeshSystem,ms);
+        if ( ok )
+        {
+          FILE *fph = fopen(export_name, "wb");
+          if ( fph )
+          {
+            fwrite(ms.mBaseData,ms.mBaseLen,1,fph);
+            fclose(fph);
+            ret = true;
+          }
+          else
+          {
+            SEND_TEXT_MESSAGE(0,"Failed to open file '%s' for write access.\r\n", export_name );
+          }
+
+          if ( ms.mExtendedData )
+          {
+            FILE *fph = fopen(material_name, "wb");
+            if ( fph )
+            {
+              fwrite(ms.mExtendedData,ms.mExtendedLen,1,fph);
+              fclose(fph);
+              SEND_TEXT_MESSAGE(0,"Saving material data to '%s'\r\n", material_name );
+            }
+            else
+            {
+              SEND_TEXT_MESSAGE(0,"Failed to open file '%s' for write access.\r\n", material_name );
+            }
+          }
+          gMeshImport->releaseSerializeMemory(ms);
+        }
+        else
+        {
+          SEND_TEXT_MESSAGE(0,"Serialization failed.\r\n");
+        }
+      }
+    }
+
     return ret;
   }
 
@@ -589,6 +681,7 @@ private:
   StringDict mStrings;
   HeMat44Vector mTransforms;
   PD3D::Pd3dMaterial mMaterial;
+  HeI32 mSelectCollision;
 };
 
 MeshSystemHelper * createMeshSystemHelper(void)

@@ -2,7 +2,7 @@
 
 #include "common/binding/binding.h"
 #include "common/MemoryServices/ApplicationSystemServices.h"
-
+#include "common/snippets/JobSwarm.h"
 #include "RenderDebug/RenderDebug.h"
 #include "MeshImport/MeshImport.h"
 #include "ClientPhysics/ClientPhysics.h"
@@ -36,6 +36,8 @@ CLIENT_PHYSICS::ClientPhysics *gClientPhysics=0;
 bool loadPlugins(void)
 {
   bool ok = false;
+
+  gJobSwarmContext = JOB_SWARM::createJobSwarmContext(4); // create a jobswarm context
 
   gResourceInterface = createDefaultResourceInterface();
 

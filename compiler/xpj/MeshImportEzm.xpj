@@ -45,8 +45,8 @@
           snippets/sutil.h
           snippets/SystemServices.h
           snippets/SystemServices.cpp
-          TinyXML/*.cpp
-          TinyXML/*.h
+          snippets/FastXml.h
+          snippets/FastXml.cpp
           FileInterface/*.cpp
           FileInterface/*.h
           MemoryServices/MemoryContainer.cpp

@@ -128,11 +128,13 @@ public:
    createButton("Create Apex Cloth", CSC_APEX_CLOTH, "CreateApexCloth" );
 
    createSlider("Animation Speed",CSC_ANIMATION_SPEED,"AnimationSpeed",0,100,4,false);
+   createSlider("Select Collision Hull",CSC_SELECT_COLLISION,"SelectCollision",0,100,0,true);
 
    createButton("Clear Mesh", CSC_CLEAR_MESH, "ClearMesh");
    createButton("AutoGenerate Collision Mesh", CSC_AUTO_GEOMETRY,"AutoGeometry");
 
    createButton("BEST_FIT_OBB",  CSC_BEST_FIT_OBB,  "CSC_BEST_FIT_OBB");
+   createButton("BEST_FIT_CAPSULE",  CSC_BEST_FIT_CAPSULE,  "CSC_BEST_FIT_CAPSULE");
    createButton("BEST_FIT_PLANE",  CSC_BEST_FIT_PLANE,  "CSC_BEST_FIT_PLANE");
 
    createButton("STAN_HULL",  CSC_STAN_HULL,  "CSC_STAN_HULL");
@@ -166,7 +168,7 @@ public:
    createButton("*EROSION",  CSC_EROSION,  "CSC_EROSION");
 
     createCheckbox("Debug View", SMC_DEBUG_VIEW, "DebugView", false );
-    createCheckbox("Remove T-Junctions", SMC_REMOVE_TJUNCTIONS, "RemoveTjunctions", true );
+    createCheckbox("Remove T-Junctions", SMC_REMOVE_TJUNCTIONS, "RemoveTjunctions", false );
     createCheckbox("Tesselate", SMC_TESSELATE, "Tesselate", false );
     createCheckbox("Noise Break", SMC_NOISE, "Noise", false);
     createCheckbox("Wireframe", SMC_WIREFRAME, "WireFrame", true);
@@ -220,6 +222,7 @@ public:
     CPARSER.Parse("TuiElement ShowSkeleton");
     CPARSER.Parse("TuiElement ShowMesh");
     CPARSER.Parse("TuiElement ShowCollision");
+    CPARSER.Parse("TuiElement SelectCollision");
     if ( gClientPhysics ) CPARSER.Parse("TuiElement CreateApexCloth");
     CPARSER.Parse("TuiElement PlayAnimation");
     CPARSER.Parse("TuiElement AnimationSpeed");
@@ -228,6 +231,7 @@ public:
     CPARSER.Parse("TuiElement ClearMesh");
     CPARSER.Parse("TuiElement AutoGeometry");
     CPARSER.Parse("TuiElement CSC_BEST_FIT_OBB");
+    CPARSER.Parse("TuiElement CSC_BEST_FIT_CAPSULE");
     CPARSER.Parse("TuiElement CSC_BEST_FIT_PLANE");
     CPARSER.Parse("TuiElement CSC_STAN_HULL");
     CPARSER.Parse("TuiElement ConvexDecomposition");
@@ -714,6 +718,7 @@ public:
         }
         break;
       case CSC_BEST_FIT_OBB:
+      case CSC_BEST_FIT_CAPSULE:
       case CSC_BEST_FIT_PLANE:
       case CSC_STAN_HULL:
       case CSC_INPARSER:
@@ -763,6 +768,7 @@ public:
       case CSC_REMOVE_TJUNCTIONS:
       case CSC_INITIAL_ISLAND_GENERATION:
       case CSC_ISLAND_GENERATION:
+      case CSC_SELECT_COLLISION:
         gCodeSuppository->processCommand( (CodeSuppositoryCommand)token, state, data );
         break;
       case SMC_WIREFRAME:

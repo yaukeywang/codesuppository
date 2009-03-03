@@ -45,6 +45,7 @@ public:
 
   virtual MeshSystemRaw * getMeshSystemRaw(void) = 0;
   virtual void            releaseMeshSystemRaw(MeshSystemRaw *mr) = 0;
+  virtual void setSelectCollision(int sc) = 0;
 };
 
 MeshSystemHelper * createMeshSystemHelper(void);

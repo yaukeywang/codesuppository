@@ -8,9 +8,9 @@
 
 #include "ImportOgre.h"
 #include "MeshImport/MeshImport.h"
-#include "common/TinyXML/tinyxml.h"
 #include "common/snippets/stringdict.h"
 #include "common/snippets/sutil.h"
+#include "common/snippets/FastXml.h"
 
 #pragma warning(disable:4100)
 #pragma warning(disable:4996)
@@ -267,7 +267,7 @@ enum NodeAttribute
 };
 
 
-class MeshImportOgre : public MeshImporter
+class MeshImportOgre : public MeshImporter, public FastXmlInterface
 {
 public:
   MeshImportOgre(void)
@@ -277,7 +277,6 @@ public:
     mVertexIndex = 0;
     mVertexBuffer = 0;
     mElement = NE_LAST;
-    mDisplay = false;
     mUseSharedVertices = false;
     mUse32BitIndices = false;
     mPositions = false;
@@ -416,24 +415,17 @@ public:
   {
     bool ret = false;
 
-    mDisplay = false;
-    for (int i=0; i<NE_LAST; i++)
-      mShow[i] = true;
     mCallback = callback;
 
     if ( data && mCallback )
     {
       mSkeletonName = mStrings.Get(fname);
 
-  		TINYXML::TiXmlDocument *doc = MEMALLOC_NEW(TINYXML::TiXmlDocument);
-  		bool ok = doc->LoadFile(fname,data,dlen);
+      FastXml *f = createFastXml();
+      bool ok = f->processXml((const char *)data,dlen,this);
   		if ( ok )
   		{
         mCallback->importAssetName(fname,0);
-  			Traverse(doc,0);
-
-        MEMALLOC_DELETE(TINYXML::TiXmlDocument,doc);
-
         if ( strlen(mSkeletonName.Get()) > 0  && appResource )
         {
           char scratch[512];
@@ -455,13 +447,7 @@ public:
           void *mem = appResource->getApplicationResource(fname,scratch,len);
           if ( mem )
           {
-        		TINYXML::TiXmlDocument *doc = MEMALLOC_NEW(TINYXML::TiXmlDocument);
-        		bool ok = doc->LoadFile(scratch,mem,len);
-        		if ( ok )
-        		{
-        			Traverse(doc,0);
-              MEMALLOC_DELETE(TINYXML::TiXmlDocument,doc);
-            }
+            f->processXml((const char *)mem,len,this);
             appResource->releaseApplicationResource(mem);
           }
         }
@@ -499,6 +485,8 @@ public:
   			ret = true;
   		}
 
+      releaseFastXml(f);
+
 
       release();
 
@@ -506,52 +494,6 @@ public:
 
     return ret;
   }
-
-	void Traverse(TINYXML::TiXmlNode *node,int depth)
-	{
-
-		Process(node,depth);
-
-		node = node->FirstChild();
-
-		while (node )
-		{
-
-			if ( node->NoChildren() )
-			{
-				Process(node,depth);
-			}
-			else
-			{
-				Traverse(node,depth+1);
-			}
-
-			node = node->NextSibling();
-		}
-
-	}
-
-	void Process(TINYXML::TiXmlNode *node,int depth)
-	{
-
-		const char *value = node->Value();
-
-		ProcessNode(node->Type(),value,depth);
-
-		TINYXML::TiXmlElement *element = node->ToElement(); // is there an element?  Yes, traverse it's attribute key-pair values.
-
-		if ( element )
-		{
-			TINYXML::TiXmlAttribute *atr = element->FirstAttribute();
-			while ( atr )
-			{
-				const char *aname  = atr->Name();
-				const char *avalue = atr->Value();
-				ProcessAttribute( node->Type(), value, depth, aname, avalue );
-				atr = atr->Next();
-			}
-		}
-	}
 
   void flushAnimation(void)
   {
@@ -586,127 +528,73 @@ public:
     mCurrentAnimTrack = 0;
   }
 
+  virtual bool processElement(const char *elementName,         // name of the element
+                              int         argc,                // number of attributes
+                              const char **argv,               // list of attributes.
+                              const char  *elementData,        // element data, null if none
+                              int         lineno)         // line number in the source XML file
+  {
+    if ( !elementData ) elementData = "";
+    ProcessNode(elementName,elementData);
+    int acount = argc/2;
+    for (int i=0; i<acount; i++)
+    {
+      const char *key = argv[i*2];
+      const char *value = argv[i*2+1];
+      ProcessAttribute(key,value);
+    }
+    return true; // keep on going!
+  }
 
-	void ProcessNode(int ntype,const char *svalue,int depth)
+
+	void ProcessNode(const char *value,const char *data)
 	{
-		char value[43];
-		value[39] = '.';
-		value[40] = '.';
-		value[41] = '.';
-		value[42] = 0;
-
-		strncpy(value,svalue,39);
-
-    if ( ntype != TINYXML::TiXmlNode::ELEMENT )
+    mElement = getNodeElement(value);
+    switch ( mElement )
     {
-      mDisplay = true;
+      case NE_ANIMATION:
+        flushAnimation(); // if a previous animation pending..flush it
+        mAnimation = MEMALLOC_NEW(MeshAnimation);
+        break;
+      case NE_MESH:
+        break;
+      case NE_SHARED_GEOMETRY:
+        break;
+      case NE_VERTEX_BUFFER:
+        mVertexIndex = -1;
+        break;
+      case NE_VERTEX:
+        mVertexIndex++;
+        break;
+      case NE_POSITION:
+        break;
+      case NE_NORMAL:
+        break;
+  	  case NE_BONEASSIGNMENTS:
+        mVertexIndex = -1;
+        mBoneCount = 0;
+        mBoneAssignments = true;
+        break;
+  	  case NE_COLOR_DIFFUSE:
+        break;
+  	  case NE_FACE:
+        assert(mCurrentSubMesh);
+        if ( mCurrentSubMesh )
+        {
+          mCurrentSubMesh->mFaceIndex++;
+        }
+        break;
+  	  case NE_TEXCOORD:
+        break;
+  	  case NE_VERTEX_BONE_ASSIGNMENT:
+        break;
     }
-    else
-    {
-      mDisplay = false;
-    }
-
-		switch ( ntype )
-		{
-			case TINYXML::TiXmlNode::ELEMENT:
-			case TINYXML::TiXmlNode::DOCUMENT:
-				{
-					if ( ntype == TINYXML::TiXmlNode::DOCUMENT )
-						Display(depth,"Node(DOCUMENT): %s\n", value);
-					else
-					{
-						mElement = getNodeElement(value);
-            if ( mElement != NE_LAST )
-            {
-              mDisplay = mShow[mElement];
-              mShow[mElement] = false;
-            }
-            else
-            {
-              mDisplay = true;
-            }
-
-            // insert code here...
-						Display(depth,"Node(ELEMENT): %s\n", value);
-
-            switch ( mElement )
-            {
-              case NE_ANIMATION:
-                flushAnimation(); // if a previous animation pending..flush it
-                mAnimation = MEMALLOC_NEW(MeshAnimation);
-                break;
-              case NE_MESH:
-                break;
-              case NE_SHARED_GEOMETRY:
-                break;
-              case NE_VERTEX_BUFFER:
-                mVertexIndex = -1;
-                break;
-              case NE_VERTEX:
-                mVertexIndex++;
-                break;
-              case NE_POSITION:
-                break;
-              case NE_NORMAL:
-                break;
-          	  case NE_BONEASSIGNMENTS:
-                mVertexIndex = -1;
-                mBoneCount = 0;
-                mBoneAssignments = true;
-                break;
-          	  case NE_COLOR_DIFFUSE:
-                break;
-          	  case NE_FACE:
-                assert(mCurrentSubMesh);
-                if ( mCurrentSubMesh )
-                {
-                  mCurrentSubMesh->mFaceIndex++;
-                }
-                break;
-          	  case NE_TEXCOORD:
-                break;
-          	  case NE_VERTEX_BONE_ASSIGNMENT:
-                break;
-            }
-					}
-				}
-				break;
-			case TINYXML::TiXmlNode::TEXT:
-				Display(depth,"Node(TEXT): %s\n", value);
-				break;
-			case TINYXML::TiXmlNode::COMMENT:
-				Display(depth,"Node(COMMENT): %s\n", value);
-				break;
-			case TINYXML::TiXmlNode::DECLARATION:
-				Display(depth,"Node(DECLARATION): %s\n", value);
-				break;
-			case TINYXML::TiXmlNode::UNKNOWN:
-				Display(depth,"Node(UNKNOWN): %s\n", value);
-				break;
-			default:
-				Display(depth,"Node(?????): %s\n", value);
-				break;
-		}
 	}
 
-	void ProcessAttribute(int         /* ntype */,          // enumerated type of the node
-												const char * /* nvalue */, // The node value / key
-												int         depth,          // how deeply nested we are in the XML hierachy
-												const char *aname,  // the name of the attribute
+	void ProcessAttribute(const char *aname,  // the name of the attribute
 												const char *savalue) // the value of the attribute
 	{
-		char avalue[43];
-
-		avalue[39] = '.';
-		avalue[40] = '.';
-		avalue[41] = '.';
-		avalue[42] = 0;
-
-		strncpy(avalue,savalue,39);
-		Display(depth,"  ### Attribute(%s,%s)\n", aname, avalue );
-
     NodeAttribute a = getNodeAttribute(aname);
-
     switch ( a )
     {
       case NA_ID:
@@ -1133,28 +1021,7 @@ public:
 
 	}
 
-	void Display(int depth,const char * fmt,...)
-	{
-#if DEBUG_LOG
-    if ( mDisplay )
-    {
-  		for (int i=0; i<depth; i++)
-  		{
-  			printf("  ");
-  		}
-  		char wbuff[8192];
-  		_vsnprintf(wbuff, 8191, fmt, (char *)(&fmt+1));
-  		printf("%s", wbuff);
-    }
-#endif
-	}
-
-
-
-
-
 private:
-  bool                 mDisplay;
   bool                 mBoneAssignments;
   bool                 mUseSharedVertices;
   bool                 mUse32BitIndices;
@@ -1165,7 +1032,6 @@ private:
   int                  mTextureCoords;
 
   OperationType        mOperationType;
-  bool                 mShow[NE_LAST];
   MeshImportInterface *mCallback;
   int                  mVertexCount;
   int                  mVertexIndex;

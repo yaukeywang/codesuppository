@@ -5,6 +5,7 @@
 enum CodeSuppositoryCommand
 {
   CSC_BEST_FIT_OBB = 4000,
+  CSC_BEST_FIT_CAPSULE,
   CSC_BEST_FIT_PLANE,
   CSC_STAN_HULL,
   CSC_INPARSER,
@@ -57,6 +58,7 @@ enum CodeSuppositoryCommand
   CSC_REMOVE_TJUNCTIONS,
   CSC_INITIAL_ISLAND_GENERATION,
   CSC_ISLAND_GENERATION,
+  CSC_SELECT_COLLISION,
 };
 
 class CodeSuppository
@@ -65,6 +67,7 @@ public:
   virtual void processCommand(CodeSuppositoryCommand command,bool state=true,const float *data=0) = 0;
   virtual void render(float dtime) = 0;
   virtual void importMesh(const char *fname) = 0;
+  virtual void process(float dtime) = 0;
 };
 
 CodeSuppository * createCodeSuppository(void);

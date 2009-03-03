@@ -6,62 +6,21 @@
 #include <vector>
 
 #ifdef APEX_TOOLS
-#include "../include/AutoGeometry.h"
-#include "../include/UserMemAlloc.h"
-#include "../include/StanHull.h"
+#include "AutoGeometry.h"
+#include "UserMemAlloc.h"
+#include "StanHull.h"
 #else
 #include "AutoGeometry.h"
 #include "../snippets/UserMemAlloc.h"
 #include "../snippets/StanHull.h"
+#include "../snippets/JobSwarm.h"
+#include "../snippets/FloatMath.h"
 #endif
 
-#pragma warning(disable:4100)
+#pragma warning(disable:4100 4996)
 
 namespace AUTO_GEOMETRY
 {
-void  fm_transform(const float matrix[16],const float v[3],float t[3]) // rotate and translate this point
-{
-  if ( matrix )
-  {
-    float tx = (matrix[0*4+0] * v[0]) +  (matrix[1*4+0] * v[1]) + (matrix[2*4+0] * v[2]) + matrix[3*4+0];
-    float ty = (matrix[0*4+1] * v[0]) +  (matrix[1*4+1] * v[1]) + (matrix[2*4+1] * v[2]) + matrix[3*4+1];
-    float tz = (matrix[0*4+2] * v[0]) +  (matrix[1*4+2] * v[1]) + (matrix[2*4+2] * v[2]) + matrix[3*4+2];
-    t[0] = tx;
-    t[1] = ty;
-    t[2] = tz;
-  }
-  else
-  {
-    t[0] = v[0];
-    t[1] = v[1];
-    t[2] = v[2];
-  }
-}
-inline float det(const float *p1,const float *p2,const float *p3)
-{
-  return  p1[0]*p2[1]*p3[2] + p2[0]*p3[1]*p1[2] + p3[0]*p1[1]*p2[2] -p1[0]*p3[1]*p2[2] - p2[0]*p1[1]*p3[2] - p3[0]*p2[1]*p1[2];
-}
-
-
-float  fm_computeMeshVolume(const float *vertices,size_t tcount,const unsigned int *indices)
-{
-	float volume = 0;
-
-	for (unsigned int i=0; i<tcount; i++,indices+=3)
-	{
-  	const float *p1 = &vertices[ indices[0]*3 ];
-		const float *p2 = &vertices[ indices[1]*3 ];
-		const float *p3 = &vertices[ indices[2]*3 ];
-		volume+=det(p1,p2,p3); // compute the volume of the tetrahedran relative to the origin.
-	}
-
-	volume*=(1.0f/6.0f);
-	if ( volume < 0 )
-		volume*=-1;
-	return volume;
-}
-
-
 
 class Vec3
 {
@@ -111,6 +70,7 @@ public:
   float generateHull(void)
   {
     release();
+    fm_identity(mLocalTransform);
     if ( mPoints.size() >= 3 ) // must have at least 3 vertices to create a hull.
     {
       // now generate the convex hull.
@@ -163,24 +123,39 @@ public:
         fm_transform(b.mInverseTransform,vtx,vtx); // inverse transform the point into bone relative object space
       }
     }
-
   }
+
+  void computeOBB(void)
+  {
+    fm_computeBestFitOBB( (size_t)mVertexCount, (const float *)mVertices, sizeof(float)*3,mSides, mLocalTransform, true);
+    mOBBVolume = mSides[0]*mSides[1]*mSides[2];
+  }
+
+  void computeSphere(void)
+  {
+    mRadius = fm_computeBestFitSphere( (size_t)mVertexCount, (const float *)mVertices, sizeof(float)*3, mCenter );
+    mSphereVolume = fm_sphereVolume(mRadius);
+  }
+
 
   bool        mValidHull;
   Vec3Vector  mPoints;
 };
 
-class MyAutoGeometry : public AutoGeometry
+class MyAutoGeometry : public AutoGeometry, public JOB_SWARM::JobSwarmInterface
 {
 public:
   MyAutoGeometry(void)
   {
+    mContext = 0;
+    mSwarmJob = 0;
     mHulls = 0;
     mSimpleHulls = 0;
   }
 
   ~MyAutoGeometry(void)
   {
+    assert( mSwarmJob == 0 );
     release();
   }
 
@@ -190,6 +165,54 @@ public:
     mHulls = 0;
     MEMALLOC_DELETE_ARRAY(SimpleHull *,mSimpleHulls);
     mSimpleHulls = 0;
+  }
+
+  #define MAX_BONE_COUNT 8
+
+  void addBone(unsigned int bone,unsigned int *bones,unsigned int &bcount)
+  {
+    if ( bcount < MAX_BONE_COUNT )
+    {
+      bool found = false;
+
+      for (unsigned int i=0; i<bcount; i++)
+      {
+        if ( bones[i] == bone )
+        {
+          found = true;
+          break;
+        }
+      }
+      if ( !found )
+      {
+        bones[bcount] = bone;
+        bcount++;
+      }
+    }
+  }
+
+  #define MIN_WEIGHT 0.1f
+  void addBones(const SimpleSkinnedVertex &v,unsigned int *bones,unsigned int &bcount)
+  {
+    if ( v.mWeight[0] >= MIN_WEIGHT ) addBone(v.mBone[0],bones,bcount);
+    if ( v.mWeight[1] >= MIN_WEIGHT ) addBone(v.mBone[1],bones,bcount);
+    if ( v.mWeight[2] >= MIN_WEIGHT ) addBone(v.mBone[2],bones,bcount);
+    if ( v.mWeight[3] >= MIN_WEIGHT ) addBone(v.mBone[3],bones,bcount);
+  }
+
+  void addTri(const SimpleSkinnedVertex &v1,const SimpleSkinnedVertex &v2,const SimpleSkinnedVertex &v3,const SimpleBone *sbones)
+  {
+    unsigned int bcount = 0;
+    unsigned int bones[MAX_BONE_COUNT];
+    addBones(v1,bones,bcount);
+    addBones(v2,bones,bcount);
+    addBones(v3,bones,bcount);
+    for (unsigned int i=0; i<bcount; i++)
+    {
+      addPos(v1.mPos, bones[i], sbones );
+      addPos(v2.mPos, bones[i], sbones );
+      addPos(v3.mPos, bones[i], sbones );
+    }
   }
 
   virtual SimpleHull ** createCollisionVolumes(float collapse_percentage,
@@ -203,13 +226,20 @@ public:
 
     mHulls = MEMALLOC_NEW_ARRAY(MyHull,bone_count)[bone_count];
 
-    for (unsigned int i=0; i<mesh->mVertexCount; i++)
+    for (unsigned int i=0; i<bone_count; i++)
     {
-      const SimpleSkinnedVertex &vtx = mesh->mVertices[i];
-      addPos( vtx.mPos, vtx.mWeight[0], vtx.mBone[0], bones );
-      addPos( vtx.mPos, vtx.mWeight[1], vtx.mBone[1], bones );
-      addPos( vtx.mPos, vtx.mWeight[2], vtx.mBone[2], bones );
-      addPos( vtx.mPos, vtx.mWeight[3], vtx.mBone[3], bones );
+      const SimpleBone &b = bones[i];
+      mHulls[i].setTransform(b,i);
+    }
+
+    unsigned int tcount = mesh->mVertexCount/3;
+
+    for (unsigned int i=0; i<tcount; i++)
+    {
+      const SimpleSkinnedVertex &v1 = mesh->mVertices[i*3+0];
+      const SimpleSkinnedVertex &v2 = mesh->mVertices[i*3+0];
+      const SimpleSkinnedVertex &v3 = mesh->mVertices[i*3+0];
+      addTri(v1,v2,v3,bones);
     }
 
     float totalVolume = 0;
@@ -239,13 +269,13 @@ public:
         }
       }
     }
-
     for (int i=0; i<(int)bone_count; i++)
     {
       MyHull &h = mHulls[i];
       if ( h.mValidHull )
         geom_count++;
     }
+
     if ( geom_count )
     {
       mSimpleHulls = MEMALLOC_NEW_ARRAY(SimpleHull *,geom_count)[geom_count];
@@ -257,6 +287,8 @@ public:
         {
           const SimpleBone &b = bones[i];
           h->setTransform(b,i);
+          h->computeOBB();
+          h->computeSphere();
           mSimpleHulls[index] = h;
           index++;
         }
@@ -266,29 +298,37 @@ public:
     return mSimpleHulls;
   }
 
-  void addPos(const float *p,float w,int bone,const SimpleBone *bones)
+  void addPos(const float *p,int bone,const SimpleBone *bones)
   {
-    if ( w > 0.1f ) // must be weighted at least 10% or higher to this vertex
+    switch ( bones[bone].mOption )
     {
-      switch ( bones[bone].mOption )
-      {
-        case BO_INCLUDE:
-          mHulls[bone].addPos(p);
-          break;
-        case BO_EXCLUDE:
-          break;
-        case BO_COLLAPSE:
+      case BO_INCLUDE:
+        mHulls[bone].addPos(p);
+        break;
+      case BO_EXCLUDE:
+        break;
+      case BO_COLLAPSE:
+        {
+          while ( bone >= 0 )
           {
             bone = bones[bone].mParentIndex;
-            if ( bone > 0 )
+            if ( bones[bone].mOption == BO_INCLUDE )
+              break;
+            else if ( bones[bone].mOption == BO_EXCLUDE )
             {
-              mHulls[bone].addPos(p); // collapse into the parent
+              bone = -1;
+              break;
             }
           }
-          break;
-      }
+          if ( bone >= 0 )
+          {
+            mHulls[bone].addPos(p); // collapse into the parent
+          }
+        }
+        break;
     }
   }
+
 
   virtual SimpleHull ** createCollisionVolumes(float collapse_percentage,unsigned int &geom_count)
   {
@@ -307,14 +347,110 @@ public:
     return ret;
   }
 
-  virtual void addSimpleSkinnedVertex(const SimpleSkinnedVertex &vtx)
+  virtual void addSimpleSkinnedTriangle(const SimpleSkinnedVertex &v1,const SimpleSkinnedVertex &v2,const SimpleSkinnedVertex &v3)
   {
-    mVertices.push_back(vtx);
+    mVertices.push_back(v1);
+    mVertices.push_back(v2);
+    mVertices.push_back(v3);
   }
 
-  virtual void addSimpleBone(const SimpleBone &b)
+  virtual void addSimpleBone(const SimpleBone &_b)
   {
+    SimpleBone b = _b;
     mBones.push_back(b);
+  }
+
+  virtual const char * stristr(const char *str,const char *key)  // case insensitive ststr
+  {
+  	assert( strlen(str) < 2048 );
+  	assert( strlen(key) < 2048 );
+
+  	char istr[2048];
+  	char ikey[2048];
+
+  	strncpy(istr,str,2048);
+  	strncpy(ikey,key,2048);
+  	strlwr(istr);
+  	strlwr(ikey);
+
+  	char *foo = strstr(istr,ikey);
+  	if ( foo )
+  	{
+  		unsigned int loc = (unsigned int)(foo - istr);
+  		foo = (char *)str+loc;
+  	}
+
+  	return foo;
+  }
+
+  virtual bool createCollisionVolumes(float collapse_percentage,JOB_SWARM::JobSwarmContext *context)
+  {
+    bool ret = true;
+
+    mReady = false;
+    mFinished = false;
+    mContext = context;
+    mCollapsePercentage = collapse_percentage;
+    mSwarmJob = mContext->createSwarmJob(this,0,0);
+
+    return ret;
+  }
+
+  virtual SimpleHull ** getResults(unsigned int &geom_count,bool &ready)
+  {
+    SimpleHull **ret = 0;
+    geom_count = 0;
+    ready = false;
+    if  ( mReady && mFinished )
+    {
+      ret = mSimpleHulls;
+      geom_count = mHullCount;
+      ready = true;
+    }
+    return ret;
+  }
+
+  virtual void job_process(void *userData,int userId)    // RUNS IN ANOTHER THREAD!! MUST BE THREAD SAFE!
+  {
+    if ( !mVertices.empty() && !mBones.empty() )
+    {
+      mHullCount = 0;
+      SimpleSkinnedMesh mesh;
+      mesh.mVertexCount = mVertices.size();
+      mesh.mVertices    = &mVertices[0];
+      createCollisionVolumes(mCollapsePercentage,mBones.size(),&mBones[0],&mesh,mHullCount);
+      mVertices.clear();
+      mBones.clear();
+    }
+    mReady = true;
+  }
+
+  virtual void job_onFinish(void *userData,int userId)   // runs in primary thread of the context
+  {
+    mFinished = true;
+    mSwarmJob = 0;
+  }
+
+  virtual void job_onCancel(void *userData,int userId)  // runs in primary thread of the context
+  {
+    mSwarmJob = 0;
+    mFinished = true;
+  }
+
+  virtual bool cancel(void)
+  {
+    bool ret = true;
+    if ( mSwarmJob )
+    {
+      mContext->cancel(mSwarmJob);
+      ret = false;
+    }
+    return ret;
+  }
+
+  virtual bool isFinish(void) const 
+  {
+    return mFinished;
   }
 
 private:
@@ -322,7 +458,14 @@ private:
   typedef USER_STL::vector< SimpleSkinnedVertex > SimpleSkinnedVertexVector;
   SimpleBoneVector mBones;
   SimpleSkinnedVertexVector mVertices;
+  float                      mCollapsePercentage;
+  bool                       mReady;
+  bool                       mFinished;
 
+  JOB_SWARM::SwarmJob        *mSwarmJob;
+  JOB_SWARM::JobSwarmContext *mContext;
+
+  unsigned int mHullCount;
   MyHull      *mHulls;
   SimpleHull **mSimpleHulls;
 

@@ -14,6 +14,7 @@
 #include "common/HeMath/HeFoundation.h"
 #include "ApexRenderInterface.h"
 #include "TestBestFitOBB.h"
+#include "TestBestFitCapsule.h"
 #include "TestBestFitPlane.h"
 #include "TestStanHull.h"
 #include "TestInPlaceParser.h"
@@ -46,6 +47,7 @@
 #include "TestAutoGeometry.h"
 #include "RenderDebug/RenderDebug.h"
 #include "SplitMeshApp.h"
+#include "common/snippets/JobSwarm.h"
 
 CodeSuppository *gCodeSuppository=0;
 CLIENT_PHYSICS::ApexScene *gApexScene=0;
@@ -56,6 +58,7 @@ class MyCodeSuppository : public CodeSuppository
 public:
   MyCodeSuppository(void)
   {
+    mTestAutoGeometry = 0;
     mApexCloth = 0;
     mMeshSystemHelper = 0;
     mShowSkeleton = true;
@@ -84,6 +87,11 @@ public:
 
   void resetMeshSystem(void)
   {
+    if ( mTestAutoGeometry )
+    {
+      releaseTestAutoGeometry(mTestAutoGeometry);
+      mTestAutoGeometry = 0;
+    }
     if ( mMeshSystemHelper )
     {
       releaseMeshSystemHelper(mMeshSystemHelper);
@@ -96,6 +104,15 @@ public:
   {
     switch ( command )
     {
+      case CSC_SELECT_COLLISION:
+        {
+          int s = (int) data[0];
+          if ( mMeshSystemHelper )
+          {
+            mMeshSystemHelper->setSelectCollision(s);
+          }
+        }
+        break;
       case CSC_MERGE_PERCENTAGE:
         mMergePercentage = data[0];
         break;
@@ -271,9 +288,14 @@ public:
       case CSC_BEST_FIT_OBB:
         testBestFitOBB(mMeshSystemHelper);
         break;
+      case CSC_BEST_FIT_CAPSULE:
+        testBestFitCapsule(mMeshSystemHelper);
+        break;
       case CSC_AUTO_GEOMETRY:
-        if ( mMeshSystemHelper )
-          testAutoGeometry(mMeshSystemHelper);
+        if ( mMeshSystemHelper && mTestAutoGeometry == 0 )
+        {
+          mTestAutoGeometry = createTestAutoGeometry(mMeshSystemHelper);
+        }
         break;
       case CSC_APEX_CLOTH:
         apexCloth();
@@ -292,7 +314,7 @@ public:
         const float *matrices = mMeshSystemHelper->getCompositeTransforms(bone_count);
         if ( matrices )
         {
-          mApexCloth->setCompositeTransforms(bone_count,matrices);
+          mApexCloth->setCompositeTransforms(bone_count,matrices,false);
 
           if ( gApexScene )
           {
@@ -357,6 +379,23 @@ public:
     }
   }
 
+  virtual void process(float /*dtime*/)
+  {
+    if ( mTestAutoGeometry )
+    {
+      bool tcontinue = mTestAutoGeometry->pump();
+      if ( !tcontinue )
+      {
+        releaseTestAutoGeometry(mTestAutoGeometry);
+        mTestAutoGeometry = 0;
+      }
+    }
+    if ( gJobSwarmContext )
+    {
+      gJobSwarmContext->processSwarmJobs();
+    }
+  }
+
 private:
   bool               mShowSkeleton;
   bool               mShowMesh;
@@ -377,6 +416,7 @@ private:
   bool mRemoveTjunctions;
   bool mInitialIslandGeneration;
   bool mIslandGeneration;
+  TestAutoGeometry *mTestAutoGeometry;
 };
 
 CodeSuppository * createCodeSuppository(void)

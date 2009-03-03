@@ -26,6 +26,7 @@ public:
   SAS_LazyKdTree(SpatialAwarenessObserver *observer);
   ~SAS_LazyKdTree(void);
 
+   virtual HeSize getMemoryUsage();
    void Pump(SecondsType time_elapsed_since_last_pump);
    bool SetActive(ActiveType new_active_flag);
    bool SetName(NameType new_name);

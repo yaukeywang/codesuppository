@@ -1152,7 +1152,12 @@ public:
     {
       const MeshMaterial &m = mesh->mMaterials[i];
       fi_fprintf(exfph,"newmtl %s\r\n", m.mName );
-      const char *diffuse = "white.dds";
+      char scratch[512];
+      strncpy(scratch,m.mName,512);
+      char *plus = strstr(scratch,"+");
+      if ( plus )
+        *plus = 0;
+      const char *diffuse = scratch;
       fi_fprintf(exfph,"map_Ka %s\r\n", diffuse );
     }
 
@@ -1242,9 +1247,6 @@ public:
                   fmi_transformRotate(exportTransform,v2.mNormal,v2.mNormal);
                   fmi_transformRotate(exportTransform,v3.mNormal,v3.mNormal);
 
-                  fmi_normalize(v1.mNormal);
-                  fmi_normalize(v2.mNormal);
-                  fmi_normalize(v3.mNormal);
                 }
 
                 i1 = bigPool.GetVertex(v1)+1;
@@ -1281,10 +1283,124 @@ public:
         for (HeI32 i=0; i<vcount; i++)
         {
           MeshVertex &v = vb[i];
-          if ( v.mRadius == 1 )
+          fmi_normalize(v.mNormal);
+          fi_fprintf(fph,"vn %s %s %s\r\n", FloatString(v.mNormal[0]), FloatString(v.mNormal[1]), FloatString(v.mNormal[2]));
+        }
+        MsaveVector::iterator i;
+        for (i=meshes.begin(); i!=meshes.end(); ++i)
+        {
+          Msave &ms = (*i);
+          fi_fprintf(fph,"usemtl %s\r\n", ms.mMaterialName );
+          HeU32 tcount = ms.mIndices.size()/3;
+          HeU32 *indices = &ms.mIndices[0];
+          for (HeU32 k=0; k<tcount; k++)
           {
-            fmi_normalize(v.mNormal);
+            HeU32 i1 = indices[k*3+0];
+            HeU32 i2 = indices[k*3+1];
+            HeU32 i3 = indices[k*3+2];
+            fi_fprintf(fph,"f %d/%d/%d %d/%d/%d %d/%d/%d\r\n", i1, i1, i1, i2, i2, i2, i3, i3, i3 );
           }
+        }
+      }
+    }
+    else
+    {
+      MsaveVector meshes;
+      VertexPool< MeshVertex > bigPool;
+
+      for (unsigned int j=0; j<mesh->mMeshCount; j++)
+      {
+        Mesh *mm = mesh->mMeshes[j];
+        bool compute_normal = false;
+        for (unsigned int k=0; k<mm->mSubMeshCount; k++)
+        {
+          SubMesh *sm = mm->mSubMeshes[k];
+          Msave ms;
+          ms.mMaterialName = sm->mMaterialName;
+          for (unsigned int l=0; l<sm->mTriCount; l++)
+          {
+            unsigned int i1 = sm->mIndices[l*3+0];
+            unsigned int i2 = sm->mIndices[l*3+1];
+            unsigned int i3 = sm->mIndices[l*3+2];
+
+            MeshVertex v1 = mm->mVertices[i1];
+            MeshVertex v2 = mm->mVertices[i2];
+            MeshVertex v3 = mm->mVertices[i3];
+
+            fmi_transform(exportTransform,v1.mPos,v1.mPos);
+            fmi_transform(exportTransform,v2.mPos,v2.mPos);
+            fmi_transform(exportTransform,v3.mPos,v3.mPos);
+
+            if ( l == 0 )
+            {
+              if ( v1.mRadius == 1 || v2.mRadius == 1 || v3.mRadius == 1 )
+              {
+                compute_normal = true;
+              }
+              if ( v1.mNormal[0] == 0 && v1.mNormal[1] == 0 && v1.mNormal[2] == 0 ) compute_normal = true;
+            }
+
+            if ( compute_normal )
+            {
+
+              v1.mRadius = 1;
+              v2.mRadius = 1;
+              v3.mRadius = 1;
+
+              float n[3];
+              fmi_computePlane(v3.mPos,v2.mPos,v1.mPos,n);
+
+              v1.mNormal[0]+=n[0];
+              v1.mNormal[1]+=n[1];
+              v1.mNormal[2]+=n[2];
+
+              v2.mNormal[0]+=n[0];
+              v2.mNormal[1]+=n[1];
+              v2.mNormal[2]+=n[2];
+
+              v3.mNormal[0]+=n[0];
+              v3.mNormal[1]+=n[1];
+              v3.mNormal[2]+=n[2];
+
+            }
+            else
+            {
+              fmi_transformRotate(exportTransform,v1.mNormal,v1.mNormal);
+              fmi_transformRotate(exportTransform,v2.mNormal,v2.mNormal);
+              fmi_transformRotate(exportTransform,v3.mNormal,v3.mNormal);
+            }
+
+            i1 = bigPool.GetVertex(v1)+1;
+            i2 = bigPool.GetVertex(v2)+1;
+            i3 = bigPool.GetVertex(v3)+1;
+
+            ms.mIndices.push_back(i1);
+            ms.mIndices.push_back(i2);
+            ms.mIndices.push_back(i3);
+
+          }
+          meshes.push_back(ms);
+        }
+      }
+      HeI32 vcount = bigPool.GetVertexCount();
+
+      if ( vcount )
+      {
+        MeshVertex *vb = bigPool.GetBuffer();
+        for (HeI32 i=0; i<vcount; i++)
+        {
+          const MeshVertex &v = vb[i];
+          fi_fprintf(fph,"v %s %s %s\r\n", FloatString(v.mPos[0]), FloatString(v.mPos[1]), FloatString(v.mPos[2]));
+        }
+        for (HeI32 i=0; i<vcount; i++)
+        {
+          const MeshVertex &v = vb[i];
+          fi_fprintf(fph,"vt %s %s\r\n", FloatString(v.mTexel1[0]), FloatString(v.mTexel1[1]));
+        }
+        for (HeI32 i=0; i<vcount; i++)
+        {
+          MeshVertex &v = vb[i];
+          fmi_normalize(v.mNormal);
           fi_fprintf(fph,"vn %s %s %s\r\n", FloatString(v.mNormal[0]), FloatString(v.mNormal[1]), FloatString(v.mNormal[2]));
         }
         MsaveVector::iterator i;

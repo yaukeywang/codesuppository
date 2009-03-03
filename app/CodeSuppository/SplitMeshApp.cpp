@@ -32,7 +32,7 @@ class SplitMeshApp : public SPLIT_MESH::RobustMeshInterface
 public:
   SplitMeshApp(void)
   {
-    mRemoveTjunctions = true;
+    mRemoveTjunctions = false;
     mTesselate = false;
     mSaveResults = false;
     mSplitMesh = 0;

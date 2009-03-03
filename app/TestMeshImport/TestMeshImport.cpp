@@ -52,36 +52,34 @@ void main(int argc,const char **argv)
       }
       if ( data )
       {
-#if 0
-        MESHIMPORT::MeshSystem *ms = gMeshImport->createMeshSystem(fname,data,len,0);
-        if ( ms )
+        MESHIMPORT::MeshSystemContainer *msc = gMeshImport->createMeshSystemContainer(fname,data,len,0);
+        if ( msc )
         {
           printf("Success!\r\n");
-
-          unsigned int olen;
-          void *data = gMeshImport->serializeMeshSystem(ms,olen,MESHIMPORT::MSF_EZMESH);
-          if ( data )
+          MESHIMPORT::MeshSystem *ms = gMeshImport->getMeshSystem(msc);
+          MESHIMPORT::MeshSerialize s(MESHIMPORT::MSF_EZMESH);
+          bool ok = gMeshImport->serializeMeshSystem(ms,s);
+          if ( ok )
           {
             printf("Saving serialized data as temp.ezm\r\n");
             FILE *fph = fopen("temp.ezm", "wb");
             if ( fph )
             {
-              fwrite(data,olen,1,fph);
+              fwrite(s.mBaseData,s.mBaseLen,1,fph);
               fclose(fph);
             }
             else
             {
               printf("Failed to open file for write access.\r\n");
             }
-            gMeshImport->releaseSerializeMemory(data);
+            gMeshImport->releaseSerializeMemory(s);
           }
-          gMeshImport->releaseMeshSystem(ms);
+          gMeshImport->releaseMeshSystemContainer(msc);
         }
         else
         {
           printf("Failed to create MeshSystem for '%s'\r\n", fname );
         }
-#endif
         delete []data;
       }
       else

@@ -50,12 +50,10 @@
 #include "LockFreeQ.h"
 #include "pool.h"
 
+//JOB_SWARM::JobSwarmContext *gJobSwarmContext=0;
+
 namespace JOB_SWARM
 {
-
-
-
-
 
   class SwarmJob : public LOCK_FREE_Q::node_t
   {

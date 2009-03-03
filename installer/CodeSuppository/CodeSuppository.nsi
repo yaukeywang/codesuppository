@@ -7,8 +7,8 @@ XPStyle on
 
 !define ShortName      "CodeSuppository"
 !define LongName       "CodeSuppository - Mandelbrot Explorer by John W. Ratcliff"
-!define ShortVersion   "1.0"
-!define LongVersion    "v1.0"
+!define ShortVersion   "1.1"
+!define LongVersion    "v1.1"
 Icon                   "Rocket.ico"
 UninstallIcon          "Rocket.ico"
 !define RootDir        "..\.."

@@ -1,3 +1,4 @@
+#include <cassert>
 #include "ThreadConfig.h"
 
 /*!
@@ -58,8 +59,23 @@
 	#include "NxXBOX.h"
 #endif
 
-#if defined(__APPLE__) || defined(LINUX)
+#if defined(__linux__)
+	//#include <sys/time.h>
+	#include <time.h>
+	#include <unistd.h>
+	#include <errno.h>
+	#define __stdcall
+#endif
+
+#if defined(__APPLE__) || defined(__linux__)
 	#include <pthread.h>
+#endif
+
+
+#ifdef	NDEBUG
+#define VERIFY( x ) (x)
+#else
+#define VERIFY( x ) assert((x))
 #endif
 
 namespace THREAD_CONFIG
@@ -67,40 +83,39 @@ namespace THREAD_CONFIG
 
 unsigned int tc_timeGetTime(void)
 {
-  return timeGetTime();
+   #if defined(__linux__)
+      struct timespec ts;
+      clock_gettime(CLOCK_REALTIME, &ts);
+      return ts.tv_sec * 1000 + ts.tv_nsec / 1000000;
+   #else
+      return timeGetTime();
+   #endif
 }
 
 void   tc_sleep(unsigned int ms)
 {
-  Sleep(ms);
+   #if defined(__linux__)
+      usleep(ms * 1000);
+   #else
+      Sleep(ms);
+   #endif
 }
 
 void tc_spinloop()
 {
-   #ifdef LINUX
-      __asm { pause };
+   #ifdef __linux__
+      asm ( "pause" );
    #else
       __asm { pause };
    #endif
 }
 
-void tc_interlockedExchange(void *dest, const __int64 exchange)
+void tc_interlockedExchange(void *dest, const int64_t exchange)
 {
-   #ifdef LINUX
-      __asm
-      {
-         mov      ebx, dword ptr [exchange]
-         mov      ecx, dword ptr [exchange + 4]
-         mov      edi, dest
-         mov      eax, dword ptr [edi]
-         mov      edx, dword ptr [edi + 4]
-         jmp      start
-      retry:
-         pause
-      start:
-         lock cmpxchg8b [edi]
-         jnz      retry
-      };
+   #ifdef __linux__
+	  // not working
+	  assert(false);
+	  //__sync_lock_test_and_set((int64_t*)dest, exchange);
    #else
       __asm
       {
@@ -119,24 +134,14 @@ void tc_interlockedExchange(void *dest, const __int64 exchange)
    #endif
 }
 
-int tc_interlockedCompareExchange(void *dest,int exchange,int compare)
+int tc_interlockedCompareExchange(void *dest, int exchange, int compare)
 {
-   #ifdef LINUX
-      char _ret;
-      //
-      __asm
-      {
-         mov      edx, [dest]
-         mov      eax, [compare]
-         mov      ecx, [exchange]
-
-         lock cmpxchg [edx], ecx
-
-         setz    al
-         mov     byte ptr [_ret], al
-      }
-      //
-      return _ret;
+   #ifdef __linux__
+	  // not working
+	  assert(false);
+	  return 0;
+	  //return __sync_val_compare_and_swap((uintptr_t*)dest, exchange, compare);
+	  //return __sync_bool_compare_and_swap((uintptr_t*)dest, exchange, compare);
    #else
       char _ret;
       //
@@ -158,22 +163,13 @@ int tc_interlockedCompareExchange(void *dest,int exchange,int compare)
 
 int tc_interlockedCompareExchange(void *dest, const int exchange1, const int exchange2, const int compare1, const int compare2)
 {
-   #ifdef LINUX
-      char _ret;
-      //
-      __asm
-      {
-         mov     ebx, [exchange1]
-         mov     ecx, [exchange2]
-         mov     edi, [dest]
-         mov     eax, [compare1]
-         mov     edx, [compare2]
-         lock cmpxchg8b [edi]
-         setz    al
-         mov     byte ptr [_ret], al
-      }
-      //
-      return _ret;
+   #ifdef __linux__
+	  // not working
+      assert(false);
+	  return 0;
+	  //uint64_t exchange = ((uint64_t)exchange1 << 32) | (uint64_t)exchange2;
+	  //uint64_t compare = ((uint64_t)compare1 << 32) | (uint64_t)compare2;
+	  //return __sync_bool_compare_and_swap((int64_t*)dest, exchange, compare);
    #else
       char _ret;
       //
@@ -200,8 +196,12 @@ public:
   {
     #if defined(WIN32) || defined(_XBOX)
   	InitializeCriticalSection(&m_Mutex);
-    #elif defined(__APPLE__) || defined(LINUX)
-  	pthread_mutex_init(&m_Mutex, 0);
+    #elif defined(__APPLE__) || defined(__linux__)
+  	pthread_mutexattr_t mutexAttr;  // Mutex Attribute
+  	VERIFY( pthread_mutexattr_init(&mutexAttr) == 0 );
+  	VERIFY( pthread_mutexattr_settype(&mutexAttr, PTHREAD_MUTEX_RECURSIVE_NP) == 0 );
+  	VERIFY( pthread_mutex_init(&m_Mutex, &mutexAttr) == 0 );
+  	VERIFY( pthread_mutexattr_destroy(&mutexAttr) == 0 );
     #endif
   }
 
@@ -209,8 +209,8 @@ public:
   {
     #if defined(WIN32) || defined(_XBOX)
   	DeleteCriticalSection(&m_Mutex);
-    #elif defined(__APPLE__) || defined(LINUX)
-  	pthread_mutex_destroy(&m_Mutex);
+    #elif defined(__APPLE__) || defined(__linux__)
+  	VERIFY( pthread_mutex_destroy(&m_Mutex) == 0 );
     #endif
   }
 
@@ -218,36 +218,37 @@ public:
   {
     #if defined(WIN32) || defined(_XBOX)
   	EnterCriticalSection(&m_Mutex);
-    #elif defined(__APPLE__) || defined(LINUX)
-  	pthread_mutex_lock(&m_Mutex);
+    #elif defined(__APPLE__) || defined(__linux__)
+  	VERIFY( pthread_mutex_lock(&m_Mutex) == 0 );
     #endif
   }
 
   bool tryLock(void)
   {
-  	bool bRet = false;
     #if defined(WIN32) || defined(_XBOX)
+  	bool bRet = false;
   	//assert(("TryEnterCriticalSection seems to not work on XP???", 0));
   	bRet = TryEnterCriticalSection(&m_Mutex) ? true : false;
-    #elif defined(__APPLE__) || defined(LINUX)
-  	pthread_mutex_trylock(&m_Mutex)
-    #endif
   	return bRet;
+    #elif defined(__APPLE__) || defined(__linux__)
+  	int result = pthread_mutex_trylock(&m_Mutex);
+  	return (result == 0);
+    #endif
   }
 
   void unlock(void)
   {
     #if defined(WIN32) || defined(_XBOX)
   	LeaveCriticalSection(&m_Mutex);
-    #elif defined(__APPLE__) || defined(LINUX)
-  	pthread_mutex_unlock(&m_Mutex)
+    #elif defined(__APPLE__) || defined(__linux__)
+  	VERIFY( pthread_mutex_unlock(&m_Mutex) == 0 );
     #endif
   }
 
 private:
   #if defined(WIN32) || defined(_XBOX)
 	CRITICAL_SECTION m_Mutex;
-	#elif defined(__APPLE__) || defined(LINUX)
+	#elif defined(__APPLE__) || defined(__linux__)
 	pthread_mutex_t  m_Mutex;
 	#endif
 };
@@ -264,8 +265,11 @@ void          tc_releaseThreadMutex(ThreadMutex *tm)
   delete m;
 }
 
-
+#if defined(WIN32) || defined(_XBOX)
 static unsigned long __stdcall _ThreadWorkerFunc(LPVOID arg);
+#elif defined(__APPLE__) || defined(__linux__)
+static void* _ThreadWorkerFunc(void* arg);
+#endif
 
 class MyThread : public Thread
 {
@@ -273,16 +277,22 @@ public:
   MyThread(ThreadInterface *iface)
   {
     mInterface = iface;
-   	mThread     = CreateThread(0, 0, _ThreadWorkerFunc, this, 0, 0);
+	#if defined(WIN32) || defined(_XBOX)
+   	  mThread     = CreateThread(0, 0, _ThreadWorkerFunc, this, 0, 0);
+    #elif defined(__APPLE__) || defined(__linux__)
+	  VERIFY( pthread_create(&mThread, NULL, _ThreadWorkerFunc, this) == 0 );
+	#endif
   }
 
   ~MyThread(void)
   {
-    if ( mThread )
-    {
-      CloseHandle(mThread);
-      mThread = 0;
-    }
+	#if defined(WIN32) || defined(_XBOX)
+      if ( mThread )
+      {
+        CloseHandle(mThread);
+        mThread = 0;
+      }
+	#endif
   }
 
   void onJobExecute(void)
@@ -292,7 +302,11 @@ public:
 
 private:
   ThreadInterface *mInterface;
-  HANDLE           mThread;
+  #if defined(WIN32) || defined(_XBOX)
+    HANDLE           mThread;
+  #elif defined(__APPLE__) || defined(__linux__)
+    pthread_t mThread;
+  #endif
 };
 
 
@@ -308,7 +322,11 @@ void          tc_releaseThread(Thread *t)
   delete m;
 }
 
+#if defined(WIN32) || defined(_XBOX)
 static unsigned long __stdcall _ThreadWorkerFunc(LPVOID arg)
+#elif defined(__APPLE__) || defined(__linux__)
+static void* _ThreadWorkerFunc(void* arg)
+#endif
 {
   MyThread *worker = (MyThread *) arg;
 	worker->onJobExecute();
@@ -321,43 +339,89 @@ class MyThreadEvent : public ThreadEvent
 public:
   MyThreadEvent(void)
   {
-    mEvent = ::CreateEventA(NULL,TRUE,TRUE,"ThreadEvent");
+	#if defined(WIN32) || defined(_XBOX)
+      mEvent = ::CreateEventA(NULL,TRUE,TRUE,"ThreadEvent");
+	#elif defined(__APPLE__) || defined(__linux__)
+	  pthread_mutexattr_t mutexAttr;  // Mutex Attribute
+	  VERIFY( pthread_mutexattr_init(&mutexAttr) == 0 );
+	  VERIFY( pthread_mutexattr_settype(&mutexAttr, PTHREAD_MUTEX_RECURSIVE_NP) == 0 );
+	  VERIFY( pthread_mutex_init(&mEventMutex, &mutexAttr) == 0 );
+	  VERIFY( pthread_mutexattr_destroy(&mutexAttr) == 0 );
+	  VERIFY( pthread_cond_init(&mEvent, NULL) == 0 );
+	#endif
   }
 
   ~MyThreadEvent(void)
   {
+	#if defined(WIN32) || defined(_XBOX)
     if ( mEvent )
     {
       ::CloseHandle(mEvent);
     }
+	#elif defined(__APPLE__) || defined(__linux__)
+	  VERIFY( pthread_cond_destroy(&mEvent) == 0 );
+	  VERIFY( pthread_mutex_destroy(&mEventMutex) == 0 );
+	#endif
   }
 
   virtual void setEvent(void)  // signal the event
   {
+	#if defined(WIN32) || defined(_XBOX)
     if ( mEvent )
     {
       ::SetEvent(mEvent);
     }
+	#elif defined(__APPLE__) || defined(__linux__)
+	  VERIFY( pthread_mutex_lock(&mEventMutex) == 0 );
+	  VERIFY( pthread_cond_signal(&mEvent) == 0 );
+	  VERIFY( pthread_mutex_unlock(&mEventMutex) == 0 );
+	#endif
   }
 
   void resetEvent(void)
   {
+	#if defined(WIN32) || defined(_XBOX)
     if ( mEvent )
     {
       ::ResetEvent(mEvent);
     }
+	#endif
   }
 
   virtual void waitForSingleObject(unsigned int ms)
   {
+	#if defined(WIN32) || defined(_XBOX)
     if ( mEvent )
     {
       ::WaitForSingleObject(mEvent,ms);
     }
+	#elif defined(__APPLE__) || defined(__linux__)
+      VERIFY( pthread_mutex_lock(&mEventMutex) == 0 );
+	  if (ms == 0xffffffff)
+	  {
+		  VERIFY( pthread_cond_wait(&mEvent, &mEventMutex) == 0 );
+	  }
+	  else
+	  {
+	      struct timespec ts;
+	      clock_gettime(CLOCK_REALTIME, &ts);
+	      ts.tv_nsec += ms * 1000000;
+	      ts.tv_sec += ts.tv_nsec / 1000000000;
+	      ts.tv_nsec %= 1000000000;
+		  int result = pthread_cond_timedwait(&mEvent, &mEventMutex, &ts);
+		  assert(result == 0 || result == ETIMEDOUT);
+	  }
+	  VERIFY( pthread_mutex_unlock(&mEventMutex) == 0 );
+	#endif
   }
 
 private:
-  HANDLE mEvent;
+  #if defined(WIN32) || defined(_XBOX)
+    HANDLE mEvent;
+  #elif defined(__APPLE__) || defined(__linux__)
+    pthread_mutex_t mEventMutex;
+    pthread_cond_t mEvent;
+  #endif
 };
 
 ThreadEvent * tc_createThreadEvent(void)

@@ -653,6 +653,64 @@ public:
     }
   }
 
+
+  virtual void importSphere(const char *collision_rep,    // the collision representation it is associated with
+                            const char *boneName,         // the name of the bone it is associated with in a skeleton.
+                            const float *transform,
+                            float radius)
+  {
+    getCurrentRep(collision_rep);
+    MeshCollisionSphere *c = MEMALLOC_NEW(MeshCollisionSphere);
+    c->mName = mStrings.Get(boneName).Get();
+    if ( transform )
+    {
+      memcpy(c->mTransform,transform,sizeof(float)*16);
+    }
+    c->mRadius = radius;
+    MeshCollision *mc = static_cast< MeshCollision *>(c);
+    mCurrentCollision->mGeometries.push_back(mc);
+  }
+
+  virtual void importCapsule(const char *collision_rep,    // the collision representation it is associated with
+                                const char *boneName,         // the name of the bone it is associated with in a skeleton.
+                                const float *transform,       // the full 4x4 transform for this hull, null if in world space.
+                                float radius,
+                                float height)
+  {
+    getCurrentRep(collision_rep);
+    MeshCollisionCapsule *c = MEMALLOC_NEW(MeshCollisionCapsule);
+    c->mName = mStrings.Get(boneName).Get();
+    if ( transform )
+    {
+      memcpy(c->mTransform,transform,sizeof(float)*16);
+    }
+    c->mRadius = radius;
+    c->mHeight = height;
+    MeshCollision *mc = static_cast< MeshCollision *>(c);
+    mCurrentCollision->mGeometries.push_back(mc);
+  }
+
+  virtual void importOBB(const char *collision_rep,    // the collision representation it is associated with
+                         const char *boneName,         // the name of the bone it is associated with in a skeleton.
+                         const float *transform,       // the full 4x4 transform for this hull, null if in world space.
+                         const float *sides)
+  {
+    getCurrentRep(collision_rep);
+    MeshCollisionBox *c = MEMALLOC_NEW(MeshCollisionBox);
+    c->mName = mStrings.Get(boneName).Get();
+    if ( transform )
+    {
+      memcpy(c->mTransform,transform,sizeof(float)*16);
+    }
+    c->mSides[0] = sides[0];
+    c->mSides[1] = sides[1];
+    c->mSides[2] = sides[2];
+    MeshCollision *mc = static_cast< MeshCollision *>(c);
+    mCurrentCollision->mGeometries.push_back(mc);
+  }
+
+
+
   virtual void importConvexHull(const char *collision_rep,    // the collision representation it is associated with
     const char *boneName,         // the name of the bone it is associated with in a skeleton.
     const float *transform,       // the full 4x4 transform for this hull, null if in world space.
@@ -662,7 +720,6 @@ public:
     const unsigned int *indices)
   {
     getCurrentRep(collision_rep);
-
     MeshCollisionConvex *c = MEMALLOC_NEW(MeshCollisionConvex);
     c->mName = mStrings.Get(boneName).Get();
     if ( transform )

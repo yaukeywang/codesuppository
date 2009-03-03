@@ -187,6 +187,8 @@ public:
   {
     HeU32 color = gRenderDebug->getDebugColor();
 
+    float combined[16];
+
     const float *transform = m->mTransform;
     if ( skeleton )
     {
@@ -195,7 +197,8 @@ public:
         MESHIMPORT::MeshBoneInstance &b = mSkeleton->mBones[i];
         if ( strcmp(b.mBoneName,m->mName) == 0 )
         {
-          transform = b.mAnimTransform;
+          fm_multiplyTransform(m->mTransform,b.mAnimTransform,combined);
+          transform = combined;
           break;
         }
       }
@@ -203,6 +206,25 @@ public:
 
     switch ( m->getType() )
     {
+      case MESHIMPORT::MCT_CAPSULE:
+        {
+          MESHIMPORT::MeshCollisionCapsule *c = static_cast< MESHIMPORT::MeshCollisionCapsule *>(m);
+          gRenderDebug->DebugOrientedCapsule(c->mRadius, c->mHeight, transform, color );
+        }
+        break;
+      case MESHIMPORT::MCT_SPHERE:
+        {
+          MESHIMPORT::MeshCollisionSphere *c = static_cast< MESHIMPORT::MeshCollisionSphere *>(m);
+          gRenderDebug->DebugSphere(&transform[12],c->mRadius, color );
+        }
+        break;
+      case MESHIMPORT::MCT_BOX:
+        {
+          MESHIMPORT::MeshCollisionBox *c = static_cast< MESHIMPORT::MeshCollisionBox *>(m);
+          gRenderDebug->DebugOrientedBound(c->mSides,transform,color);
+        }
+        break;
+
       case MESHIMPORT::MCT_CONVEX:
         {
           MESHIMPORT::MeshCollisionConvex *c = static_cast< MESHIMPORT::MeshCollisionConvex *>(m);

@@ -396,6 +396,7 @@ void fm_computeBestFitABB(size_t vcount,const float *points,size_t pstride,float
 void fm_computeBestFitABB(size_t vcount,const double *points,size_t pstride,double *sides,double pos[3]);
 
 
+//** Note, if the returned capsule height is less than zero, then you must represent it is a sphere of size radius.
 void fm_computeBestFitCapsule(size_t vcount,const float *points,size_t pstride,float &radius,float &height,float matrix[16],bool bruteForce=true);
 void fm_computeBestFitCapsule(size_t vcount,const double *points,size_t pstride,float &radius,float &height,double matrix[16],bool bruteForce=true);
 

@@ -1225,6 +1225,23 @@ public:
                                 unsigned int tri_count,
                                 const unsigned int *indices) = 0;
 
+  virtual void importSphere(const char *collision_rep,    // the collision representation it is associated with
+                            const char *boneName,         // the name of the bone it is associated with in a skeleton.
+                            const float *transform,
+                            float radius) = 0;
+
+  virtual void importCapsule(const char *collision_rep,    // the collision representation it is associated with
+                                const char *boneName,         // the name of the bone it is associated with in a skeleton.
+                                const float *transform,       // the full 4x4 transform for this hull, null if in world space.
+                                float radius,
+                                float height) = 0;
+
+  virtual void importOBB(const char *collision_rep,    // the collision representation it is associated with
+                         const char *boneName,         // the name of the bone it is associated with in a skeleton.
+                         const float *transform,       // the full 4x4 transform for this hull, null if in world space.
+                         const float *sides) = 0;
+
+
   virtual int getSerializeFrame(void) = 0;
 
 

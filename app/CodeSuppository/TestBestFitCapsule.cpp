@@ -10,6 +10,7 @@
 #include "common/snippets/FloatMath.h"
 #include "common/snippets/rand.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
+#include "common/snippets/rand.h"
 
 void testBestFitCapsule(MeshSystemHelper *ms)
 {
@@ -37,8 +38,11 @@ void testBestFitCapsule(MeshSystemHelper *ms)
   }
   if ( !ms )
   {
+    Rand r;
+    r.setSeed(rand());
+
     float quat[4];
-    fm_eulerToQuat(ranf()*FM_PI,ranf()*FM_PI,ranf()*FM_PI,quat);
+    fm_eulerToQuat(r.ranf()*FM_PI,r.ranf()*FM_PI,r.ranf()*FM_PI,quat);
     fm_quatToMatrix(quat,matrix);
 
     #define PCOUNT 60
@@ -51,9 +55,11 @@ void testBestFitCapsule(MeshSystemHelper *ms)
     for (int i=0; i<PCOUNT; i++)
     {
       float t[3] = { pos[0], pos[1], pos[2] };
-      pos[0] = (float) ((rand()&63)-32)*0.15f;
-      pos[1] = (float) ((rand()&63)-32)*0.025f;
-      pos[2] = (float) ((rand()%63)-32)*0.015f;
+
+      pos[0] = (float) ((r.get()&63)-32)*0.35f;
+      pos[1] = (float) ((r.get()&63)-32)*0.025f;
+      pos[2] = (float) ((r.get()%63)-32)*0.015f;
+
       fm_transform(matrix,pos,t);
 
       gRenderDebug->DebugPoint(t,0.1f,0xFFFFFF,15.0f);
@@ -69,6 +75,6 @@ void testBestFitCapsule(MeshSystemHelper *ms)
     fm_computeBestFitCapsule(PCOUNT,points,sizeof(float)*3,radius,height,matrix,true);
   }
 
-//  gRenderDebug->DebugOrientedCapsule(radius,height,matrix,0xFFFF00,600.0f);
+  gRenderDebug->DebugOrientedCapsule(radius,height,matrix,0xFFFF00,600.0f);
 }
 

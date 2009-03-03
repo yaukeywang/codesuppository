@@ -27,20 +27,28 @@ public:
   int           mBoneIndex;
   int           mParentIndex;
   const char   *mBoneName;
-  float         mTransform[16];
+  float         mConvexTransform[16];
   unsigned int  mVertexCount;
   float        *mVertices;
   unsigned int  mTriCount;
   unsigned int *mIndices;
   float         mMeshVolume;
+
   // OBB
   float         mOBBVolume;
-  float         mLocalTransform[16];
-  float         mSides[3];
+  float         mOBBTransform[16];
+  float         mOBBSides[3];
+
   // sphere
   float         mSphereVolume;
-  float         mRadius;
-  float         mCenter[3];
+  float         mSphereRadius;
+  float         mSphereCenter[3];
+
+  // Capsule
+  float         mCapsuleVolume;
+  float         mCapsuleHeight;
+  float         mCapsuleRadius;
+  float         mCapsuleTransform[16];
 };
 
 enum BoneOption

@@ -151,27 +151,54 @@ public:
           {
             AUTO_GEOMETRY::SimpleHull *h = hulls[i];
 
-#if 0
-            float combined[16];
-            float local[16];
-            fm_identity(local);
-            local[12] = h->mCenter[0];
-            local[13] = h->mCenter[1];
-            local[14] = h->mCenter[2];
-            fm_multiplyTransform( local, h->mTransform, combined );
+            MESHIMPORT::MeshCollisionType t = MESHIMPORT::MCT_CAPSULE;
 
-            const float *pos = &combined[12];
-            gRenderDebug->DebugPoint(pos,1.0f,0xFFFFFF,60.0f);
-            gRenderDebug->DebugDetailedSphere(pos, h->mRadius,16, 0x0000FF, 60.0f, true, true );
-            gRenderDebug->DebugDetailedSphere(pos, h->mRadius,16, 0xFFFFFF, 60.0f, true, false);
-#else
-            float combined[16];
-            fm_multiplyTransform( h->mLocalTransform, h->mTransform, combined );
-//            gRenderDebug->DebugOrientedBound( h->mSides, combined, 0x0000FF, 60.0f, true, true );
-            gRenderDebug->DebugOrientedBound( h->mSides, combined, 0xFFFFFF, 60.0f, true, false );
-#endif
-            iface->importConvexHull("ClothCollision", h->mBoneName, h->mTransform, h->mVertexCount, h->mVertices, h->mTriCount, h->mIndices );
-            SEND_TEXT_MESSAGE(0,"Generated hull for bone: %s Volume: %0.6f\r\n", h->mBoneName, h->mMeshVolume );
+            if ( (h->mSphereVolume*0.9f) < h->mOBBVolume )
+            {
+              t = MESHIMPORT::MCT_SPHERE;
+            }
+            else if ( (h->mOBBVolume*0.95f) < h->mCapsuleVolume )
+            {
+              t = MESHIMPORT::MCT_BOX;
+            }
+
+            t = MESHIMPORT::MCT_CONVEX;
+
+            switch ( t )
+            {
+              case MESHIMPORT::MCT_SPHERE:
+                {
+                  float matrix[16];
+                  fm_identity(matrix);
+                  fm_setTranslation(matrix,h->mSphereCenter);
+                  iface->importSphere("ClothCollision", h->mBoneName, matrix, h->mSphereRadius ); 
+                  SEND_TEXT_MESSAGE(0,"Generated sphere for bone: %s Volume: %0.6f\r\n", h->mBoneName, h->mMeshVolume );
+                }
+                break;
+              case MESHIMPORT::MCT_BOX:
+                iface->importOBB("ClothCollision", h->mBoneName, h->mOBBTransform, h->mOBBSides );
+                SEND_TEXT_MESSAGE(0,"Generated OBB for bone: %s Volume: %0.6f\r\n", h->mBoneName, h->mMeshVolume );
+                break;
+              case MESHIMPORT::MCT_CAPSULE:
+                {
+                  const float capsuleScale = 1.0f;
+                  if ( h->mCapsuleHeight <= 0 )
+                  {
+                    iface->importSphere("ClothCollision", h->mBoneName, h->mCapsuleTransform, h->mCapsuleRadius*capsuleScale );
+                    SEND_TEXT_MESSAGE(0,"Generated sphere(c) for bone: %s Volume: %0.6f\r\n", h->mBoneName, h->mMeshVolume );
+                  }
+                  else
+                  {
+                    iface->importCapsule("ClothCollision", h->mBoneName, h->mCapsuleTransform, h->mCapsuleRadius*capsuleScale, h->mCapsuleHeight*capsuleScale );
+                    SEND_TEXT_MESSAGE(0,"Generated capsule for bone: %s Volume: %0.6f\r\n", h->mBoneName, h->mMeshVolume );
+                  }
+                }
+                break;
+              case MESHIMPORT::MCT_CONVEX:
+                iface->importConvexHull("ClothCollision", h->mBoneName, h->mConvexTransform, h->mVertexCount, h->mVertices, h->mTriCount, h->mIndices );
+                SEND_TEXT_MESSAGE(0,"Generated hull for bone: %s Volume: %0.6f\r\n", h->mBoneName, h->mMeshVolume );
+                break;
+            }
           }
           gMeshImport->gather(msc);
           AUTO_GEOMETRY::releaseAutoGeometry(mAutoGeometry);

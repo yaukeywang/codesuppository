@@ -5271,4 +5271,104 @@ REAL  fm_computeBestFitSphere(size_t vcount,const REAL *points,size_t pstride,RE
 
 void fm_computeBestFitCapsule(size_t vcount,const REAL *points,size_t pstride,REAL &radius,REAL &height,REAL matrix[16],bool bruteForce)
 {
+  REAL sides[3];
+  REAL omatrix[16];
+  fm_computeBestFitOBB(vcount,points,pstride,sides,omatrix,bruteForce);
+
+  int axis = 0;
+  if ( sides[0] > sides[1] && sides[0] > sides[2] )
+    axis = 0;
+  else if ( sides[1] > sides[0] && sides[1] > sides[2] )
+    axis = 1;
+  else 
+    axis = 2;
+
+  REAL localTransform[16];
+
+  REAL maxDist = 0;
+  REAL maxLen = 0;
+
+  switch ( axis )
+  {
+    case 0:
+      {
+        fm_eulerMatrix(0,0,FM_PI/2,localTransform);
+        fm_matrixMultiply(localTransform,omatrix,matrix);
+
+        const unsigned char *scan = (const unsigned char *)points;
+        for (size_t i=0; i<vcount; i++)
+        {
+          const REAL *p = (const REAL *)scan;
+          REAL t[3];
+          fm_inverseRT(omatrix,p,t);
+          REAL dist = t[1]*t[1]+t[2]*t[2];
+          if ( dist > maxDist )
+          {
+            maxDist = dist;
+          }
+          REAL l = (REAL) fabs(t[0]);
+          if ( l > maxLen )
+          {
+            maxLen = l;
+          }
+          scan+=pstride;
+        }
+      }
+      height = sides[0];
+      break;
+    case 1:
+      {
+        fm_eulerMatrix(0,FM_PI/2,0,localTransform);
+        fm_matrixMultiply(localTransform,omatrix,matrix);
+
+        const unsigned char *scan = (const unsigned char *)points;
+        for (size_t i=0; i<vcount; i++)
+        {
+          const REAL *p = (const REAL *)scan;
+          REAL t[3];
+          fm_inverseRT(omatrix,p,t);
+          REAL dist = t[0]*t[0]+t[2]*t[2];
+          if ( dist > maxDist )
+          {
+            maxDist = dist;
+          }
+          REAL l = (REAL) fabs(t[1]);
+          if ( l > maxLen )
+          {
+            maxLen = l;
+          }
+          scan+=pstride;
+        }
+      }
+      height = sides[1];
+      break;
+    case 2:
+      {
+        fm_eulerMatrix(FM_PI/2,0,0,localTransform);
+        fm_matrixMultiply(localTransform,omatrix,matrix);
+
+        const unsigned char *scan = (const unsigned char *)points;
+        for (size_t i=0; i<vcount; i++)
+        {
+          const REAL *p = (const REAL *)scan;
+          REAL t[3];
+          fm_inverseRT(omatrix,p,t);
+          REAL dist = t[0]*t[0]+t[1]*t[1];
+          if ( dist > maxDist )
+          {
+            maxDist = dist;
+          }
+          REAL l = (REAL) fabs(t[2]);
+          if ( l > maxLen )
+          {
+            maxLen = l;
+          }
+          scan+=pstride;
+        }
+      }
+      height = sides[2];
+      break;
+  }
+  radius = (REAL)sqrt(maxDist);
+  height = (maxLen*2)-(radius*2);
 }

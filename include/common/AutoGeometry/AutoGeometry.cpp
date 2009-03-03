@@ -70,7 +70,8 @@ public:
   float generateHull(void)
   {
     release();
-    fm_identity(mLocalTransform);
+    fm_identity(mOBBTransform);
+    fm_identity(mCapsuleTransform);
     if ( mPoints.size() >= 3 ) // must have at least 3 vertices to create a hull.
     {
       // now generate the convex hull.
@@ -114,7 +115,7 @@ public:
     mBoneName    = b.mBoneName;
     mBoneIndex   = bone_index;
     mParentIndex = b.mParentIndex;
-    memcpy(mTransform,b.mTransform,sizeof(float)*16);
+    fm_identity(mConvexTransform);
     if ( mVertexCount )
     {
       for (unsigned int i=0; i<mVertexCount; i++)
@@ -125,16 +126,30 @@ public:
     }
   }
 
+  void computeCapsule(void)
+  {
+    fm_computeBestFitCapsule( (size_t)mVertexCount, (const float *)mVertices, sizeof(float)*3,mCapsuleRadius, mCapsuleHeight, mCapsuleTransform, true);
+    if ( mCapsuleHeight > 0 )
+    {
+      mCapsuleVolume = fm_capsuleVolume(mCapsuleRadius,mCapsuleHeight);
+    }
+    else
+    {
+      mCapsuleVolume = fm_sphereVolume(mCapsuleRadius);
+    }
+  }
+
   void computeOBB(void)
   {
-    fm_computeBestFitOBB( (size_t)mVertexCount, (const float *)mVertices, sizeof(float)*3,mSides, mLocalTransform, true);
-    mOBBVolume = mSides[0]*mSides[1]*mSides[2];
+    fm_computeBestFitOBB( (size_t)mVertexCount, (const float *)mVertices, sizeof(float)*3,mOBBSides, mOBBTransform, true);
+    mOBBVolume = mOBBSides[0]*mOBBSides[1]*mOBBSides[2];
   }
+
 
   void computeSphere(void)
   {
-    mRadius = fm_computeBestFitSphere( (size_t)mVertexCount, (const float *)mVertices, sizeof(float)*3, mCenter );
-    mSphereVolume = fm_sphereVolume(mRadius);
+    mSphereRadius = fm_computeBestFitSphere( (size_t)mVertexCount, (const float *)mVertices, sizeof(float)*3, mSphereCenter );
+    mSphereVolume = fm_sphereVolume(mSphereRadius);
   }
 
 
@@ -289,6 +304,7 @@ public:
           h->setTransform(b,i);
           h->computeOBB();
           h->computeSphere();
+          h->computeCapsule();
           mSimpleHulls[index] = h;
           index++;
         }

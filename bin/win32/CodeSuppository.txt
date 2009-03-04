@@ -1,6 +1,6 @@
 Menu System Initialized
-Processing mesh 'G:\p4\depot\HeroEngine\CLOTH-MAIN\he_plugins\media\MeshImport\clothsim.ezm'
-Successfully imported mesh 'G:\p4\depot\HeroEngine\CLOTH-MAIN\he_plugins\media\MeshImport\clothsim.ezm'
+Processing mesh 'C:\GoogleCode\CodeSuppository\media\CodeSuppository\clothsim.ezm'
+Successfully imported mesh 'C:\GoogleCode\CodeSuppository\media\CodeSuppository\clothsim.ezm'
 Generated hull for bone: Bip01 Pelvis Volume: 0.031235
 Generated hull for bone: Bip01 Spine Volume: 0.002488
 Generated hull for bone: Bip01 R Thigh Volume: 0.052368
@@ -23,4 +23,3 @@ Generated hull for bone: Bip01 Neck1 Volume: 0.000837
 Generated hull for bone: Bip01 Head Volume: 0.005817
 Generated hull for bone: Bip01 R Hand Volume: 0.001165
 Generated hull for bone: Bip01 L Hand Volume: 0.001156
-Camera speed 9.00 meters per second

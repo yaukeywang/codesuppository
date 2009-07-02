@@ -1143,6 +1143,10 @@ public:
     mAssetVersion        = 0;
     mMeshCollisionCount  = 0;
     mMeshCollisionRepresentations = 0;
+	mPlane[0] = 1;
+	mPlane[1] = 0;
+	mPlane[2] = 0;
+	mPlane[3] = 0;
   }
 
 
@@ -1180,6 +1184,8 @@ public:
 
   unsigned int          mMeshCollisionCount;
   MeshCollisionRepresentation **mMeshCollisionRepresentations;
+
+  float                 mPlane[4];
 
 };
 
@@ -1243,6 +1249,8 @@ public:
 
 
   virtual int getSerializeFrame(void) = 0;
+
+  virtual void importPlane(const float *p) = 0;
 
 
 };
@@ -1394,7 +1402,7 @@ public:
 
 }; // End of namespace for MESHIMPORT
 
-#define MESHIMPORT_VERSION 5  // version 0.01  increase this version number whenever an interface change occurs.
+#define MESHIMPORT_VERSION 6  // version 0.01  increase this version number whenever an interface change occurs.
 
 
 extern MESHIMPORT::MeshImport *gMeshImport; // This is an optional global variable that can be used by the application.  If the application uses it, it should define it somewhere in its codespace.

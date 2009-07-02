@@ -139,6 +139,7 @@ private:
   Vec3Vector  mVerts;
   Vec2Vector  mTexels;
   Vec3Vector  mNormals;
+  float       mPlane[4];
 
   StringRef            mCurrentMesh;
   StringRef            mCurrentMat;
@@ -417,6 +418,15 @@ int OBJ::ParseLine(int lineno,int argc,const char **argv)  // return TRUE to con
 
           mVerts.push_back(v);
         }
+		else if ( stricmp(argv[0],"p") == 0 && argc == 5 )
+		{
+			mPlane[0] = (float) atof( argv[1] );
+			mPlane[1] = (float) atof( argv[2] );
+			mPlane[2] = (float) atof( argv[3] );
+			mPlane[3] = (float) atof( argv[4] );
+			mCallback->importPlane(mPlane);
+		}
+
         else if ( stricmp(argv[0],"vt") == 0 && argc >= 3 )
         {
           Vec2 t;

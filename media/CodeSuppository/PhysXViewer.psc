@@ -21,7 +21,7 @@
 /RotateY 0.000000 
 /RotateX 0.000000 
 /Explode 0.200000 
-/PlaneD 0.000000 
+/PlaneD 0.076 
 /Plane YUP 
 /EdgeIntersect true 
 /CollapseColinear false 
@@ -38,7 +38,7 @@
 /DebugView false 
 /SelectCollision 0.000000 
 /AnimationSpeed 4.000000 
-/PlayAnimation true 
+/PlayAnimation false 
 /FlipWinding false 
 /ShowWireframe false 
 /ShowCollision true 

@@ -496,6 +496,16 @@ public:
     }
   }
 
+  virtual void importPlane(const float *p)
+  {
+	  mPlane[0] = p[0];
+	  mPlane[1] = p[1];
+	  mPlane[2] = p[2];
+	  mPlane[3] = p[3];
+  }
+
+
+
   virtual void        importTriangle(const char *_meshName,
                                      const char *_materialName,
                                      unsigned int vertexFlags,

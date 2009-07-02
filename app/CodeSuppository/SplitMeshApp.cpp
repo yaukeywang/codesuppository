@@ -24,6 +24,7 @@
 #include "common/HeMath/HeFoundation.h"
 #include "common/compression/compression.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
+#include "MeshImport/MeshImport.h"
 
 static const HeF64 EPSILON=0.0001;
 
@@ -197,6 +198,11 @@ public:
           const float *p3 = &mr->mVertices[i3*3];
           mRobustMesh->addTriangle(p1,p2,p3,0);
         }
+		MESHIMPORT::MeshSystem *msh = ms->getMeshSystem();
+		mPlane[0] = msh->mPlane[0];
+		mPlane[1] = msh->mPlane[1];
+		mPlane[2] = msh->mPlane[2];
+		mPlane[3] = msh->mPlane[3];
         rebuild();
       }
       ms->releaseMeshSystemRaw(mr);

@@ -966,6 +966,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\app\CodeSuppository\TestIslandGeneration.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\app\CodeSuppository\TestKdTree.h"
 				>
 			</File>
@@ -983,6 +987,10 @@
 			</File>
 			<File
 				RelativePath="..\..\app\CodeSuppository\TestMeshCleanup.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\TestMeshConsolidation.h"
 				>
 			</File>
 			<File
@@ -1015,6 +1023,10 @@
 			</File>
 			<File
 				RelativePath="..\..\app\CodeSuppository\TestTinyXML.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\TestTjunctions.h"
 				>
 			</File>
 			<File
@@ -1166,6 +1178,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\app\CodeSuppository\TestIslandGeneration.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\app\CodeSuppository\TestKdTree.cpp"
 				>
 			</File>
@@ -1183,6 +1199,10 @@
 			</File>
 			<File
 				RelativePath="..\..\app\CodeSuppository\TestMeshCleanup.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\TestMeshConsolidation.cpp"
 				>
 			</File>
 			<File
@@ -1215,6 +1235,10 @@
 			</File>
 			<File
 				RelativePath="..\..\app\CodeSuppository\TestTinyXML.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\TestTjunctions.cpp"
 				>
 			</File>
 			<File
@@ -1657,6 +1681,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\common\snippets\ConsolidateMesh.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\ConsolidateMesh.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\common\snippets\ConvexDecomposition.cpp"
 					>
 				</File>
@@ -1790,6 +1822,10 @@
 				</File>
 				<File
 					RelativePath="..\..\include\common\snippets\log.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\MeshConsolidate.cpp"
 					>
 				</File>
 				<File

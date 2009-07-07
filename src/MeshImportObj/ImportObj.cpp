@@ -212,7 +212,9 @@ bool OBJ::importMesh(const char *fname,const void *_data,unsigned int len,MeshIm
     {
       char *data = (char *)MEMALLOC_MALLOC(len);
       memcpy(data,mem,len);
+
       appResource->releaseApplicationResource(mem);
+
       InPlaceParser ipp(data,len);
       ipp.Parse(this);
 

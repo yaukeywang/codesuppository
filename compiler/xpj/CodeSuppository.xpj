@@ -172,6 +172,10 @@
          snippets/splitmesh.cpp
          snippets/OpenClosedMesh.h
          snippets/OpenClosedMesh.cpp
+         snippets/ConsolidateMesh.h
+         snippets/ConsolidateMesh.cpp
+         snippets/MeshConslidate.h
+         snippets/MeshConsolidate.cpp
          snippets/RemoveTjunctions.h
          snippets/RemoveTjunctions.cpp
          snippets/ImportHeightMap.h

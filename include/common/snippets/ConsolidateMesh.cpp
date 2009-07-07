@@ -29,7 +29,7 @@ class Edge;
 
 static void addPolyPoint(Edge *p,Edge **polyPoints,Polygon *parent);
 static void removePolyPoint(Edge *p,Edge **polyPoints);
-static bool hasPolyPoint(Polygon *p,size_t i,Edge **polyPoints);
+static bool hasPolyPoint(Polygon *p,HeU32 i,Edge **polyPoints);
 
 class Edge
 {
@@ -38,35 +38,34 @@ public:
   {
     mI1 = 0;
     mI2 = 0;
-    mHash = 0;
     mNext = 0;
     mPrevious = 0;
     mParent = 0;
   }
 
-  void init(size_t i1,size_t i2,Polygon *parent)
+  void init(HeU32 i1,HeU32 i2,Polygon *parent)
   {
     HE_ASSERT( i1 < 65536 );
     HE_ASSERT( i2 < 65536 );
     mI1 = i1;
     mI2 = i2;
-    mHash        = (i2<<16)|i1;
-    mReverseHash = (i1<<16)|i2;
     mNext = 0;
     mPrevious = 0;
     mParent = parent;
   }
 
-  size_t  mI1;
-  size_t  mI2;
-  size_t  mHash;
-  size_t  mReverseHash;
+  HeU32 getHash(void) const { return (mI2<<16)|mI1; };
+  HeU32 getReverseHash(void) const { return (mI1<<16)|mI2; };
+
+
+  HeU32  mI1;
+  HeU32  mI2;
 
   Edge   *mNext;
   Edge   *mPrevious;
 
   Polygon *mParent;
-  Edge   *mNextPolyPoint;
+  Edge    *mNextPolyPoint;
 
 
 };
@@ -200,13 +199,13 @@ public:
     Edge *scan_prev=0;
     Edge *scan_next=0;
 
-    if ( tri[0]->mHash == e->mReverseHash )
+    if ( tri[0]->getHash() == e->getReverseHash() )
     {
       scan = tri[0];
       scan_next = tri[1];
       scan_prev = tri[2];
     }
-    else if ( tri[1]->mHash == e->mReverseHash )
+    else if ( tri[1]->getHash() == e->getReverseHash() )
     {
       scan = tri[1];
       scan_next = tri[2];
@@ -214,7 +213,7 @@ public:
     }
     else
     {
-      HE_ASSERT( tri[2]->mHash == e->mReverseHash );
+      HE_ASSERT( tri[2]->getHash() == e->getReverseHash() );
       scan = tri[2];
       scan_next = tri[0];
       scan_prev = tri[1];
@@ -229,19 +228,19 @@ public:
 
     Edge *insert_one = 0;
 
-    if ( scan_next->mHash == e_prev->mReverseHash )
+    if ( scan_next->getHash() == e_prev->getReverseHash() )
     {
       insert_one = scan_prev;
     }
-    else if ( scan_next->mHash == e_next->mReverseHash )
+    else if ( scan_next->getHash() == e_next->getReverseHash() )
     {
       insert_one = scan_prev;
     }
-    else if ( scan_prev->mHash == e_prev->mReverseHash )
+    else if ( scan_prev->getHash() == e_prev->getReverseHash() )
     {
       insert_one = scan_next;
     }
-    else if ( scan_prev->mHash == e_next->mReverseHash )
+    else if ( scan_prev->getHash() == e_next->getReverseHash() )
     {
       insert_one = scan_next;
     }
@@ -276,13 +275,13 @@ public:
     Edge *scan_prev=0;
     Edge *scan_next=0;
 
-    if ( tri[0]->mHash == e->mReverseHash )
+    if ( tri[0]->getHash() == e->getReverseHash() )
     {
       scan = tri[0];
       scan_next = tri[1];
       scan_prev = tri[2];
     }
-    else if ( tri[1]->mHash == e->mReverseHash )
+    else if ( tri[1]->getHash() == e->getReverseHash() )
     {
       scan = tri[1];
       scan_next = tri[2];
@@ -290,7 +289,7 @@ public:
     }
     else
     {
-      HE_ASSERT( tri[2]->mHash == e->mReverseHash );
+      HE_ASSERT( tri[2]->getHash() == e->getReverseHash() );
       scan = tri[2];
       scan_next = tri[0];
       scan_prev = tri[1];
@@ -307,7 +306,7 @@ public:
     Edge *kill2 = 0;
     Edge *insert_one = 0;
 
-    if ( scan_next->mHash == e_prev->mReverseHash )
+    if ( scan_next->getHash() == e_prev->getReverseHash() )
     {
       // kill e_prev
       // kill e
@@ -316,7 +315,7 @@ public:
       kill2 = e;
       insert_one = scan_prev;
     }
-    else if ( scan_next->mHash == e_next->mReverseHash )
+    else if ( scan_next->getHash() == e_next->getReverseHash() )
     {
       // kill e
       // kill e_next
@@ -325,7 +324,7 @@ public:
       kill2 = e_prev;
       insert_one = scan_prev;
     }
-    else if ( scan_prev->mHash == e_prev->mReverseHash )
+    else if ( scan_prev->getHash() == e_prev->getReverseHash() )
     {
       // kill e_prev
       // kill e
@@ -334,7 +333,7 @@ public:
       kill2 = e;
       insert_one = scan_next;
     }
-    else if ( scan_prev->mHash == e_next->mReverseHash )
+    else if ( scan_prev->getHash() == e_next->getReverseHash() )
     {
       // kill e
       // kill e_next
@@ -437,7 +436,7 @@ public:
     Edge *e = mRoot;
     Edge *prev = 0;
 
-    size_t count = 0;
+    HeU32 count = 0;
 
     while ( e )
     {
@@ -490,17 +489,17 @@ public:
   bool    mMerged:1;
   bool    mRemoved:1;
 
-  size_t  mEcount;
+  HeU32  mEcount;
   Edge   *mRoot;
   Edge   *mTail;
   float  mNormal[3];
-  size_t mIndex; // polygon index (used for debugging)
+  HeU32 mIndex; // polygon index (used for debugging)
 
   Polygon *mNextPolygonEdge;
 };
 
 
-static bool hasPolyPoint(Polygon *p,size_t i,Edge **polyPoints)
+static bool hasPolyPoint(Polygon *p,HeU32 i,Edge **polyPoints)
 {
   bool ret = false;
 
@@ -538,7 +537,7 @@ static bool hasPolyPoint(Polygon *p,size_t i,Edge **polyPoints)
 
 static void addPolyPoint(Edge *p,Edge **polyPoints,Polygon *parent)
 {
-  size_t i = p->mI2;
+  HeU32 i = p->mI2;
 
   Edge *scan = polyPoints[i];
   while ( scan )
@@ -562,7 +561,7 @@ static void addPolyPoint(Edge *p,Edge **polyPoints,Polygon *parent)
 
 static void removePolyPoint(Edge *p,Edge **polyPoints)
 {
-  size_t i = p->mI2;
+  HeU32 i = p->mI2;
 
   Edge *scan = polyPoints[i];
   Edge *prev = 0;
@@ -593,8 +592,8 @@ static void removePolyPoint(Edge *p,Edge **polyPoints)
 
 #define SPLIT_EPSILON 0.000001f
 
-typedef USER_STL::vector< size_t > size_tVector;
-typedef USER_STL::hash_map< size_t, Polygon * > PolygonHashMap;
+typedef USER_STL::vector< HeU32 > HeU32Vector;
+typedef USER_STL::hash_map< HeU32, Polygon * > PolygonHashMap;
 
 class MyConsolidateMesh : public ConsolidateMesh
 {
@@ -660,9 +659,9 @@ public:
 
       bool np;
 
-      size_t i1 = mVertexIndex->getIndex(p1,np);
-      size_t i2 = mVertexIndex->getIndex(p2,np);
-      size_t i3 = mVertexIndex->getIndex(p3,np);
+      HeU32 i1 = mVertexIndex->getIndex(p1,np);
+      HeU32 i2 = mVertexIndex->getIndex(p2,np);
+      HeU32 i3 = mVertexIndex->getIndex(p3,np);
 
       if ( i1 == i2 || i1 == i3 || i2 == i3 )
       {
@@ -698,9 +697,9 @@ public:
 
       bool np;
 
-      size_t i1 = mVertexIndex->getIndex(p1,np);
-      size_t i2 = mVertexIndex->getIndex(p2,np);
-      size_t i3 = mVertexIndex->getIndex(p3,np);
+      HeU32 i1 = mVertexIndex->getIndex(p1,np);
+      HeU32 i2 = mVertexIndex->getIndex(p2,np);
+      HeU32 i3 = mVertexIndex->getIndex(p3,np);
 
       if ( i1 == i2 || i1 == i3 || i2 == i3 )
       {
@@ -721,7 +720,7 @@ public:
     return ret;
   }
 
-  Edge * addEdge(Edge *e,Polygon *p,size_t i1,size_t i2)
+  Edge * addEdge(Edge *e,Polygon *p,HeU32 i1,HeU32 i2)
   {
     e->init(i1,i2,p);
 
@@ -730,10 +729,10 @@ public:
     p->addEdge(e);
 
     PolygonHashMap::iterator found;
-    found = mPolygonEdges.find(e->mHash);
+    found = mPolygonEdges.find(e->getHash());
     if ( found == mPolygonEdges.end() )
     {
-      mPolygonEdges[ e->mHash ] = p;
+      mPolygonEdges[ e->getHash() ] = p;
     }
     else
     {
@@ -776,24 +775,23 @@ public:
         else
           mVertexOutput = fm_createVertexIndex((float)SPLIT_EPSILON,false);
 
-        size_t vcount = mVertexIndex->getVcount();
+        HeU32 vcount = mVertexIndex->getVcount();
         mPolyPoints = new Edge*[vcount];
         mPolygons = new Polygon[mPolygonCount];
         mEdges    = new Edge[mEdgeCount];
         memset(mPolyPoints,0,sizeof(Edge *)*vcount);
 
 
-//        gLog->Display("Input mesh has %d triangles.\r\n", mPolygonCount);
-
         Polygon *p = mPolygons;
         Edge    *e = mEdges;
 
-        const size_t *scan = &mIndices[0];
-        for (size_t i=0; i<mPolygonCount; i++)
+        const HeU32 *scan = &mIndices[0];
+        for (HeU32 i=0; i<mPolygonCount; i++)
         {
-          size_t i1 = scan[0];
-          size_t i2 = scan[1];
-          size_t i3 = scan[2];
+
+          HeU32 i1 = scan[0];
+          HeU32 i2 = scan[1];
+          HeU32 i3 = scan[2];
 
           p->mIndex = i;
 
@@ -825,7 +823,7 @@ public:
         // Consolidate all triangles into polygons in a single pass.
         {
           Polygon *p = mPolygons;
-          for (size_t i=0; i<mPolygonCount; i++)
+          for (HeU32 i=0; i<mPolygonCount; i++)
           {
             consolidate(p,i);
             p++;
@@ -836,7 +834,7 @@ public:
         {
           Polygon *p = mPolygons;
           fm_Triangulate *t = fm_createTriangulate(); // create the 3d polygon triangulator
-          for (size_t j=0; j<mPolygonCount; j++)
+          for (HeU32 j=0; j<mPolygonCount; j++)
           {
             if ( !p->mRemoved )
             {
@@ -853,7 +851,7 @@ public:
                 double _vertices[MAX_VERTS*3];
 
                 Edge *e = p->mRoot;
-                size_t pcount = 0;
+                HeU32 pcount = 0;
                 double *dest = _vertices;
                 while ( e )
                 {
@@ -927,12 +925,12 @@ public:
                     break;
                   default:
                     {
-                      size_t tcount;
+                      HeU32 tcount;
                       const double *triangles = t->triangulate3d(pcount,vertices,sizeof(double)*3,tcount);
 
                       if ( triangles )
                       {
-                        for (size_t i=0; i<tcount; i++)
+                        for (HeU32 i=0; i<tcount; i++)
                         {
                           const double *p1 = triangles;
                           const double *p2 = triangles+3;
@@ -959,7 +957,7 @@ public:
 
 //                        SEND_TEXT_MESSAGE(0,"Triangulation failed on %d points.\r\n", pcount);
 //
-//                        for (size_t i=0; i<pcount; i++)
+//                        for (HeU32 i=0; i<pcount; i++)
 //                        {
 //                          const double *p = &vertices[i*3];
 //                          SEND_TEXT_MESSAGE(0,"Point%d : %0.9f, %0.9f, %0.9f \r\n", i+1, (float)p[0],(float)p[1],(float)p[2]);
@@ -1007,10 +1005,10 @@ public:
   bool normalMatch(const float *n1,const float *n2) const
   {
     float dot = fm_dot(n1,n2);
-    return dot >= 0.999f && dot <= 1.001f ? true : false;
+    return dot >= 0.9999f && dot <= 1.0001f ? true : false;
   }
 
-  Polygon * sharedEdge(size_t hash,Polygon *check)
+  Polygon * sharedEdge(HeU32 hash,Polygon *check)
   {
     Polygon *ret = 0;
 
@@ -1038,7 +1036,7 @@ public:
   void removeEdge(Polygon *p,Edge *e)
   {
     PolygonHashMap::iterator found;
-    found = mPolygonEdges.find( e->mHash );
+    found = mPolygonEdges.find( e->getHash() );
     if ( found != mPolygonEdges.end() )
     {
       Polygon *prev = 0;
@@ -1094,40 +1092,37 @@ public:
     removePolyPoint(e3,mPolyPoints);
   }
 
-  void consolidate(Polygon *p,size_t index)
+  void consolidate(Polygon *p,HeU32 index)
   {
 
-    bool visualize = (index==9999999) ? true : false;
+    HeU32 merge_count = 0;
 
-    float offset = 0;
-
-    size_t merge_count = 0;
-    if ( !p->mRemoved )
+    if ( !p->mRemoved )  // if this is not a polygon which has already been removed (folded up into another)
     {
-      remove(p);
+
+      remove(p);         // remove it
+
       // first see if we share any edges...
       Edge *e = p->mRoot;
+
       while ( e )
       {
-        if ( visualize )
-        {
-          p->debug(offset,mVertexIndex);
-          offset+=1;
-        }
 
-        Polygon *merge = sharedEdge(e->mReverseHash,p);
+        Polygon *merge = sharedEdge(e->getReverseHash(),p);
 
         if ( merge )
         {
           Edge *insertion_point = p->determineInsertionPoint(merge,e,mPolyPoints);
+
           if ( insertion_point )
           {
-            size_t new_point = insertion_point->mI2;
+            HeU32 new_point = insertion_point->mI2;
             if ( hasPolyPoint(p,new_point,mPolyPoints) )
             {
               merge = 0;
             }
           }
+
           if ( merge )
           {
             removePolyPoints(merge);
@@ -1145,6 +1140,7 @@ public:
           e = e->mNext;
         }
       }
+
     }
   }
 
@@ -1167,9 +1163,9 @@ public:
 #endif
     HE_ASSERT( !mUseDouble );
     bool np;
-    size_t i1 = mVertexOutput->getIndex(p1,np);
-    size_t i2 = mVertexOutput->getIndex(p2,np);
-    size_t i3 = mVertexOutput->getIndex(p3,np);
+    HeU32 i1 = mVertexOutput->getIndex(p1,np);
+    HeU32 i2 = mVertexOutput->getIndex(p2,np);
+    HeU32 i3 = mVertexOutput->getIndex(p3,np);
     mOutputIndices.push_back(i1);
     mOutputIndices.push_back(i2);
     mOutputIndices.push_back(i3);
@@ -1184,9 +1180,9 @@ public:
 
     HE_ASSERT( mUseDouble );
     bool np;
-    size_t i1 = mVertexOutput->getIndex(p1,np);
-    size_t i2 = mVertexOutput->getIndex(p2,np);
-    size_t i3 = mVertexOutput->getIndex(p3,np);
+    HeU32 i1 = mVertexOutput->getIndex(p1,np);
+    HeU32 i2 = mVertexOutput->getIndex(p2,np);
+    HeU32 i3 = mVertexOutput->getIndex(p3,np);
     mOutputIndices.push_back(i1);
     mOutputIndices.push_back(i2);
     mOutputIndices.push_back(i3);
@@ -1196,13 +1192,13 @@ public:
   fm_VertexIndex        *mVertexIndex;
   Polygon               *mPolygons;
   Edge                  *mEdges;
-  size_tVector           mIndices;
-  size_t                 mPolygonCount;
-  size_t                 mEdgeCount;
+  HeU32Vector           mIndices;
+  HeU32                 mPolygonCount;
+  HeU32                 mEdgeCount;
   PolygonHashMap         mPolygonEdges;
 
   fm_VertexIndex        *mVertexOutput;
-  size_tVector           mOutputIndices;
+  HeU32Vector           mOutputIndices;
 
   Edge                 **mPolyPoints;
 

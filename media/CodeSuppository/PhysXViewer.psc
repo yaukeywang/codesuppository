@@ -21,7 +21,7 @@
 /RotateY 0.000000 
 /RotateX 0.000000 
 /Explode 0.200000 
-/PlaneD 0.076 
+/PlaneD 0.000000 
 /Plane YUP 
 /EdgeIntersect true 
 /CollapseColinear false 

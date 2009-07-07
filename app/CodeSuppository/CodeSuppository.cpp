@@ -45,6 +45,9 @@
 #include "TestSendAIM.h"
 #include "TestErosion.h"
 #include "TestAutoGeometry.h"
+#include "TestTjunctions.h"
+#include "TestMeshConsolidation.h"
+#include "TestIslandGeneration.h"
 #include "RenderDebug/RenderDebug.h"
 #include "SplitMeshApp.h"
 #include "common/snippets/JobSwarm.h"
@@ -288,6 +291,15 @@ public:
       case CSC_BEST_FIT_OBB:
         testBestFitOBB(mMeshSystemHelper);
         break;
+      case CSC_TEST_MESH_CONSOLIDATION:
+        testMeshConsolidation(mMeshSystemHelper);
+        break;
+	  case CSC_TEST_REMOVE_TJUNCTIONS:
+		  testTjunctions(mMeshSystemHelper);
+		  break;
+	  case CSC_TEST_ISLAND_GENERATION:
+		  testIslandGeneration(mMeshSystemHelper);
+		  break;
       case CSC_BEST_FIT_CAPSULE:
         testBestFitCapsule(mMeshSystemHelper);
         break;

@@ -2,15 +2,16 @@
 
 #define CONSOLIDATE_MESH_H
 
+#include "He.h"
 
 class ConsolidateMeshOutput
 {
 public:
-  size_t        mVcount;
-  size_t        mTcount;
+  HeU32        mVcount;
+  HeU32        mTcount;
   const float  *mVerticesFloat;
   const double *mVerticesDouble;
-  const size_t *mIndices;
+  const HeU32 *mIndices;
 };
 
 class ConsolidateMesh

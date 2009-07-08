@@ -7,11 +7,20 @@
 class MeshConsolidateOutput
 {
 public:
+  MeshConsolidateOutput(void)
+  {
+    mVcount = 0;
+    mTcount = 0;
+    mVertices = 0;
+    mIndices = 0;
+    mSubMeshes = 0;
+  }
   HeU32        mVcount;
   HeU32        mTcount;
   const float  *mVertices;
   const HeU32 *mIndices;
   const HeU32 *mIds;
+  const HeU32 *mSubMeshes;
 };
 
 class MeshConsolidate

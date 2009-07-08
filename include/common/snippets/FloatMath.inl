@@ -3742,7 +3742,7 @@ public:
        defined by A, B, C.
      */
 
-  bool Snip(const Vector2dVector &contour,int u,int v,int w,int n,int *V)
+  bool Snip(const Vector2dVector &contour,int u,int v,int w,int n,int *V,double epsilon)
   {
     int p;
     double Ax, Ay, Bx, By, Cx, Cy, Px, Py;
@@ -3756,20 +3756,22 @@ public:
     Cx = contour[V[w]].GetX();
     Cy = contour[V[w]].GetY();
 
-    if ( EPSILON > (((Bx-Ax)*(Cy-Ay)) - ((By-Ay)*(Cx-Ax))) ) return false;
+    if ( epsilon > (((Bx-Ax)*(Cy-Ay)) - ((By-Ay)*(Cx-Ax))) ) 
+		return false;
 
     for (p=0;p<n;p++)
     {
       if( (p == u) || (p == v) || (p == w) ) continue;
       Px = contour[V[p]].GetX();
       Py = contour[V[p]].GetY();
-      if (fm_insideTriangle(Ax,Ay,Bx,By,Cx,Cy,Px,Py)) return false;
+      if (fm_insideTriangle(Ax,Ay,Bx,By,Cx,Cy,Px,Py)) 
+		  return false;
     }
 
     return true;
   }
 
-  bool Process(const Vector2dVector &contour,size_tVector &result,bool &flipped)
+  bool Process(const Vector2dVector &contour,size_tVector &result,bool &flipped,double epsilon)
   {
     /* allocate and initialize list of Vertices in polygon */
 
@@ -3814,7 +3816,7 @@ public:
       int w = v+1;
       if (nv <= w) w = 0;     /* next     */
 
-      if ( Snip(contour,u,v,w,nv,V) )
+      if ( Snip(contour,u,v,w,nv,V,epsilon) )
       {
         int a,b,c,s,t;
 
@@ -3857,7 +3859,7 @@ public:
     mTrianglesFloat.push_back(p[2]);
   }
 
-  const double *       triangulate3d(size_t pcount,const double *_points,size_t vstride,size_t &tcount)
+  const double *       triangulate3d(size_t pcount,const double *_points,size_t vstride,size_t &tcount,bool consolidate,double epsilon)
   {
     const double *ret = 0;
 
@@ -3868,7 +3870,12 @@ public:
     if ( pcount >= 3 )
     {
       double *points = MEMALLOC_NEW_ARRAY(double,pcount*3)[pcount*3];
-      pcount = fm_consolidatePolygon(pcount,_points,vstride,points);
+
+      if ( consolidate )
+        pcount = fm_consolidatePolygon(pcount,_points,vstride,points,epsilon);
+      else
+        memcpy(points,_points,sizeof(double)*3*pcount);
+
       vstride = sizeof(double)*3;
 
       if ( pcount >= 3 )
@@ -3911,7 +3918,7 @@ public:
         }
         bool flipped;
         size_tVector results;
-        if ( Process(polygon,results,flipped) && !results.empty() )
+        if ( Process(polygon,results,flipped,epsilon) && !results.empty() )
         {
           size_t tcount = results.size()/3;
           size_t *indices = &results[0];
@@ -3951,7 +3958,7 @@ public:
     return ret;
   }
 
-  const float  *       triangulate3d(size_t pcount,const float *points,size_t vstride,size_t &tcount)
+  const float  *       triangulate3d(size_t pcount,const float *points,size_t vstride,size_t &tcount,bool consolidate,float epsilon)
   {
     const float *ret = 0;
 
@@ -3967,14 +3974,18 @@ public:
       polygon.push_back(dp[2]);
     }
 
-    const double *results = triangulate3d(pcount,&polygon[0],sizeof(double)*3,tcount);
-    for (size_t i=0; i<tcount*9; i++)
-    {
-      float v = (float) *results++;
-      mTrianglesFloat.push_back(v);
-    }
+    const double *results = triangulate3d(pcount,&polygon[0],sizeof(double)*3,tcount,consolidate,epsilon);
 
-    ret = &mTrianglesFloat[0];
+	if ( tcount )
+	{
+		for (size_t i=0; i<tcount*9; i++)
+		{
+		  float v = (float) *results++;
+		  mTrianglesFloat.push_back(v);
+		}
+
+		ret = &mTrianglesFloat[0];
+	}
 
 
     return ret;

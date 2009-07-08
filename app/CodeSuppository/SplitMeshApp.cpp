@@ -370,7 +370,7 @@ public:
         {
           fm_Triangulate *t = fm_createTriangulate();
           HeU32 tcount;
-          const HeF64 *vertices = t->triangulate3d(pcount,points,sizeof(HeF64)*3,tcount);
+          const HeF64 *vertices = t->triangulate3d(pcount,points,sizeof(HeF64)*3,tcount,true,SPLIT_EPSILON);
 
           if ( vertices )
           {
@@ -2705,7 +2705,7 @@ public:
 
     fm_Triangulate *t = fm_createTriangulate();
     size_t tcount;
-    const double *tris = t->triangulate3d(pcount,results,sizeof(double)*3,tcount);
+    const double *tris = t->triangulate3d(pcount,results,sizeof(double)*3,tcount,true,SPLIT_EPSILON);
     if ( tris )
     {
       for (size_t i=0; i<tcount; i++)

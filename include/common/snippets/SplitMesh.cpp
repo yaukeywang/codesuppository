@@ -1079,7 +1079,7 @@ public:
         fm_Triangulate *t = fm_createTriangulate();
         size_t tcount;
 
-        const double *vertices = t->triangulate3d(pcount,_points,sizeof(double)*3,tcount);
+        const double *vertices = t->triangulate3d(pcount,_points,sizeof(double)*3,tcount,true,SPLIT_EPSILON);
         if ( vertices )
         {
           size_tVector indices;

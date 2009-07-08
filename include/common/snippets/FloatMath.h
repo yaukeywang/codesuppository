@@ -481,8 +481,8 @@ void           fm_releaseLineSweep(fm_LineSweep *sweep);
 class fm_Triangulate
 {
 public:
-  virtual const double *       triangulate3d(size_t pcount,const double *points,size_t vstride,size_t &tcount) = 0;
-  virtual const float  *       triangulate3d(size_t pcount,const float  *points,size_t vstride,size_t &tcount) = 0;
+  virtual const double *       triangulate3d(size_t pcount,const double *points,size_t vstride,size_t &tcount,bool consolidate,double epsilon) = 0;
+  virtual const float  *       triangulate3d(size_t pcount,const float  *points,size_t vstride,size_t &tcount,bool consolidate,float epsilon) = 0;
 };
 
 fm_Triangulate * fm_createTriangulate(void);
@@ -500,8 +500,8 @@ double fm_areaPolygon2d(size_t pcount,const double *points,size_t pstride);
 bool  fm_pointInsidePolygon2d(size_t pcount,const float *points,size_t pstride,const float *point,size_t xindex=0,size_t yindex=1);
 bool  fm_pointInsidePolygon2d(size_t pcount,const double *points,size_t pstride,const double *point,size_t xindex=0,size_t yindex=1);
 
-size_t fm_consolidatePolygon(size_t pcount,const float *points,size_t pstride,float *dest,float epsilon=0.999f); // collapses co-linear edges.
-size_t fm_consolidatePolygon(size_t pcount,const double *points,size_t pstride,double *dest,double epsilon=0.999); // collapses co-linear edges.
+size_t fm_consolidatePolygon(size_t pcount,const float *points,size_t pstride,float *dest,float epsilon=0.999999f); // collapses co-linear edges.
+size_t fm_consolidatePolygon(size_t pcount,const double *points,size_t pstride,double *dest,double epsilon=0.999999); // collapses co-linear edges.
 
 
 bool fm_computeSplitPlane(unsigned int vcount,const double *vertices,unsigned int tcount,const unsigned int *indices,double *plane);

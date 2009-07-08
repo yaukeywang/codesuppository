@@ -926,7 +926,7 @@ public:
                   default:
                     {
                       HeU32 tcount;
-                      const double *triangles = t->triangulate3d(pcount,vertices,sizeof(double)*3,tcount);
+                      const double *triangles = t->triangulate3d(pcount,vertices,sizeof(double)*3,tcount,false,SPLIT_EPSILON);
 
                       if ( triangles )
                       {

@@ -5502,4 +5502,53 @@ void             fm_releaseTriangulate(fm_Triangulate *t)
 
 #endif
 
+bool validDistance(const REAL *p1,const REAL *p2,REAL epsilon)
+{
+	bool ret = true;
 
+	REAL dx = p1[0] - p2[0];
+	REAL dy = p1[1] - p2[1];
+	REAL dz = p1[2] - p2[2];
+	REAL dist = dx*dx+dy*dy+dz*dz;
+	if ( dist < (epsilon*epsilon) )
+	{
+		ret = false;
+	}
+	return ret;
+}
+
+bool fm_isValidTriangle(const REAL *p1,const REAL *p2,const REAL *p3,REAL epsilon)
+{
+  bool ret = false;
+
+  if ( validDistance(p1,p2,epsilon) &&
+	   validDistance(p1,p3,epsilon) &&
+	   validDistance(p2,p3,epsilon) )
+  {
+
+	  REAL area = fm_computeArea(p1,p2,p3);
+	  if ( area > epsilon )
+	  {
+		REAL _vertices[3*3],vertices[64*3];
+
+		_vertices[0] = p1[0];
+		_vertices[1] = p1[1];
+		_vertices[2] = p1[2];
+
+		_vertices[3] = p2[0];
+		_vertices[4] = p2[1];
+		_vertices[5] = p2[2];
+
+		_vertices[6] = p3[0];
+		_vertices[7] = p3[1];
+		_vertices[8] = p3[2];
+
+		NxU32 pcount = fm_consolidatePolygon(3,_vertices,sizeof(REAL)*3,vertices,1-epsilon);
+		if ( pcount == 3 )
+		{
+		  ret = true;
+		}
+	  }
+  }
+  return ret;
+}

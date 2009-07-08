@@ -575,4 +575,8 @@ void fm_computeMeanNormals(unsigned int vcount,       // the number of vertices
                            unsigned int tcount,       // the number of triangles
                            const unsigned int *indices);     // the triangle indices
 
+
+bool fm_isValidTriangle(const float *p1,const float *p2,const float *p3,float epsilon=0.00001f);
+bool fm_isValidTriangle(const double *p1,const double *p2,const double *p3,double epsilon=0.00001f);
+
 #endif

@@ -3,4 +3,5 @@ Processing mesh 'C:\dev\trunk\APEX\tools\DestructionTool\consolidate000.obj'
 Successfully imported mesh 'C:\dev\trunk\APEX\tools\DestructionTool\consolidate000.obj'
 Demonstrates how to consolidate a mesh
 Input triangle count 118 output triangle count 118.
-FAILED TO TRIANGULATE POLYGON WITH 8 points!
+Input TriCount: 118 Output TriCount: 112
+Camera speed 10.00 meters per second

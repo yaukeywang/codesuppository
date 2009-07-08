@@ -141,6 +141,7 @@
          snippets/cparser.h
          snippets/filesystem.cpp
          snippets/filesystem.h
+         snippets/FloatMath.inl
          snippets/FloatMath.cpp
          snippets/FloatMath.h
          snippets/gauss.cpp
@@ -180,6 +181,8 @@
          snippets/RemoveTjunctions.cpp
          snippets/ImportHeightMap.h
          snippets/ImportHeightMap.cpp
+         snippets/Triangulator.h
+         snippets/Triangulator.cpp
          snippets/StanHull.h
          snippets/StanHull.cpp
          snippets/cd_hull.h

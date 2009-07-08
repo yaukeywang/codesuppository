@@ -5,7 +5,7 @@
 
 /*!
 **
-** Copyright (c) 2007 by John W. Ratcliff mailto:jratcliff@infiniplex.net
+** Copyright (c) 2009 by John W. Ratcliff mailto:jratcliffscarab@gmail.com
 **
 ** Portions of this source has been released with the PhysXViewer application, as well as
 ** Rocket, CreateDynamics, ODF, and as a number of sample code snippets.
@@ -24,16 +24,15 @@
 **
 ** If you wish to contact me you can use the following methods:
 **
-** Skype Phone: 636-486-4040 (let it ring a long time while it goes through switches)
 ** Skype ID: jratcliff63367
 ** Yahoo: jratcliff63367
 ** AOL: jratcliff1961
-** email: jratcliff@infiniplex.net
+** email: jratcliffscarab@gmail.com
 **
 **
 ** The MIT license:
 **
-** Permission is hereby granted, MEMALLOC_FREE of charge, to any person obtaining a copy
+** Permission is hereby granted, free of charge, to any person obtaining a copy
 ** of this software and associated documentation files (the "Software"), to deal
 ** in the Software without restriction, including without limitation the rights
 ** to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
@@ -481,8 +480,19 @@ void           fm_releaseLineSweep(fm_LineSweep *sweep);
 class fm_Triangulate
 {
 public:
-  virtual const double *       triangulate3d(size_t pcount,const double *points,size_t vstride,size_t &tcount,bool consolidate,double epsilon) = 0;
-  virtual const float  *       triangulate3d(size_t pcount,const float  *points,size_t vstride,size_t &tcount,bool consolidate,float epsilon) = 0;
+  virtual const double *       triangulate3d(size_t pcount,
+                                             const double *points,
+                                             size_t vstride,
+                                             size_t &tcount,
+                                             bool consolidate,
+                                             double epsilon) = 0;
+
+  virtual const float  *       triangulate3d(size_t pcount,
+                                             const float  *points,
+                                             size_t vstride,
+                                             size_t &tcount,
+                                             bool consolidate,
+                                             float epsilon) = 0;
 };
 
 fm_Triangulate * fm_createTriangulate(void);

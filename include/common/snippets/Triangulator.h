@@ -1,9 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
-#include <math.h>
-#include <float.h>
+#ifndef TRIANGULATOR_H
+#define TRIANGULATOR_H
 
 /*!
 **
@@ -53,13 +49,24 @@
 
 */
 
-#include "FloatMath.h"
+class Triangulator
+{
+public:
+  virtual void           addPoint(double x,double y,double z) = 0; // add a point to the contour
+  virtual void           addPoint(float x,float y,float z) = 0; // add a point to the contour
 
-#define REAL float
+  virtual unsigned int * triangulate(unsigned int &tcount,double epsilon=0.00000000001) = 0; // triangulate using the provided epsilon
 
-#include "FloatMath.inl"
+  virtual void           reset(void) = 0; // reset contour
 
-#undef REAL
-#define REAL double
+  virtual void           getPoint(unsigned int index,float &x,float &y,float &z) const = 0; // retrieve one of the points in the contour.
+  virtual void           getPoint(unsigned int index,double &x,double &y,double &z) const = 0; // retrieve one of the points in the contour.
 
-#include "FloatMath.inl"
+protected:
+  virtual ~Triangulator(void) { };
+};
+
+Triangulator * createTriangulator(void);
+void           releaseTriangulator(Triangulator *t);
+
+#endif

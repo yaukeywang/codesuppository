@@ -71,6 +71,7 @@ void testMeshConsolidation(MeshSystemHelper * ms)
   			const HeF32 *p2 = &results.mVertices[i2*3];
   			const HeF32 *p3 = &results.mVertices[i3*3];
 			gRenderDebug->DebugSolidTri(p1,p2,p3,0x0000FF,6000);
+			gRenderDebug->DebugSolidTri(p3,p2,p1,0xFF00FF,6000);
   			gRenderDebug->DebugTri(p1,p2,p3,0xFFFF00,6000);
   		  }
   		  SEND_TEXT_MESSAGE(0,"Input TriCount: %d Output TriCount: %d\r\n", tcount, results.mTcount );

@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="Pd3d"
 	ProjectGUID="{4B098AAC-BDE4-A37E-9077-D544BD9A6CBE}"
+	RootNamespace="Pd3d"
 	SccProjectName="Perforce Project"
 	SccLocalPath="."
 	SccProvider="MSCCI:Perforce SCM"

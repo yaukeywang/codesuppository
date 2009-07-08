@@ -1,6 +1,6 @@
 /*!
 **
-** Copyright (c) 2007 by John W. Ratcliff mailto:jratcliff@infiniplex.net
+** Copyright (c) 2009 by John W. Ratcliff mailto:jratcliffscarab@gmail.com
 **
 ** Portions of this source has been released with the PhysXViewer application, as well as
 ** Rocket, CreateDynamics, ODF, and as a number of sample code snippets.
@@ -19,16 +19,15 @@
 **
 ** If you wish to contact me you can use the following methods:
 **
-** Skype Phone: 636-486-4040 (let it ring a long time while it goes through switches)
 ** Skype ID: jratcliff63367
 ** Yahoo: jratcliff63367
 ** AOL: jratcliff1961
-** email: jratcliff@infiniplex.net
+** email: jratcliffscarab@gmail.com
 **
 **
 ** The MIT license:
 **
-** Permission is hereby granted, MEMALLOC_FREE of charge, to any person obtaining a copy
+** Permission is hereby granted, free of charge, to any person obtaining a copy
 ** of this software and associated documentation files (the "Software"), to deal
 ** in the Software without restriction, including without limitation the rights
 ** to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
@@ -46,7 +45,6 @@
 ** CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 */
-
 // a set of routines that let you do common 3d math
 // operations without any vector, matrix, or quaternion
 // classes or templates.
@@ -3663,352 +3661,7 @@ void        fm_releaseLineSweep(fm_LineSweep *sweep)
 
 #endif  // End of LineSweep code
 
-//**********************************************************
-//**********************************************************
-//**** Triangulation Code!
-//**********************************************************
-//**********************************************************
 
-#ifndef TRIANGULATE_H
-
-#define TRIANGULATE_H
-
-static const double EPSILON=0.00000000000001;
-
-typedef USER_STL::vector< size_t > size_tVector;
-typedef USER_STL::vector< double > doubleVector;
-typedef USER_STL::vector< float > floatVector;
-
-class Vector2d
-{
-public:
-  Vector2d(float x,float y)
-  {
-    Set(x,y);
-  };
-
-  Vector2d(double x,double y)
-  {
-    Set(x,y);
-  }
-
-  Vector2d(const float *p)
-  {
-    mX = p[0];
-    mY = p[1];
-  }
-
-  Vector2d(const double *p)
-  {
-    mX = p[0];
-    mY = p[1];
-  }
-
-
-
-  double GetX(void) const { return mX; };
-
-  double GetY(void) const { return mY; };
-
-  void  Set(double x,double y)
-  {
-    mX = x;
-    mY = y;
-  };
-//private:
-  double mX;
-  double mY;
-};
-
-// Typedef an STL vector of vertices which are used to represent
-// a polygon/contour and a series of triangles.
-typedef USER_STL::vector< Vector2d > Vector2dVector;
-
-
-class MyTriangulate : public fm_Triangulate
-{
-public:
-  MyTriangulate(void)
-  {
-  }
-
-  ~MyTriangulate(void)
-  {
-  }
-
-
-     /*
-       InsideTriangle decides if a point P is Inside of the triangle
-       defined by A, B, C.
-     */
-
-  bool Snip(const Vector2dVector &contour,int u,int v,int w,int n,int *V,double epsilon)
-  {
-    int p;
-    double Ax, Ay, Bx, By, Cx, Cy, Px, Py;
-
-    Ax = contour[V[u]].GetX();
-    Ay = contour[V[u]].GetY();
-
-    Bx = contour[V[v]].GetX();
-    By = contour[V[v]].GetY();
-
-    Cx = contour[V[w]].GetX();
-    Cy = contour[V[w]].GetY();
-
-    if ( epsilon > (((Bx-Ax)*(Cy-Ay)) - ((By-Ay)*(Cx-Ax))) ) 
-		return false;
-
-    for (p=0;p<n;p++)
-    {
-      if( (p == u) || (p == v) || (p == w) ) continue;
-      Px = contour[V[p]].GetX();
-      Py = contour[V[p]].GetY();
-      if (fm_insideTriangle(Ax,Ay,Bx,By,Cx,Cy,Px,Py)) 
-		  return false;
-    }
-
-    return true;
-  }
-
-  bool Process(const Vector2dVector &contour,size_tVector &result,bool &flipped,double epsilon)
-  {
-    /* allocate and initialize list of Vertices in polygon */
-
-    int n = (int)contour.size();
-    if ( n < 3 ) return false;
-
-    int *V = MEMALLOC_NEW_ARRAY(int,n)[n];
-
-    /* we want a counter-clockwise polygon in V */
-
-    if ( 0.0f < fm_areaPolygon2d(contour.size(),&contour[0].mX,sizeof(Vector2d)) )
-    {
-      for (int v=0; v<n; v++) V[v] = v;
-      flipped = false;
-    }
-    else
-    {
-      for(int v=0; v<n; v++) V[v] = (n-1)-v;
-      flipped = true;
-    }
-
-    int nv = n;
-
-    /*  remove nv-2 Vertices, creating 1 triangle every time */
-    int count = 2*nv;   /* error detection */
-
-    for(int m=0, v=nv-1; nv>2; )
-    {
-      /* if we loop, it is probably a non-simple polygon */
-      if (0 >= (count--))
-      {
-        //** Triangulate: ERROR - probable bad polygon!
-        MEMALLOC_DELETE_ARRAY(int *,V);
-        return false;
-      }
-
-      /* three consecutive vertices in current polygon, <u,v,w> */
-      int u = v;
-      if (nv <= u) u = 0;     /* previous */
-      v = u+1;
-      if (nv <= v) v = 0;     /* new v    */
-      int w = v+1;
-      if (nv <= w) w = 0;     /* next     */
-
-      if ( Snip(contour,u,v,w,nv,V,epsilon) )
-      {
-        int a,b,c,s,t;
-
-        /* true names of the vertices */
-        a = V[u];
-        b = V[v];
-        c = V[w];
-
-        /* output Triangle */
-        result.push_back( a );
-        result.push_back( b );
-        result.push_back( c );
-
-        m++;
-
-        /* remove v from remaining polygon */
-        for(s=v,t=v+1;t<nv;s++,t++) V[s] = V[t]; nv--;
-
-        /* resest error detection counter */
-        count = 2*nv;
-      }
-    }
-
-    MEMALLOC_DELETE_ARRAY(int *,V);
-
-    return true;
-  }
-
-  void add(const double *p)
-  {
-    mTrianglesDouble.push_back(p[0]);
-    mTrianglesDouble.push_back(p[1]);
-    mTrianglesDouble.push_back(p[2]);
-  }
-
-  void add(const float *p)
-  {
-    mTrianglesFloat.push_back(p[0]);
-    mTrianglesFloat.push_back(p[1]);
-    mTrianglesFloat.push_back(p[2]);
-  }
-
-  const double *       triangulate3d(size_t pcount,const double *_points,size_t vstride,size_t &tcount,bool consolidate,double epsilon)
-  {
-    const double *ret = 0;
-
-
-    mTrianglesDouble.clear();
-    tcount = 0;
-
-    if ( pcount >= 3 )
-    {
-      double *points = MEMALLOC_NEW_ARRAY(double,pcount*3)[pcount*3];
-
-      if ( consolidate )
-        pcount = fm_consolidatePolygon(pcount,_points,vstride,points,epsilon);
-      else
-        memcpy(points,_points,sizeof(double)*3*pcount);
-
-      vstride = sizeof(double)*3;
-
-      if ( pcount >= 3 )
-      {
-
-        const double *p1 = fm_getPoint(points,vstride,0);
-        const double *p2 = fm_getPoint(points,vstride,1);
-        const double *p3 = fm_getPoint(points,vstride,2);
-
-        double plane[4];
-        plane[3] = fm_computePlane(p1,p2,p3,plane);
-
-        FM_Axis axis = fm_getDominantAxis(plane);
-        size_t ix = 0;
-        size_t iy = 0;
-        switch ( axis )
-        {
-          case FM_XAXIS:
-            ix = 1;
-            iy = 2;
-            break;
-          case FM_YAXIS:
-            ix = 0;
-            iy = 2;
-            break;
-          case FM_ZAXIS:
-            ix = 0;
-            iy = 1;
-            break;
-        }
-
-        Vector2dVector polygon;
-        unsigned char *scan = (unsigned char *)points;
-        for (size_t i=0; i<pcount; i++)
-        {
-          const double *v = (const double *)scan;
-          Vector2d point( v[ix], v[iy] );
-          polygon.push_back(point);
-          scan+=vstride;
-        }
-        bool flipped;
-        size_tVector results;
-        if ( Process(polygon,results,flipped,epsilon) && !results.empty() )
-        {
-          size_t tcount = results.size()/3;
-          size_t *indices = &results[0];
-          for (size_t i=0; i<tcount; i++,indices+=3)
-          {
-            size_t i1 = indices[0];
-            size_t i2 = indices[1];
-            size_t i3 = indices[2];
-            const double *p1 = fm_getPoint(points,vstride,i1);
-            const double *p2 = fm_getPoint(points,vstride,i2);
-            const double *p3 = fm_getPoint(points,vstride,i3);
-            if ( flipped )
-            {
-              add(p1);
-              add(p2);
-              add(p3);
-            }
-            else
-            {
-              add(p3);
-              add(p2);
-              add(p1);
-            }
-          }
-        }
-      }
-      delete []points;
-    }
-
-    tcount = mTrianglesDouble.size()/9;
-
-    if ( tcount )
-    {
-      ret = &mTrianglesDouble[0];
-    }
-
-    return ret;
-  }
-
-  const float  *       triangulate3d(size_t pcount,const float *points,size_t vstride,size_t &tcount,bool consolidate,float epsilon)
-  {
-    const float *ret = 0;
-
-    mTrianglesFloat.clear();
-    doubleVector polygon;
-    for (size_t i=0; i<pcount; i++)
-    {
-      const float *p = fm_getPoint(points,vstride,i);
-      double dp[3];
-      fm_floatToDouble3(p,dp);
-      polygon.push_back(dp[0]);
-      polygon.push_back(dp[1]);
-      polygon.push_back(dp[2]);
-    }
-
-    const double *results = triangulate3d(pcount,&polygon[0],sizeof(double)*3,tcount,consolidate,epsilon);
-
-	if ( tcount )
-	{
-		for (size_t i=0; i<tcount*9; i++)
-		{
-		  float v = (float) *results++;
-		  mTrianglesFloat.push_back(v);
-		}
-
-		ret = &mTrianglesFloat[0];
-	}
-
-
-    return ret;
-  }
-
-
-  doubleVector mTrianglesDouble;
-  floatVector  mTrianglesFloat;
-};
-
-fm_Triangulate * fm_createTriangulate(void)
-{
-  MyTriangulate *mt = MEMALLOC_NEW(MyTriangulate);
-  return static_cast< fm_Triangulate *>(mt);
-}
-
-void          fm_releaseTriangulate(fm_Triangulate *t)
-{
-  MyTriangulate *mt = static_cast< MyTriangulate *>(t);
-  delete mt;
-}
-
-#endif // End of Triangulation code
 
 
 REAL fm_computeBestFitAABB(size_t vcount,const REAL *points,size_t pstride,REAL *bmin,REAL *bmax) // returns the diagonal distance
@@ -5383,3 +5036,470 @@ void fm_computeBestFitCapsule(size_t vcount,const REAL *points,size_t pstride,RE
   radius = (REAL)sqrt(maxDist);
   height = (maxLen*2)-(radius*2);
 }
+
+
+//************* Triangulation
+
+#ifndef TRIANGULATE_H
+
+#define TRIANGULATE_H
+
+typedef unsigned int TU32;
+
+class TVec
+{
+public:
+	TVec(double _x,double _y,double _z) { x = _x; y = _y; z = _z; };
+	TVec(void) { };
+
+  double x;
+  double y;
+  double z;
+};
+
+typedef std::vector< TVec >  TVecVector;
+typedef std::vector< TU32 >  TU32Vector;
+
+class CTriangulator
+{
+public:
+    ///     Default constructor
+    CTriangulator();
+
+    ///     Default destructor
+    ~CTriangulator();
+
+    ///     Triangulates the contour
+    void triangulate(TU32Vector &indices);
+
+    ///     Returns the given point in the triangulator array
+    inline TVec get(const TU32 id) { return mPoints[id]; }
+
+    virtual void reset(void)
+    {
+        mInputPoints.clear();
+        mPoints.clear();
+        mIndices.clear();
+    }
+
+    virtual void addPoint(double x,double y,double z)
+    {
+        TVec v(x,y,z);
+        // update bounding box...
+        if ( mInputPoints.empty() )
+        {
+            mMin = v;
+            mMax = v;
+        }
+        else
+        {
+            if ( x < mMin.x ) mMin.x = x;
+            if ( y < mMin.y ) mMin.y = y;
+            if ( z < mMin.z ) mMin.z = z;
+
+            if ( x > mMax.x ) mMax.x = x;
+            if ( y > mMax.y ) mMax.y = y;
+            if ( z > mMax.z ) mMax.z = z;
+        }
+        mInputPoints.push_back(v);
+    }
+
+    // Triangulation happens in 2d.  We could inverse transform the polygon around the normal direction, or we just use the two most signficant axes
+    // Here we find the two longest axes and use them to triangulate.  Inverse transforming them would introduce more doubleing point error and isn't worth it.
+    virtual unsigned int * triangulate(unsigned int &tcount,double epsilon)
+    {
+        unsigned int *ret = 0;
+        tcount = 0;
+        mEpsilon = epsilon;
+
+        if ( !mInputPoints.empty() )
+        {
+            mPoints.clear();
+
+          double dx = mMax.x - mMin.x; // locate the first, second and third longest edges and store them in i1, i2, i3
+          double dy = mMax.y - mMin.y;
+          double dz = mMax.z - mMin.z;
+
+          unsigned int i1,i2,i3;
+
+          if ( dx > dy && dx > dz )
+          {
+              i1 = 0;
+              if ( dy > dz )
+              {
+                  i2 = 1;
+                  i3 = 2;
+              }
+              else
+              {
+                  i2 = 2;
+                  i3 = 1;
+              }
+          }
+          else if ( dy > dx && dy > dz )
+          {
+              i1 = 1;
+              if ( dx > dz )
+              {
+                  i2 = 0;
+                  i3 = 2;
+              }
+              else
+              {
+                  i2 = 2;
+                  i3 = 0;
+              }
+          }
+          else
+          {
+              i1 = 2;
+              if ( dx > dy )
+              {
+                  i2 = 0;
+                  i3 = 1;
+              }
+              else
+              {
+                  i2 = 1;
+                  i3 = 0;
+              }
+          }
+
+          unsigned int pcount = mInputPoints.size();
+          const double *points = &mInputPoints[0].x;
+          for (unsigned int i=0; i<pcount; i++)
+          {
+            TVec v( points[i1], points[i2], points[i3] );
+            mPoints.push_back(v);
+            points+=3;
+          }
+
+          mIndices.clear();
+          triangulate(mIndices);
+          tcount = mIndices.size()/3;
+          if ( tcount )
+          {
+              ret = &mIndices[0];
+          }
+        }
+        return ret;
+    }
+
+    virtual const double * getPoint(unsigned int index)
+    {
+        return &mInputPoints[index].x;
+    }
+
+
+private:
+    double                  mEpsilon;
+    TVec                   mMin;
+    TVec                   mMax;
+    TVecVector             mInputPoints;
+    TVecVector             mPoints;
+    TU32Vector             mIndices;
+
+    ///     Tests if a point is inside the given triangle
+    bool _insideTriangle(const TVec& A, const TVec& B, const TVec& C,const TVec& P);
+
+    ///     Returns the area of the contour
+    double _area();
+
+    bool _snip(int u, int v, int w, int n, int *V);
+
+    ///     Processes the triangulation
+    void _process(TU32Vector &indices);
+
+};
+
+///     Default constructor
+CTriangulator::CTriangulator(void)
+{
+}
+
+///     Default destructor
+CTriangulator::~CTriangulator()
+{
+}
+
+///     Triangulates the contour
+void CTriangulator::triangulate(TU32Vector &indices)
+{
+    _process(indices);
+}
+
+///     Processes the triangulation
+void CTriangulator::_process(TU32Vector &indices)
+{
+    const int n = mPoints.size();
+    if (n < 3)
+        return;
+    int *V = new int[n];
+
+	bool flipped = false;
+
+    if (0.0f < _area())
+    {
+        for (int v = 0; v < n; v++)
+            V[v] = v;
+    }
+    else
+    {
+		flipped = true;
+        for (int v = 0; v < n; v++)
+            V[v] = (n - 1) - v;
+    }
+
+    int nv = n;
+    int count = 2 * nv;
+    for (int m = 0, v = nv - 1; nv > 2;)
+    {
+        if (0 >= (count--))
+            return;
+
+        int u = v;
+        if (nv <= u)
+            u = 0;
+        v = u + 1;
+        if (nv <= v)
+            v = 0;
+        int w = v + 1;
+        if (nv <= w)
+            w = 0;
+
+        if (_snip(u, v, w, nv, V))
+        {
+            int a, b, c, s, t;
+            a = V[u];
+            b = V[v];
+            c = V[w];
+			if ( flipped )
+			{
+				indices.push_back(a);
+				indices.push_back(b);
+				indices.push_back(c);
+			}
+			else
+			{
+				indices.push_back(c);
+				indices.push_back(b);
+				indices.push_back(a);
+			}
+            m++;
+            for (s = v, t = v + 1; t < nv; s++, t++)
+                V[s] = V[t];
+            nv--;
+            count = 2 * nv;
+        }
+    }
+
+    delete []V;
+}
+
+///     Returns the area of the contour
+double CTriangulator::_area()
+{
+    int n = mPoints.size();
+    double A = 0.0f;
+    for (int p = n - 1, q = 0; q < n; p = q++)
+    {
+        const TVec &pval = mPoints[p];
+        const TVec &qval = mPoints[q];
+        A += pval.x * qval.y - qval.x * pval.y;
+    }
+	A*=0.5f;
+    return A;
+}
+
+bool CTriangulator::_snip(int u, int v, int w, int n, int *V)
+{
+    int p;
+
+    const TVec &A = mPoints[ V[u] ];
+    const TVec &B = mPoints[ V[v] ];
+    const TVec &C = mPoints[ V[w] ];
+
+    if (mEpsilon > (((B.x - A.x) * (C.y - A.y)) - ((B.y - A.y) * (C.x - A.x))) )
+        return false;
+
+    for (p = 0; p < n; p++)
+    {
+        if ((p == u) || (p == v) || (p == w))
+            continue;
+        const TVec &P = mPoints[ V[p] ];
+        if (_insideTriangle(A, B, C, P))
+            return false;
+    }
+    return true;
+}
+
+///     Tests if a point is inside the given triangle
+bool CTriangulator::_insideTriangle(const TVec& A, const TVec& B, const TVec& C,const TVec& P)
+{
+    double ax, ay, bx, by, cx, cy, apx, apy, bpx, bpy, cpx, cpy;
+    double cCROSSap, bCROSScp, aCROSSbp;
+
+    ax = C.x - B.x;  ay = C.y - B.y;
+    bx = A.x - C.x;  by = A.y - C.y;
+    cx = B.x - A.x;  cy = B.y - A.y;
+    apx = P.x - A.x;  apy = P.y - A.y;
+    bpx = P.x - B.x;  bpy = P.y - B.y;
+    cpx = P.x - C.x;  cpy = P.y - C.y;
+
+    aCROSSbp = ax * bpy - ay * bpx;
+    cCROSSap = cx * apy - cy * apx;
+    bCROSScp = bx * cpy - by * cpx;
+
+    return ((aCROSSbp >= 0.0f) && (bCROSScp >= 0.0f) && (cCROSSap >= 0.0f));
+}
+
+class Triangulate : public fm_Triangulate
+{
+public:
+  Triangulate(void)
+  {
+    mPointsFloat = 0;
+    mPointsDouble = 0;
+  }
+
+  ~Triangulate(void)
+  {
+    reset();
+  }
+  void reset(void)
+  {
+    delete []mPointsFloat;
+    delete []mPointsDouble;
+    mPointsFloat = 0;
+    mPointsDouble = 0;
+  }
+
+  virtual const double *       triangulate3d(size_t pcount,
+                                             const double *_points,
+                                             size_t vstride,
+                                             size_t &tcount,
+                                             bool consolidate,
+                                             double epsilon)
+  {
+    reset();
+
+    double *points = new double[pcount*3];
+    if ( consolidate )
+    {
+      pcount = fm_consolidatePolygon(pcount,_points,vstride,points,1-epsilon);
+    }
+    else
+    {
+      double *dest = points;
+      for (size_t i=0; i<pcount; i++)
+      {
+        const double *src = fm_getPoint(_points,vstride,i);
+        dest[0] = src[0];
+        dest[1] = src[1];
+        dest[2] = src[2];
+        dest+=3;
+      }
+      vstride = sizeof(double)*3;
+    }
+
+    if ( pcount >= 3 )
+    {
+      CTriangulator ct;
+      for (size_t i=0; i<pcount; i++)
+      {
+        const double *src = fm_getPoint(points,vstride,i);
+        ct.addPoint( src[0], src[1], src[2] );
+      }
+      unsigned int _tcount;
+      unsigned int *indices = ct.triangulate(_tcount,epsilon);
+      if ( indices )
+      {
+        tcount = _tcount;
+        mPointsDouble = new double[tcount*3*3];
+        double *dest = mPointsDouble;
+        for (size_t i=0; i<tcount; i++)
+        {
+          unsigned int i1 = indices[i*3+0];
+          unsigned int i2 = indices[i*3+1];
+          unsigned int i3 = indices[i*3+2];
+          const double *p1 = ct.getPoint(i1);
+          const double *p2 = ct.getPoint(i2);
+          const double *p3 = ct.getPoint(i3);
+
+          dest[0] = p1[0];
+          dest[1] = p1[1];
+          dest[2] = p1[2];
+
+          dest[3] = p2[0];
+          dest[4] = p2[1];
+          dest[5] = p2[2];
+
+          dest[6] = p3[0];
+          dest[7] = p3[1];
+          dest[8] = p3[2];
+          dest+=9;
+        }
+      }
+    }
+    delete []points;
+
+    return mPointsDouble;
+  }
+
+  virtual const float  *       triangulate3d(size_t pcount,
+                                             const float  *points,
+                                             size_t vstride,
+                                             size_t &tcount,
+                                             bool consolidate,
+                                             float epsilon)
+  {
+    reset();
+
+    double *temp = new double[pcount*3];
+    double *dest = temp;
+    for (size_t i=0; i<pcount; i++)
+    {
+      const float *p = fm_getPoint(points,vstride,i);
+      dest[0] = p[0];
+      dest[1] = p[1];
+      dest[2] = p[2];
+      dest+=3;
+    }
+    const double *results = triangulate3d(pcount,temp,sizeof(double)*3,tcount,consolidate,epsilon);
+    if ( results )
+    {
+      size_t fcount = tcount*3*3;
+      mPointsFloat = new float[tcount*3*3];
+      float *dest = mPointsFloat;
+      for (size_t i=0; i<fcount; i++)
+      {
+        dest[i] = (float) results[i];
+      }
+      delete []mPointsDouble;
+      mPointsDouble = 0;
+    }
+    delete []temp;
+
+    return mPointsFloat;
+  }
+
+private:
+  float *mPointsFloat;
+  double *mPointsDouble;
+};
+
+fm_Triangulate * fm_createTriangulate(void)
+{
+  Triangulate *t = new Triangulate;
+  return static_cast< fm_Triangulate *>(t);
+}
+
+void             fm_releaseTriangulate(fm_Triangulate *t)
+{
+  Triangulate *tt = static_cast< Triangulate *>(t);
+  delete tt;
+}
+
+#endif
+
+

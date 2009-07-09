@@ -1241,13 +1241,13 @@ void fm_rotationArc(const REAL *v0,const REAL *v1,REAL *quat)
 }
 
 
-REAL fm_distancePointLineSegment(const REAL *Point,const REAL *LineStart,const REAL *LineEnd,REAL *intersection,LineSegmentType &type)
+REAL fm_distancePointLineSegment(const REAL *Point,const REAL *LineStart,const REAL *LineEnd,REAL *intersection,LineSegmentType &type,REAL epsilon)
 {
   REAL ret;
 
-
   REAL LineMag = fm_distance( LineEnd, LineStart );
-  if ( LineMag > 0.000001f )
+
+  if ( LineMag > 0 )
   {
     REAL U = ( ( ( Point[0] - LineStart[0] ) * ( LineEnd[0] - LineStart[0] ) ) + ( ( Point[1] - LineStart[1] ) * ( LineEnd[1] - LineStart[1] ) ) + ( ( Point[2] - LineStart[2] ) * ( LineEnd[2] - LineStart[2] ) ) ) / ( LineMag * LineMag );
     if( U < 0.0f || U > 1.0f )
@@ -1273,18 +1273,21 @@ REAL fm_distancePointLineSegment(const REAL *Point,const REAL *LineStart,const R
     }
     else
     {
-
-      intersection[0]= LineStart[0] + U * ( LineEnd[0] - LineStart[0] );
-      intersection[1]= LineStart[1] + U * ( LineEnd[1] - LineStart[1] );
-      intersection[2]= LineStart[2] + U * ( LineEnd[2] - LineStart[2] );
+      intersection[0] = LineStart[0] + U * ( LineEnd[0] - LineStart[0] );
+      intersection[1] = LineStart[1] + U * ( LineEnd[1] - LineStart[1] );
+      intersection[2] = LineStart[2] + U * ( LineEnd[2] - LineStart[2] );
 
       ret = fm_distance(Point,intersection);
 
-      if ( U < 0.01f ) // if less than 1/100th the total distance, treat is as the 'start'
+      REAL d1 = fm_distanceSquared(intersection,LineStart);
+      REAL d2 = fm_distanceSquared(intersection,LineEnd);
+	  REAL mag = (epsilon*2)*(epsilon*2);
+
+      if ( d1 < mag ) // if less than 1/100th the total distance, treat is as the 'start'
       {
         type = LS_START;
       }
-      else if ( U > 0.99f )
+      else if ( d2 < mag )
       {
         type = LS_END;
       }
@@ -1292,6 +1295,7 @@ REAL fm_distancePointLineSegment(const REAL *Point,const REAL *LineStart,const R
       {
         type = LS_MIDDLE;
       }
+
     }
   }
   else
@@ -5543,7 +5547,7 @@ bool fm_isValidTriangle(const REAL *p1,const REAL *p2,const REAL *p3,REAL epsilo
 		_vertices[7] = p3[1];
 		_vertices[8] = p3[2];
 
-		NxU32 pcount = fm_consolidatePolygon(3,_vertices,sizeof(REAL)*3,vertices,1-epsilon);
+		unsigned int pcount = fm_consolidatePolygon(3,_vertices,sizeof(REAL)*3,vertices,1-epsilon);
 		if ( pcount == 3 )
 		{
 		  ret = true;

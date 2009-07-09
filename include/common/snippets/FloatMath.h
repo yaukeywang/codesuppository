@@ -324,8 +324,8 @@ bool fm_intersectAABB(const double bmin1[3],const double bmax1[3],const double b
 void fm_rotationArc(const float v0[3],const float v1[3],float quat[4]);
 void fm_rotationArc(const double v0[3],const double v1[3],double quat[4]);
 
-float  fm_distancePointLineSegment(const float Point[3],const float LineStart[3],const float LineEnd[3],float intersection[3],LineSegmentType &type);
-double fm_distancePointLineSegment(const double Point[3],const double LineStart[3],const double LineEnd[3],double intersection[3],LineSegmentType &type);
+float  fm_distancePointLineSegment(const float Point[3],const float LineStart[3],const float LineEnd[3],float intersection[3],LineSegmentType &type,float epsilon);
+double fm_distancePointLineSegment(const double Point[3],const double LineStart[3],const double LineEnd[3],double intersection[3],LineSegmentType &type,double epsilon);
 
 
 bool fm_colinear(const double p1[3],const double p2[3],const double p3[3],double epsilon=0.999);               // true if these three points in a row are co-linear

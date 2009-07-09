@@ -126,7 +126,7 @@ public:
 
     double sect[3];
     LineSegmentType type;
-    double dist = fm_distancePointLineSegment(pos,p1,p2,sect,type);
+    double dist = fm_distancePointLineSegment(pos,p1,p2,sect,type,EPSILON);
     if ( type == LS_MIDDLE && dist < EPSILON )
     {
       ret = true;

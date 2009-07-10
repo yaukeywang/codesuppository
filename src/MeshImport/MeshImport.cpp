@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <vector>
 
+#include "common/snippets/telnet.h"
 #include "./MeshImport/MeshImport.h"
 #include "VtxWeld.h"
 #include "MeshImportBuilder.h"
@@ -1721,6 +1722,16 @@ public:
       MeshBuilder *b = (MeshBuilder *)msc;
       b->gather();
     }
+  }
+
+  virtual TELNET::Telnet * createTelnet(const char *address,unsigned int port)
+  {
+    return TELNET::createTelnet(address,port);
+  }
+
+  virtual void     releaseTelnet(TELNET::Telnet *t)
+  {
+    TELNET::releaseTelnet(t);
   }
 
 private:

@@ -269,6 +269,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\common\snippets\telnet.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\telnet.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\common\snippets\UserMemAlloc.h"
 					>
 				</File>

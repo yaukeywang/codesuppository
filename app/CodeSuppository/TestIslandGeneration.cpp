@@ -4,7 +4,7 @@
 #include <assert.h>
 
 #include "TestIslandGeneration.h"
-#include "MeshImport/MeshSystem.h"
+#include "MeshImport/MeshImport.h"
 #include "common/snippets/SendTextMessage.h"
 #include "common/snippets/MeshIslandGeneration.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"

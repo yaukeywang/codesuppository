@@ -121,6 +121,8 @@ SccProvider="MSCCI:Perforce SCM"
       <File RelativePath="..\..\include\common\snippets\sutil.h"/>
       <File RelativePath="..\..\include\common\snippets\SystemServices.cpp"/>
       <File RelativePath="..\..\include\common\snippets\SystemServices.h"/>
+      <File RelativePath="..\..\include\common\snippets\telnet.cpp"/>
+      <File RelativePath="..\..\include\common\snippets\telnet.h"/>
       <File RelativePath="..\..\include\common\snippets\UserMemAlloc.h"/>
     </Filter>
     <Filter Name="FileInterface" Filter="">

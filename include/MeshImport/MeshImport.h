@@ -10,6 +10,29 @@
 #pragma warning(push)
 #pragma warning(disable:4996)
 
+#ifndef  TELNET_H
+#define TELNET_H
+
+namespace TELNET
+{
+
+class Telnet
+{
+public:
+  virtual bool          isServer(void) = 0; // returns true if we are a server or a client.  First one created on a machine is a server, additional copies are clients.
+  virtual bool          haveConnection(void) = 0; // returns true if we (as a client) successfully connected to the server.
+  virtual bool          sendMessage(unsigned int client,const char *fmt,...) = 0; // send a message to the server, all clients (client=0) or just a specific client.
+  virtual const char *  receiveMessage(unsigned int &client) = 0; // receive an incoming message (client=0) means it came from the server, otherwise it designates a specific client.
+  virtual const char ** getArgs(const char *input,unsigned int &argc) = 0; // parse string into a series of arguments.
+protected:
+  virtual ~Telnet(void) { };
+};
+
+
+};
+
+#endif
+
 
 // MeshImporters to write:  Wavefront OBJ
 //                          EZ-Mesh
@@ -1397,12 +1420,15 @@ public:
 
   virtual void scale(MeshSystemContainer *msc,float scale) = 0;
 
+  virtual TELNET::Telnet * createTelnet(const char *address="LOCALHOST",unsigned int port=23) =  0;
+  virtual void             releaseTelnet(TELNET::Telnet *t) = 0;
+
 
 };
 
 }; // End of namespace for MESHIMPORT
 
-#define MESHIMPORT_VERSION 6  // version 0.01  increase this version number whenever an interface change occurs.
+#define MESHIMPORT_VERSION 7  // version 0.01  increase this version number whenever an interface change occurs.
 
 
 extern MESHIMPORT::MeshImport *gMeshImport; // This is an optional global variable that can be used by the application.  If the application uses it, it should define it somewhere in its codespace.

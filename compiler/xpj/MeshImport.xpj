@@ -33,6 +33,8 @@
 				<Files name="Plugin Header Files" root="../../include" type="header">
 				</Files>
 				<Files name="Common Include-Binding Files" root="../../include/common" type="header">
+          snippets/telnet.h
+          snippets/telnet.cpp
           snippets/sutil.h
           snippets/sutil.cpp
           snippets/inparser.h

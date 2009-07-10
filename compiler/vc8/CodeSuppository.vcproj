@@ -4,7 +4,6 @@
 	Version="8.00"
 	Name="CodeSuppository"
 	ProjectGUID="{3C667553-6365-118B-1B30-CD3053732760}"
-	RootNamespace="CodeSuppository"
 	SccProjectName="Perforce Project"
 	SccLocalPath="."
 	SccProvider="MSCCI:Perforce SCM"
@@ -73,7 +72,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
-				EmbedManifest="true"
+				EmbedManifest="false"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -150,7 +149,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
-				EmbedManifest="true"
+				EmbedManifest="false"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"

@@ -1,6 +1,22 @@
 #ifndef MESHIMPORT_H
 #define MESHIMPORT_H
 
+#ifdef WIN32
+
+  #if FINAL_RELEASE
+  #define USE_MESH_IMPORT 0
+  #else
+  #define USE_MESH_IMPORT 1
+  #endif
+
+#else
+
+#define USE_MESH_IMPORT 0
+
+#endif
+
+
+
 #include <stdio.h>
 #include <string.h>
 #include <float.h>
@@ -11,6 +27,7 @@
 #pragma warning(disable:4996)
 
 #ifndef  TELNET_H
+
 #define TELNET_H
 
 namespace TELNET
@@ -24,12 +41,15 @@ public:
   virtual bool          sendMessage(unsigned int client,const char *fmt,...) = 0; // send a message to the server, all clients (client=0) or just a specific client.
   virtual const char *  receiveMessage(unsigned int &client) = 0; // receive an incoming message (client=0) means it came from the server, otherwise it designates a specific client.
   virtual const char ** getArgs(const char *input,unsigned int &argc) = 0; // parse string into a series of arguments.
+
+  virtual bool          sendBlob(unsigned int client,const char *blobType,const void *data,unsigned int dlen) = 0;
+  virtual const char *  receiveBlob(unsigned int &client,const void *&data,unsigned int &dlen) = 0;
+
 protected:
   virtual ~Telnet(void) { };
 };
 
-
-};
+}; // end of namespace
 
 #endif
 

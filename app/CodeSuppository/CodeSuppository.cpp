@@ -81,11 +81,19 @@ public:
     mRemoveTjunctions = false;
     mInitialIslandGeneration = false;
     mIslandGeneration = false;
+    if ( gMeshImport )
+    {
+        mTelnet = gMeshImport->createTelnet();
+    }
   }
 
   ~MyCodeSuppository(void)
   {
     resetMeshSystem();
+    if ( mTelnet )
+    {
+        gMeshImport->releaseTelnet(mTelnet);
+    }
   }
 
   void resetMeshSystem(void)
@@ -317,6 +325,23 @@ public:
 
   void render(float dtime)
   {
+
+    if ( mTelnet )
+    {
+        unsigned int client;
+        const char *msg = mTelnet->receiveMessage(client);
+        if ( msg )
+        {
+            if ( strcmp(msg,"NewConnection") == 0 )
+            {
+                mTelnet->sendMessage(client,"Welecome to the Code Suppository.\r\n");
+				char *temp = "This is a test of sending a blob of data";
+				mTelnet->sendBlob(client,"BlobTest",temp,strlen(temp)+1);
+            }
+            SEND_TEXT_MESSAGE(0,"%s\r\n", msg );
+        }
+    }
+
     if ( mApexCloth )
     {
 
@@ -429,6 +454,7 @@ private:
   bool mInitialIslandGeneration;
   bool mIslandGeneration;
   TestAutoGeometry *mTestAutoGeometry;
+  TELNET::Telnet   *mTelnet;
 };
 
 CodeSuppository * createCodeSuppository(void)

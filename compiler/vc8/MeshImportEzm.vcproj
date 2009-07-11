@@ -212,10 +212,6 @@
 					RelativePath="..\..\include\MeshImport\MeshImport.h"
 					>
 				</File>
-				<File
-					RelativePath="..\..\include\MeshImport\MeshSystem.h"
-					>
-				</File>
 			</Filter>
 		</Filter>
 		<Filter

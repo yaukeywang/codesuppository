@@ -377,6 +377,7 @@ public:
     bool ret = false;
 
 	HeF32 area = fm_computeArea(p1,p2,p3);
+	area;
 	assert( area > 0 );
 
 	HeVec3 _vertices[3],vertices[64];

@@ -13,6 +13,8 @@
 #pragma warning(disable:4706)
 #pragma warning(disable:4702)
 
+#include "UserMemAlloc.h"
+
 /*!
 **
 ** Copyright (c) 2009 by John W. Ratcliff mailto:jratcliffscarab@gmail.com
@@ -105,6 +107,7 @@
 #endif
 
 #include "telnet.h"
+#include "BlobIO.h"
 
 // Common Telnet Functionality.
 #ifdef WIN32
@@ -319,70 +322,12 @@ typedef std::queue<TelnetLineNode*> TelnetLineNodeQueue;
 #endif
 
 
-class TelnetBlock
-{
-public:
-  TelnetBlock(void)
-  {
-    m_uiClient = 0;
-    m_pcName = 0;
-    m_pData  = 0;
-    m_uiDataSize = 0;
-  }
-
-  ~TelnetBlock(void)
-  {
-    Free();
-  }
-
-  void setBlock(unsigned int client,const char *name,const void *mem,unsigned int len)
-  {
-    Free();
-    m_uiClient = client;
-    if ( name )
-    {
-      size_t len = strlen(name);
-      m_pcName = new char[len+1];
-      strcpy(m_pcName,name);
-    }
-    if ( mem && len )
-    {
-      m_pData = new char[len];
-      memcpy(m_pData,mem,len);
-      m_uiDataSize = len;
-    }
-  }
-
-  const void *GetData(void) { return m_pData; }
-	unsigned int GetSize(void) { return m_uiDataSize; }
-
-	void Free(void)
-	{
-		if(m_pcName)
-		{
-			delete [] m_pcName;
-			m_pcName = 0;
-		}
-		if(m_pData)
-		{
-			delete [] m_pData;
-			m_pData = 0;
-		}
-	}
-		unsigned int  m_uiClient;
-		char   *m_pcName;
-		void   *m_pData;
-		unsigned int  m_uiDataSize;
-};
-
-typedef std::queue<TelnetBlock*> TelnetBlockQueue;
-
 // Common Telnet Functionality.
 class TelnetInterface
 {
 	public:
 		// Called when a connection has been established.
-		virtual void OnConnect(unsigned int uiClient) 
+		virtual void OnConnect(unsigned int uiClient)
 		{
       PushLine("NewConnection", uiClient );
 		}
@@ -392,10 +337,6 @@ class TelnetInterface
 		// returns false on failure.
 		virtual bool SendText(unsigned int uiClient, const char *pcLine, ...)=0;
 
-		// Sends a binary block of data across the telnet session.
-		// returns false on failure.
-		virtual bool SendBlock(const TelnetBlock &block)=0;
-
 	public:
 		// Waits until there is a block ready to be read.
 		bool WaitForBlock(void);
@@ -404,18 +345,9 @@ class TelnetInterface
 		// returns 0 if no lines available.
 		const char *GetLine(unsigned int &uiClient);
 
-		// Pops the last binary block off the local queue.
-		// returns 0 if no lines available.
-		bool GetBlock(TelnetBlock &block);
-
-		void ReleaseBlock(TelnetBlock &block);
-
 	protected:
 		// Add a Line to the Local Queue.
 		void PushLine(const char *pcLine, unsigned int uiClient);
-
-		// Add a block to the local queue.
-		void PushBlock(TelnetBlock *pBlock);
 
 	protected:
 		TelnetInterface(void);
@@ -429,7 +361,6 @@ class TelnetInterface
 
 		OdfMutex              m_BlockMutex;
 		OdfMutex              m_HaveBlock;
-		TelnetBlockQueue      m_Blocks;
 };
 
 #ifdef WIN32
@@ -448,17 +379,6 @@ class TelnetLineNode
 		char         *pcLine;
 		unsigned int  uiClient;
 };
-
-// Waits until there is a block ready to be read.
-bool TelnetInterface::WaitForBlock(void)
-{
-	bool ret = false;
-	if(!m_Blocks.empty()) return true;
-	m_HaveBlock.Lock();
-	if(!m_Blocks.empty()) ret = true;
-	m_HaveBlock.Unlock();
-	return ret;
-}
 
 // Pops the last line off the local queue.
 // returns 0 if no lines available.
@@ -490,36 +410,6 @@ const char *TelnetInterface::GetLine(unsigned int &uiClient)
 	return pRet;
 }
 
-// Pops the last binary block off the local queue.
-// returns 0 if no lines available.
-bool  TelnetInterface::GetBlock(TelnetBlock &block)
-{
-	bool ret = false;
-	
-	m_BlockMutex.Lock();
-	if(!m_Blocks.empty())
-	{
-		TelnetBlock *pBlock = m_Blocks.front();
-		m_Blocks.pop();
-		memcpy(&block, pBlock, sizeof(TelnetBlock));
-		delete pBlock;
-		ret = true;
-	}
-	m_BlockMutex.Unlock();
-
-	if(m_Blocks.empty())
-	{
-		m_HaveBlock.TryLock();
-	}
-
-	return ret;
-}
-
-void TelnetInterface::ReleaseBlock(TelnetBlock &block)
-{
-	block.Free();
-}
-
 
 // Add a Line to the Local Queue.
 void TelnetInterface::PushLine(const char *pcLine, unsigned int uiClient)
@@ -531,18 +421,6 @@ void TelnetInterface::PushLine(const char *pcLine, unsigned int uiClient)
 	node->uiClient = uiClient;
 	m_Lines.push(node);
 	m_LineMutex.Unlock();
-}
-
-// Add a block to the local queue.
-void TelnetInterface::PushBlock(TelnetBlock *pBlock)
-{
-	assert(pBlock);
-	m_BlockMutex.Lock();
-	m_Blocks.push(pBlock);
-	m_BlockMutex.Unlock();
-
-	m_HaveBlock.TryLock();
-	m_HaveBlock.Unlock();
 }
 
 TelnetInterface::TelnetInterface(void)
@@ -773,7 +651,7 @@ class TelnetParser
 				m_uiCurrBlockUsed = 0;
 			}
 		}
-		
+
 		void Resize(unsigned int uiNewSize)
 		{
 			char *pNewBuffer = (char*)::malloc(sizeof(char)*uiNewSize);
@@ -830,10 +708,6 @@ class TelnetClient : public TelnetInterface
 		// Sends text across the telnet connection.
 		// returns false on failure.
 		virtual bool SendText(unsigned int uiClient, const char *pcLine, ...);
-
-		// Sends a binary block of data across the telnet session.
-		// returns false on failure.
-		virtual bool SendBlock(const TelnetBlock &block);
 
 	private:
 		void ThreadFunc(void);
@@ -899,17 +773,6 @@ void TelnetClient::ThreadFunc(void)
 			PushLine(pcLine, 0);
 		}
 		
-		const void *pBlockData = 0;
-		unsigned int uiBlockSize = 0;
-		while((pBlockData = parser.GetBlock(uiBlockSize)))
-		{
-			TelnetBlock *pBlock   = new TelnetBlock;
-			pBlock->m_pData       = (void *)pBlockData;
-			pBlock->m_uiDataSize  = uiBlockSize;
-			pBlock->m_uiClient    = 0;
-			pBlock->m_pcName      = 0;
-			PushBlock(pBlock);
-		}
 		
 		m_Mutex.Lock();
 		clientSocket  = m_Socket;
@@ -1021,34 +884,6 @@ bool TelnetClient::SendText(unsigned int uiClient, const char *pcLine, ...)
 	return true;
 }
 
-// Sends a binary block of data across the telnet session.
-// returns false on failure.
-bool TelnetClient::SendBlock(const TelnetBlock &block)
-{
-	bool          bRet        = false;
-	char          vcFooter[]  = "</NxBlock>\r\n";
-	char          vcHeader[256];
-	
-	sprintf(vcHeader, "\r\n<NxBlock=%s>", block.m_pcName);
-	
-	send(m_Socket, vcHeader, (int)strlen(vcHeader),0);
-
-	// Send in small chunks...
-	const char *pData = (const char*)block.m_pData;
-	unsigned int uiDataSent = 0;
-	while(uiDataSent < block.m_uiDataSize)
-	{
-		unsigned int uiSendSize = block.m_uiDataSize - uiDataSent;
-		uiSendSize = uiSendSize > 1024 ? 1024 : uiSendSize;
-		int iSent = send(m_Socket, &pData[uiDataSent], uiSendSize, 0);
-		uiDataSent += (unsigned int)iSent;
-	} 
-	
-	send(m_Socket, vcFooter,(int)strlen(vcFooter),   0);
-	bRet = true;
-	
-	return bRet;
-}
 
 //****************************************************************************
 //** Telnet server header file
@@ -1080,10 +915,6 @@ class TelnetServer : public TelnetInterface
 		// Sends text across the telnet connection.
 		// returns false on failure.
 		virtual bool SendText(unsigned int uiClient, const char *pcLine, ...);
-
-		// Sends a binary block of data across the telnet session.
-		// returns false on failure.
-		virtual bool SendBlock(const TelnetBlock &block);
 
 	private:
 		void ThreadFunc(void);
@@ -1364,13 +1195,13 @@ void TelnetServer::Close(void)
 bool TelnetServer::SendText(unsigned int uiClient, const char *pcLine, ...)
 {
 	bool bRet = false;
-	
+
 	TelnetServer_ClientMap::iterator iter;
-	
+
 	char vcBuffer[8192];
 	_vsnprintf(vcBuffer, 8191, pcLine, (va_list)(&pcLine+1));
 	unsigned int uiLen = (unsigned int)strlen(vcBuffer);
-	
+
 	if(!uiClient)
 	{
 		for(iter=m_Clients.begin(); iter!=m_Clients.end(); iter++)
@@ -1399,68 +1230,6 @@ bool TelnetServer::SendText(unsigned int uiClient, const char *pcLine, ...)
 		}
 	}
 	
-	return bRet;
-}
-
-// Sends a binary block of data across the telnet session.
-// returns false on failure.
-bool TelnetServer::SendBlock(const TelnetBlock &block)
-{
-	unsigned int  uiClient    = block.m_uiClient;
-	bool          bRet        = false;
-	char          vcFooter[]  = "</NxBlock>\r\n";
-	char          vcHeader[256];
-	
-	sprintf(vcHeader, "\r\n<NxBlock=%s>", block.m_pcName);
-
-	TelnetServer_ClientMap::iterator iter;
-	
-	if(!uiClient)
-	{
-		for(iter=m_Clients.begin(); iter!=m_Clients.end(); iter++)
-		{
-			TelnetServer_Client *pClient  = (*iter).second;
-			pClient->m_Mutex.Lock();
-			#if !defined(_XBOX)			
-			send(pClient->m_Socket, vcHeader,               (int)strlen(vcHeader),   0);
-			send(pClient->m_Socket, (char*)block.m_pData,   block.m_uiDataSize, 0);
-			send(pClient->m_Socket, vcFooter,               (int)strlen(vcFooter),   0);
-			#endif
-			pClient->m_Mutex.Unlock();
-			bRet = true;
-		}
-	}
-	else
-	{
-		iter = m_Clients.find(uiClient);
-		if(iter != m_Clients.end())
-		{
-			TelnetServer_Client *pClient  = (*iter).second;
-			pClient->m_Mutex.Lock();
-			
-			#if !defined(_XBOX)
-			send(pClient->m_Socket, vcHeader,               (int)strlen(vcHeader),   0);
-			
-			// Send in small chunks...
-			const char *pData = (const char*)block.m_pData;
-			unsigned int uiDataSent = 0;
-			while(uiDataSent < block.m_uiDataSize)
-			{
-				unsigned int uiSendSize = block.m_uiDataSize - uiDataSent;
-				uiSendSize = uiSendSize > 1024 ? 1024 : uiSendSize;
-				int iSent = send(pClient->m_Socket, &pData[uiDataSent], uiSendSize, 0);
-				uiDataSent += (unsigned int)iSent;
-			}
-
-			send(pClient->m_Socket, vcFooter,               (int)strlen(vcFooter),   0);
-			#endif
-
-
-			pClient->m_Mutex.Unlock();
-			bRet = true;
-		}
-	}
-
 	return bRet;
 }
 
@@ -1923,11 +1692,41 @@ const char ** InPlaceParser::GetArglist(char *line,int &count) // convert source
 
 #define MAXPARSEBUFFER 2048
 
-class MyTelnet : public Telnet
+class BlobLine
+{
+public:
+  BlobLine(unsigned int client,const char *msg)
+  {
+    mClient = client;
+    size_t l = strlen(msg);
+    mBlobText = (char *)MEMALLOC_MALLOC(l+1);
+    memcpy(mBlobText,msg,l+1);
+  }
+  ~BlobLine(void)
+  {
+    MEMALLOC_FREE(mBlobText);
+  }
+
+  BlobLine(const BlobLine &b)
+  {
+    mClient = b.mClient;
+    size_t l = strlen(b.mBlobText);
+    mBlobText = (char *)MEMALLOC_MALLOC(l+1);
+    memcpy(mBlobText,b.mBlobText,l+1);
+  }
+
+  unsigned int mClient;
+  char        *mBlobText;
+};
+
+typedef std::queue< BlobLine > BlobLineQueue;
+
+class MyTelnet : public Telnet, public BlobIOInterface
 {
 public:
   MyTelnet(const char *address,unsigned int port)
   {
+    mBlobIO = createBlobIO(this);
     mParser.DefaultSymbols();
     mClient = 0;
     mInterface = 0;
@@ -1972,9 +1771,9 @@ public:
     if ( mInterface )
     {
     	char wbuff[MAXPARSEBUFFER];
-      wbuff[MAXPARSEBUFFER-1] = 0;
+        wbuff[MAXPARSEBUFFER-1] = 0;
     	_vsnprintf(wbuff,MAXPARSEBUFFER-1, fmt, (char *)(&fmt+1));
-      ret = mInterface->SendText(client,"%s",wbuff);
+        ret = mInterface->SendText(client,"%s",wbuff);
     }
     return ret;
   }
@@ -1983,6 +1782,13 @@ public:
   {
     const char *ret = 0;
     client = 0;
+
+    if ( !mBlobLines.empty() )
+    {
+        BlobLine &bl = mBlobLines.front();
+        mInterface->SendText(bl.mClient,"%s", bl.mBlobText );
+        mBlobLines.pop();
+    }
 
     if ( mInterface )
     {
@@ -2006,7 +1812,46 @@ public:
   {
     delete mClient;
     delete mServer;
+    releaseBlobIO(mBlobIO);
   }
+
+  virtual bool          sendBlob(unsigned int client,const char *blobType,const void *data,unsigned int dlen)
+  {
+    bool ret = false;
+
+    if ( mBlobIO )
+    {
+        ret = mBlobIO->sendBlob(client,blobType,data,dlen);
+    }
+
+
+    return ret;
+  }
+
+  virtual const char *  receiveBlob(unsigned int &client,const void *&data,unsigned int &dlen)
+  {
+    const char *ret = 0;
+
+    client = 0;
+    dlen = 0;
+    data = 0;
+
+
+    return ret;
+  }
+
+  virtual void sendBlobText(unsigned int client,const char *fmt,...)
+  {
+    if ( mInterface )
+    {
+    	char wbuff[MAXPARSEBUFFER];
+        wbuff[MAXPARSEBUFFER-1] = 0;
+    	_vsnprintf(wbuff,MAXPARSEBUFFER-1, fmt, (char *)(&fmt+1));
+        BlobLine bl(client,wbuff);
+        mBlobLines.push(bl);
+    }
+  }
+
 private:
   bool          mIsServer;
   bool          mHaveConnection;
@@ -2015,6 +1860,8 @@ private:
   TelnetServer *mServer;
   char          mParseBuffer[MAXPARSEBUFFER];
   InPlaceParser mParser;
+  BlobIO       *mBlobIO;
+  BlobLineQueue mBlobLines;
 };
 
 Telnet * createTelnet(const char *address,unsigned int port)

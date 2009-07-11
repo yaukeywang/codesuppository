@@ -107,7 +107,6 @@ SccProvider="MSCCI:Perforce SCM"
   <Filter Name="Plugin Header Files" Filter="">
     <Filter Name="MeshImport" Filter="">
       <File RelativePath="..\..\include\MeshImport\MeshImport.h"/>
-      <File RelativePath="..\..\include\MeshImport\MeshSystem.h"/>
     </Filter>
   </Filter>
   <Filter Name="Common Include-Binding Files" Filter="">

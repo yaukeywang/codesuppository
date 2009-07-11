@@ -35,6 +35,8 @@
 				<Files name="Common Include-Binding Files" root="../../include/common" type="header">
           snippets/telnet.h
           snippets/telnet.cpp
+          snippets/BlobIO.h
+          snippets/BlobIO.cpp
           snippets/sutil.h
           snippets/sutil.cpp
           snippets/inparser.h

@@ -105,10 +105,11 @@ SccProvider="MSCCI:Perforce SCM"
   </Filter>
   <Filter Name="Public Header Files" Filter="">
     <File RelativePath="..\..\include\MeshImport\MeshImport.h"/>
-    <File RelativePath="..\..\include\MeshImport\MeshSystem.h"/>
   </Filter>
   <Filter Name="Common Include-Binding Files" Filter="">
     <Filter Name="snippets" Filter="">
+      <File RelativePath="..\..\include\common\snippets\BlobIO.cpp"/>
+      <File RelativePath="..\..\include\common\snippets\BlobIO.h"/>
       <File RelativePath="..\..\include\common\snippets\FloatMath.cpp"/>
       <File RelativePath="..\..\include\common\snippets\FloatMath.h"/>
       <File RelativePath="..\..\include\common\snippets\FloatMath.inl"/>

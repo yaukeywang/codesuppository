@@ -225,6 +225,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\common\snippets\FastXml.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\FastXml.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\common\snippets\FloatMath.cpp"
 					>
 				</File>

@@ -6,6 +6,7 @@
 #include "MeshImport.h"
 
 MESHIMPORT::MeshImport *gMeshImport=0; // This is an optional global variable that can be used by the application.  If the application uses it, it should define it somewhere in its codespace.
+TELNET::Telnet *gTelnet=0;
 
 #pragma warning(disable:4996)
 

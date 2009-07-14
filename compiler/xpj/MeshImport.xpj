@@ -37,6 +37,8 @@
           snippets/telnet.cpp
           snippets/BlobIO.h
           snippets/BlobIO.cpp
+          snippets/FastXml.h
+          snippets/FastXml.cpp
           snippets/sutil.h
           snippets/sutil.cpp
           snippets/inparser.h

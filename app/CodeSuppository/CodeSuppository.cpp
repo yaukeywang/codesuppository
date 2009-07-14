@@ -180,6 +180,11 @@ public:
         break;
       case CSC_FLIP_WINDING:
         mFlipWinding = state;
+        {
+            const char *test = "This is a test of the emergency blob cast system.";
+            unsigned int len = strlen(test);
+            mTelnet->sendBlob(0,"testBlob", test, len+1 );
+        }
         break;
       case CSC_PLAY_ANIMATION:
         mPlayAnimation = state;
@@ -340,6 +345,13 @@ public:
             }
             SEND_TEXT_MESSAGE(0,"%s\r\n", msg );
         }
+		const void *data;
+		unsigned int dlen;
+		const char *blobType = mTelnet->receiveBlob(client,data,dlen);
+		if ( blobType )
+		{
+			printf("Debug me");
+		}
     }
 
     if ( mApexCloth )

@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <deque>
 #include <queue>
+#include <list>
 #include <vector>
 
 #pragma warning(disable:4211)
@@ -12,6 +13,7 @@
 #pragma warning(disable:4100)
 #pragma warning(disable:4706)
 #pragma warning(disable:4702)
+#pragma warning(disable:4267)
 
 #include "UserMemAlloc.h"
 
@@ -107,7 +109,6 @@
 #endif
 
 #include "telnet.h"
-#include "BlobIO.h"
 
 // Common Telnet Functionality.
 #ifdef WIN32
@@ -119,6 +120,734 @@ TELNET::Telnet *gTelnet=0; // optional global variable representing the TELNET s
 
 namespace TELNET
 {
+
+///*************** The FastXML code snippet
+
+class FastXmlInterface
+{
+public:
+
+  // return true to continue processing the XML document, false to skip.
+  virtual bool processElement(const char *elementName,         // name of the element
+                              int         argc,                // number of attributes
+                              const char **argv,               // list of attributes.
+                              const char  *elementData,        // element data, null if none
+                              int         lineno) = 0;         // line number in the source XML file
+
+};
+
+class FastXml
+{
+public:
+  virtual bool processXml(const char *inputData,unsigned int dataLen,FastXmlInterface *iface) = 0;
+  virtual const char * getError(int &lineno) = 0; // report the reason for a parsing error, and the line number where it occurred.
+};
+
+FastXml * createFastXml(void);
+void      releaseFastXml(FastXml *f);
+
+class MyFastXml : public FastXml
+{
+public:
+  enum CharType
+  {
+    CT_DATA,
+    CT_EOF,
+    CT_SOFT,
+    CT_END_OF_ELEMENT, // either a forward slash or a greater than symbol
+    CT_END_OF_LINE,
+  };
+
+  MyFastXml(void)
+  {
+    mInputData = 0;
+    memset(mTypes,CT_DATA,256);
+    mTypes[0] = CT_EOF;
+    mTypes[32] = CT_SOFT;
+    mTypes[9] = CT_SOFT;
+    mTypes['/'] = CT_END_OF_ELEMENT;
+    mTypes['>'] = CT_END_OF_ELEMENT;
+    mTypes['?'] = CT_END_OF_ELEMENT;
+    mTypes[10] = CT_END_OF_LINE;
+    mTypes[13] = CT_END_OF_LINE;
+    mError = 0;
+  }
+  ~MyFastXml(void)
+  {
+    release();
+  }
+
+  void release(void)
+  {
+    if ( mInputData )
+    {
+      free(mInputData);
+      mInputData = 0;
+    }
+    mError = 0;
+  }
+
+  inline char *nextSoft(char *scan)
+  {
+    while ( *scan && mTypes[*scan] != CT_SOFT ) scan++;
+    return scan;
+  }
+
+  inline char *nextSoftOrClose(char *scan,bool &close)
+  {
+    while ( *scan && mTypes[*scan] != CT_SOFT && *scan != '>' ) scan++;
+    close = *scan == '>';
+    return scan;
+  }
+
+  inline char *nextSep(char *scan)
+  {
+    while ( *scan && mTypes[*scan] != CT_SOFT && *scan != '=' ) scan++;
+    return scan;
+  }
+
+  inline char * skipNextData(char *scan)
+  {
+    // while we have data, and we encounter soft seperators or line feeds...
+    while ( *scan && mTypes[*scan] == CT_SOFT || mTypes[*scan] == CT_END_OF_LINE )
+    {
+      if ( *scan == 13 ) mLineNo++;
+      scan++;
+    }
+    return scan;
+  }
+
+  char * processClose(char c,const char *element,char *scan,int argc,const char **argv,FastXmlInterface *iface)
+  {
+    if ( c == '/' || c == '?' )
+    {
+      if ( *scan != '>' ) // unexepected character!
+      {
+        mError = "Expected an element close character immediately after the '/' or '?' character.";
+        return 0;
+      }
+      scan++;
+      bool ok = iface->processElement(element,argc,argv,0,mLineNo);
+      if ( !ok )
+      {
+        mError = "User aborted the parsing process";
+        return 0;
+      }
+    }
+    else
+    {
+      scan = skipNextData(scan);
+      char *data = scan; // this is the data portion of the element, only copies memory if we encounter line feeds
+      char *dest_data = 0;
+      while ( *scan && *scan != '<' )
+      {
+        if ( mTypes[*scan] == CT_END_OF_LINE )
+        {
+          if ( *scan == 13 ) mLineNo++;
+          dest_data = scan;
+          *dest_data++ = 32; // replace the linefeed with a space...
+          scan = skipNextData(scan);
+          while ( *scan && *scan != '<' )
+          {
+            if ( mTypes[*scan] == CT_END_OF_LINE )
+            {
+             if ( *scan == 13 ) mLineNo++;
+             *dest_data++ = 32; // replace the linefeed with a space...
+              scan = skipNextData(scan);
+            }
+            else
+            {
+              *dest_data++ = *scan++;
+            }
+          }
+          break;
+        }
+        else
+          scan++;
+      }
+      if ( *scan == '<' )
+      {
+        if ( dest_data )
+        {
+          *dest_data = 0;
+        }
+        else
+        {
+          *scan = 0;
+        }
+        scan++; // skip it..
+        if ( *data == 0 ) data = 0;
+        bool ok = iface->processElement(element,argc,argv,data,mLineNo);
+        if ( !ok )
+        {
+          mError = "User aborted the parsing process";
+          return 0;
+        }
+        if ( *scan == '/' )
+        {
+          while ( *scan && *scan != '>' ) scan++;
+          scan++;
+        }
+      }
+      else
+      {
+        mError = "Data portion of an element wasn't terminated properly";
+        return 0;
+      }
+    }
+    return scan;
+  }
+
+  virtual bool processXml(const char *inputData,unsigned int dataLen,FastXmlInterface *iface)
+  {
+    bool ret = true;
+
+    #define MAX_ATTRIBUTE 2048 // can't imagine having more than 2,048 attributes in a single element right?
+
+    release();
+    mInputData = (char *)malloc(dataLen+1);
+    memcpy(mInputData,inputData,dataLen);
+    mInputData[dataLen] = 0;
+
+    mLineNo = 1;
+
+    char *element;
+
+    char *scan = mInputData;
+    if ( *scan == '<' )
+    {
+      scan++;
+      while ( *scan )
+      {
+        scan = skipNextData(scan);
+        if ( *scan == 0 ) return ret;
+        if ( *scan == '<' )
+        {
+          scan++;
+        }
+        if ( *scan == '/' || *scan == '?' )
+        {
+          while ( *scan && *scan != '>' ) scan++;
+          scan++;
+        }
+        else
+        {
+          element = scan;
+          int argc = 0;
+          const char *argv[MAX_ATTRIBUTE];
+          bool close;
+          scan = nextSoftOrClose(scan,close);
+          if ( close )
+          {
+            char c = *(scan-1);
+            if ( c != '?' && c != '/' )
+            {
+              c = '>';
+            }
+            *scan = 0;
+            scan++;
+            scan = processClose(c,element,scan,argc,argv,iface);
+            if ( !scan ) return false;
+          }
+          else
+          {
+            if ( *scan == 0 ) return ret;
+            *scan = 0; // place a zero byte to indicate the end of the element name...
+            scan++;
+
+            while ( *scan )
+            {
+              scan = skipNextData(scan); // advance past any soft seperators (tab or space)
+
+              if ( mTypes[*scan] == CT_END_OF_ELEMENT )
+              {
+                char c = *scan++;
+                scan = processClose(c,element,scan,argc,argv,iface);
+                if ( !scan ) return false;
+                break;
+              }
+              else
+              {
+                if ( argc >= MAX_ATTRIBUTE )
+                {
+                  mError = "encountered too many attributes";
+                  return false;
+                }
+                argv[argc] = scan;
+                scan = nextSep(scan);  // scan up to a space, or an equal
+                if ( *scan )
+                {
+                  if ( *scan != '=' )
+                  {
+                    *scan = 0;
+                    scan++;
+                    while ( *scan && *scan != '=' ) scan++;
+                    if ( *scan == '=' ) scan++;
+                  }
+                  else
+                  {
+                    *scan=0;
+                    scan++;
+                  }
+                  if ( *scan ) // if not eof...
+                  {
+                    scan = skipNextData(scan);
+                    if ( *scan == 34 )
+                    {
+                      scan++;
+                      argc++;
+                      argv[argc] = scan;
+                      argc++;
+                      while ( *scan && *scan != 34 ) scan++;
+                      if ( *scan == 34 )
+                      {
+                        *scan = 0;
+                        scan++;
+                      }
+                      else
+                      {
+                        mError = "Failed to find closing quote for attribute";
+                        return false;
+                      }
+                    }
+                    else
+                    {
+                      mError = "Expected quote to begin attribute";
+                      return false;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    else
+    {
+      mError = "Expected the start of an element '<' at this location.";
+      ret = false; // unexpected character!?
+    }
+
+    return ret;
+  }
+
+  const char * getError(int &lineno)
+  {
+    const char *ret = mError;
+    lineno = mLineNo;
+    mError = 0;
+    return ret;
+  }
+
+private:
+  char         mTypes[256];
+  char        *mInputData;
+  int          mLineNo;
+  const char  *mError;
+};
+
+
+
+FastXml * createFastXml(void)
+{
+  MyFastXml *f = new MyFastXml;
+  return static_cast< FastXml *>(f);
+}
+
+void      releaseFastXml(FastXml *f)
+{
+  MyFastXml *m = static_cast< MyFastXml *>(f);
+  delete m;
+}
+
+//**** The BlobIO code snippet
+
+class BlobIOInterface
+{
+public:
+  virtual void sendBlobText(unsigned int client,const char *fmt,...) = 0;
+};
+
+class BlobIO
+{
+public:
+  virtual bool sendBlob(unsigned int client,const char *blobType,const void *blobData,unsigned int blobLen) = 0;
+  virtual const char * receiveBlob(unsigned int &client,const void *&data,unsigned int &dlen) = 0;
+  virtual bool processIncomingBlobText(unsigned int client,const char *text) = 0;
+protected:
+  BlobIO(void) { };
+};
+
+
+BlobIO * createBlobIO(BlobIOInterface *iface);
+void     releaseBlobIO(BlobIO *b);
+
+#define BLOB_LINE 256
+
+static char gHexTable[16] = { '0', '1', '2', '3','4','5','6','7','8','9','A','B','C','D','E','F' };
+
+static inline char getHex(unsigned char c)
+{
+    return gHexTable[c];
+}
+
+#pragma warning(disable:4100)
+
+static inline bool getHex(char c,unsigned char &v)
+{
+    bool ret = true;
+    if ( c >= '0' && c <= '9' )
+    {
+        v = c-'0';
+    }
+    else if ( c >= 'A' && c <= 'F' )
+    {
+        v = (c-'A')+10;
+    }
+    else
+    {
+        ret = false;
+    }
+    return ret;
+}
+
+static inline bool getHexValue(char c1,char c2,unsigned char &v)
+{
+    bool ret = false;
+    unsigned char v1,v2;
+    if ( getHex(c1,v1) && getHex(c2,v2) )
+    {
+        v = v1<<4 | v2;
+        ret = true;
+    }
+    return ret;
+}
+
+class Blob
+{
+public:
+  Blob(const char *blobType,unsigned int client,unsigned int blobId,unsigned int olen,const char *data)
+  {
+    unsigned int slen = strlen(blobType);
+    mClient   = client;
+    mFinished = false;
+    mError    = false;
+    mBlobType = (char *)MEMALLOC_MALLOC(slen+1);
+    strcpy(mBlobType,blobType);
+    mBlobId = blobId;
+    mBlobLen  = olen;
+    mBlobData = (unsigned char *)MEMALLOC_MALLOC(olen);
+    mBlobIndex = 0;
+    addData(data);
+  }
+
+  ~Blob(void)
+  {
+    MEMALLOC_FREE(mBlobType);
+    MEMALLOC_FREE(mBlobData);
+  }
+
+  void addData(const char *data)
+  {
+
+    while ( mBlobIndex < mBlobLen && *data )
+    {
+        char c1 = data[0];
+        char c2 = data[1];
+
+        if ( getHexValue(c1,c2,mBlobData[mBlobIndex]) )
+        {
+            mBlobIndex++;
+        }
+        else
+        {
+            break;
+        }
+        data+=2;
+    }
+
+    if ( mBlobIndex == mBlobLen )
+    {
+        mFinished = true;
+    }
+  }
+
+  void addDataEnd(const char *data)
+  {
+    addData(data);
+    assert( mFinished );
+  }
+
+  unsigned int getId(void) const { return mBlobId; };
+
+  bool           mFinished;
+  bool           mError;
+  char          *mBlobType;
+  unsigned int   mBlobId;
+  unsigned int   mBlobLen;
+  unsigned char *mBlobData;
+  unsigned int   mBlobIndex;
+  unsigned int   mClient;
+};
+
+typedef std::list< Blob * > BlobList;
+
+class MyBlobIO : public BlobIO, public FastXmlInterface
+{
+public:
+  MyBlobIO(BlobIOInterface *iface)
+  {
+    mCallback = iface;
+    mBlobId   = 0;
+    mLastBlob = 0;
+    mFastXml = createFastXml();
+  }
+
+  ~MyBlobIO(void)
+  {
+    releaseFastXml(mFastXml);
+    BlobList::iterator i;
+    for (i=mBlobs.begin(); i!=mBlobs.end(); ++i)
+    {
+        Blob *b = (*i);
+        MEMALLOC_DELETE(block,b);
+    }
+    MEMALLOC_DELETE(Blob,mLastBlob);
+  }
+
+  // convert a blob of binary data into multiple lines of ascii data
+  virtual bool sendBlob(unsigned int client,const char *blobType,const void *blobData,unsigned int blobLen)
+  {
+	bool ret = false;
+    if ( mCallback && blobLen > 0 )
+    {
+		assert(blobType);
+		assert(blobData);
+        if ( blobLen <= BLOB_LINE )
+        {
+            char blobText[BLOB_LINE*2+1];
+            const unsigned char *scan = (const unsigned char *)blobData;
+            char *dest = blobText;
+            for (unsigned int i=0; i<blobLen; i++)
+            {
+                unsigned char c = *scan++;
+                dest[0] = getHex(c>>4);
+                dest[1] = getHex(c&0xF);
+                dest+=2;
+            }
+            *dest = 0;
+            mCallback->sendBlobText(client,"<telnetBlob blob=\"%s\" len=\"%d\">%s</telnetBlob>\r\n", blobType, blobLen, blobText );
+        }
+        else
+        {
+            mBlobId++;
+            char blobText[BLOB_LINE*2+1];
+            const unsigned char *scan = (const unsigned char *)blobData;
+            char *dest = blobText;
+            for (unsigned int i=0; i<BLOB_LINE; i++)
+            {
+                unsigned char c = *scan++;
+                dest[0] = getHex(c>>4);
+                dest[1] = getHex(c&0xF);
+                dest+=2;
+            }
+            *dest = 0;
+            mCallback->sendBlobText(client,"<telnetBlob blob=\"%s\" blobId=\"%d\" len=\"%d\">%s</telnetBlob>\r\n", blobType, mBlobId, blobLen, blobText );
+            blobLen-=BLOB_LINE;
+            while ( blobLen > BLOB_LINE )
+            {
+              char *dest = blobText;
+              for (unsigned int i=0; i<BLOB_LINE; i++)
+              {
+                  unsigned char c = *scan++;
+                  dest[0] = getHex(c>>4);
+                  dest[1] = getHex(c&0xF);
+                  dest+=2;
+              }
+              *dest = 0;
+              blobLen-=BLOB_LINE;
+              mCallback->sendBlobText(client,"<telnetBlobData blobId=\"%d\">%s</telnetBlobData>\r\n", mBlobId, blobText );
+            }
+            dest = blobText;
+            for (unsigned int i=0; i<blobLen; i++)
+            {
+                unsigned char c = *scan++;
+                dest[0] = getHex(c>>4);
+                dest[1] = getHex(c&0xF);
+                dest+=2;
+            }
+            *dest = 0;
+            mCallback->sendBlobText(client,"<telnetBlobEnd blobId=\"%d\">%s</telnetBlobEnd>\r\n", mBlobId, blobText );
+        }
+    }
+	return ret;
+  }
+
+  virtual const char * receiveBlob(unsigned int &client,const void *&data,unsigned int &dlen)
+  {
+    const char *ret  = 0;
+	client = 0;
+    data = 0;
+    dlen = 0;
+
+    MEMALLOC_DELETE(Blob,mLastBlob);
+    mLastBlob = 0;
+
+    if ( !mBlobs.empty() )
+    {
+        BlobList::iterator i;
+        for (i=mBlobs.begin(); i!=mBlobs.end(); ++i)
+        {
+            Blob *b = (*i);
+            if ( b->mFinished )
+            {
+                mLastBlob = b;
+                client = b->mClient;
+                data   = b->mBlobData;
+                dlen   = b->mBlobLen;
+                ret    = b->mBlobType;
+                mBlobs.erase(i);
+                break;
+            }
+        }
+    }
+
+    return ret;
+  }
+
+  virtual bool processIncomingBlobText(unsigned int client,const char *text)
+  {
+	  bool ret = false;
+
+	  client;
+
+	  if ( strncmp(text,"<telnetBlob",11) == 0 )
+	  {
+		  size_t len = strlen(text);
+          mClient = client;
+          ret = mFastXml->processXml(text,len,this);
+          if ( !ret )
+          {
+            int lineno;
+            const char *error = mFastXml->getError(lineno);
+            printf("Error: %s at line %d\r\n", error, lineno );
+          }
+	  }
+	  return ret;
+  }
+
+  virtual bool processElement(const char *elementName,         // name of the element
+                              int         argc,                // number of attributes
+                              const char **argv,               // list of attributes.
+                              const char  *elementData,        // element data, null if none
+                              int         lineno)         // line number in the source XML file
+  {
+    bool ret = true;
+
+	lineno;
+	elementData;
+
+    if ( elementData )
+    {
+
+      int len = 0;
+      int blobId = 0;
+      const char *blobName=0;
+  	  int acount = argc/2;
+      for (int i=0; i<acount; i++)
+      {
+          const char * atr   = argv[i*2];
+          const char * value = argv[i*2+1];
+          if ( strcmp(atr,"blob") == 0 )
+          {
+              blobName = value;
+          }
+          else if ( strcmp(atr,"blobId") == 0 )
+          {
+              blobId = atoi(value);
+          }
+          else if ( strcmp(atr,"len") == 0 )
+          {
+              len = atoi(value);
+          }
+      }
+      {
+        if ( strcmp(elementName,"telnetBlob") == 0 )
+        {
+            Blob *check = locateBlob(blobId,mClient);
+            assert(check==0);
+			assert(blobName);
+            //
+            assert(len > 0 );
+            if ( len > 0 && check == 0 && blobName )
+            {
+              Blob *b = MEMALLOC_NEW(Blob)(blobName,mClient,blobId,len,elementData);
+              mBlobs.push_back(b);
+            }
+        }
+        else if ( strcmp(elementName,"telnetBlobData") == 0 )
+        {
+          Blob *b = locateBlob(blobId,mClient);
+          if ( b )
+          {
+            b->addData(elementData);
+          }
+        }
+        else if ( strcmp(elementName,"telnetBlobEnd") == 0 )
+        {
+          Blob *b = locateBlob(blobId,mClient);
+          if ( b )
+          {
+            b->addDataEnd(elementData);
+          }
+        }
+      }
+    }
+
+    return ret;
+  }
+
+  Blob * locateBlob(unsigned int id,unsigned int client) const
+  {
+    Blob *ret = 0;
+    if ( id != 0 )
+    {
+      BlobList::const_iterator i;
+      for (i=mBlobs.begin(); i!=mBlobs.end(); i++)
+      {
+        Blob *b = (*i);
+        if ( b->getId() == id && b->mClient == client )
+        {
+            ret = b;
+            break;
+        }
+	  }
+    }
+    return ret;
+  }
+
+private:
+  unsigned int    mClient;
+  unsigned int    mBlobId;
+  BlobIOInterface *mCallback;
+  FastXml         *mFastXml;
+  Blob            *mLastBlob;
+  BlobList         mBlobs;
+};
+
+BlobIO * createBlobIO(BlobIOInterface *iface)
+{
+    MyBlobIO * m = MEMALLOC_NEW(MyBlobIO)(iface);
+    return static_cast< BlobIO *>(m);
+}
+
+void     releaseBlobIO(BlobIO *b)
+{
+    MyBlobIO *m = static_cast< MyBlobIO *>(b);
+    MEMALLOC_DELETE(MyBlobIO,m);
+}
+
 
 //******************************************************
 //*** Mutex layer
@@ -1793,6 +2522,14 @@ public:
     if ( mInterface )
     {
       ret = mInterface->GetLine(client);
+      if ( ret && mBlobIO )
+      {
+        bool snarfed = mBlobIO->processIncomingBlobText(client,ret);
+        if ( snarfed )
+        {
+            ret = 0;
+        }
+      }
     }
 
     return ret;
@@ -1836,6 +2573,11 @@ public:
     dlen = 0;
     data = 0;
 
+    if ( mBlobIO )
+    {
+        ret = mBlobIO->receiveBlob(client,data,dlen);
+    }
+
 
     return ret;
   }
@@ -1849,6 +2591,10 @@ public:
     	_vsnprintf(wbuff,MAXPARSEBUFFER-1, fmt, (char *)(&fmt+1));
         BlobLine bl(client,wbuff);
         mBlobLines.push(bl);
+		if ( mBlobIO )
+		{
+			mBlobIO->processIncomingBlobText(client,wbuff);
+		}
     }
   }
 

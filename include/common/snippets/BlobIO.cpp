@@ -2,9 +2,16 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <list>
 
 #include "BlobIO.h"
+#include "FastXml.h"
 #include "UserMemAlloc.h"
+
+#pragma warning(disable:4996)
+
+namespace BLOB_IO
+{
 
 #define BLOB_LINE 256
 
@@ -15,13 +22,128 @@ static inline char getHex(unsigned char c)
     return gHexTable[c];
 }
 
-class MyBlobIO : public BlobIO
+#pragma warning(disable:4100)
+
+static inline bool getHex(char c,unsigned char &v)
+{
+    bool ret = true;
+    if ( c >= '0' && c <= '9' )
+    {
+        v = c-'0';
+    }
+    else if ( c >= 'A' && c <= 'F' )
+    {
+        v = (c-'A')+10;
+    }
+    else
+    {
+        ret = false;
+    }
+    return ret;
+}
+
+static inline bool getHexValue(char c1,char c2,unsigned char &v)
+{
+    bool ret = false;
+    unsigned char v1,v2;
+    if ( getHex(c1,v1) && getHex(c2,v2) )
+    {
+        v = v1<<4 | v2;
+        ret = true;
+    }
+    return ret;
+}
+
+class Blob
+{
+public:
+  Blob(const char *blobType,unsigned int client,unsigned int blobId,unsigned int olen,const char *data)
+  {
+    unsigned int slen = strlen(blobType);
+    mClient   = client;
+    mFinished = false;
+    mError    = false;
+    mBlobType = (char *)MEMALLOC_MALLOC(slen+1);
+    strcpy(mBlobType,blobType);
+    mBlobId = blobId;
+    mBlobLen  = olen;
+    mBlobData = (unsigned char *)MEMALLOC_MALLOC(olen);
+    mBlobIndex = 0;
+    addData(data);
+  }
+
+  ~Blob(void)
+  {
+    MEMALLOC_FREE(mBlobType);
+    MEMALLOC_FREE(mBlobData);
+  }
+
+  void addData(const char *data)
+  {
+
+    while ( mBlobIndex < mBlobLen && *data )
+    {
+        char c1 = data[0];
+        char c2 = data[1];
+
+        if ( getHexValue(c1,c2,mBlobData[mBlobIndex]) )
+        {
+            mBlobIndex++;
+        }
+        else
+        {
+            break;
+        }
+        data+=2;
+    }
+
+    if ( mBlobIndex == mBlobLen )
+    {
+        mFinished = true;
+    }
+  }
+
+  void addDataEnd(const char *data)
+  {
+    addData(data);
+    assert( mFinished );
+  }
+
+  unsigned int getId(void) const { return mBlobId; };
+
+  bool           mFinished;
+  bool           mError;
+  char          *mBlobType;
+  unsigned int   mBlobId;
+  unsigned int   mBlobLen;
+  unsigned char *mBlobData;
+  unsigned int   mBlobIndex;
+  unsigned int   mClient;
+};
+
+typedef std::list< Blob * > BlobList;
+
+class MyBlobIO : public BlobIO, public FastXmlInterface
 {
 public:
   MyBlobIO(BlobIOInterface *iface)
   {
     mCallback = iface;
     mBlobId   = 0;
+    mLastBlob = 0;
+    mFastXml = createFastXml();
+  }
+
+  ~MyBlobIO(void)
+  {
+    releaseFastXml(mFastXml);
+    BlobList::iterator i;
+    for (i=mBlobs.begin(); i!=mBlobs.end(); ++i)
+    {
+        Blob *b = (*i);
+        MEMALLOC_DELETE(block,b);
+    }
+    MEMALLOC_DELETE(Blob,mLastBlob);
   }
 
   // convert a blob of binary data into multiple lines of ascii data
@@ -45,7 +167,7 @@ public:
                 dest+=2;
             }
             *dest = 0;
-            mCallback->sendBlobText(client,"<telnetBlob blob=%s>%s</telnetBlob>\r\n", blobType, blobText );
+            mCallback->sendBlobText(client,"<telnetBlob blob=\"%s\" len=\"%d\">%s</telnetBlob>\r\n", blobType, blobLen, blobText );
         }
         else
         {
@@ -61,8 +183,8 @@ public:
                 dest+=2;
             }
             *dest = 0;
+            mCallback->sendBlobText(client,"<telnetBlob blob=\"%s\" blobId=\"%d\" len=\"%d\">%s</telnetBlob>\r\n", blobType, mBlobId, blobLen, blobText );
             blobLen-=BLOB_LINE;
-            mCallback->sendBlobText(client,"<telnetBlob blob=%s blobId=%d>%s</telnetBlob>\r\n", blobType, mBlobId, blobText );
             while ( blobLen > BLOB_LINE )
             {
               char *dest = blobText;
@@ -75,7 +197,7 @@ public:
               }
               *dest = 0;
               blobLen-=BLOB_LINE;
-              mCallback->sendBlobText(client,"<telnetBlobData blobId=%d>%s</telnetBlobData>\r\n", mBlobId, blobText );
+              mCallback->sendBlobText(client,"<telnetBlobData blobId=\"%d\">%s</telnetBlobData>\r\n", mBlobId, blobText );
             }
             dest = blobText;
             for (unsigned int i=0; i<blobLen; i++)
@@ -86,7 +208,7 @@ public:
                 dest+=2;
             }
             *dest = 0;
-            mCallback->sendBlobText(client,"<telnetBlobEnd blobId=%d>%s</telnetBlobEnd>\r\n", mBlobId, blobText );
+            mCallback->sendBlobText(client,"<telnetBlobEnd blobId=\"%d\">%s</telnetBlobEnd>\r\n", mBlobId, blobText );
         }
     }
 	return ret;
@@ -98,15 +220,155 @@ public:
 	client = 0;
     data = 0;
     dlen = 0;
+
+    MEMALLOC_DELETE(Blob,mLastBlob);
+    mLastBlob = 0;
+
+    if ( !mBlobs.empty() )
+    {
+        BlobList::iterator i;
+        for (i=mBlobs.begin(); i!=mBlobs.end(); ++i)
+        {
+            Blob *b = (*i);
+            if ( b->mFinished )
+            {
+                mLastBlob = b;
+                client = b->mClient;
+                data   = b->mBlobData;
+                dlen   = b->mBlobLen;
+                ret    = b->mBlobType;
+                mBlobs.erase(i);
+                break;
+            }
+        }
+    }
+
+    return ret;
+  }
+
+  virtual bool processIncomingBlobText(unsigned int client,const char *text)
+  {
+	  bool ret = false;
+
+	  client;
+
+	  if ( strncmp(text,"<telnetBlob",11) == 0 )
+	  {
+		  size_t len = strlen(text);
+          mClient = client;
+          ret = mFastXml->processXml(text,len,this);
+          if ( !ret )
+          {
+            int lineno;
+            const char *error = mFastXml->getError(lineno);
+            printf("Error: %s at line %d\r\n", error, lineno );
+          }
+	  }
+	  return ret;
+  }
+
+  virtual bool processElement(const char *elementName,         // name of the element
+                              int         argc,                // number of attributes
+                              const char **argv,               // list of attributes.
+                              const char  *elementData,        // element data, null if none
+                              int         lineno)         // line number in the source XML file
+  {
+    bool ret = true;
+
+	lineno;
+	elementData;
+
+    if ( elementData )
+    {
+
+      int len = 0;
+      int blobId = 0;
+      const char *blobName=0;
+  	  int acount = argc/2;
+      for (int i=0; i<acount; i++)
+      {
+          const char * atr   = argv[i*2];
+          const char * value = argv[i*2+1];
+          if ( strcmp(atr,"blob") == 0 )
+          {
+              blobName = value;
+          }
+          else if ( strcmp(atr,"blobId") == 0 )
+          {
+              blobId = atoi(value);
+          }
+          else if ( strcmp(atr,"len") == 0 )
+          {
+              len = atoi(value);
+          }
+      }
+      {
+        if ( strcmp(elementName,"telnetBlob") == 0 )
+        {
+            Blob *check = locateBlob(blobId,mClient);
+            assert(check==0);
+			assert(blobName);
+            //
+            assert(len > 0 );
+            if ( len > 0 && check == 0 && blobName )
+            {
+              Blob *b = MEMALLOC_NEW(Blob)(blobName,mClient,blobId,len,elementData);
+              mBlobs.push_back(b);
+            }
+        }
+        else if ( strcmp(elementName,"telnetBlobData") == 0 )
+        {
+          Blob *b = locateBlob(blobId,mClient);
+          if ( b )
+          {
+            b->addData(elementData);
+          }
+        }
+        else if ( strcmp(elementName,"telnetBlobEnd") == 0 )
+        {
+          Blob *b = locateBlob(blobId,mClient);
+          if ( b )
+          {
+            b->addDataEnd(elementData);
+          }
+        }
+      }
+    }
+
+    return ret;
+  }
+
+  Blob * locateBlob(unsigned int id,unsigned int client) const
+  {
+    Blob *ret = 0;
+    if ( id != 0 )
+    {
+      BlobList::const_iterator i;
+      for (i=mBlobs.begin(); i!=mBlobs.end(); i++)
+      {
+        Blob *b = (*i);
+        if ( b->getId() == id && b->mClient == client )
+        {
+            ret = b;
+            break;
+        }
+	  }
+    }
     return ret;
   }
 
 private:
+  unsigned int    mClient;
   unsigned int    mBlobId;
   BlobIOInterface *mCallback;
+  FastXml         *mFastXml;
+  Blob            *mLastBlob;
+  BlobList         mBlobs;
 };
 
+}; // end of BLOB_IO namespace
 
+using namespace BLOB_IO;
 
 BlobIO * createBlobIO(BlobIOInterface *iface)
 {

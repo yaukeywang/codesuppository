@@ -1460,6 +1460,8 @@ class SystemServices;
 
 MESHIMPORT::MeshImport * loadMeshImporters(const char *directory,SYSTEM_SERVICES::SystemServices *services); // loads the mesh import library (dll) and all available importers from the same directory.
 
+extern TELNET::Telnet *gTelnet;
+
 #pragma warning(pop)
 
 #endif

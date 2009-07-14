@@ -110,6 +110,8 @@ SccProvider="MSCCI:Perforce SCM"
     <Filter Name="snippets" Filter="">
       <File RelativePath="..\..\include\common\snippets\BlobIO.cpp"/>
       <File RelativePath="..\..\include\common\snippets\BlobIO.h"/>
+      <File RelativePath="..\..\include\common\snippets\FastXml.cpp"/>
+      <File RelativePath="..\..\include\common\snippets\FastXml.h"/>
       <File RelativePath="..\..\include\common\snippets\FloatMath.cpp"/>
       <File RelativePath="..\..\include\common\snippets\FloatMath.h"/>
       <File RelativePath="..\..\include\common\snippets\FloatMath.inl"/>

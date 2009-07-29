@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="MeshImportLeveller"
-	ProjectGUID="{439FE316-A384-B433-12BF-A4CA1BF47F37}"
+	Name="VsoFont"
+	ProjectGUID="{CF184D41-740F-B99A-85A4-1D95459D518F}"
 	>
 	<Platforms>
 		<Platform
@@ -17,7 +17,7 @@
 			Name="debug|Win32"
 			OutputDirectory="../../bin/win32"
 			IntermediateDirectory="build/Win32/$(SolutionName)/$(ProjectName)/debug"
-			ConfigurationType="2"
+			ConfigurationType="1"
 			CharacterSet="2"
 			>
 			<Tool
@@ -37,10 +37,10 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/WX /W4 /fp:fast /MDd /Zi "
+				AdditionalOptions="/wd4996 /fp:fast /W4 /WX /MDd /Zi "
 				Optimization="4"
-				AdditionalIncludeDirectories="&quot;../../ext/deja_insight&quot;;&quot;../../include&quot;;&quot;../../include/common/snippets&quot;;&quot;../../include/common/binding&quot;;&quot;../../include/common/MemoryServices&quot;;"
-				PreprocessorDefinitions="WIN32;_WINDOWS;UNICODE=1;_UNICODE=1;MESHIMPORTLEVELLER_EXPORTS;_DEBUG;"
+				AdditionalIncludeDirectories=""
+				PreprocessorDefinitions="WIN32;_WINDOWS;UNICODE=1;_CRT_SECURE_NO_DEPRECATE;OPEN_SOURCE=1;_DEBUG;"
 				ExceptionHandling="1"
 				WarningLevel="3"
 			/>
@@ -57,19 +57,19 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/NODEFAULTLIB:libcp.lib /DEBUG "
 				AdditionalDependencies=""
-				OutputFile="$(OutDir)/MeshImportLeveller.dll"
-				AdditionalLibraryDirectories="&quot;../../lib/win32&quot;;&quot;../../ext/deja_insight/lib/win32&quot;;"
-				ProgramDatabaseFile="$(OutDir)/MeshImportLeveller.dll.pdb"
+				OutputFile="$(OutDir)/VsoFontDEBUG.exe"
+				AdditionalLibraryDirectories=""
+				ProgramDatabaseFile="$(OutDir)/VsoFontDEBUG.exe.pdb"
 				GenerateMapFile="true"
-				MapFileName="$(OutDir)/MeshImportLeveller.dll.map"
+				MapFileName="$(OutDir)/VsoFontDEBUG.exe.map"
 				SubSystem="1"
-				ImportLibrary="../../lib/win32/$(TargetName).lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
 			/>
 			<Tool
 				Name="VCManifestTool"
+				EmbedManifest="true"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -94,7 +94,7 @@
 			Name="release|Win32"
 			OutputDirectory="../../bin/win32"
 			IntermediateDirectory="build/Win32/$(SolutionName)/$(ProjectName)/release"
-			ConfigurationType="2"
+			ConfigurationType="1"
 			CharacterSet="2"
 			>
 			<Tool
@@ -114,10 +114,10 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/Zi /WX /W4 /fp:fast /WX /MD /O2 "
+				AdditionalOptions="/wd4996 /fp:fast /WX /W4 /MD /Zi /O2 "
 				Optimization="4"
-				AdditionalIncludeDirectories="&quot;../../ext/deja_insight&quot;;&quot;../../include&quot;;&quot;../../include/common/snippets&quot;;&quot;../../include/common/binding&quot;;&quot;../../include/common/MemoryServices&quot;;"
-				PreprocessorDefinitions="WIN32;_WINDOWS;UNICODE=1;_UNICODE=1;MESHIMPORTLEVELLER_EXPORTS;NDEBUG;"
+				AdditionalIncludeDirectories=""
+				PreprocessorDefinitions="WIN32;_WINDOWS;UNICODE=1;_CRT_SECURE_NO_DEPRECATE;OPEN_SOURCE=1;NDEBUG;"
 				ExceptionHandling="1"
 				WarningLevel="3"
 			/>
@@ -134,19 +134,19 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/NODEFAULTLIB:libcp.lib /DEBUG "
 				AdditionalDependencies=""
-				OutputFile="$(OutDir)/MeshImportLeveller.dll"
-				AdditionalLibraryDirectories="&quot;../../lib/win32&quot;;&quot;../../ext/deja_insight/lib/win32&quot;;"
-				ProgramDatabaseFile="$(OutDir)/MeshImportLeveller.dll.pdb"
+				OutputFile="$(OutDir)/VsoFont.exe"
+				AdditionalLibraryDirectories=""
+				ProgramDatabaseFile="$(OutDir)/VsoFont.exe.pdb"
 				GenerateMapFile="true"
-				MapFileName="$(OutDir)/MeshImportLeveller.dll.map"
+				MapFileName="$(OutDir)/VsoFont.exe.map"
 				SubSystem="1"
-				ImportLibrary="../../lib/win32/$(TargetName).lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
 			/>
 			<Tool
 				Name="VCManifestTool"
+				EmbedManifest="true"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -172,52 +172,24 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source Files"
+			Name="VsoFont"
 			>
 			<File
-				RelativePath="..\..\src\MeshImportLeveller\MeshImportLeveller.cpp"
+				RelativePath="..\..\app\VsoFont\defines.h"
 				>
 			</File>
-		</Filter>
-		<Filter
-			Name="Public Header Files"
-			>
 			<File
-				RelativePath="..\..\include\MeshImportLeveller\MeshImportLeveller.h"
+				RelativePath="..\..\app\VsoFont\main.cpp"
 				>
 			</File>
-		</Filter>
-		<Filter
-			Name="Common Include-Binding Files"
-			>
-			<Filter
-				Name="snippets"
+			<File
+				RelativePath="..\..\app\VsoFont\VsoFont.cpp"
 				>
-				<File
-					RelativePath="..\..\include\common\snippets\SystemServices.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\SystemServices.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="MemoryServices"
+			</File>
+			<File
+				RelativePath="..\..\app\VsoFont\vsofont.h"
 				>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\GlobalNewDelete.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\MemoryContainer.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\MemoryContainer.h"
-					>
-				</File>
-			</Filter>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

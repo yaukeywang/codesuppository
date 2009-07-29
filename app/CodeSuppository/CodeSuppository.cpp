@@ -48,6 +48,7 @@
 #include "TestTjunctions.h"
 #include "TestMeshConsolidation.h"
 #include "TestIslandGeneration.h"
+#include "TestVectorFont.h"
 #include "RenderDebug/RenderDebug.h"
 #include "SplitMeshApp.h"
 #include "common/snippets/JobSwarm.h"
@@ -115,6 +116,9 @@ public:
   {
     switch ( command )
     {
+      case CSC_TEST_VECTOR_FONT:
+        testVectorFont();
+        break;
       case CSC_SELECT_COLLISION:
         {
           int s = (int) data[0];

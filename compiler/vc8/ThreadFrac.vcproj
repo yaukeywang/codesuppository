@@ -4,9 +4,6 @@
 	Version="8.00"
 	Name="ThreadFrac"
 	ProjectGUID="{D433FEBE-B07E-DBBE-C2CC-C336DE06DBE8}"
-	SccProjectName="Perforce Project"
-	SccLocalPath="."
-	SccProvider="MSCCI:Perforce SCM"
 	>
 	<Platforms>
 		<Platform

@@ -308,6 +308,7 @@ SccProvider="MSCCI:Perforce SCM"
     <File RelativePath="..\..\app\CodeSuppository\TestStanHull.h"/>
     <File RelativePath="..\..\app\CodeSuppository\TestTinyXML.h"/>
     <File RelativePath="..\..\app\CodeSuppository\TestTjunctions.h"/>
+    <File RelativePath="..\..\app\CodeSuppository\TestVectorFont.h"/>
     <File RelativePath="..\..\app\CodeSuppository\TestVertexLookup.h"/>
     <File RelativePath="..\..\app\CodeSuppository\TestWildCard.h"/>
     <File RelativePath="..\..\app\CodeSuppository\TestWinMsg.h"/>
@@ -365,6 +366,7 @@ SccProvider="MSCCI:Perforce SCM"
     <File RelativePath="..\..\app\CodeSuppository\TestStanHull.cpp"/>
     <File RelativePath="..\..\app\CodeSuppository\TestTinyXML.cpp"/>
     <File RelativePath="..\..\app\CodeSuppository\TestTjunctions.cpp"/>
+    <File RelativePath="..\..\app\CodeSuppository\TestVectorFont.cpp"/>
     <File RelativePath="..\..\app\CodeSuppository\TestVertexLookup.cpp"/>
     <File RelativePath="..\..\app\CodeSuppository\TestWildCard.cpp"/>
     <File RelativePath="..\..\app\CodeSuppository\TestWinMsg.cpp"/>
@@ -477,6 +479,10 @@ SccProvider="MSCCI:Perforce SCM"
       <File RelativePath="..\..\include\common\MemoryServices\simplevector.h"/>
       <File RelativePath="..\..\include\common\MemoryServices\simuhash_linux.h"/>
       <File RelativePath="..\..\include\common\MemoryServices\streamer.h"/>
+    </Filter>
+    <Filter Name="VectorFont" Filter="">
+      <File RelativePath="..\..\include\common\VectorFont\VectorFont.cpp"/>
+      <File RelativePath="..\..\include\common\VectorFont\VectorFont.h"/>
     </Filter>
     <Filter Name="snippets" Filter="">
       <File RelativePath="..\..\include\common\snippets\asc2bin.cpp"/>

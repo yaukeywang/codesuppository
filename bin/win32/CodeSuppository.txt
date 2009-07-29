@@ -1,10 +1,1 @@
 Menu System Initialized
-Processing mesh 'E:\UE3-APEX\Binaries\Cape_Pacing.ezm'
-Successfully imported mesh 'E:\UE3-APEX\Binaries\Cape_Pacing.ezm'
-Camera speed 10.00 meters per second
-Camera speed 20.00 meters per second
-Camera speed 30.00 meters per second
-Camera speed 40.00 meters per second
-Camera speed 50.00 meters per second
-Camera speed 60.00 meters per second
-Camera speed 70.00 meters per second

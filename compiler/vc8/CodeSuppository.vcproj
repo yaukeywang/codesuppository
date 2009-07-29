@@ -4,9 +4,6 @@
 	Version="8.00"
 	Name="CodeSuppository"
 	ProjectGUID="{3C667553-6365-118B-1B30-CD3053732760}"
-	SccProjectName="Perforce Project"
-	SccLocalPath="."
-	SccProvider="MSCCI:Perforce SCM"
 	>
 	<Platforms>
 		<Platform
@@ -72,7 +69,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
-				EmbedManifest="false"
+				EmbedManifest="true"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -149,7 +146,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
-				EmbedManifest="false"
+				EmbedManifest="true"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -1030,6 +1027,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\app\CodeSuppository\TestVectorFont.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\app\CodeSuppository\TestVertexLookup.h"
 				>
 			</File>
@@ -1239,6 +1240,10 @@
 			</File>
 			<File
 				RelativePath="..\..\app\CodeSuppository\TestTjunctions.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\TestVectorFont.cpp"
 				>
 			</File>
 			<File
@@ -1654,6 +1659,18 @@
 				</File>
 				<File
 					RelativePath="..\..\include\common\MemoryServices\streamer.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="VectorFont"
+				>
+				<File
+					RelativePath="..\..\include\common\VectorFont\VectorFont.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\VectorFont\VectorFont.h"
 					>
 				</File>
 			</Filter>

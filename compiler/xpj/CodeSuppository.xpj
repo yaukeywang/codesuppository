@@ -135,6 +135,8 @@
         MemoryServices/*.cpp
         MemoryServices/*.c
         MemoryServices/*.h
+        VectorFont/*.h
+        VectorFont/*.cpp
          snippets/Asc2Bin.cpp
          snippets/Asc2Bin.h
          snippets/cparser.cpp

@@ -70,6 +70,7 @@
 #endif
 
 #define MEDIA_PATH "..\\..\\media\\CodeSuppository"
+//#define MEDIA_PATH ".\\"
 
 // Direct3D includes
 #include <d3d9.h>

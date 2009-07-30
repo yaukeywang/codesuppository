@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="VsoFont"
 	ProjectGUID="{CF184D41-740F-B99A-85A4-1D95459D518F}"
+	RootNamespace="VsoFont"
 	>
 	<Platforms>
 		<Platform
@@ -175,19 +176,23 @@
 			Name="VsoFont"
 			>
 			<File
-				RelativePath="..\..\app\VsoFont\defines.h"
+				RelativePath="..\..\app\VsoFont\FloatMath.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\VsoFont\FloatMath.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\VsoFont\FloatMath.inl"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\VsoFont\hershey.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\app\VsoFont\main.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\app\VsoFont\VsoFont.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\app\VsoFont\vsofont.h"
 				>
 			</File>
 		</Filter>

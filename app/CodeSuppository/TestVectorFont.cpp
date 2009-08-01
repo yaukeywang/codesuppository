@@ -2,23 +2,23 @@
 #include "common/VectorFont/VectorFont.h"
 #include "RenderDebug/RenderDebug.h"
 
+class TestVectorFont : public VectorFontInterface
+{
+public:
+	virtual void drawLine(float x1,float y1,float x2,float y2)
+	{
+		HeVec3 v1(x1,y1,0);
+		HeVec3 v2(x2,y2,0);
+		gRenderDebug->DebugLine(&v1.x,&v2.x,0xFFFF00,60.0f);
+	}
+};
+
 void testVectorFont(void)
 {
-	VectorFont *vf = createVectorFont();
-	gRenderDebug->setRenderScale(20.0f);
-	vf->vprintf("This is a test of the emergency broadcasting system 0123456789");
-	gRenderDebug->setRenderScale(1.0f);
+	TestVectorFont tvf;
+	VectorFont *vf = createVectorFont(&tvf);
+	vf->vprintf(0,1.0f,true,"This is a test of the emergency broadcasting system.");
 
-#if 0
-	HeVec3 p1(0,0.018f,0);
-	HeVec3 p2(0,-0.0135f,0);
-
-	HeVec3 p3(-0.0105f,0.0180f,0);
-	HeVec3 p4(0.0105f,0.0180f,0);
-
-	gRenderDebug->DebugRay(&p1.x,&p2.x,0.001f,0xFFFFFF,0xFF0000,60.0f);
-	gRenderDebug->DebugRay(&p3.x,&p4.x,0.001f,0xFFFF00,0xFF0000,60.0f);
-#endif
 	releaseVectorFont(vf);
 }
 

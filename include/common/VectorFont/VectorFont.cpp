@@ -1,6 +1,4 @@
 #include "VectorFont.h"
-#include "common/snippets/UserMemAlloc.h"
-#include "RenderDebug/RenderDebug.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -10,48 +8,115 @@
 #include <assert.h>
 #include <ctype.h>
 
+/*!
+**
+** Copyright (c) 2009 by John W. Ratcliff mailto:jratcliffscarab@gmail.com
+**
+** If you wish to contact me you can use the following methods:
+**
+** email: jratcliffscarab@gmail.com
+** Personal website: http://jratcliffscarab.blogspot.com
+** Coding Website:   http://codesuppository.blogspot.com
+** FundRaising Blog: http://amillionpixels.blogspot.com
+** Fundraising site: http://www.amillionpixels.us
+** New Temple Site:  http://newtemple.blogspot.com
+**
+**
+** The MIT license:
+**
+** Permission is hereby granted, freeof charge, to any person obtaining a copy
+** of this software and associated documentation files (the "Software"), to deal
+** in the Software without restriction, including without limitation the rights
+** to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+** copies of the Software, and to permit persons to whom the Software is furnished
+** to do so, subject to the following conditions:
+**
+** The above copyright notice and this permission notice shall be included in all
+** copies or substantial portions of the Software.
+
+** THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+** IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+** FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+** AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+** WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+** CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+*/
+
+// This code snippet allows you to render a high quality vector line font.
+// The font it uses is called the 'Hershey Font' (search for it on Google).
+// This font is completely public domain and you are free to use it in
+// your own applications.
+//
+//
+// Here is how you use this code snippet.
+//
+// Step #1 : Create an instance of the VectorFont pure virtual interface.
+// Step #2 : call 'vprintf' with the transform, scale, center flag, and text you wish to print.
+// Step #3 : Dispatch individual line segments to your own rendering framework.
+// Step #4 : Release the VectorFont class.
+//
+// Here is an example usage in C++
+//
+// class MyLineDraw : public VectorFontInterfac
+// {
+//     public:
+//      virtual void drawLine(float x1,float y1,float x2,float y2)
+//      {
+//        // Right here, in this callback, draw the line using your own line draw interface, OpenGL, D3D, or whatever works for you.
+//      }
+//    };
+//
+//
+//    MyLineDraw mld; // create an instance of our callback class to draw individual line segments.
+//
+//    VectorFont *vf = createVectorFont(&mld);
+//    vf->vprintf(NULL,1,true,"This is a test of the emergency broadcasting system.");
+//    releaseVectorFont(vf);
+
 namespace VECTOR_FONT
 {
 
-	//   font info:
-	//
-	//Peter Holzmann, Octopus Enterprises
-	//USPS: 19611 La Mar Court, Cupertino, CA 95014
-	//UUCP: {hplabs!hpdsd,pyramid}!octopus!pete
-	//Phone: 408/996-7746
-	//
-	//This distribution is made possible through the collective encouragement
-	//of the Usenet Font Consortium, a mailing list that sprang to life to get
-	//this accomplished and that will now most likely disappear into the mists
-	//of time... Thanks are especially due to Jim Hurt, who provided the packed
-	//font data for the distribution, along with a lot of other help.
-	//
-	//This file describes the Hershey Fonts in general, along with a description of
-	//the other files in this distribution and a simple re-distribution restriction.
-	//
-	//USE RESTRICTION:
-	//        This distribution of the Hershey Fonts may be used by anyone for
-	//        any purpose, commercial or otherwise, providing that:
-	//                1. The following acknowledgements must be distributed with
-	//                        the font data:
-	//                        - The Hershey Fonts were originally created by Dr.
-	//                                A. V. Hershey while working at the U. S.
-	//                                National Bureau of Standards.
-	//                        - The format of the Font data in this distribution
-	//                                was originally created by
-	//                                        James Hurt
-	//                                        Cognition, Inc.
-	//                                        900 Technology Park Drive
-	//                                        Billerica, MA 01821
-	//                                        (mit-eddie!ci-dandelion!hurt)
-	//                2. The font data in this distribution may be converted into
-	//                        any other format *EXCEPT* the format distributed by
-	//                        the U.S. NTIS (which organization holds the rights
-	//                        to the distribution and use of the font data in that
-	//                        particular format). Not that anybody would really
-	//                        *want* to use their format... each point is described
-	//                        in eight bytes as "xxx yyy:", where xxx and yyy are
-	//                        the coordinate values as ASCII numbers.
+
+//   font info:
+//
+//Peter Holzmann, Octopus Enterprises
+//USPS: 19611 La Mar Court, Cupertino, CA 95014
+//UUCP: {hplabs!hpdsd,pyramid}!octopus!pete
+//Phone: 408/996-7746
+//
+//This distribution is made possible through the collective encouragement
+//of the Usenet Font Consortium, a mailing list that sprang to life to get
+//this accomplished and that will now most likely disappear into the mists
+//of time... Thanks are especially due to Jim Hurt, who provided the packed
+//font data for the distribution, along with a lot of other help.
+//
+//This file describes the Hershey Fonts in general, along with a description of
+//the other files in this distribution and a simple re-distribution restriction.
+//
+//USE RESTRICTION:
+//        This distribution of the Hershey Fonts may be used by anyone for
+//        any purpose, commercial or otherwise, providing that:
+//                1. The following acknowledgements must be distributed with
+//                        the font data:
+//                        - The Hershey Fonts were originally created by Dr.
+//                                A. V. Hershey while working at the U. S.
+//                                National Bureau of Standards.
+//                        - The format of the Font data in this distribution
+//                                was originally created by
+//                                        James Hurt
+//                                        Cognition, Inc.
+//                                        900 Technology Park Drive
+//                                        Billerica, MA 01821
+//                                        (mit-eddie!ci-dandelion!hurt)
+//                2. The font data in this distribution may be converted into
+//                        any other format *EXCEPT* the format distributed by
+//                        the U.S. NTIS (which organization holds the rights
+//                        to the distribution and use of the font data in that
+//                        particular format). Not that anybody would really
+//                        *want* to use their format... each point is described
+//                        in eight bytes as "xxx yyy:", where xxx and yyy are
+//                        the coordinate values as ASCII numbers.
 
 
 #define FONT_VERSION 1
@@ -258,6 +323,25 @@ unsigned char g_font[6350] = {
   0x3F,0x01,0x3F,0x01,0x40,0x01,0x40,0x01,0x3B,0x01,0x3B,0x01,0xBB,0x00
 };
 
+void  fm_transform(const float matrix[16],const float v[3],float t[3]) // rotate and translate this point
+{
+  if ( matrix )
+  {
+    float tx = (matrix[0*4+0] * v[0]) +  (matrix[1*4+0] * v[1]) + (matrix[2*4+0] * v[2]) + matrix[3*4+0];
+    float ty = (matrix[0*4+1] * v[0]) +  (matrix[1*4+1] * v[1]) + (matrix[2*4+1] * v[2]) + matrix[3*4+1];
+    float tz = (matrix[0*4+2] * v[0]) +  (matrix[1*4+2] * v[1]) + (matrix[2*4+2] * v[2]) + matrix[3*4+2];
+    t[0] = tx;
+    t[1] = ty;
+    t[2] = tz;
+  }
+  else
+  {
+    t[0] = v[0];
+    t[1] = v[1];
+    t[2] = v[2];
+  }
+}
+
 static inline const unsigned char * getUShort(const unsigned char *data,unsigned short &v)
 {
     const unsigned short *src = (const unsigned short *)data;
@@ -284,14 +368,14 @@ public:
     mX1 = mY1 = mX2 = mY2 = 0;
   }
 
-  const unsigned char * init(const unsigned char *data,unsigned short *&dest,const float *vertices)
+  const unsigned char * init(const unsigned char *data,const float *vertices)
   {
-    mIndices = dest;
     data = getUShort(data,mIndexCount);
+    mIndices = (const unsigned short *)data;
+    data+=(mIndexCount*sizeof(unsigned short));
     for (unsigned int i=0; i<mIndexCount; i++)
     {
-        data = getUShort(data,dest[0]);
-        unsigned int index = dest[0];
+        unsigned int index = mIndices[i];
         const float *vertex = &vertices[index*2];
 		assert( _finite(vertex[0]));
 		assert( _finite(vertex[1]));
@@ -309,16 +393,17 @@ public:
             if ( vertex[1] > mY2 ) mY2 = vertex[1];
 
         }
-        dest++;
     }
+
 	assert( _finite(mX1));
 	assert( _finite(mX2));
 	assert( _finite(mY1));
 	assert( _finite(mY2));
+
     return data;
   }
 
-  void vputc(const float *vertices,float &x,float &y)
+  void vputc(const float *vertices,VectorFontInterface *debug,const float *pose,float textScale,float &x,float &y)
   {
     if ( mIndices )
     {
@@ -333,18 +418,14 @@ public:
             const float *v1 = &vertices[i1*2];
             const float *v2 = &vertices[i2*2];
 
-			float p1[3];
-			float p2[3];
+			float p1[3] = { (v1[0]+x)*textScale,(v1[1]+y)*textScale,0 };
+			float p2[3] = { (v2[0]+x)*textScale,(v2[1]+y)*textScale,0 };
 
-            p1[0] = v1[0]+x;
-            p1[1] = v1[1]+y;
-            p1[2] = 0;
+            fm_transform(pose,p1,p1);
+            fm_transform(pose,p2,p2);
 
-            p2[0] = v2[0]+x;
-            p2[1] = v2[1]+y;
-            p2[2] = 0;
+            debug->drawLine(p1[0],p1[1], p2[0], p2[1] );
 
-            gRenderDebug->DebugLine(p1,p2,0xFFFFFF,60.0f);
 
         }
 		x+=spacing;
@@ -355,25 +436,35 @@ public:
     }
   }
 
+  float getWidth(void) const
+  {
+    float ret = 0.1f;
+    if ( mIndexCount > 0 )
+    {
+        ret = (mX2-mX1)+0.05f;
+    }
+    return ret;
+  }
+
+
   float          mX1;
   float          mX2;
   float          mY1;
   float          mY2;
   unsigned short mIndexCount;
-  unsigned short *mIndices;
+  const unsigned short *mIndices;
 };
 
 class MyVectorFont : public VectorFont
 {
 public:
-  MyVectorFont(void)
+  MyVectorFont(VectorFontInterface *iface)
   {
+    mInterface = iface;
     mVersion = 0;
     mVcount = 0;
     mCount = 0;
     mVertices = 0;
-    mIndices = 0;
-    mXloc = mYloc = 0;
     initFont(g_font);
   }
 
@@ -384,19 +475,10 @@ public:
 
   void release(void)
   {
-    if ( mVertices )
-    {
-        MEMALLOC_FREE(mVertices);
-    }
-    if ( mIndices )
-    {
-        MEMALLOC_FREE(mIndices);
-    }
     mVersion = 0;
     mVcount = 0;
     mCount = 0;
     mVertices = 0;
-    mIndices = 0;
   }
 
   void initFont(const unsigned char *font)
@@ -412,68 +494,68 @@ public:
             font = getUint(font,mCount);
             font = getUint(font,mIcount);
             unsigned int vsize = sizeof(float)*mVcount*2;
-            mVertices = (float *)MEMALLOC_MALLOC( vsize );
-            memcpy(mVertices,font,vsize);
-			for (unsigned int i=0; i<(mVcount*2); i++)
-			{
-				assert(_finite( mVertices[i] ));
-			}
+            mVertices = (float *)font;
 			font+=vsize;
-            mIndices = (unsigned short *)MEMALLOC_MALLOC(sizeof(unsigned short)*mIcount);
-            unsigned short *dest = mIndices;
             for (unsigned int i=0; i<mCount; i++)
             {
                 unsigned char c = *font++;
-                font = mCharacters[c].init(font,dest,mVertices);
+                font = mCharacters[c].init(font,mVertices);
             }
         }
     }
   }
 
-  virtual void vprintf(const char *fmt,...)
+  virtual void vprintf(const float *transform,float textScale,bool centered,const char *fmt,...)
   {
-	char wbuff[8192];
-    wbuff[8191] = 0;
-	_vsnprintf(wbuff,8191, fmt, (char *)(&fmt+1));
-    const char *scan = fmt;
+	char buffer[8192];
+    buffer[8191] = 0;
+	_vsnprintf(buffer,8191, fmt, (char *)(&fmt+1));
+    const char *scan = buffer;
+	float x = 0;
+	float y = 0;
+    if ( centered )
+    {
+        float wid=0;
+        while ( *scan )
+        {
+			char c = *scan++;
+            wid+=mCharacters[c].getWidth();
+        }
+        x = -wid*0.5f;
+        scan = buffer;
+    }
     while ( *scan )
     {
-        vputc(*scan);
-        scan++;
+        char c = *scan++;
+        mCharacters[c].vputc(mVertices,mInterface,transform,textScale,x,y);
     }
   }
 
-  virtual void vputc(char c)
-  {
-    mCharacters[c].vputc(mVertices,mXloc,mYloc);
-  }
-
 private:
-  float           mXloc;
-  float           mYloc;
   unsigned int    mVersion;
   unsigned int    mVcount;
   unsigned int    mCount;
   float          *mVertices;
   unsigned int    mIcount;
-  unsigned short *mIndices;
   FontChar        mCharacters[256];
+  VectorFontInterface *mInterface;
 };
+
 
 }; // end of namespace
 
 using namespace VECTOR_FONT;
 
 
-VectorFont * createVectorFont(void)
+VectorFont * createVectorFont(VectorFontInterface *iface)
 {
-    MyVectorFont *mvf = MEMALLOC_NEW(MyVectorFont);
+    MyVectorFont *mvf = new MyVectorFont(iface);
     return static_cast< VectorFont *>(mvf);
 }
 
 void         releaseVectorFont(VectorFont *vf)
 {
     MyVectorFont *mvf = static_cast< MyVectorFont *>(vf);
-    MEMALLOC_DELETE(MyVectorFont,mvf);
+    delete mvf;
 }
 

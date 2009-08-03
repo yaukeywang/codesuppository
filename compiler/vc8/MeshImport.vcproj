@@ -175,6 +175,10 @@
 			Name="Source Files"
 			>
 			<File
+				RelativePath="..\..\src\MeshImport\CommLayer.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\MeshImport\MeshImport.cpp"
 				>
 			</File>
@@ -190,6 +194,10 @@
 		<Filter
 			Name="Header Files"
 			>
+			<File
+				RelativePath="..\..\src\MeshImport\CommLayer.h"
+				>
+			</File>
 			<File
 				RelativePath="..\..\src\MeshImport\MeshImportBuilder.h"
 				>
@@ -287,6 +295,14 @@
 				</File>
 				<File
 					RelativePath="..\..\include\common\snippets\UserMemAlloc.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\winmsg.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\winmsg.h"
 					>
 				</File>
 			</Filter>

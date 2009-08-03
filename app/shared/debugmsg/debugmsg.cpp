@@ -192,7 +192,7 @@ static DebugMessageTri sendTri;
 
 #include "RenderDebug/RenderDebug.h"
 
-class DebugSystem : public WinMsgReceive
+class DebugSystem 
 {
 public:
 
@@ -256,7 +256,6 @@ bool openDebug(void)
   if ( gDebugSystem == 0 )
   {
     gDebugSystem = MEMALLOC_NEW(DebugSystem);
-    gDebugSystem->initMsg("SkeletonD3D");
     ret = true;
   }
 
@@ -281,7 +280,6 @@ bool processDebug(void)
 
   if ( gDebugSystem )
   {
-    gDebugSystem->checkWinMsg();
     ret = true;
   }
   return ret;
@@ -297,7 +295,7 @@ void debugTri(const HeF32 *p1,const HeF32 *p2,const HeF32 *p3,HeU32 color,HeF32 
   bool send = sendTri.add(p1,p2,p3,color,duration,(SingleTriFlag) flag);
   if ( send )
   {
-    sendWinMsgBinary("SkeletonD3D", &sendTri, sizeof(DebugMessageTri) );
+//    sendWinMsgBinary("SkeletonD3D", &sendTri, sizeof(DebugMessageTri) );
     sendTri.mCount = 0;
   }
 }
@@ -307,7 +305,7 @@ void debugSolidTri(const HeF32 *p1,const HeF32 *p2,const HeF32 *p3,HeU32 color,H
   bool send = sendTri.add(p1,p2,p3,color,duration,STF_SOLID);
   if ( send )
   {
-    sendWinMsgBinary("SkeletonD3D", &sendTri, sizeof(DebugMessageTri) );
+//    sendWinMsgBinary("SkeletonD3D", &sendTri, sizeof(DebugMessageTri) );
     sendTri.mCount = 0;
   }
 }
@@ -317,7 +315,7 @@ void debugSolidTri(const HeF32 *p1,const HeF32 *p2,const HeF32 *p3,const HeF32 *
   bool send = sendTri.add(p1,p2,p3,n1,n2,n3,color,duration,(SingleTriFlag)(STF_SOLID | STF_NORMALS));
   if ( send )
   {
-    sendWinMsgBinary("SkeletonD3D", &sendTri, sizeof(DebugMessageTri) );
+//    sendWinMsgBinary("SkeletonD3D", &sendTri, sizeof(DebugMessageTri) );
     sendTri.mCount = 0;
   }
 }
@@ -330,7 +328,7 @@ void debugLine(const HeF32 *p1,const HeF32 *p2,HeU32 color,HeF32 duration,bool u
   bool send = sendTri.add(p1,p2,0,color,duration,(SingleTriFlag) flag);
   if ( send )
   {
-    sendWinMsgBinary("SkeletonD3D", &sendTri, sizeof(DebugMessageTri) );
+//    sendWinMsgBinary("SkeletonD3D", &sendTri, sizeof(DebugMessageTri) );
     sendTri.mCount = 0;
   }
 }
@@ -339,7 +337,7 @@ void flushDebug(void)
 {
   if ( sendTri.mCount )
   {
-    sendWinMsgBinary("SkeletonD3D", &sendTri, sizeof(DebugMessageTri) );
+//    sendWinMsgBinary("SkeletonD3D", &sendTri, sizeof(DebugMessageTri) );
     sendTri.mCount = 0;
   }
 }
@@ -353,7 +351,7 @@ void debugSphere(const HeF32 *pos,HeF32 radius,HeU32 color,HeF32 duration,bool u
   bool send = sendTri.add(pos,radius,color,duration,(SingleTriFlag) flag);
   if ( send )
   {
-    sendWinMsgBinary("SkeletonD3D", &sendTri, sizeof(DebugMessageTri) );
+//    sendWinMsgBinary("SkeletonD3D", &sendTri, sizeof(DebugMessageTri) );
     sendTri.mCount = 0;
   }
 }
@@ -367,7 +365,7 @@ void debugPoint(const HeF32 *pos,HeF32 radius,HeU32 color,HeF32 duration,bool us
   bool send = sendTri.add(pos,radius,color,duration,(SingleTriFlag) flag);
   if ( send )
   {
-    sendWinMsgBinary("SkeletonD3D", &sendTri, sizeof(DebugMessageTri) );
+//    sendWinMsgBinary("SkeletonD3D", &sendTri, sizeof(DebugMessageTri) );
     sendTri.mCount = 0;
   }
 }
@@ -375,6 +373,6 @@ void debugPoint(const HeF32 *pos,HeF32 radius,HeU32 color,HeF32 duration,bool us
 void resetDebug(void)
 {
   ResetMessage msg;
-  sendWinMsgBinary("SkeletonD3D", &msg, sizeof(ResetMessage) );
+//  sendWinMsgBinary("SkeletonD3D", &msg, sizeof(ResetMessage) );
 }
 

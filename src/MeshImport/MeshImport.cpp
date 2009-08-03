@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <vector>
 
-#include "common/snippets/telnet.h"
+#include "CommLayer.h"
 #include "./MeshImport/MeshImport.h"
 #include "VtxWeld.h"
 #include "MeshImportBuilder.h"
@@ -1724,14 +1724,19 @@ public:
     }
   }
 
-  virtual TELNET::Telnet * createTelnet(const char *address,unsigned int port)
+  virtual CommLayer *      createCommLayerTelent(const char *address,unsigned int port)
   {
-    return TELNET::createTelnet(address,port);
+    return CreateCommLayerTelent(address,port);
   }
 
-  virtual void     releaseTelnet(TELNET::Telnet *t)
+  virtual CommLayer *      createCommLayerWindowsMessage(const char *appName,const char *destApp)
   {
-    TELNET::releaseTelnet(t);
+    return CreateCommLayerWindowsMessage(appName,destApp);
+  }
+
+  virtual void             releaseCommLayer(CommLayer *t)
+  {
+    ReleaseCommLayer(t);
   }
 
 private:

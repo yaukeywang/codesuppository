@@ -84,16 +84,17 @@ public:
     mIslandGeneration = false;
     if ( gMeshImport )
     {
-        mTelnet = gMeshImport->createTelnet();
+        //mCommLayer = gMeshImport->createCommLayerTelent();
+		mCommLayer = gMeshImport->createCommLayerWindowsMessage("CodeSuppository","ClothingTool");
     }
   }
 
   ~MyCodeSuppository(void)
   {
     resetMeshSystem();
-    if ( mTelnet )
+    if ( mCommLayer )
     {
-        gMeshImport->releaseTelnet(mTelnet);
+        gMeshImport->releaseCommLayer(mCommLayer);
     }
   }
 
@@ -187,7 +188,7 @@ public:
         {
             const char *test = "This is a test of the emergency blob cast system.";
             unsigned int len = strlen(test);
-            mTelnet->sendBlob(0,"testBlob", test, len+1 );
+            mCommLayer->sendBlob(0,"testBlob", test, len+1 );
         }
         break;
       case CSC_PLAY_ANIMATION:
@@ -335,23 +336,23 @@ public:
   void render(float dtime)
   {
 
-    if ( mTelnet )
+    if ( mCommLayer )
     {
         unsigned int client;
-        const char *msg = mTelnet->receiveMessage(client);
+        const char *msg = mCommLayer->receiveMessage(client);
         if ( msg )
         {
             if ( strcmp(msg,"NewConnection") == 0 )
             {
-                mTelnet->sendMessage(client,"Welecome to the Code Suppository.\r\n");
+                mCommLayer->sendMessage(client,"Welecome to the Code Suppository.\r\n");
 				char *temp = "This is a test of sending a blob of data";
-				mTelnet->sendBlob(client,"BlobTest",temp,strlen(temp)+1);
+				mCommLayer->sendBlob(client,"BlobTest",temp,strlen(temp)+1);
             }
             SEND_TEXT_MESSAGE(0,"%s\r\n", msg );
         }
 		const void *data;
 		unsigned int dlen;
-		const char *blobType = mTelnet->receiveBlob(client,data,dlen);
+		const char *blobType = mCommLayer->receiveBlob(client,data,dlen);
 		if ( blobType )
 		{
 			printf("Debug me");
@@ -470,7 +471,7 @@ private:
   bool mInitialIslandGeneration;
   bool mIslandGeneration;
   TestAutoGeometry *mTestAutoGeometry;
-  TELNET::Telnet   *mTelnet;
+  MESHIMPORT::CommLayer *mCommLayer;
 };
 
 CodeSuppository * createCodeSuppository(void)

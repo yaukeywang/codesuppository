@@ -26,33 +26,6 @@
 #pragma warning(push)
 #pragma warning(disable:4996)
 
-#ifndef  TELNET_H
-
-#define TELNET_H
-
-namespace TELNET
-{
-
-class Telnet
-{
-public:
-  virtual bool          isServer(void) = 0; // returns true if we are a server or a client.  First one created on a machine is a server, additional copies are clients.
-  virtual bool          haveConnection(void) = 0; // returns true if we (as a client) successfully connected to the server.
-  virtual bool          sendMessage(unsigned int client,const char *fmt,...) = 0; // send a message to the server, all clients (client=0) or just a specific client.
-  virtual const char *  receiveMessage(unsigned int &client) = 0; // receive an incoming message (client=0) means it came from the server, otherwise it designates a specific client.
-  virtual const char ** getArgs(const char *input,unsigned int &argc) = 0; // parse string into a series of arguments.
-
-  virtual bool          sendBlob(unsigned int client,const char *blobType,const void *data,unsigned int dlen) = 0;
-  virtual const char *  receiveBlob(unsigned int &client,const void *&data,unsigned int &dlen) = 0;
-
-protected:
-  virtual ~Telnet(void) { };
-};
-
-}; // end of namespace
-
-#endif
-
 
 // MeshImporters to write:  Wavefront OBJ
 //                          EZ-Mesh
@@ -69,6 +42,22 @@ class MemoryServices;
 
 namespace MESHIMPORT
 {
+
+class CommLayer
+{
+public:
+  virtual bool          sendMessage(unsigned int client,const char *fmt,...) = 0; // send a message to the server, all clients (client=0) or just a specific client.
+  virtual const char *  receiveMessage(unsigned int &client) = 0; // receive an incoming message (client=0) means it came from the server, otherwise it designates a specific client.
+  virtual const char ** getArgs(const char *input,unsigned int &argc) = 0; // parse string into a series of arguments.
+
+  virtual bool          sendBlob(unsigned int client,const char *blobType,const void *data,unsigned int dlen) = 0;
+  virtual const char *  receiveBlob(unsigned int &client,const void *&data,unsigned int &dlen) = 0;
+
+protected:
+  virtual ~CommLayer(void) { };
+};
+
+
 
 inline float fmi_computePlane(const float *A,const float *B,const float *C,float *n) // returns D
 {
@@ -1440,8 +1429,9 @@ public:
 
   virtual void scale(MeshSystemContainer *msc,float scale) = 0;
 
-  virtual TELNET::Telnet * createTelnet(const char *address="LOCALHOST",unsigned int port=23) =  0;
-  virtual void             releaseTelnet(TELNET::Telnet *t) = 0;
+  virtual CommLayer *      createCommLayerTelent(const char *address="LOCALHOST",unsigned int port=23) =  0;
+  virtual CommLayer *      createCommLayerWindowsMessage(const char *appName="MeshImport",const char *destApp="DestTool") = 0;
+  virtual void             releaseCommLayer(CommLayer *t) = 0;
 
 
 };
@@ -1460,7 +1450,7 @@ class SystemServices;
 
 MESHIMPORT::MeshImport * loadMeshImporters(const char *directory,SYSTEM_SERVICES::SystemServices *services); // loads the mesh import library (dll) and all available importers from the same directory.
 
-extern TELNET::Telnet *gTelnet;
+extern MESHIMPORT::CommLayer *gCommLayer;
 
 #pragma warning(pop)
 

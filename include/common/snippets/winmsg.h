@@ -2,32 +2,14 @@
 
 #define WIN_MSG_H
 
+
 /*!
 **
-** Copyright (c) 2007 by John W. Ratcliff mailto:jratcliff@infiniplex.net
-**
-** Portions of this source has been released with the PhysXViewer application, as well as
-** Rocket, CreateDynamics, ODF, and as a number of sample code snippets.
-**
-** If you find this code useful or you are feeling particularily generous I would
-** ask that you please go to http://www.amillionpixels.us and make a donation
-** to Troy DeMolay.
-**
-** DeMolay is a youth group for young men between the ages of 12 and 21.
-** It teaches strong moral principles, as well as leadership skills and
-** public speaking.  The donations page uses the 'pay for pixels' paradigm
-** where, in this case, a pixel is only a single penny.  Donations can be
-** made for as small as $4 or as high as a $100 block.  Each person who donates
-** will get a link to their own site as well as acknowledgement on the
-** donations blog located here http://www.amillionpixels.blogspot.com/
+** Copyright (c) 2009 by John W. Ratcliff mailto:jratcliffscarab@gmail.com
 **
 ** If you wish to contact me you can use the following methods:
 **
-** Skype Phone: 636-486-4040 (let it ring a long time while it goes through switches)
-** Skype ID: jratcliff63367
-** Yahoo: jratcliff63367
-** AOL: jratcliff1961
-** email: jratcliff@infiniplex.net
+** email: jratcliffscarab@gmail.com
 ** Personal website: http://jratcliffscarab.blogspot.com
 ** Coding Website:   http://codesuppository.blogspot.com
 ** FundRaising Blog: http://amillionpixels.blogspot.com
@@ -37,7 +19,7 @@
 **
 ** The MIT license:
 **
-** Permission is hereby granted, MEMALLOC_FREE of charge, to any person obtaining a copy
+** Permission is hereby granted, freeof charge, to any person obtaining a copy
 ** of this software and associated documentation files (the "Software"), to deal
 ** in the Software without restriction, including without limitation the rights
 ** to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
@@ -56,31 +38,21 @@
 
 */
 
-#include "common/snippets/UserMemAlloc.h"
-
 // handles inter-application communication by sending windows messages to hidden windows.
 
-class WinMsgReceive
+class WinMsg
 {
 public:
-  WinMsgReceive(void);
-  ~WinMsgReceive(void);
-
-	bool initMsg(const char *app); // initialize
-
-	virtual bool receiveMessage(const char *msg,HeU32 len) = 0;
-
-  void checkWinMsg(void);
-
-
-private:
-  void 	*mHwnd; // the windows handle
+	virtual const char * receiveWindowsMessage(void) = 0;
+	virtual const char * receiveWindowsMessageBlob(const void *&msg,unsigned int &len) = 0;
+    virtual const char ** getArgs(const char *input,unsigned int &argc) = 0; // parse string into a series of arguments.
+    virtual bool sendWinMsg(const char *app,const char *fmt,...) = 0;
+    virtual bool sendWinMsgBinary(const char *app,const char *blobType,const void *mem,unsigned int len) = 0;
+    virtual bool hasWindow(const char *app) = 0; // returns true if this application window exists on the system.
 };
 
-
-bool sendWinMsg(const char *app,const char *fmt,...);
-bool sendWinMsgBinary(const char *app,const void *mem,HeU32 len);
-bool hasWindow(const char *app); // returns true if this application window exists on the system.
+WinMsg * createWinMsg(const char *windowName); // can be null if this is being used only for send messages.
+void     releaseWinMsg(WinMsg *msg);
 
 
 #endif

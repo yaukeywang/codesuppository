@@ -61,7 +61,7 @@
 #include <vector>
 
 #include "UserMemAlloc.h"
-#include "MeshImport/MeshImport.h"
+#include "MeshImport.h"
 
 namespace MESHIMPORT
 {

@@ -43,15 +43,14 @@
          snippets/SystemServices.cpp
          snippets/SystemServices.h
          snippets/UseMemAlloc.h
-         Foundation/*.h
+         snippets/Nx*.h
 				</Files>
 				<OutDir>../../bin/win32</OutDir>
 				<ImpDir>../../lib/win32</ImpDir>
 				<SearchPaths type="header">
-          ../../ext/deja_insight
           ../../include
           ../../include/common/snippets
-          ../../include/common/Foundation
+                 ../../include/MeshImport
 				</SearchPaths>
 				<SearchPaths type="library">
        ../../lib/win32

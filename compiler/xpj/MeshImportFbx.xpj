@@ -80,6 +80,7 @@
 				<SearchPaths type="header">
                  ../../include
                  ../../include/common/snippets
+                 ../../include/MeshImport
                  ../../ext/fbx
 				</SearchPaths>
 				<SearchPaths type="library">

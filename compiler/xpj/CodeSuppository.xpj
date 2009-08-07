@@ -40,6 +40,7 @@
           ../../include
           ../../include/common/snippets
           ../../include/common/compression
+          ../../include/MeshImport
           ../../app
 				</SearchPaths>
 				<SearchPaths type="library">
@@ -61,6 +62,7 @@
           ../../include
           ../../app
           ../../include/common/snippets
+          ../../include/MeshImport
 				</SearchPaths>
 				<SearchPaths type="library">
 					../../ext/DirectX_October2006

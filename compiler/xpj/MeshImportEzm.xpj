@@ -48,16 +48,13 @@
           snippets/FastXml.h
           snippets/FastXml.cpp
           snippets/UserMemAlloc.h
-          Foundation/*.h
-          FileInterface/*.cpp
-          FileInterface/*.h
 				</Files>
 				<OutDir>../../bin/win32</OutDir>
 				<ImpDir>../../lib/win32</ImpDir>
 				<SearchPaths type="header">
                 ../../include
-                ../../include/common/Foundation
                 ../../include/common/snippets
+          ../../include/MeshImport
 				</SearchPaths>
 				<SearchPaths type="library">
          ../../lib/win32

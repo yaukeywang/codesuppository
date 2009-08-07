@@ -9,6 +9,7 @@
 		<Import root=".\" file="MeshImportEzm.xpj"/>
 		<Import root=".\" file="MeshImportObj.xpj"/>
 		<Import root=".\" file="MeshImportOgre.xpj"/>
+		<Import root=".\" file="MeshImportPSK.xpj"/>
 
 		<Target name="CodeSuppository">
 			<Export platform="win32" tool="vc7">../vc7</Export>

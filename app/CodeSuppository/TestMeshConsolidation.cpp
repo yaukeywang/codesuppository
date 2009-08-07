@@ -4,7 +4,7 @@
 #include <assert.h>
 
 #include "TestMeshConsolidation.h"
-#include "MeshImport/MeshImport.h"
+#include "MeshImport.h"
 #include "SendTextMessage.h"
 #include "ConsolidateMesh.h"
 #include "MeshConsolidate.h"

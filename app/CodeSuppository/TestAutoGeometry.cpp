@@ -9,7 +9,7 @@
 
 #include "SendTextMessage.h"
 #include "AutoGeometry.h"
-#include "MeshImport/MeshImport.h"
+#include "MeshImport.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
 #include "UserMemAlloc.h"
 #include "sutil.h"

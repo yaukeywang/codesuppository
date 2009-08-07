@@ -39,7 +39,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/wd4996 /WX /W4 /fp:fast /WX /MDd /ZI "
 				Optimization="4"
-				AdditionalIncludeDirectories="&quot;../../app/CodeSuppository&quot;;&quot;../../src&quot;;&quot;../../include&quot;;&quot;../../ext/DirectX_October2006&quot;;&quot;../../include&quot;;&quot;../../include/common/snippets&quot;;&quot;../../include/common/compression&quot;;&quot;../../app&quot;;"
+				AdditionalIncludeDirectories="&quot;../../app/CodeSuppository&quot;;&quot;../../src&quot;;&quot;../../include&quot;;&quot;../../ext/DirectX_October2006&quot;;&quot;../../include&quot;;&quot;../../include/common/snippets&quot;;&quot;../../include/common/compression&quot;;&quot;../../include/MeshImport&quot;;&quot;../../app&quot;;"
 				PreprocessorDefinitions="WIN32;_WINDOWS;UNICODE=1;_CRT_SECURE_NO_DEPRECATE;DEBUG_SERVER;USE_MEMORY_TRAPPING=1;OPEN_SOURCE=1;_DEBUG;"
 				ExceptionHandling="1"
 				WarningLevel="3"
@@ -116,7 +116,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/wd4996 /Zi /WX /W4 /fp:fast /WX /MD /O2 "
 				Optimization="4"
-				AdditionalIncludeDirectories="&quot;../../app/CodeSuppository&quot;;&quot;../../src&quot;;&quot;../../include&quot;;&quot;../../ext/DirectX_October2006&quot;;&quot;../../include&quot;;&quot;../../app&quot;;&quot;../../include/common/snippets&quot;;"
+				AdditionalIncludeDirectories="&quot;../../app/CodeSuppository&quot;;&quot;../../src&quot;;&quot;../../include&quot;;&quot;../../ext/DirectX_October2006&quot;;&quot;../../include&quot;;&quot;../../app&quot;;&quot;../../include/common/snippets&quot;;&quot;../../include/MeshImport&quot;;"
 				PreprocessorDefinitions="WIN32;_WINDOWS;UNICODE=1;_CRT_SECURE_NO_DEPRECATE;DEBUG_SERVER;USE_MEMORY_TRAPPING=1;OPEN_SOURCE=1;NDEBUG;"
 				ExceptionHandling="1"
 				WarningLevel="3"
@@ -2131,14 +2131,6 @@
 				</File>
 				<File
 					RelativePath="..\..\include\common\snippets\viewtest.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\VtxWeld.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\VtxWeld.h"
 					>
 				</File>
 				<File

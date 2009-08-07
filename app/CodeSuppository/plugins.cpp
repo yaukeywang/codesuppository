@@ -3,7 +3,7 @@
 #include "common/binding/binding.h"
 #include "JobSwarm.h"
 #include "RenderDebug/RenderDebug.h"
-#include "MeshImport/MeshImport.h"
+#include "MeshImport.h"
 #include "ResourceInterface.h"
 #include "SystemServices.h"
 #include "pd3d/pd3d.h"

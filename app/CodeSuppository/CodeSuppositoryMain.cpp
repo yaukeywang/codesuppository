@@ -22,7 +22,7 @@
 #include "log.h"
 #include "sutil.h"
 #include "shared/debugmsg/debugmsg.h"
-#include "MeshImport/MeshImport.h"
+#include "MeshImport.h"
 #include <direct.h>
 #include "common/tui/tui.h"
 #include "common/binding/binding.h"

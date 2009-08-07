@@ -9,7 +9,7 @@
 #include "SendTextMessage.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
 #include "CodeSuppository.h"
-#include "MeshImport/MeshImport.h"
+#include "MeshImport.h"
 #include "NxFoundation.h"
 #include "TestBestFitOBB.h"
 #include "TestBestFitCapsule.h"

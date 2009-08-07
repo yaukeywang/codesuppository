@@ -9,7 +9,7 @@
 #include "common/dxut/dxstdafx.h"
 #include "resource.h"
 #include "menu.h"
-#include "MeshImport/MeshImport.h"
+#include "MeshImport.h"
 #include "cparser.h"
 #include "filesystem.h"
 #include "log.h"

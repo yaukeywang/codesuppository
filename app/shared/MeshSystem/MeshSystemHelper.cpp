@@ -3,7 +3,7 @@
 #include <string.h>
 #include <assert.h>
 
-#include "MeshImport/MeshImport.h"
+#include "MeshImport.h"
 #include "MeshSystemHelper.h"
 #include "UserMemAlloc.h"
 #include "fmem.h"

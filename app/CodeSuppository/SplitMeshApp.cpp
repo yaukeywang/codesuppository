@@ -24,7 +24,7 @@
 #include "NxFoundation.h"
 #include "common/compression/compression.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
-#include "MeshImport/MeshImport.h"
+#include "MeshImport.h"
 
 static const NxF64 EPSILON=0.0001;
 

@@ -4,7 +4,7 @@
 #include <assert.h>
 
 #include "TestTjunctions.h"
-#include "MeshImport/MeshImport.h"
+#include "MeshImport.h"
 #include "SendTextMessage.h"
 #include "RemoveTjunctions.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"

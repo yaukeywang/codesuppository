@@ -51,13 +51,13 @@
 
 #define QUOTIENT 0x04c11db7
 
-static HeU32 crctab[256];
+static NxU32 crctab[256];
 
 
-static inline HeU32 myhtonl(HeU32 n_ecx)
+static inline NxU32 myhtonl(NxU32 n_ecx)
 {
-  HeU32 n_eax = n_ecx;                 //mov         eax,ecx 
-  HeU32 n_edx = n_ecx;                 //mov         edx,ecx 
+  NxU32 n_eax = n_ecx;                 //mov         eax,ecx 
+  NxU32 n_edx = n_ecx;                 //mov         edx,ecx 
   n_edx = n_edx << 16;           //shl         edx,10h 
   n_eax = n_eax & 0x0FF00;       //and         eax,0FF00h 
   n_eax = n_eax | n_edx;         //or          eax,edx 
@@ -73,9 +73,9 @@ static inline HeU32 myhtonl(HeU32 n_ecx)
 
 static void crc32_init(void)
 {
-  HeI32 i,j;
+  NxI32 i,j;
 
-  HeU32 crc;
+  NxU32 crc;
 
   for (i = 0; i < 256; i++)
   {
@@ -91,24 +91,24 @@ static void crc32_init(void)
   }
 }
 
-inline void getRand(HeU32 &current)
+inline void getRand(NxU32 &current)
 {
   current = (current * 214013L + 2531011L) & 0x7fffffff;
 };
 
 
 
-static HeU32 crc(const HeU8 *data, HeI32 len)
+static NxU32 crc(const NxU8 *data, NxI32 len)
 {
-  HeU32        result;
-  HeU32        *p = (HeU32 *)data;
-  HeU32        *e = (HeU32 *)(data + len);
+  NxU32        result;
+  NxU32        *p = (NxU32 *)data;
+  NxU32        *e = (NxU32 *)(data + len);
 
   result = ~*p++;
   result = result ^ len;
 
-  const HeU32 *tmp = (const HeU32 *) data;
-  HeU32 current = *tmp & len;
+  const NxU32 *tmp = (const NxU32 *) data;
+  NxU32 current = *tmp & len;
 
   while( p<e )
   {
@@ -136,9 +136,9 @@ static HeU32 crc(const HeU8 *data, HeI32 len)
 
 
 
-HeU32 computeCRC(const HeU8 *data,HeU32 len)
+NxU32 computeCRC(const NxU8 *data,NxU32 len)
 {
-  HeU32 ret = 0;
+  NxU32 ret = 0;
 
   static bool first = true;
   if ( first )
@@ -149,8 +149,8 @@ HeU32 computeCRC(const HeU8 *data,HeU32 len)
 
   if ( len < 4 )
   {
-    HeU8 mem[4] = { 0, 0, 0, 0 };
-    for (HeU32 i=0; i<len; i++)
+    NxU8 mem[4] = { 0, 0, 0, 0 };
+    for (NxU32 i=0; i<len; i++)
       mem[i] = data[i];
     ret = crc(mem,4);
   }

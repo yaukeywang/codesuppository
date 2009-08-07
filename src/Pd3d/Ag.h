@@ -98,8 +98,8 @@ class AgWriter;
 ///
 /// -- typedef declarations
 ///
-typedef HeU8 uchar;
-typedef HeU32  uint;
+typedef NxU8 uchar;
+typedef NxU32  uint;
 
 #if defined(AGENABLE_SHORTHANDTYPES)
 typedef AgInt2   int2;
@@ -111,20 +111,20 @@ typedef AgFloat4 float4;
 ///
 /// -- global constants
 ///
-const HeF32 AGFLOAT_OPAQUEALPHA=1;
+const NxF32 AGFLOAT_OPAQUEALPHA=1;
 
 ///
 /// -- global functions
 ///
 
-HeI32 dprintf(const char* format,...);
+NxI32 dprintf(const char* format,...);
 
 
 ///
 /// -- global inline functions
 ///
 
-AGINLINE HeI32 Ag_maxi(HeI32 a,HeI32 b)
+AGINLINE NxI32 Ag_maxi(NxI32 a,NxI32 b)
 {
 	if(a>b)
 	{
@@ -134,7 +134,7 @@ AGINLINE HeI32 Ag_maxi(HeI32 a,HeI32 b)
 	return b;
 }
 
-AGINLINE HeI32 Ag_mini(HeI32 a,HeI32 b)
+AGINLINE NxI32 Ag_mini(NxI32 a,NxI32 b)
 {
 	if(a<b)
 	{

@@ -40,7 +40,7 @@ public:
 	\param size
 	Size of set to be defined.
 	*/
-	explicit SortedSet(HeU32 size) :
+	explicit SortedSet(NxU32 size) :
 		mData(0), mCapacity(size), mSize(0)
 	{
 		if (mCapacity > 0)
@@ -106,7 +106,7 @@ public:
 	\return
 	Element i in the set.
 	*/
-	inline const T& get(HeU32 i) const
+	inline const T& get(NxU32 i) const
 	{
 		return mData[i];
 	}
@@ -118,7 +118,7 @@ public:
 	\return
 	Element i in the set.
 	*/
-	inline T& get(HeU32 i)
+	inline T& get(NxU32 i)
 	{
 		return mData[i];
 	}
@@ -130,7 +130,7 @@ public:
 	\return
 	The element i in the array.
 	*/
-	inline const T& operator[] (HeU32 i) const
+	inline const T& operator[] (NxU32 i) const
 	{
 		return get(i);
 	}
@@ -142,7 +142,7 @@ public:
 	\return
 	The element i in the array.
 	*/
-	inline T& operator[] (HeU32 i)
+	inline T& operator[] (NxU32 i)
 	{
 		return get(i);
 	}
@@ -163,7 +163,7 @@ public:
 	\return
 	The number of of entries in the set.
 	*/
-	inline HeU32 getSize() const
+	inline NxU32 getSize() const
 	{
 		return mSize;
 	}
@@ -196,11 +196,11 @@ public:
 	\return
 	The index of this element, or -1 if not found.
 	*/
-	inline HeI32 getIndexOf(const T &a) const
+	inline NxI32 getIndexOf(const T &a) const
 	{
-		HeI32 l=0;
-		HeI32 r=mSize-1;
-		HeI32 i;
+		NxI32 l=0;
+		NxI32 r=mSize-1;
+		NxI32 i;
 		for(;r>=l;)
 		{
 			i=(l+r)/2;
@@ -246,7 +246,7 @@ public:
 	True if the element was inserted.
 	False if the element was already in the set.
 	*/
-	inline bool insert(const T &a, HeU32* index = NULL)
+	inline bool insert(const T &a, NxU32* index = NULL)
 	{
 		int l=0;
 		int r=mSize-1;
@@ -329,7 +329,7 @@ public:
 	\return
 	The element that was removed.
 	*/
-	inline T removeElement(HeU32 i) 
+	inline T removeElement(NxU32 i) 
 	{
 		T tmp = mData[i];
 		memmove(mData+i,mData+i+1,(mSize-i-1)*sizeof(T));
@@ -345,7 +345,7 @@ private:
 	\param capacity
 	The number of entries that the set should be able to hold.
 	*/	
-	inline void grow(HeU32 capacity) 
+	inline void grow(NxU32 capacity) 
 	{
 		if(this->mCapacity < capacity)
     {
@@ -356,7 +356,7 @@ private:
 			mData = newData;
 
 			//initialize new entries
-			for(HeU32 i = mCapacity; i < capacity; i++)
+			for(NxU32 i = mCapacity; i < capacity; i++)
 			{
 				new ((void*)(mData+i)) T;
 			}
@@ -365,8 +365,8 @@ private:
 	}
 
 	T *					mData;
-	HeU32				mCapacity;
-	HeU32				mSize;
+	NxU32				mCapacity;
+	NxU32				mSize;
 };
 
 #endif

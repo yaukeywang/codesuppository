@@ -710,22 +710,22 @@ MyPerlin4::MyPerlin4(const char * options)
 
   if ( options )
   {
-    HeU32 count;
+    NxU32 count;
     KeyValue k;
     const char **kv = k.getKeyValues(options,count);
 
 
-    HeU32 octaves1=0,octaves2=0,octaves3=0,octaves4=0;
-    HeF32 freq1=0.017f,freq2=0.017f,freq3=0.017f,freq4=0.017f;
+    NxU32 octaves1=0,octaves2=0,octaves3=0,octaves4=0;
+    NxF32 freq1=0.017f,freq2=0.017f,freq3=0.017f,freq4=0.017f;
     EnvelopeType type1=ET_NULL;
     EnvelopeType type2=ET_NULL;
     EnvelopeType type3=ET_NULL;
     EnvelopeType type4=ET_NULL;
-    HeF32 amp1=1,amp2=1,amp3=1,amp4=1;
-    HeU32 seed1=0,seed2=0,seed3=0,seed4=0;
+    NxF32 amp1=1,amp2=1,amp3=1,amp4=1;
+    NxU32 seed1=0,seed2=0,seed3=0,seed4=0;
 
 
-    for (HeU32 i=0; i<count; i++)
+    for (NxU32 i=0; i<count; i++)
     {
       const char *key = kv[i*2+0];
       const char *value = kv[i*2+1];
@@ -764,35 +764,35 @@ MyPerlin4::MyPerlin4(const char * options)
       }
       else if ( stricmp(key,"frequency1") == 0 )
       {
-        freq1 = (HeF32)atof(value);
+        freq1 = (NxF32)atof(value);
       }
       else if ( stricmp(key,"frequency2") == 0 )
       {
-        freq2 = (HeF32)atof(value);
+        freq2 = (NxF32)atof(value);
       }
       else if ( stricmp(key,"frequency3") == 0 )
       {
-        freq3 = (HeF32)atof(value);
+        freq3 = (NxF32)atof(value);
       }
       else if ( stricmp(key,"frequency4") == 0 )
       {
-        freq4 = (HeF32)atof(value);
+        freq4 = (NxF32)atof(value);
       }
       else if ( stricmp(key,"amplitude1") == 0 )
       {
-        amp1 = (HeF32)atof(value);
+        amp1 = (NxF32)atof(value);
       }
       else if ( stricmp(key,"amplitude2") == 0 )
       {
-        amp2 = (HeF32)atof(value);
+        amp2 = (NxF32)atof(value);
       }
       else if ( stricmp(key,"amplitude3") == 0 )
       {
-        amp3 = (HeF32)atof(value);
+        amp3 = (NxF32)atof(value);
       }
       else if ( stricmp(key,"amplitude4") == 0 )
       {
-        amp4 = (HeF32)atof(value);
+        amp4 = (NxF32)atof(value);
       }
       else if ( stricmp(key,"seed1") == 0 )
       {

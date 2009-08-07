@@ -197,7 +197,8 @@ public:
 enum HullError
 {
 	QE_OK,            // success!
-	QE_FAIL           // failed.
+	QE_FAIL,           // failed.
+	QE_NOT_READY
 };
 
 // This class is used when converting a convex hull into a triangle mesh.

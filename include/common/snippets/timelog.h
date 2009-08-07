@@ -110,7 +110,7 @@ public:
   }
 
 
-  static bool getMachineName(char *name,HeU32 maxLen)
+  static bool getMachineName(char *name,NxU32 maxLen)
   {
     bool ret = false;
 

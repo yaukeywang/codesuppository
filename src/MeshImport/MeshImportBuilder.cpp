@@ -5,9 +5,11 @@
 
 #include "MeshImportBuilder.h"
 #include "VtxWeld.h"
-#include "common/snippets/UserMemAlloc.h"
-#include "common/snippets/stringdict.h"
-#include "common/snippets/sutil.h"
+#include "UserMemAlloc.h"
+#include "stringdict.h"
+#include "sutil.h"
+#include "FloatMath.h"
+#include "KeyValueIni.h"
 
 #pragma warning(disable:4100 4189)
 
@@ -24,6 +26,54 @@ typedef USER_STL::vector< MeshSkeleton * > MeshSkeletonVector;
 static int gSerializeFrame=1;
 
 class MyMesh;
+
+void validate(const MeshVertex &v)
+{
+	assert( _finite( v.mPos[0] ));
+	assert( _finite( v.mPos[1] ));
+	assert( _finite( v.mPos[2] ));
+	assert( _finite( v.mNormal[0] ) );
+	assert( _finite( v.mNormal[1] ) );
+	assert( _finite( v.mNormal[2] ) );
+
+	assert( _finite( v.mTexel1[0] ) );
+	assert( _finite( v.mTexel1[1] ) );
+
+	assert( _finite( v.mTexel2[0] ) );
+	assert( _finite( v.mTexel2[1] ) );
+
+	assert( _finite( v.mTexel3[0] ) );
+	assert( _finite( v.mTexel3[1] ) );
+
+	assert( _finite( v.mTexel4[0] ) );
+	assert( _finite( v.mTexel4[1] ) );
+
+	assert( _finite( v.mWeight[0] ) );
+	assert( _finite( v.mWeight[1] ) );
+	assert( _finite( v.mWeight[2] ) );
+	assert( _finite( v.mWeight[3] ) );
+
+	assert( v.mWeight[0] >= 0 && v.mWeight[0] <= 1 );
+	assert( v.mWeight[1] >= 0 && v.mWeight[1] <= 1 );
+	assert( v.mWeight[2] >= 0 && v.mWeight[2] <= 1 );
+	assert( v.mWeight[3] >= 0 && v.mWeight[3] <= 1 );
+
+	float sum = v.mWeight[0] + v.mWeight[1] + v.mWeight[2] + v.mWeight[3];
+	assert( sum >= 0 && sum <= 1.001f );
+	assert( v.mBone[0] >= 0 && v.mBone[0] < 1024 );
+	assert( v.mBone[1] >= 0 && v.mBone[1] < 1024 );
+	assert( v.mBone[2] >= 0 && v.mBone[2] < 1024 );
+	assert( v.mBone[3] >= 0 && v.mBone[3] < 1024 );
+
+	assert( _finite(v.mTangent[0]));
+	assert( _finite(v.mTangent[1]));
+	assert( _finite(v.mTangent[2]));
+
+	assert( _finite(v.mBiNormal[0]));
+	assert( _finite(v.mBiNormal[1]));
+	assert( _finite(v.mBiNormal[2]));
+
+}
 
 class MySubMesh : public SubMesh
 {
@@ -135,45 +185,36 @@ public:
 
   virtual void        importTriangle(const char *materialName,
                                      unsigned int vertexFlags,
-                                     const MeshVertex &v1,
-                                     const MeshVertex &v2,
-                                     const MeshVertex &v3)
+                                     const MeshVertex &_v1,
+                                     const MeshVertex &_v2,
+                                     const MeshVertex &_v3)
   {
+	  MeshVertex v1 = _v1;
+	  MeshVertex v2 = _v2;
+	  MeshVertex v3 = _v3;
+	  fm_normalize(v1.mNormal);
+	  fm_normalize(v1.mBiNormal);
+	  fm_normalize(v1.mTangent);
+
+	  fm_normalize(v2.mNormal);
+	  fm_normalize(v2.mBiNormal);
+	  fm_normalize(v2.mTangent);
+
+	  fm_normalize(v3.mNormal);
+	  fm_normalize(v3.mBiNormal);
+	  fm_normalize(v3.mTangent);
+
+
     mAABB.include( v1.mPos );
     mAABB.include( v2.mPos );
     mAABB.include( v3.mPos );
+	validate(v1);
+	validate(v2);
+	validate(v3);
     getCurrent(materialName,vertexFlags);
     mVertexFlags|=vertexFlags;
 
     mCurrent->add(v1,v2,v3,mVertexPool);
-#if 0
-    if ( stristr(materialName,"cape") )
-    {
-      MeshVertex tv1 = v1;
-      MeshVertex tv2 = v2;
-      MeshVertex tv3 = v3;
-
-      tv1.mNormal[0]*=-1;
-      tv1.mNormal[1]*=-1;
-      tv1.mNormal[2]*=-1;
-      tv1.mTexel1[0] = 0;
-      tv1.mTexel1[1] = 0;
-
-      tv2.mNormal[0]*=-1;
-      tv2.mNormal[1]*=-1;
-      tv2.mNormal[2]*=-1;
-      tv2.mTexel1[0] = 0;
-      tv2.mTexel1[1] = 0;
-
-      tv3.mNormal[0]*=-1;
-      tv3.mNormal[1]*=-1;
-      tv3.mNormal[2]*=-1;
-      tv3.mTexel1[0] = 0;
-      tv3.mTexel1[1] = 0;
-
-      mCurrent->add(tv3,tv2,tv1,mVertexPool);
-    }
-#endif
   }
 
   virtual void        importIndexedTriangleList(const char *materialName,
@@ -275,8 +316,9 @@ typedef USER_STL::vector< MeshCollisionRepresentation * > MeshCollisionRepresent
 class MyMeshBuilder : public MeshBuilder
 {
 public:
-  MyMeshBuilder(const char *meshName,const void *data,unsigned int dlen,MeshImporter *mi,const char *options,MeshImportApplicationResource *appResource)
+  MyMeshBuilder(KeyValueIni *ini,const char *meshName,const void *data,unsigned int dlen,MeshImporter *mi,const char *options,MeshImportApplicationResource *appResource)
   {
+    mINI = ini;
     gSerializeFrame++;
     mCurrentMesh = 0;
     mCurrentCollision = 0;
@@ -288,6 +330,7 @@ public:
 
   MyMeshBuilder(MeshImportApplicationResource *appResource)
   {
+    mINI = 0;
     gSerializeFrame++;
     mCurrentMesh = 0;
     mCurrentCollision = 0;
@@ -448,6 +491,7 @@ public:
 
   virtual void importMaterial(const char *matName,const char *metaData)
   {
+    matName = getMaterialName(matName);
     StringRef m = mStrings.Get(matName);
     StringRef d = mStrings.Get(metaData);
     mMaterialMap[m] = d;
@@ -513,6 +557,7 @@ public:
                                      const MeshVertex &v2,
                                      const MeshVertex &v3)
   {
+    _materialName = getMaterialName(_materialName);
     const char *meshName = mStrings.Get(_meshName).Get();
     const char *materialName = mStrings.Get(_materialName).Get();
     getCurrentMesh(meshName);
@@ -530,6 +575,7 @@ public:
                                                 unsigned int tcount,
                                                 const unsigned int *indices)
   {
+    _materialName = getMaterialName(_materialName);
     const char *meshName = mStrings.Get(_meshName).Get();
     const char *materialName = mStrings.Get(_materialName).Get();
     getCurrentMesh(meshName);
@@ -752,6 +798,64 @@ public:
     mCurrentCollision->mGeometries.push_back(mc);
   }
 
+  virtual void rotate(float rotX,float rotY,float rotZ)
+  {
+    float quat[4];
+    fm_eulerToQuat(rotX*FM_DEG_TO_RAD,rotY*FM_DEG_TO_RAD,rotZ*FM_DEG_TO_RAD,quat);
+
+    {
+      MeshSkeletonVector::iterator i;
+      for (i=mMySkeletons.begin(); i!=mMySkeletons.end(); ++i)
+      {
+        MeshSkeleton *ms = (*i);
+        for (int j=0; j<ms->mBoneCount; j++)
+        {
+          MeshBone &b = ms->mBones[j];
+          if ( b.mParentIndex == -1 )
+          {
+            fm_quatRotate(quat,b.mPosition,b.mPosition);
+            fm_multiplyQuat(quat,b.mOrientation,b.mOrientation);
+          }
+        }
+      }
+    }
+
+    {
+      MyMeshVector::iterator i;
+      for (i=mMyMeshes.begin(); i!=mMyMeshes.end(); ++i)
+      {
+        MyMesh *m = (*i);
+        unsigned int vcount = m->mVertexPool.GetSize();
+        if ( vcount > 0 )
+        {
+          MeshVertex *vb = m->mVertexPool.GetBuffer();
+          for (unsigned int j=0; j<vcount; j++)
+          {
+            fm_quatRotate(quat,vb->mPos,vb->mPos);
+            vb++;
+          }
+        }
+      }
+    }
+
+    {
+      MeshAnimationVector::iterator i;
+      for (i=mMyAnimations.begin(); i!=mMyAnimations.end(); ++i)
+      {
+        MeshAnimation *ma = (*i);
+        for (int j=0; j<ma->mTrackCount && j <1; j++)
+        {
+          MeshAnimTrack *t = ma->mTracks[j];
+          for (int k=0; k<t->mFrameCount; k++)
+          {
+            MeshAnimPose &p = t->mPose[k];
+            fm_quatRotate(quat,p.mPos,p.mPos);
+            fm_multiplyQuat(quat,p.mQuat,p.mQuat);
+          }
+        }
+      }
+    }
+  }
 
   virtual void scale(float s)
   {
@@ -810,9 +914,37 @@ public:
     }
   }
 
-  virtual int getSerializeFrame(void) 
+  virtual int getSerializeFrame(void)
   {
     return gSerializeFrame;
+  }
+
+  const char *getMaterialName(const char *matName)
+  {
+    const char *ret = matName;
+    if ( mINI )
+    {
+        unsigned int keycount;
+        unsigned int lineno;
+        const KeyValueSection *section = locateSection(mINI,"REMAP_MATERIALS",keycount,lineno);
+        if ( section )
+        {
+            for (unsigned int i=0; i<keycount; i++)
+            {
+                const char *key = getKey(section,i,lineno);
+                const char *value = getValue(section,i,lineno);
+                if ( key && value )
+                {
+                    if ( stricmp(key,matName) == 0 )
+                    {
+                        ret = value;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    return ret;
   }
 
 
@@ -828,11 +960,12 @@ private:
   MyMeshCollisionRepresentation      *mCurrentCollision;
   MeshCollisionRepresentationVector   mCollisionReps;
   MeshImportApplicationResource      *mAppResource;
+  KeyValueIni                        *mINI;
 };
 
-MeshBuilder * createMeshBuilder(const char *meshName,const void *data,unsigned int dlen,MeshImporter *mi,const char *options,MeshImportApplicationResource *appResource)
+MeshBuilder * createMeshBuilder(KeyValueIni *ini,const char *meshName,const void *data,unsigned int dlen,MeshImporter *mi,const char *options,MeshImportApplicationResource *appResource)
 {
-  MyMeshBuilder *b = MEMALLOC_NEW(MyMeshBuilder)(meshName,data,dlen,mi,options,appResource);
+  MyMeshBuilder *b = MEMALLOC_NEW(MyMeshBuilder)(ini,meshName,data,dlen,mi,options,appResource);
   return static_cast< MeshBuilder *>(b);
 }
 

@@ -73,7 +73,7 @@ public:
 #ifdef WIN32
   WIN32_FIND_DATAA finddata;
   HANDLE hFindNext;
-  HeI32 bFound;
+  NxI32 bFound;
 #endif
 #ifdef LINUX_GENERIC
   DIR      *mDir;
@@ -182,7 +182,7 @@ bool FileFind::FindNext(String &name)
 }
 
 
-HeI32 deleteFiles(const String &str)
+NxI32 deleteFiles(const String &str)
 {
   WildCard *wild = createWildCard(str.c_str());
   StringVector list;
@@ -209,7 +209,7 @@ HeI32 deleteFiles(const String &str)
   }
   releaseWildCard(wild);
 
-  HeI32 ret = list.size();
+  NxI32 ret = list.size();
 
   return ret;
 }

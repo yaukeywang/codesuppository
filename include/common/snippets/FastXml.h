@@ -76,6 +76,7 @@ class FastXml
 {
 public:
   virtual bool processXml(const char *inputData,unsigned int dataLen,FastXmlInterface *iface) = 0;
+  virtual bool processXmlFile(const char* filename, FastXmlInterface* iface) = 0;
   virtual const char * getError(int &lineno) = 0; // report the reason for a parsing error, and the line number where it occurred.
 };
 

@@ -4,12 +4,12 @@
 #include <assert.h>
 
 #include "terrain.h"
-#include "common/snippets/ImportHeightMap.h"
-#include "common/HeMath/HeFoundation.h"
+#include "ImportHeightMap.h"
+#include "NxFoundation.h"
 #include "RenderDebug/RenderDebug.h"
-#include "common/snippets/simplevector.h"
+#include "simplevector.h"
 #include "pd3d/pd3d.h"
-#include "common/snippets/FloatMath.h"
+#include "FloatMath.h"
 
 #pragma warning(disable:4100)
 
@@ -40,10 +40,10 @@ public:
       mWidth = importHeightMap->getWidth();
       mHeight = importHeightMap->getDepth();
 
-      mData = new HeF32[mWidth*mHeight];
-      memcpy(mData,importHeightMap->getData(),sizeof(HeF32)*mWidth*mHeight);
-      HeU32 tcount = mWidth*mHeight;
-      for (HeU32 i=0; i<tcount; i++)
+      mData = new NxF32[mWidth*mHeight];
+      memcpy(mData,importHeightMap->getData(),sizeof(NxF32)*mWidth*mHeight);
+      NxU32 tcount = mWidth*mHeight;
+      for (NxU32 i=0; i<tcount; i++)
         mData[i]*=40;
 
       releaseImportHeightMap(importHeightMap);
@@ -59,7 +59,7 @@ public:
     delete []mData;
   }
 
-  HeU32 getIndex(HeU32 wid,HeU32 depth,HeU32 x,HeU32 z)
+  NxU32 getIndex(NxU32 wid,NxU32 depth,NxU32 x,NxU32 z)
   {
     return (z*wid)+x;
   }
@@ -72,17 +72,17 @@ public:
     }
   }
 
-  HeU32  getWidth(void)
+  NxU32  getWidth(void)
   {
     return mWidth;
   }
 
-  HeU32  getHeight(void)
+  NxU32  getHeight(void)
   {
     return mHeight;
   }
 
-  HeF32 * getData(void)
+  NxF32 * getData(void)
   {
     return mData;
   }
@@ -96,33 +96,33 @@ public:
     if ( mData )
     {
 
-      SimpleVector< HeU32 > indices;
-      SimpleVector< HeVec3 > vertices;
+      SimpleVector< NxU32 > indices;
+      SimpleVector< NxVec3 > vertices;
 
-      HeU32 wid   = mWidth;
-      HeU32 depth = mHeight;
+      NxU32 wid   = mWidth;
+      NxU32 depth = mHeight;
 
-      for (HeU32 z=0; z<depth; z++)
+      for (NxU32 z=0; z<depth; z++)
       {
-        for (HeU32 x=0; x<wid; x++)
+        for (NxU32 x=0; x<wid; x++)
         {
-          HeVec3 p1;
-          HeU32 index = z*wid+x;
-          p1.x = (HeReal)x;
+          NxVec3 p1;
+          NxU32 index = z*wid+x;
+          p1.x = (NxF32)x;
           p1.y = mData[index];
-          p1.z = (HeReal)z;
+          p1.z = (NxF32)z;
           vertices.push_back(p1);
         }
       }
 
-      for (HeU32 z=0; z<(depth-1); z++)
+      for (NxU32 z=0; z<(depth-1); z++)
       {
-        for (HeU32 x=0; x<(wid-1); x++)
+        for (NxU32 x=0; x<(wid-1); x++)
         {
-          HeU32 i1 = getIndex(wid,depth,x,z);
-          HeU32 i2 = getIndex(wid,depth,x+1,z);
-          HeU32 i3 = getIndex(wid,depth,x+1,z+1);
-          HeU32 i4 = getIndex(wid,depth,x,z+1);
+          NxU32 i1 = getIndex(wid,depth,x,z);
+          NxU32 i2 = getIndex(wid,depth,x+1,z);
+          NxU32 i3 = getIndex(wid,depth,x+1,z+1);
+          NxU32 i4 = getIndex(wid,depth,x,z+1);
 
           indices.push_back(i3);
           indices.push_back(i2);
@@ -135,13 +135,13 @@ public:
         }
       }
 
-      HeU32 vcount = vertices.size();
+      NxU32 vcount = vertices.size();
 
       PD3D::Pd3dGraphicsVertex *gv = new PD3D::Pd3dGraphicsVertex[vcount];
-      for (HeU32 i=0; i<vcount; i++)
+      for (NxU32 i=0; i<vcount; i++)
       {
         PD3D::Pd3dGraphicsVertex *dest = &gv[i];
-        const HeVec3 &source           = vertices[i];
+        const NxVec3 &source           = vertices[i];
         dest->mPos[0] = source.x;
         dest->mPos[1] = source.y;
         dest->mPos[2] = source.z;
@@ -166,11 +166,11 @@ public:
   }
 
 private:
-  HeU32               mWidth;
-  HeU32               mHeight;
-  HeF32              *mData;
-  HeU32               mVcount;
-  HeU32               mTcount;
+  NxU32               mWidth;
+  NxU32               mHeight;
+  NxF32              *mData;
+  NxU32               mVcount;
+  NxU32               mTcount;
   PD3D::Pd3dMaterial  mMaterial;
   void               *mVertexBuffer;
   void               *mIndexBuffer;

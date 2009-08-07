@@ -7,26 +7,26 @@
 #pragma warning(disable:4702)
 
 #include "SplitMeshApp.h"
-#include "common/snippets/SplitMesh.h"
-#include "common/snippets/wavefront.h"
+#include "SplitMesh.h"
+#include "wavefront.h"
 #include "RenderDebug/RenderDebug.h"
-#include "common/snippets/log.h"
-#include "common/snippets/FloatMath.h"
-#include "common/snippets/ArrowHead.h"
-#include "common/snippets/ConsolidateMesh.h"
-#include "common/snippets/ConvexDecomposition.h"
-#include "common/snippets/MeshIslandGeneration.h"
-#include "common/snippets/RemoveTjunctions.h"
-#include "common/snippets/rand.h"
-#include "common/snippets/perlin4.h"
-#include "common/snippets/ImportHeightMap.h"
-#include "common/snippets/erode.h"
-#include "common/HeMath/HeFoundation.h"
+#include "log.h"
+#include "FloatMath.h"
+#include "ArrowHead.h"
+#include "ConsolidateMesh.h"
+#include "ConvexDecomposition.h"
+#include "MeshIslandGeneration.h"
+#include "RemoveTjunctions.h"
+#include "rand.h"
+#include "perlin4.h"
+#include "ImportHeightMap.h"
+#include "erode.h"
+#include "NxFoundation.h"
 #include "common/compression/compression.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
 #include "MeshImport/MeshImport.h"
 
-static const HeF64 EPSILON=0.0001;
+static const NxF64 EPSILON=0.0001;
 
 class SplitMeshApp : public SPLIT_MESH::RobustMeshInterface
 {
@@ -110,7 +110,7 @@ public:
   {
     bool ret = false;
 
-    HeF64 d = fabs(fm_distToPlane(mPlane,p));
+    NxF64 d = fabs(fm_distToPlane(mPlane,p));
 
     if ( d < EPSILON )
     {
@@ -209,18 +209,18 @@ public:
     }
   }
 
-  void debugRingSegment(const HeF64 *from,const HeF64 *to,const HeF64 *project,HeU32 color)
+  void debugRingSegment(const NxF64 *from,const NxF64 *to,const NxF64 *project,NxU32 color)
   {
-    HeF32 p1[3];
-    HeF32 p2[3];
+    NxF32 p1[3];
+    NxF32 p2[3];
 
-    p1[0] = (HeF32)(from[0]+project[0]);
-    p1[1] = (HeF32)(from[1]+project[1]);
-    p1[2] = (HeF32)(from[2]+project[2]);
+    p1[0] = (NxF32)(from[0]+project[0]);
+    p1[1] = (NxF32)(from[1]+project[1]);
+    p1[2] = (NxF32)(from[2]+project[2]);
 
-    p2[0] = (HeF32)(to[0]+project[0]);
-    p2[1] = (HeF32)(to[0]+project[1]);
-    p2[2] = (HeF32)(to[0]+project[2]);
+    p2[0] = (NxF32)(to[0]+project[0]);
+    p2[1] = (NxF32)(to[0]+project[1]);
+    p2[2] = (NxF32)(to[0]+project[2]);
 
 
     gRenderDebug->DebugSphere(p1,0.002f,0xFFFF00);
@@ -228,19 +228,19 @@ public:
 
   }
 
-  void debugRing(SPLIT_MESH::RingSystem *ring,HeF64 pscale)
+  void debugRing(SPLIT_MESH::RingSystem *ring,NxF64 pscale)
   {
-    mProject[0] = (HeF32)(mPlane[0]*pscale);
-    mProject[1] = (HeF32)(mPlane[1]*pscale);
-    mProject[2] = (HeF32)(mPlane[2]*pscale);
+    mProject[0] = (NxF32)(mPlane[0]*pscale);
+    mProject[1] = (NxF32)(mPlane[1]*pscale);
+    mProject[2] = (NxF32)(mPlane[2]*pscale);
 
-    HeU32 edgeCount;
-    const HeF64 *edges = ring->getEdges(edgeCount);
+    NxU32 edgeCount;
+    const NxF64 *edges = ring->getEdges(edgeCount);
 
-    for (HeU32 i=0; i<edgeCount; i++)
+    for (NxU32 i=0; i<edgeCount; i++)
     {
-      HeF32 p1[3];
-      HeF32 p2[3];
+      NxF32 p1[3];
+      NxF32 p2[3];
 
       getDF(edges,p1);
       getDF(edges+3,p2);
@@ -252,8 +252,8 @@ public:
 
     }
 
-		HeU32 pcount = ring->getPolygonCount();
-		for (HeU32 i=0; i<pcount; i++)
+		NxU32 pcount = ring->getPolygonCount();
+		for (NxU32 i=0; i<pcount; i++)
 		{
 			double center[3];
 			size_t count;
@@ -261,10 +261,10 @@ public:
 			const double *points = ring->getPolygon(i,count,closed,concave,center);
 			assert(closed);
 			const double *previous = &points[(count-1)*3];
-			for (HeU32 i=0; i<count; i++)
+			for (NxU32 i=0; i<count; i++)
 			{
-        HeF32 p1[3];
-        HeF32 p2[3];
+        NxF32 p1[3];
+        NxF32 p2[3];
 
         getDF(previous,p1);
         getDF(points,p2);
@@ -279,28 +279,28 @@ public:
 		}
   }
 
-  void debugTriangles(SPLIT_MESH::RingSystem *ring,HeF64 pscale)
+  void debugTriangles(SPLIT_MESH::RingSystem *ring,NxF64 pscale)
   {
 
-    mProject[0] = (HeF32)(mPlane[0]*pscale);
-    mProject[1] = (HeF32)(mPlane[1]*pscale);
-    mProject[2] = (HeF32)(mPlane[2]*pscale);
+    mProject[0] = (NxF32)(mPlane[0]*pscale);
+    mProject[1] = (NxF32)(mPlane[1]*pscale);
+    mProject[2] = (NxF32)(mPlane[2]*pscale);
 
-    HeU32 tcount;
-    const HeF64 *triangles = ring->getTriangulation(tcount);
+    NxU32 tcount;
+    const NxF64 *triangles = ring->getTriangulation(tcount);
     if ( triangles )
     {
-      for (HeU32 i=0; i<tcount; i++)
+      for (NxU32 i=0; i<tcount; i++)
       {
-        HeF32 p1[3];
-        HeF32 p2[3];
-        HeF32 p3[3];
+        NxF32 p1[3];
+        NxF32 p2[3];
+        NxF32 p3[3];
 
         getDF(triangles,p1);
         getDF(triangles+3,p2);
         getDF(triangles+6,p3);
 
-        HeU32 color = 0xFFFFFF;
+        NxU32 color = 0xFFFFFF;
 
         if ( mWireframe )
         {
@@ -322,33 +322,33 @@ public:
   }
 
 
-  void debugPolys(SPLIT_MESH::RingSystem *ring,HeF64 pscale,bool flip)
+  void debugPolys(SPLIT_MESH::RingSystem *ring,NxF64 pscale,bool flip)
   {
-    mProject[0] = (HeF32)(mPlane[0]*pscale);
-    mProject[1] = (HeF32)(mPlane[1]*pscale);
-    mProject[2] = (HeF32)(mPlane[2]*pscale);
+    mProject[0] = (NxF32)(mPlane[0]*pscale);
+    mProject[1] = (NxF32)(mPlane[1]*pscale);
+    mProject[2] = (NxF32)(mPlane[2]*pscale);
 
-    HeU32 pcount = ring->getPolygonCount();
-    for (HeU32 i=0; i<pcount; i++)
+    NxU32 pcount = ring->getPolygonCount();
+    for (NxU32 i=0; i<pcount; i++)
     {
-      HeU32 pcount;
+      NxU32 pcount;
       bool closed;
       bool concave;
-      HeF64 center[3];
-      HeF64 *points = ring->getPolygon(i,pcount,closed,concave,center);
+      NxF64 center[3];
+      NxF64 *points = ring->getPolygon(i,pcount,closed,concave,center);
       if ( points )
       {
-        HeU32 color = 0x00FF00;
+        NxU32 color = 0x00FF00;
         if ( !closed )
         {
           color = 0xFF0000;
         }
-        HeF64 *previous = &points[(pcount-1)*3];
-        HeF64 *scan     = points;
-        for (HeU32 i=0; i<pcount; i++)
+        NxF64 *previous = &points[(pcount-1)*3];
+        NxF64 *scan     = points;
+        for (NxU32 i=0; i<pcount; i++)
         {
-          HeF32 p1[3];
-          HeF32 p2[3];
+          NxF32 p1[3];
+          NxF32 p2[3];
 
           getDF(previous,p1);
           getDF(scan,p2);
@@ -369,20 +369,20 @@ public:
         if ( closed )
         {
           fm_Triangulate *t = fm_createTriangulate();
-          HeU32 tcount;
-          const HeF64 *vertices = t->triangulate3d(pcount,points,sizeof(HeF64)*3,tcount,true,SPLIT_EPSILON);
+          NxU32 tcount;
+          const NxF64 *vertices = t->triangulate3d(pcount,points,sizeof(NxF64)*3,tcount,true,SPLIT_EPSILON);
 
           if ( vertices )
           {
-            for (HeU32 i=0; i<tcount; i++,vertices+=9)
+            for (NxU32 i=0; i<tcount; i++,vertices+=9)
             {
-              const HeF64 *dp1 = vertices;
-              const HeF64 *dp2 = vertices+3;
-              const HeF64 *dp3 = vertices+6;
+              const NxF64 *dp1 = vertices;
+              const NxF64 *dp2 = vertices+3;
+              const NxF64 *dp3 = vertices+6;
 
-              HeF32 p1[3];
-              HeF32 p2[3];
-              HeF32 p3[3];
+              NxF32 p1[3];
+              NxF32 p2[3];
+              NxF32 p3[3];
 
               getDF(dp1,p1);
               getDF(dp2,p2);
@@ -408,13 +408,13 @@ public:
     }
   }
 
-  void renderCone(const HeF32 *p1,const HeF32 *p2)
+  void renderCone(const NxF32 *p1,const NxF32 *p2)
   {
     gRenderDebug->DebugLine(p1,p2);
 
-    HeU32 tcount;
-    const HeF32 *triangles = createArrowHead(p1,p2,1,tcount);
-    for (HeU32 i=0; i<tcount; i++)
+    NxU32 tcount;
+    const NxF32 *triangles = createArrowHead(p1,p2,1,tcount);
+    for (NxU32 i=0; i<tcount; i++)
     {
       gRenderDebug->DebugSolidTri(triangles,triangles+3,triangles+6,0xFFFF00);
       gRenderDebug->DebugTri(triangles,triangles+3,triangles+6,0xFFFFFF);
@@ -428,11 +428,11 @@ public:
 
     if ( mShowSplitPlane )
     {
-      HeF32 plane[4];
-      plane[0] = (HeF32)mPlane[0];
-      plane[1] = (HeF32)mPlane[1];
-      plane[2] = (HeF32)mPlane[2];
-      plane[3] = (HeF32)mPlane[3];
+      NxF32 plane[4];
+      plane[0] = (NxF32)mPlane[0];
+      plane[1] = (NxF32)mPlane[1];
+      plane[2] = (NxF32)mPlane[2];
+      plane[3] = (NxF32)mPlane[3];
       gRenderDebug->DebugPlane(plane,4,4,0xFFFF00);
     }
 
@@ -715,10 +715,10 @@ public:
     const char *test = "this is a test string to test for compression testing stuff";
     size_t len = strlen(test);
 
-    HeI32 outlen;
+    NxI32 outlen;
     void *mem = COMPRESSION::compressData(test,len+1,outlen,COMPRESSION::CT_GZIP,COMPRESSION::CL_BEST_COMPRESSION);
 
-    HeI32 olen;
+    NxI32 olen;
     const char *c = (const char *)COMPRESSION::decompressData(mem,outlen,olen);
     if ( c )
     {
@@ -851,12 +851,12 @@ public:
     if ( mSplitMesh )
     {
       SPLIT_MESH::RingSystem *ring = mSplitMesh->getLeftRingSystem();
-      HeU32 edgeCount;
-      const HeF64 *edges = ring->getEdges(edgeCount);
+      NxU32 edgeCount;
+      const NxF64 *edges = ring->getEdges(edgeCount);
 
       gLog->Display("EdgeCount=%d  PlaneEquation: %0.9f,%0.9f,%9f,%0.9f\r\n", edgeCount, (float)mPlane[0], (float)mPlane[1], (float)mPlane[2],(float) mPlane[3]);
 
-      for (HeU32 i=0; i<edgeCount; i++)
+      for (NxU32 i=0; i<edgeCount; i++)
       {
         gLog->Display("Edge%d: %0.9f,%0.9f,%0.9f,            %0.9f, %0.9f,%0.9f,\r\n",
           i+1,
@@ -893,7 +893,7 @@ public:
         mLeftMesh.release();
         mRightMesh.release();
 
-        HeF32 plane[4];
+        NxF32 plane[4];
         plane[0] = (float)mPlane[0];
         plane[1] = (float)mPlane[1];
         plane[2] = (float)mPlane[2];
@@ -905,11 +905,11 @@ public:
     }
   }
 
-  HeF64 normalize(HeF64 *n) // normalize this vector
+  NxF64 normalize(NxF64 *n) // normalize this vector
   {
 
-    HeF64 dist = sqrt(n[0]*n[0] + n[1]*n[1] + n[2]*n[2]);
-    HeF64 mag = 0;
+    NxF64 dist = sqrt(n[0]*n[0] + n[1]*n[1] + n[2]*n[2]);
+    NxF64 mag = 0;
 
     if ( dist > 0.0000001 )
       mag = 1.0 / dist;
@@ -924,8 +924,8 @@ public:
 
   void computePlane(void)
   {
-    HeF64 a = mRotate[0]*FM_DEG_TO_RAD;
-    HeF64 b = mRotate[1]*FM_DEG_TO_RAD;
+    NxF64 a = mRotate[0]*FM_DEG_TO_RAD;
+    NxF64 b = mRotate[1]*FM_DEG_TO_RAD;
     mPlane[0] = sin(a)*cos(b);
     mPlane[1] = sin(a)*sin(b);
     mPlane[2] = cos(a);
@@ -1001,8 +1001,8 @@ public:
       bool newPos;
       SPLIT_MESH::LineSegment seg;
 
-      HeF64 p1[3];
-      HeF64 p2[3];
+      NxF64 p1[3];
+      NxF64 p2[3];
 
       p1[0] = scan[0];
       p1[1] = scan[1];
@@ -1015,13 +1015,13 @@ public:
       seg.mE1 = SPLIT_MESH::Vl_getIndex(vpool,p1,newPos);
       seg.mE2 = SPLIT_MESH::Vl_getIndex(vpool,p2,newPos);
 
-      const HeF64 *spos1 = SPLIT_MESH::Vl_getVertex(vpool,seg.mE1);
-      const HeF64 *spos2 = SPLIT_MESH::Vl_getVertex(vpool,seg.mE2);
+      const NxF64 *spos1 = SPLIT_MESH::Vl_getVertex(vpool,seg.mE1);
+      const NxF64 *spos2 = SPLIT_MESH::Vl_getVertex(vpool,seg.mE2);
 
       segments.push_back(seg);
 
-      HeF32 tp1[3];
-      HeF32 tp2[3];
+      NxF32 tp1[3];
+      NxF32 tp2[3];
       getDF(spos1,tp1);
       getDF(spos2,tp2);
 
@@ -1039,21 +1039,21 @@ public:
 #if 1
     SPLIT_MESH::LineSweep *sweep = SPLIT_MESH::createLineSweep();
 
-    HeU32 scount;
+    NxU32 scount;
     SPLIT_MESH::LineSegment *results = sweep->performLineSweep(&segments[0],segments.size(),plane,vpool,scount);
 
     if ( results )
     {
-      for (HeU32 i=0; i<scount; i++)
+      for (NxU32 i=0; i<scount; i++)
       {
-        const HeF64 *p1 = Vl_getVertex(vpool, results->mE1 );
-        const HeF64 *p2 = Vl_getVertex(vpool, results->mE2 );
-        HeF32 tp1[3];
-        HeF32 tp2[3];
+        const NxF64 *p1 = Vl_getVertex(vpool, results->mE1 );
+        const NxF64 *p2 = Vl_getVertex(vpool, results->mE2 );
+        NxF32 tp1[3];
+        NxF32 tp2[3];
         getDF(p1,tp1);
         getDF(p2,tp2);
         float radius = 0.01f;
-        HeU32 color = 0x00FF00;
+        NxU32 color = 0x00FF00;
         gRenderDebug->DebugRay(tp1,tp2,radius,0xFFFF00,color,15.0f);
         results++;
       }
@@ -2767,7 +2767,7 @@ public:
     gRenderDebug->DebugBound(bmin,bmax,0xFF00FF,60.0f,true,true);
     gRenderDebug->DebugBound(bmin,bmax,0xFFFFFF,60.0f,true,false);
 
-    for (HeU32 i=0; i<10; i++)
+    for (NxU32 i=0; i<10; i++)
     {
       float p1[3];
       float p2[3];
@@ -2814,11 +2814,11 @@ public:
     }
   }
 
-  void getPoint(ImportHeightMap *h,HeVec3 &v,HeU32 x,HeU32 z)
+  void getPoint(ImportHeightMap *h,NxVec3 &v,NxU32 x,NxU32 z)
   {
     v.y = h->getPoint(x,z)*10;
-    v.x = (HeF32)x;
-    v.z = (HeF32)z;
+    v.x = (NxF32)x;
+    v.z = (NxF32)z;
   }
 
 
@@ -2829,16 +2829,16 @@ public:
       bool ok = mErode->erode();
       mErode->getResults();
       gRenderDebug->Reset();
-      HeU32 wid = mImportHeightMap->getWidth();
-      HeU32 depth = mImportHeightMap->getDepth();
-      for (HeU32 z=0; z<(depth-1); z++)
+      NxU32 wid = mImportHeightMap->getWidth();
+      NxU32 depth = mImportHeightMap->getDepth();
+      for (NxU32 z=0; z<(depth-1); z++)
       {
-        for (HeU32 x=0; x<(wid-1); x++)
+        for (NxU32 x=0; x<(wid-1); x++)
         {
-          HeVec3 p1;
-          HeVec3 p2;
-          HeVec3 p3;
-          HeVec3 p4;
+          NxVec3 p1;
+          NxVec3 p2;
+          NxVec3 p3;
+          NxVec3 p4;
 
           getPoint(mImportHeightMap,p1,x,z);
           getPoint(mImportHeightMap,p2,x+1,z);
@@ -2877,12 +2877,12 @@ private:
   bool         mShowSplitPlane;
   bool         mCollapseColinear;
   bool         mEdgeIntersect;
-  HeF64        mExplodeDistance;
+  NxF64        mExplodeDistance;
   SPLIT_MESH::SplitMesh   *mSplitMesh;
   SPLIT_MESH::RobustMesh  *mRobustMesh;
-  HeF64        mPlane[4];
-  HeF64        mProject[3];
-  HeF64        mRotate[3];
+  NxF64        mPlane[4];
+  NxF64        mProject[3];
+  NxF64        mRotate[3];
 
   SPLIT_MESH::SimpleMesh   mLeftMesh;
   SPLIT_MESH::SimpleMesh   mRightMesh;

@@ -56,9 +56,9 @@
 */
 
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 
-HeU32 GetHeapSize(HeU32 &unused );
-HeU32 GetCurrentProcessMemoryUsage(void);
+NxU32 GetHeapSize(NxU32 &unused );
+NxU32 GetCurrentProcessMemoryUsage(void);
 
 #endif //__MEMORY_H__

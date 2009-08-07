@@ -163,13 +163,6 @@ public:
 	{
 	}
 
-  StringRef Get(const wchar_t *text)
-  {
-    char scratch[512];
-  	wcstombs(scratch,text,512);
-    return Get(scratch);
-  }
-
 	StringRef Get(const char *text)
 	{
 		StringRef ref;
@@ -213,15 +206,6 @@ typedef USER_STL::vector< StringRef  >    StringRefVector;
 typedef USER_STL::set< StringRef >        StringRefSet;
 
 inline StringRef SGET(const char *foo)
-{
-	if ( !gStringDict )
-	{
-		gStringDict = MEMALLOC_NEW(StringDict);
-	}
-	return gStringDict->Get(foo);
-}
-
-inline StringRef WSGET(const wchar_t *foo)
 {
 	if ( !gStringDict )
 	{

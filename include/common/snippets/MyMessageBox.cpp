@@ -66,9 +66,9 @@ void myMessageBox(const char *fmt, ...)
   MessageBox(0,buff,"Error",MB_OK | MB_ICONEXCLAMATION);
 #endif
 #elif defined(_XBOX)
-  HeI32 dprintf(const char* format,...);
+  NxI32 dprintf(const char* format,...);
   dprintf("Error : [%s]\n",buff);
-  HE_ASSERT(false);
+  assert(false);
 #else
 //ignore on linux
 #endif
@@ -95,9 +95,9 @@ bool myMessageBoxYesNo(const char *fmt, ...)
   MessageBox(0,buff,"Error",MB_OK | MB_ICONEXCLAMATION);
 #endif
 #elif defined(_XBOX)
-  HeI32 dprintf(const char* format,...);
+  NxI32 dprintf(const char* format,...);
   dprintf("Error : [%s]\n",buff);
-  HE_ASSERT(false);
+  assert(false);
 #else
 //ignore on linux
 #endif

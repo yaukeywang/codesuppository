@@ -60,16 +60,16 @@
 #include <string.h>
 #include <assert.h>
 #include <stdarg.h>
-#include "common/snippets/UserMemAlloc.h"
-#include "MeshImport/MeshImport.h"
+#include "UserMemAlloc.h"
+#include "MeshImport.h"
 #include "ImportEZM.h"
-#include "common/snippets/SendTextMessage.h"
-#include "common/snippets/StringDict.h"
-#include "common/snippets/sutil.h"
-#include "common/snippets/stable.h"
-#include "common/snippets/asc2bin.h"
-#include "common/snippets/inparser.h"
-#include "common/snippets/FastXml.h"
+#include "SendTextMessage.h"
+#include "StringDict.h"
+#include "sutil.h"
+#include "stable.h"
+#include "asc2bin.h"
+#include "inparser.h"
+#include "FastXml.h"
 
 #pragma warning(disable:4100)
 #pragma warning(disable:4996)
@@ -712,7 +712,7 @@ public:
   			case NT_NODE_TRIANGLE:
   				if ( mCtype && mSemantic )
   				{
-              HeI32 c1,c2;
+              NxI32 c1,c2;
               char scratch1[2048];
               char scratch2[2048];
               strcpy(scratch1,mCtype);
@@ -754,7 +754,7 @@ public:
                 if ( mVertexBuffer )
                 {
 
-                  HeI32 c1,c2;
+                  NxI32 c1,c2;
                   char scratch1[2048];
                   char scratch2[2048];
                   strcpy(scratch1,mCtype);

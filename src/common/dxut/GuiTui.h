@@ -5,7 +5,7 @@
 class CDXUTDialog;
 class CDXUTDialogResourceManager;
 
-#include "common/snippets/cparser.h"
+#include "cparser.h"
 
 #define CONSOLE_LINES			100
 
@@ -46,26 +46,26 @@ public:
 	bool          HasCursorFocus();
 	void          HideAllGuiForTuiPages();
 
-	bool MsgProc(void *hwnd,HeU32 msg,HeU32 wparam,HeU32 lparam);
+	bool MsgProc(void *hwnd,NxU32 msg,NxU32 wparam,NxU32 lparam);
 
-	void OnMouseDown(HeU32 uiX, HeU32 uiY, HeU32 uiButtons);
-	void OnMouseMove(HeU32 uiX, HeU32 uiY, HeU32 uiButtons);
-	void OnMouseUp(HeU32 uiX, HeU32 uiY, HeU32 uiButtons);
+	void OnMouseDown(NxU32 uiX, NxU32 uiY, NxU32 uiButtons);
+	void OnMouseMove(NxU32 uiX, NxU32 uiY, NxU32 uiButtons);
+	void OnMouseUp(NxU32 uiX, NxU32 uiY, NxU32 uiButtons);
 
 	bool ToggleUI(void);
 
-	void PrintText(const char *str,HeI32 x,HeI32 y,HeU32 color);
+	void PrintText(const char *str,NxI32 x,NxI32 y,NxU32 color);
 
 	void SetWindow(void* hwnd);
 
 
-	void NotifyWindowResized( HeU32 newWidth, HeU32 newHeight );
+	void NotifyWindowResized( NxU32 newWidth, NxU32 newHeight );
 
 	void NotifySceneTypeChanged( bool hardwareOn );
 
-	void GetWindowSize( HeU32 &width, HeU32 &height );
+	void GetWindowSize( NxU32 &width, NxU32 &height );
 
-	const char * GetConsoleMessage(HeI32 index)
+	const char * GetConsoleMessage(NxI32 index)
 	{
 		index = mConsoleIndex+index;
 
@@ -87,7 +87,7 @@ public:
 			mConsoleIndex = 0;
 	}
 
-	HeI32 GetConsoleMessageIndex( void ) const
+	NxI32 GetConsoleMessageIndex( void ) const
 	{
 		return mConsoleIndex;
 	}
@@ -96,7 +96,7 @@ public:
 
 public: //-- CommandParserInterface overrides
 
-	virtual HeI32 CommandCallback(HeI32 token,HeI32 count,const char **arglist);
+	virtual NxI32 CommandCallback(NxI32 token,NxI32 count,const char **arglist);
 
 	void onLostDevice(void);
 	void onResetDevice(void *device);
@@ -106,20 +106,20 @@ public: //-- CommandParserInterface overrides
 
 private:
 
-	HeI32	mWidth;
-	HeI32 mHeight;
+	NxI32	mWidth;
+	NxI32 mHeight;
 	bool mConsoleKeyDown;
   void *mNullHwnd;
   bool mShowConsole;
   bool mCapture;
-  HeF32 mDtime;
+  NxF32 mDtime;
   CDXUTDialogResourceManager *mDialogResourceManager; // manager for shared resources of dialogs
-	HeI32                 mConsoleIndex;
+	NxI32                 mConsoleIndex;
 	ConsoleMessage		  mConsole[CONSOLE_LINES];
 };
 
 //==================================================================================
-inline void GuiTui::GetWindowSize( HeU32 &width, HeU32 &height )
+inline void GuiTui::GetWindowSize( NxU32 &width, NxU32 &height )
 {
 	width  = mWidth;
 	height = mHeight;

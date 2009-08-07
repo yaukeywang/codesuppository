@@ -61,9 +61,9 @@
 #include <windows.h>
 #endif
 
-HeI32 systemCall(const char* strFunct,const char* strstrParams,bool hideWindow)
+NxI32 systemCall(const char* strFunct,const char* strstrParams,bool hideWindow)
 {
-  HeI32 rc = 1;
+  NxI32 rc = 1;
 
 #ifdef WIN32
 	STARTUPINFO StartupInfo;

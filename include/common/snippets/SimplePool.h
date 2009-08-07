@@ -11,7 +11,7 @@ template<class T>
 class SimplePool
 {
 public:
-	SimplePool (HeU32 elementsPerSlab = 32)
+	SimplePool (NxU32 elementsPerSlab = 32)
 		: mElementsPerSlab (elementsPerSlab), mSlabSize (mElementSize * elementsPerSlab),
 		mFreeElement (0)
 	{
@@ -110,8 +110,8 @@ protected:
     // All the allocated slabs, sorted by pointer
 	SortedSet<void*> mAllocatedSlabs;
 
-	HeU32 mElementsPerSlab;
-	HeU32 mSlabSize;
+	NxU32 mElementsPerSlab;
+	NxU32 mSlabSize;
 
 	FreeList* mFreeElement; // Head of free-list
 
@@ -121,14 +121,14 @@ protected:
 	// Allocate a slab and segregate it into the freelist
 	inline void allocateSlab ()
 	{
-		HeU8* slab = reinterpret_cast<HeU8*>(MEMALLOC_MALLOC(mSlabSize));
+		NxU8* slab = reinterpret_cast<NxU8*>(MEMALLOC_MALLOC(mSlabSize));
 
 		//Save the slab ptr
 		mAllocatedSlabs.insert(slab);
 
 		// Build a chain of nodes for the freelist
 		FreeList* nextFree = mFreeElement;
-		HeU8* node = slab + (mElementsPerSlab - 1) * mElementSize;
+		NxU8* node = slab + (mElementsPerSlab - 1) * mElementSize;
 		for (; node >= slab; node -= mElementSize)
 		{
 			FreeList* element = reinterpret_cast<FreeList*> (node);
@@ -148,7 +148,7 @@ protected:
 	// Free all slabs
 	inline void freeAllSlabs ()
 	{
-		for(HeU32 i = 0; i < mAllocatedSlabs.getSize(); ++i)
+		for(NxU32 i = 0; i < mAllocatedSlabs.getSize(); ++i)
 		{
 			MEMALLOC_FREE(mAllocatedSlabs[i]);
 		}
@@ -195,10 +195,10 @@ protected:
 
 		if(freeNodeSet.getSize() != mElementsPerSlab * mAllocatedSlabs.getSize())
 		{
-			for(HeU32 i = 0; i < mAllocatedSlabs.getSize(); ++i)
+			for(NxU32 i = 0; i < mAllocatedSlabs.getSize(); ++i)
 			{
-				HeU8* slab = reinterpret_cast<HeU8*>(mAllocatedSlabs[i]);
-				for(HeU32 elId = 0; elId < mElementsPerSlab; ++elId)
+				NxU8* slab = reinterpret_cast<NxU8*>(mAllocatedSlabs[i]);
+				for(NxU32 elId = 0; elId < mElementsPerSlab; ++elId)
 				{
 					void* element = slab + elId*mElementSize;
 					if(freeNodeSet.contains(element))

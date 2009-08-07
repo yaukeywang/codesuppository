@@ -5,10 +5,10 @@
 
 #include "TestBestFitOBB.h"
 
-#include "common/snippets/SendTextMessage.h"
+#include "SendTextMessage.h"
 #include "RenderDebug/RenderDebug.h"
-#include "common/snippets/FloatMath.h"
-#include "common/snippets/rand.h"
+#include "FloatMath.h"
+#include "rand.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
 
 void testBestFitOBB(MeshSystemHelper *ms)

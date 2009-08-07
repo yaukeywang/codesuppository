@@ -59,10 +59,12 @@
 #include <string.h>
 #include <assert.h>
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 #include "renderdebug/renderdebug.h"
-#include "common/snippets/pool.h"
-#include "common/snippets/FloatMath.h"
+#include "pool.h"
+#include "FloatMath.h"
+#include "SendTextMessage.h"
+#include "SystemServices.h"
 
 #pragma warning(disable:4996)
 
@@ -102,23 +104,23 @@ void DejaDescriptor(const InternalRenderDebug &obj);
 class SolidVertex
 {
 public:
-  HeF32	       mPos[3];
-  HeF32        mNormal[3];
-  HeU32 mColor;
+  NxF32	       mPos[3];
+  NxF32        mNormal[3];
+  NxU32 mColor;
 };
 
 class DebugVertex
 {
 public:
 
-	HeF32        mPos[3];
-	HeU32 mColor;
+	NxF32        mPos[3];
+	NxU32 mColor;
 };
 
 
 RenderDebug *gRenderDebug=0;
 
-const HeF32 debug_cylinder[32*9] =
+const NxF32 debug_cylinder[32*9] =
 {
 0.0000f, 0.0000f, 0.0000f,    0.7071f, 0.7071f, 0.0000f,  1.0000f, 0.0000f, 0.0000f,
 0.0000f, 0.0000f, 0.0000f,    0.0000f, 1.0000f, 0.0000f,  0.7071f, 0.7071f, 0.0000f,
@@ -154,7 +156,7 @@ const HeF32 debug_cylinder[32*9] =
 0.0000f, 0.0000f, 1.0000f,    0.7071f, -0.7071f, 1.0000f,  1.0000f, 0.0000f, 1.0000f
 };
 
-const HeF32 debug_sphere[32*9] =
+const NxF32 debug_sphere[32*9] =
 {
  0.0000f, 0.0000f, 1.0000f,    0.7071f, 0.0000f, 0.7071f,  0.0000f, 0.7071f, 0.7071f,
  0.7071f, 0.0000f, 0.7071f,    1.0000f, 0.0000f, 0.0000f,  0.7071f, 0.7071f, 0.0000f,
@@ -190,7 +192,7 @@ const HeF32 debug_sphere[32*9] =
  0.0000f, -0.7071f, -0.7071f,    0.7071f, -0.7071f, 0.0000f,  0.0000f, -1.0000f, 0.0000f,
 };
 
-const HeF32 debug_halfsphere[16*9] =
+const NxF32 debug_halfsphere[16*9] =
 {
  0.0000f, 0.0000f, 1.0000f,    0.7071f, 0.0000f, 0.7071f,  0.0000f, 0.7071f, 0.7071f,
  0.7071f, 0.0000f, 0.7071f,    1.0000f, 0.0000f, 0.0000f,  0.7071f, 0.7071f, 0.0000f,
@@ -202,7 +204,7 @@ const HeF32 debug_halfsphere[16*9] =
  -0.7071f, 0.0000f, 0.7071f,    -0.7071f, 0.7071f, 0.0000f,  -1.0000f, 0.0000f, 0.0000f,
 };
 
-const HeF32 debug_point[3*6] =
+const NxF32 debug_point[3*6] =
 {
 	-1.0f, 0.0f, 0.0f,  1.0f, 0.0f, 0.0f,
 	 0.0f,-1.0f, 0.0f,  0.0f, 1.0f, 0.0f,
@@ -439,13 +441,13 @@ public:
   }
 
 
-	void Set(const HeF32 *p1,
-					 const HeF32 *p2,
-					 const HeF32 *p3,
-					 HeU32 color,
-					 HeF32 lifespan,
+	void Set(const NxF32 *p1,
+					 const NxF32 *p2,
+					 const NxF32 *p3,
+					 NxU32 color,
+					 NxF32 lifespan,
            WireTriFlag flag,
-           HeF32 renderScale)
+           NxF32 renderScale)
 	{
     mFlags = flag;
 		mP1.mPos[0] = p1[0]*renderScale;
@@ -486,16 +488,16 @@ public:
 	};
 
 
-	void Set(const HeF32 *p1,
-					 const HeF32 *p2,
-					 const HeF32 *p3,
-           const HeF32 *n1,
-           const HeF32 *n2,
-           const HeF32 *n3,
-					 HeU32 color,
-					 HeF32 lifespan,
+	void Set(const NxF32 *p1,
+					 const NxF32 *p2,
+					 const NxF32 *p3,
+           const NxF32 *n1,
+           const NxF32 *n2,
+           const NxF32 *n3,
+					 NxU32 color,
+					 NxF32 lifespan,
            WireTriFlag flag,
-           HeF32 renderScale)
+           NxF32 renderScale)
 	{
     mFlags = flag;
 
@@ -533,7 +535,7 @@ public:
 	};
 
 
-	DebugVertex * RenderLine(HeF32 dtime,DebugVertex *current,bool &remove,bool flush)
+	DebugVertex * RenderLine(NxF32 dtime,DebugVertex *current,bool &remove,bool flush)
 	{
 
 		current[0] = mP1;
@@ -569,7 +571,7 @@ public:
 
 	}
 
-	SolidVertex * RenderSolid(HeF32 dtime,SolidVertex *current,bool &remove,bool flush)
+	SolidVertex * RenderSolid(NxF32 dtime,SolidVertex *current,bool &remove,bool flush)
 	{
     current[0].mPos[0]   = mP1.mPos[0];
     current[0].mPos[1]   = mP1.mPos[1];
@@ -627,11 +629,11 @@ public:
 	DebugVertex     mP1;
 	DebugVertex     mP2;
 	DebugVertex     mP3;
-	HeF32           mLifeSpan;
-  HeF32           mN1[3];
-  HeF32           mN2[3];
-  HeF32           mN3[3];
-  HeU32    mFlags;
+	NxF32           mLifeSpan;
+  NxF32           mN1[3];
+  NxF32           mN2[3];
+  NxF32           mN3[3];
+  NxU32    mFlags;
 };
 
 
@@ -705,14 +707,14 @@ public:
 #endif
   }
 
-	virtual void Render(HeF32 dtime, bool flush, bool zPass)
+	virtual void Render(NxF32 dtime, bool flush, bool zPass)
 	{
-    HeMat44 mvp = mViewProjectionMatrix;
-    HeVec3 localCameraPos = mEyePos;
+    NxMat44 mvp = mViewProjectionMatrix;
+    NxVec3 localCameraPos = mEyePos;
     // only render if the driver is available.
 #if USE_PD3D
 
-		HeI32 tricount = mDebug.Begin();
+		NxI32 tricount = mDebug.Begin();
 		if ( tricount )
 		{
 
@@ -724,7 +726,7 @@ public:
       SolidVertex *s_current = mSolidPoints;
 
 
-			for (HeI32 i=0; i<tricount; i++)
+			for (NxI32 i=0; i<tricount; i++)
 			{
 				WireTri *tri = mDebug.GetNext();
 
@@ -740,7 +742,7 @@ public:
 					  }
 					  if ( s_current >= s_stop )
 					  {
-						  HeU32 count = (HeU32)(s_current - mSolidPoints)/3;
+						  NxU32 count = (NxU32)(s_current - mSolidPoints)/3;
               gPd3d->renderSolid(count,(const PD3D::Pd3dSolidVertex *)mSolidPoints);
 						  s_current = mSolidPoints;
 					  }
@@ -756,7 +758,7 @@ public:
 					}
 					if ( current >= stop )
 					{
-						HeU32 count = (HeU32)(current - mLinePoints)/2;
+						NxU32 count = (NxU32)(current - mLinePoints)/2;
 						gPd3d->renderLines(count,(const PD3D::Pd3dLineVertex *)mLinePoints,zPass);
 						current = mLinePoints;
 					}
@@ -764,7 +766,7 @@ public:
 			}
 
       {
-  			HeU32 count = (HeU32)(current - mLinePoints)/2;
+  			NxU32 count = (NxU32)(current - mLinePoints)/2;
   			if ( count )
   			{
   				gPd3d->renderLines(count,(const PD3D::Pd3dLineVertex *)mLinePoints,zPass);
@@ -772,7 +774,7 @@ public:
       }
 
       {
-  			HeU32 count = (HeU32)(s_current - mSolidPoints)/3;
+  			NxU32 count = (NxU32)(s_current - mSolidPoints)/3;
   			if ( count )
   			{
           gPd3d->renderSolid(count,(const PD3D::Pd3dSolidVertex *)mSolidPoints);
@@ -790,7 +792,7 @@ public:
 
       // get the previous shader so that we can restore it's state.
       HeGrShader* prevShader = mDriver->getShader();
-		  HeI32 tricount = mDebug.Begin();
+		  NxI32 tricount = mDebug.Begin();
 		  if ( tricount )
 		  {
 			  DebugVertex *stop    = &mLinePoints[MAXLINEPOINTS-6];
@@ -800,7 +802,7 @@ public:
         SolidVertex *s_current = mSolidPoints;
 
 
-			  for (HeI32 i=0; i<tricount; i++)
+			  for (NxI32 i=0; i<tricount; i++)
 			  {
 				  WireTri *tri = mDebug.GetNext();
 
@@ -816,7 +818,7 @@ public:
 					    }
 					    if ( s_current >= s_stop )
 					    {
-						    HeU32 count = (HeU32)(s_current - mSolidPoints);
+						    NxU32 count = (NxU32)(s_current - mSolidPoints);
 
                 // TODO: Use HeGrDriver
                 mDriver->setShader( mSolidShader );
@@ -835,7 +837,7 @@ public:
 					  }
 					  if ( current >= stop )
 					  {
-						  HeU32 count = (HeU32)(current - mLinePoints);
+						  NxU32 count = (NxU32)(current - mLinePoints);
               mDriver->setShader( mLineShader );
               mDriver->renderLines(VF_POSITION | VF_COLOR, mLinePoints, count );
 						  current = mLinePoints;
@@ -845,7 +847,7 @@ public:
 
         // check for any extra lines.
         {
-  			  HeU32 count = (HeU32)(current - mLinePoints);
+  			  NxU32 count = (NxU32)(current - mLinePoints);
   			  if ( count )
           {
             mDriver->setShader( mLineShader );
@@ -855,7 +857,7 @@ public:
 
         // check for any extra triangles.
         {
-  			  HeU32 count = (HeU32)(s_current - mSolidPoints);
+  			  NxU32 count = (NxU32)(s_current - mSolidPoints);
   			  if ( count )
           {
             mDriver->setShader( mSolidShader );
@@ -873,7 +875,7 @@ public:
 #pragma warning( default : 4100 )
 #pragma warning( default : 4189 )
 
-	virtual void DebugSolidTri(const HeF32 *p1,const HeF32 *p2,const HeF32 *p3,HeU32 color,HeF32 duration)
+	virtual void DebugSolidTri(const NxF32 *p1,const NxF32 *p2,const NxF32 *p3,NxU32 color,NxF32 duration)
   {
 
     WireTri *tri = mDebug.GetFreeLink(); // pull a MEMALLOC_FREE triangle from the pool
@@ -884,62 +886,62 @@ public:
 
   }
 
-	virtual void DebugTri(const HeF32 *p1,const HeF32 *p2,const HeF32 *p3,HeU32 color,HeF32 duration,bool useZ)
+	virtual void DebugTri(const NxF32 *p1,const NxF32 *p2,const NxF32 *p3,NxU32 color,NxF32 duration,bool useZ)
 	{
 		WireTri *tri = mDebug.GetFreeLink(); // pull a MEMALLOC_FREE triangle from the pool
 		if ( tri )
 		{
-      HeU32 flag = 0;
+      NxU32 flag = 0;
       if ( useZ ) flag = WTF_USEZ;
 			tri->Set(p1,p2,p3, color | 0xFF000000, duration, (WireTriFlag)flag, mRenderScale ); // set condition of the triangle
 		}
 	}
 
-  void adjust(const HeF32 *p,HeF32 *d,HeF32 arrowSize)
+  void adjust(const NxF32 *p,NxF32 *d,NxF32 arrowSize)
   {
     d[0] = d[0]*arrowSize+p[0];
     d[1] = d[1]*arrowSize+p[1];
     d[2] = d[2]*arrowSize+p[2];
   }
 
-	void DebugRay(const HeF32 *p1,const HeF32 *p2,HeF32 arrowSize,HeU32 color,HeU32 arrowColor,HeF32 duration,bool useZ)
+	void DebugRay(const NxF32 *p1,const NxF32 *p2,NxF32 arrowSize,NxU32 color,NxU32 arrowColor,NxF32 duration,bool useZ)
   {
 
     DebugLine(p1,p2,color,duration,useZ);
 
-    HeF32 dir[3];
+    NxF32 dir[3];
 
     dir[0] = p2[0] - p1[0];
     dir[1] = p2[1] - p1[1];
     dir[2] = p2[2] - p1[2];
 
-    HeF32 mag = fm_normalize(dir);
+    NxF32 mag = fm_normalize(dir);
 
     if ( arrowSize > (mag*0.2f) )
     {
       arrowSize = mag*0.2f;
     }
 
-    HeF32 ref[3] = { 0, 1, 0 };
+    NxF32 ref[3] = { 0, 1, 0 };
 
-    HeF32 quat[4];
+    NxF32 quat[4];
 
     fm_rotationArc(ref,dir,quat);
 
-    HeF32 matrix[16];
+    NxF32 matrix[16];
     fm_quatToMatrix(quat,matrix);
     fm_setTranslation(p2,matrix);
 
 
-    HeU32 pcount = 0;
-    HeF32 points[24*3];
-    HeF32 *dest = points;
+    NxU32 pcount = 0;
+    NxF32 points[24*3];
+    NxF32 *dest = points;
 
-    for (HeF32 a=30; a<=360; a+=30)
+    for (NxF32 a=30; a<=360; a+=30)
     {
-      HeF32 r = a*FM_DEG_TO_RAD;
-      HeF32 x = cosf(r)*arrowSize;
-      HeF32 y = sinf(r)*arrowSize;
+      NxF32 r = a*FM_DEG_TO_RAD;
+      NxF32 x = cosf(r)*arrowSize;
+      NxF32 y = sinf(r)*arrowSize;
 
       dest[0] = x;
       dest[1] = -3*arrowSize;
@@ -948,22 +950,22 @@ public:
       pcount++;
     }
 
-    HeF32 *prev = &points[(pcount-1)*3];
-    HeF32 *p = points;
-    HeF32 center[3] = { 0, -2.5f*arrowSize, 0 };
-    HeF32 top[3]    = { 0, 0, 0 };
+    NxF32 *prev = &points[(pcount-1)*3];
+    NxF32 *p = points;
+    NxF32 center[3] = { 0, -2.5f*arrowSize, 0 };
+    NxF32 top[3]    = { 0, 0, 0 };
 
-    HeF32 _center[3];
-    HeF32 _top[3];
+    NxF32 _center[3];
+    NxF32 _top[3];
 
     fm_transform(matrix,center,_center);
     fm_transform(matrix,top,_top);
 
-    for (HeU32 i=0; i<pcount; i++)
+    for (NxU32 i=0; i<pcount; i++)
     {
 
-      HeF32 _p[3];
-      HeF32 _prev[3];
+      NxF32 _p[3];
+      NxF32 _prev[3];
       fm_transform(matrix,p,_p);
       fm_transform(matrix,prev,_prev);
 
@@ -977,26 +979,26 @@ public:
     }
   }
 
-	virtual void DebugLine(const HeF32 *p1,const HeF32 *p2,HeU32 color,HeF32 duration,bool useZ)
+	virtual void DebugLine(const NxF32 *p1,const NxF32 *p2,NxU32 color,NxF32 duration,bool useZ)
 	{
 		WireTri *tri = mDebug.GetFreeLink(); // pull a MEMALLOC_FREE triangle from the pool
 		if ( tri )
 		{
-      HeU32 flag = WTF_LINE;
+      NxU32 flag = WTF_LINE;
       if ( useZ ) flag|=WTF_USEZ;
 			tri->Set(p1,p2,0, color | 0xFF000000, duration, (WireTriFlag) flag, mRenderScale ); // set condition of the triangle
 		}
 	}
-	void DebugOrientedLine(const HeF32 *p1,const HeF32 *p2,const HeF32 *transform,HeU32 color,HeF32 duration,bool useZ)
+	void DebugOrientedLine(const NxF32 *p1,const NxF32 *p2,const NxF32 *transform,NxU32 color,NxF32 duration,bool useZ)
 	{
 		WireTri *tri = mDebug.GetFreeLink(); // pull a MEMALLOC_FREE triangle from the pool
 		if ( tri )
 		{
-      HeU32 flag = WTF_LINE;
+      NxU32 flag = WTF_LINE;
       if ( useZ ) flag|=WTF_USEZ;
 
-      HeF32 t1[3];
-      HeF32 t2[3];
+      NxF32 t1[3];
+      NxF32 t2[3];
 
       fm_transform(transform,p1,t1);
       fm_transform(transform,p2,t2);
@@ -1005,9 +1007,9 @@ public:
 		}
 	}
 
-	virtual void DebugBound(const HeF32 *bmin,const HeF32 *bmax,HeU32 color,HeF32 duration,bool useZ,bool solid)
+	virtual void DebugBound(const NxF32 *bmin,const NxF32 *bmax,NxU32 color,NxF32 duration,bool useZ,bool solid)
 	{
-		HeVec3 box[8];
+		NxVec3 box[8];
 
 		box[0].set( bmin[0], bmin[1], bmin[2] );
 		box[1].set( bmax[0], bmin[1], bmin[2] );
@@ -1020,70 +1022,70 @@ public:
 
     if ( !solid )
     {
-  		DebugLine(box[0].ptr(), box[1].ptr(), color, duration, useZ );
-  		DebugLine(box[1].ptr(), box[2].ptr(), color, duration, useZ );
-  		DebugLine(box[2].ptr(), box[3].ptr(), color, duration, useZ );
-  		DebugLine(box[3].ptr(), box[0].ptr(), color, duration, useZ );
+  		DebugLine(&box[0].x, &box[1].x, color, duration, useZ );
+  		DebugLine(&box[1].x, &box[2].x, color, duration, useZ );
+  		DebugLine(&box[2].x, &box[3].x, color, duration, useZ );
+  		DebugLine(&box[3].x, &box[0].x, color, duration, useZ );
 
-  		DebugLine(box[4].ptr(), box[5].ptr(), color, duration, useZ );
-  		DebugLine(box[5].ptr(), box[6].ptr(), color, duration, useZ );
-  		DebugLine(box[6].ptr(), box[7].ptr(), color, duration, useZ );
-  		DebugLine(box[7].ptr(), box[4].ptr(), color, duration, useZ );
+  		DebugLine(&box[4].x, &box[5].x, color, duration, useZ );
+  		DebugLine(&box[5].x, &box[6].x, color, duration, useZ );
+  		DebugLine(&box[6].x, &box[7].x, color, duration, useZ );
+  		DebugLine(&box[7].x, &box[4].x, color, duration, useZ );
 
-  		DebugLine(box[0].ptr(), box[4].ptr(), color, duration, useZ );
-  		DebugLine(box[1].ptr(), box[5].ptr(), color, duration, useZ );
-  		DebugLine(box[2].ptr(), box[6].ptr(), color, duration, useZ );
-  		DebugLine(box[3].ptr(), box[7].ptr(), color, duration, useZ );
+  		DebugLine(&box[0].x, &box[4].x, color, duration, useZ );
+  		DebugLine(&box[1].x, &box[5].x, color, duration, useZ );
+  		DebugLine(&box[2].x, &box[6].x, color, duration, useZ );
+  		DebugLine(&box[3].x, &box[7].x, color, duration, useZ );
     }
     else
     {
-  		DebugSolidTri(box[2].ptr(),box[1].ptr(),box[0].ptr(),color,duration);
-  		DebugSolidTri(box[3].ptr(),box[2].ptr(),box[0].ptr(),color,duration);
+  		DebugSolidTri(&box[2].x,&box[1].x,&box[0].x,color,duration);
+  		DebugSolidTri(&box[3].x,&box[2].x,&box[0].x,color,duration);
 
-  		DebugSolidTri(box[7].ptr(),box[2].ptr(),box[3].ptr(),color,duration);
-  		DebugSolidTri(box[7].ptr(),box[6].ptr(),box[2].ptr(),color,duration);
+  		DebugSolidTri(&box[7].x,&box[2].x,&box[3].x,color,duration);
+  		DebugSolidTri(&box[7].x,&box[6].x,&box[2].x,color,duration);
 
-  		DebugSolidTri(box[5].ptr(),box[1].ptr(),box[2].ptr(),color,duration);
-  		DebugSolidTri(box[5].ptr(),box[2].ptr(),box[6].ptr(),color,duration);
+  		DebugSolidTri(&box[5].x,&box[1].x,&box[2].x,color,duration);
+  		DebugSolidTri(&box[5].x,&box[2].x,&box[6].x,color,duration);
 
-  		DebugSolidTri(box[5].ptr(),box[4].ptr(),box[1].ptr(),color,duration);
-  		DebugSolidTri(box[4].ptr(),box[0].ptr(),box[1].ptr(),color,duration);
+  		DebugSolidTri(&box[5].x,&box[4].x,&box[1].x,color,duration);
+  		DebugSolidTri(&box[4].x,&box[0].x,&box[1].x,color,duration);
 
-  		DebugSolidTri(box[4].ptr(),box[6].ptr(),box[7].ptr(),color,duration);
-  		DebugSolidTri(box[4].ptr(),box[5].ptr(),box[6].ptr(),color,duration);
+  		DebugSolidTri(&box[4].x,&box[6].x,&box[7].x,color,duration);
+  		DebugSolidTri(&box[4].x,&box[5].x,&box[6].x,color,duration);
 
-  		DebugSolidTri(box[4].ptr(),box[7].ptr(),box[0].ptr(),color,duration);
-  		DebugSolidTri(box[7].ptr(),box[3].ptr(),box[0].ptr(),color,duration);
+  		DebugSolidTri(&box[4].x,&box[7].x,&box[0].x,color,duration);
+  		DebugSolidTri(&box[7].x,&box[3].x,&box[0].x,color,duration);
     }
 	}
 
-	virtual void DebugOrientedBound(const HeF32 *bmin,
-																	const HeF32 *bmax,
-																	const HeF32 *pos,
-																	const HeF32 *rot,
-																	HeU32 color,
-																	HeF32 duration,
+	virtual void DebugOrientedBound(const NxF32 *bmin,
+																	const NxF32 *bmax,
+																	const NxF32 *pos,
+																	const NxF32 *rot,
+																	NxU32 color,
+																	NxF32 duration,
 																	bool useZ,
                                   bool solid) // the rotation as a quaternion
 	{
-    HeMat44 m;
-    HeQuat q;
+    NxMat44 m;
+    NxQuat q;
     q.setXYZW(rot[0],rot[1],rot[2],rot[3]);
     m.fromQuat(q);
-    HeVec3 p(pos);
+    NxVec3 p(pos);
     m.setPosition(p);
 		DebugOrientedBound(bmin,bmax,m.ptr(),color,duration,useZ,solid);
 	}
 
-	virtual void DebugOrientedBound(const HeF32 *bmin,
-																  const HeF32 *bmax,
-																  const HeF32 *xform,
-																	HeU32 color,
-																	HeF32 duration,
+	virtual void DebugOrientedBound(const NxF32 *bmin,
+																  const NxF32 *bmax,
+																  const NxF32 *xform,
+																	NxU32 color,
+																	NxF32 duration,
 																	bool useZ,
 																	bool solid) // the rotation as a quaternion
 	{
-		HeVec3 box[8];
+		NxVec3 box[8];
 
 		box[0].set( bmin[0], bmin[1], bmin[2] );
 		box[1].set( bmax[0], bmin[1], bmin[2] );
@@ -1094,7 +1096,7 @@ public:
 		box[6].set( bmax[0], bmax[1], bmax[2] );
 		box[7].set( bmin[0], bmax[1], bmax[2] );
 
-    HeMat44 m(xform);
+    NxMat44 m(xform);
 
     m.multiply(box[0],box[0]); // = m.Transform(box[0]);
 		m.multiply(box[1],box[1]);
@@ -1107,54 +1109,54 @@ public:
 
     if ( !solid )
     {
-  		DebugLine(box[0].ptr(), box[1].ptr(), color, duration, useZ );
-  		DebugLine(box[1].ptr(), box[2].ptr(), color, duration, useZ );
-  		DebugLine(box[2].ptr(), box[3].ptr(), color, duration, useZ );
-  		DebugLine(box[3].ptr(), box[0].ptr(), color, duration, useZ );
+  		DebugLine(&box[0].x, &box[1].x, color, duration, useZ );
+  		DebugLine(&box[1].x, &box[2].x, color, duration, useZ );
+  		DebugLine(&box[2].x, &box[3].x, color, duration, useZ );
+  		DebugLine(&box[3].x, &box[0].x, color, duration, useZ );
 
-  		DebugLine(box[4].ptr(), box[5].ptr(), color, duration, useZ );
-  		DebugLine(box[5].ptr(), box[6].ptr(), color, duration, useZ );
-  		DebugLine(box[6].ptr(), box[7].ptr(), color, duration, useZ );
-  		DebugLine(box[7].ptr(), box[4].ptr(), color, duration, useZ );
+  		DebugLine(&box[4].x, &box[5].x, color, duration, useZ );
+  		DebugLine(&box[5].x, &box[6].x, color, duration, useZ );
+  		DebugLine(&box[6].x, &box[7].x, color, duration, useZ );
+  		DebugLine(&box[7].x, &box[4].x, color, duration, useZ );
 
-  		DebugLine(box[0].ptr(), box[4].ptr(), color, duration, useZ );
-  		DebugLine(box[1].ptr(), box[5].ptr(), color, duration, useZ );
-  		DebugLine(box[2].ptr(), box[6].ptr(), color, duration, useZ );
-  		DebugLine(box[3].ptr(), box[7].ptr(), color, duration, useZ );
+  		DebugLine(&box[0].x, &box[4].x, color, duration, useZ );
+  		DebugLine(&box[1].x, &box[5].x, color, duration, useZ );
+  		DebugLine(&box[2].x, &box[6].x, color, duration, useZ );
+  		DebugLine(&box[3].x, &box[7].x, color, duration, useZ );
     }
     else
     {
-  		DebugSolidTri(box[2].ptr(),box[1].ptr(),box[0].ptr(),color,duration);
-  		DebugSolidTri(box[3].ptr(),box[2].ptr(),box[0].ptr(),color,duration);
+  		DebugSolidTri(&box[2].x,&box[1].x,&box[0].x,color,duration);
+  		DebugSolidTri(&box[3].x,&box[2].x,&box[0].x,color,duration);
 
-  		DebugSolidTri(box[7].ptr(),box[2].ptr(),box[3].ptr(),color,duration);
-  		DebugSolidTri(box[7].ptr(),box[6].ptr(),box[2].ptr(),color,duration);
+  		DebugSolidTri(&box[7].x,&box[2].x,&box[3].x,color,duration);
+  		DebugSolidTri(&box[7].x,&box[6].x,&box[2].x,color,duration);
 
-  		DebugSolidTri(box[5].ptr(),box[1].ptr(),box[2].ptr(),color,duration);
-  		DebugSolidTri(box[5].ptr(),box[2].ptr(),box[6].ptr(),color,duration);
+  		DebugSolidTri(&box[5].x,&box[1].x,&box[2].x,color,duration);
+  		DebugSolidTri(&box[5].x,&box[2].x,&box[6].x,color,duration);
 
-  		DebugSolidTri(box[5].ptr(),box[4].ptr(),box[1].ptr(),color,duration);
-  		DebugSolidTri(box[4].ptr(),box[0].ptr(),box[1].ptr(),color,duration);
+  		DebugSolidTri(&box[5].x,&box[4].x,&box[1].x,color,duration);
+  		DebugSolidTri(&box[4].x,&box[0].x,&box[1].x,color,duration);
 
-  		DebugSolidTri(box[4].ptr(),box[6].ptr(),box[7].ptr(),color,duration);
-  		DebugSolidTri(box[4].ptr(),box[5].ptr(),box[6].ptr(),color,duration);
+  		DebugSolidTri(&box[4].x,&box[6].x,&box[7].x,color,duration);
+  		DebugSolidTri(&box[4].x,&box[5].x,&box[6].x,color,duration);
 
-  		DebugSolidTri(box[4].ptr(),box[7].ptr(),box[0].ptr(),color,duration);
-  		DebugSolidTri(box[7].ptr(),box[3].ptr(),box[0].ptr(),color,duration);
+  		DebugSolidTri(&box[4].x,&box[7].x,&box[0].x,color,duration);
+  		DebugSolidTri(&box[7].x,&box[3].x,&box[0].x,color,duration);
     }
 	}
 
-	virtual void DebugOrientedBound(const HeF32 *sides,
-  																const HeF32 *transform,
-																	HeU32 color,
-																  HeF32 duration,
+	virtual void DebugOrientedBound(const NxF32 *sides,
+  																const NxF32 *transform,
+																	NxU32 color,
+																  NxF32 duration,
 																  bool useZ,
                                   bool solid) // the rotation as a quaternion
 	{
-		HeVec3 box[8];
+		NxVec3 box[8];
 
-		HeF32 bmin[3];
-		HeF32 bmax[3];
+		NxF32 bmin[3];
+		NxF32 bmax[3];
 
 		bmin[0] = -sides[0]*0.5f;
 		bmin[1] = -sides[1]*0.5f;
@@ -1173,7 +1175,7 @@ public:
 		box[6].set( bmax[0], bmax[1], bmax[2] );
 		box[7].set( bmin[0], bmax[1], bmax[2] );
 
-		HeMat44 *m = (HeMat44 *) transform;
+		NxMat44 *m = (NxMat44 *) transform;
 
 		m->multiply(box[0],box[0]);
 		m->multiply(box[1],box[1]);
@@ -1186,55 +1188,55 @@ public:
 
     if ( !solid )
     {
-		  DebugLine(box[0].ptr(), box[1].ptr(), color, duration, useZ );
-		  DebugLine(box[1].ptr(), box[2].ptr(), color, duration, useZ );
-		  DebugLine(box[2].ptr(), box[3].ptr(), color, duration, useZ );
-		  DebugLine(box[3].ptr(), box[0].ptr(), color, duration, useZ );
+		  DebugLine(&box[0].x, &box[1].x, color, duration, useZ );
+		  DebugLine(&box[1].x, &box[2].x, color, duration, useZ );
+		  DebugLine(&box[2].x, &box[3].x, color, duration, useZ );
+		  DebugLine(&box[3].x, &box[0].x, color, duration, useZ );
 
-		  DebugLine(box[4].ptr(), box[5].ptr(), color, duration, useZ );
-		  DebugLine(box[5].ptr(), box[6].ptr(), color, duration, useZ );
-		  DebugLine(box[6].ptr(), box[7].ptr(), color, duration, useZ );
-		  DebugLine(box[7].ptr(), box[4].ptr(), color, duration, useZ );
+		  DebugLine(&box[4].x, &box[5].x, color, duration, useZ );
+		  DebugLine(&box[5].x, &box[6].x, color, duration, useZ );
+		  DebugLine(&box[6].x, &box[7].x, color, duration, useZ );
+		  DebugLine(&box[7].x, &box[4].x, color, duration, useZ );
 
-		  DebugLine(box[0].ptr(), box[4].ptr(), color, duration, useZ );
-		  DebugLine(box[1].ptr(), box[5].ptr(), color, duration, useZ );
-		  DebugLine(box[2].ptr(), box[6].ptr(), color, duration, useZ );
-		  DebugLine(box[3].ptr(), box[7].ptr(), color, duration, useZ );
+		  DebugLine(&box[0].x, &box[4].x, color, duration, useZ );
+		  DebugLine(&box[1].x, &box[5].x, color, duration, useZ );
+		  DebugLine(&box[2].x, &box[6].x, color, duration, useZ );
+		  DebugLine(&box[3].x, &box[7].x, color, duration, useZ );
     }
     else
     {
 // valid order
-  		DebugSolidTri(box[2].ptr(),box[1].ptr(),box[0].ptr(),color,duration);
-  		DebugSolidTri(box[3].ptr(),box[2].ptr(),box[0].ptr(),color,duration);
+  		DebugSolidTri(&box[2].x,&box[1].x,&box[0].x,color,duration);
+  		DebugSolidTri(&box[3].x,&box[2].x,&box[0].x,color,duration);
 
-  		DebugSolidTri(box[7].ptr(),box[2].ptr(),box[3].ptr(),color,duration);
-  		DebugSolidTri(box[7].ptr(),box[6].ptr(),box[2].ptr(),color,duration);
+  		DebugSolidTri(&box[7].x,&box[2].x,&box[3].x,color,duration);
+  		DebugSolidTri(&box[7].x,&box[6].x,&box[2].x,color,duration);
 
-  		DebugSolidTri(box[5].ptr(),box[1].ptr(),box[2].ptr(),color,duration);
-  		DebugSolidTri(box[5].ptr(),box[2].ptr(),box[6].ptr(),color,duration);
+  		DebugSolidTri(&box[5].x,&box[1].x,&box[2].x,color,duration);
+  		DebugSolidTri(&box[5].x,&box[2].x,&box[6].x,color,duration);
 
-  		DebugSolidTri(box[5].ptr(),box[4].ptr(),box[1].ptr(),color,duration);
-  		DebugSolidTri(box[4].ptr(),box[0].ptr(),box[1].ptr(),color,duration);
+  		DebugSolidTri(&box[5].x,&box[4].x,&box[1].x,color,duration);
+  		DebugSolidTri(&box[4].x,&box[0].x,&box[1].x,color,duration);
 
-  		DebugSolidTri(box[4].ptr(),box[6].ptr(),box[7].ptr(),color,duration);
-  		DebugSolidTri(box[4].ptr(),box[5].ptr(),box[6].ptr(),color,duration);
+  		DebugSolidTri(&box[4].x,&box[6].x,&box[7].x,color,duration);
+  		DebugSolidTri(&box[4].x,&box[5].x,&box[6].x,color,duration);
 
-  		DebugSolidTri(box[4].ptr(),box[7].ptr(),box[0].ptr(),color,duration);
-  		DebugSolidTri(box[7].ptr(),box[3].ptr(),box[0].ptr(),color,duration);
+  		DebugSolidTri(&box[4].x,&box[7].x,&box[0].x,color,duration);
+  		DebugSolidTri(&box[7].x,&box[3].x,&box[0].x,color,duration);
     }
 	}
 
-	virtual void DebugSphere(const HeF32 *pos,HeF32 radius,HeU32 color,HeF32 duration,bool useZ,bool solid)
+	virtual void DebugSphere(const NxF32 *pos,NxF32 radius,NxU32 color,NxF32 duration,bool useZ,bool solid)
 	{
-		const HeF32 *source = debug_sphere;
+		const NxF32 *source = debug_sphere;
 
-		for (HeI32 i=0; i<32; i++)
+		for (NxI32 i=0; i<32; i++)
 		{
-			HeVec3 p1( source );
+			NxVec3 p1( source );
 			source+=3;
-			HeVec3 p2( source );
+			NxVec3 p2( source );
 			source+=3;
-			HeVec3 p3( source );
+			NxVec3 p3( source );
 			source+=3;
 
 			p1.x = p1.x*radius + pos[0];
@@ -1250,23 +1252,23 @@ public:
 			p3.z = p3.z*radius + pos[2];
 
       if ( solid )
-  			DebugSolidTri(p1.ptr(),p2.ptr(),p3.ptr(),color,duration);
+  			DebugSolidTri(&p1.x,&p2.x,&p3.x,color,duration);
       else
-	  		DebugTri(p1.ptr(),p2.ptr(),p3.ptr(),color,duration,useZ);
+	  		DebugTri(&p1.x,&p2.x,&p3.x,color,duration,useZ);
 		}
 	}
 
-	virtual void DebugHalfSphere(const HeF32 *pos,HeF32 radius,HeU32 color,HeF32 duration,bool useZ)
+	virtual void DebugHalfSphere(const NxF32 *pos,NxF32 radius,NxU32 color,NxF32 duration,bool useZ)
 	{
-		const HeF32 *source = debug_halfsphere;
+		const NxF32 *source = debug_halfsphere;
 
-		for (HeI32 i=0; i<16; i++)
+		for (NxI32 i=0; i<16; i++)
 		{
-			HeVec3 p1( source );
+			NxVec3 p1( source );
 			source+=3;
-			HeVec3 p2( source );
+			NxVec3 p2( source );
 			source+=3;
-			HeVec3 p3( source );
+			NxVec3 p3( source );
 			source+=3;
 
 			p1.x = p1.x*radius + pos[0];
@@ -1281,19 +1283,19 @@ public:
 			p3.y = p3.y*radius + pos[1];
 			p3.z = p3.z*radius + pos[2];
 
-			DebugTri(p1.ptr(),p2.ptr(),p3.ptr(),color,duration,useZ);
+			DebugTri(&p1.x,&p2.x,&p3.x,color,duration,useZ);
 		}
 	}
 
-	virtual void DebugPoint(const HeF32 *pos,HeF32 radius,HeU32 color,HeF32 duration,bool useZ)
+	virtual void DebugPoint(const NxF32 *pos,NxF32 radius,NxU32 color,NxF32 duration,bool useZ)
 	{
-		const HeF32 *source = debug_point;
+		const NxF32 *source = debug_point;
 
-		for (HeI32 i=0; i<3; i++)
+		for (NxI32 i=0; i<3; i++)
 		{
-			HeVec3 p1( source );
+			NxVec3 p1( source );
 			source+=3;
-			HeVec3 p2( source );
+			NxVec3 p2( source );
 			source+=3;
 
 			p1.x = p1.x*radius + pos[0];
@@ -1304,23 +1306,23 @@ public:
 			p2.y = p2.y*radius + pos[1];
 			p2.z = p2.z*radius + pos[2];
 
-			DebugLine(p1.ptr(),p2.ptr(),color,duration,useZ);
+			DebugLine(&p1.x,&p2.x,color,duration,useZ);
 		}
 	}
 
-	virtual void DebugOrientedSphere(HeF32 radius,const HeF32 *transform,HeU32 color,HeF32 duration,bool useZ,bool solid)
+	virtual void DebugOrientedSphere(NxF32 radius,const NxF32 *transform,NxU32 color,NxF32 duration,bool useZ,bool solid)
 	{
-		const HeF32 *source = debug_sphere;
+		const NxF32 *source = debug_sphere;
 
-		HeMat44 m(transform);
+		NxMat44 m(transform);
 
-		for (HeI32 i=0; i<32; i++)
+		for (NxI32 i=0; i<32; i++)
 		{
-			HeVec3 p1( source );
+			NxVec3 p1( source );
 			source+=3;
-			HeVec3 p2( source );
+			NxVec3 p2( source );
 			source+=3;
-			HeVec3 p3( source );
+			NxVec3 p3( source );
 			source+=3;
 
       p1*=radius;
@@ -1333,16 +1335,16 @@ public:
 
       if ( solid )
       {
-  			DebugSolidTri(p1.ptr(),p2.ptr(),p3.ptr(),color,duration);
+  			DebugSolidTri(&p1.x,&p2.x,&p3.x,color,duration);
       }
       else
       {
-  			DebugTri(p1.ptr(),p2.ptr(),p3.ptr(),color,duration,useZ);
+  			DebugTri(&p1.x,&p2.x,&p3.x,color,duration,useZ);
       }
 		}
 	}
 
-	HeI32 ClampColor(HeI32 c)
+	NxI32 ClampColor(NxI32 c)
 	{
 		if ( c < 0 )
 			c = 0;
@@ -1351,57 +1353,57 @@ public:
 		return c;
 	};
 
-	HeU32 GetColor(HeF32 r,HeF32 g,HeF32 b,HeF32 brightness)
+	NxU32 GetColor(NxF32 r,NxF32 g,NxF32 b,NxF32 brightness)
 	{
-		HeI32 red   = HeI32(r*brightness*255.0f);
-		HeI32 green = HeI32(g*brightness*255.0f);
-		HeI32 blue  = HeI32(b*brightness*255.0f);
+		NxI32 red   = NxI32(r*brightness*255.0f);
+		NxI32 green = NxI32(g*brightness*255.0f);
+		NxI32 blue  = NxI32(b*brightness*255.0f);
 		red   = ClampColor(red);
 		green = ClampColor(green);
 		blue  = ClampColor(blue);
-		HeU32 color = 0xFF000000 | (red<<16) | (green<<8) | blue;
+		NxU32 color = 0xFF000000 | (red<<16) | (green<<8) | blue;
 		return color;
 	}
 
-	virtual void DebugAxes(const HeF32 *xform,HeF32 distance,HeF32 brightness,bool useZ)
+	virtual void DebugAxes(const NxF32 *xform,NxF32 distance,NxF32 brightness,bool useZ)
 	{
-		HeMat44 m(xform);
+		NxMat44 m(xform);
 
-		HeF32 dtime = 0.0001f;
-		HeF32 side =  distance*0.015f;
+		NxF32 dtime = 0.0001f;
+		NxF32 side =  distance*0.015f;
 
-		HeVec3 bmin(0,-side,-side);
-		HeVec3 bmax(distance,side,side);
+		NxVec3 bmin(0,-side,-side);
+		NxVec3 bmax(distance,side,side);
 
-		HeU32 red    = GetColor(1,0,0,brightness);
-		HeU32 green  = GetColor(0,1,0,brightness);
-		HeU32 blue   = GetColor(0,0,1,brightness);
-		HeU32 yellow = GetColor(1,1,0,brightness);
+		NxU32 red    = GetColor(1,0,0,brightness);
+		NxU32 green  = GetColor(0,1,0,brightness);
+		NxU32 blue   = GetColor(0,0,1,brightness);
+		NxU32 yellow = GetColor(1,1,0,brightness);
 
-		DebugOrientedBound( bmin.ptr(), bmax.ptr(), xform, red, dtime, useZ, false );
+		DebugOrientedBound( &bmin.x, &bmax.x, xform, red, dtime, useZ, false );
 
 		bmin.set(-side,0,-side);
 		bmax.set(side,distance,side);
 
-		DebugOrientedBound( bmin.ptr(), bmax.ptr(), xform, green, dtime,useZ, false );
+		DebugOrientedBound( &bmin.x, &bmax.x, xform, green, dtime,useZ, false );
 
 		bmin.set(-side,-side,0);
 		bmax.set(side,side,distance);
 
-		DebugOrientedBound( bmin.ptr(), bmax.ptr(), xform, blue, dtime, useZ, false );
+		DebugOrientedBound( &bmin.x, &bmax.x, xform, blue, dtime, useZ, false );
 
-		HeVec3 o(0,0,0);
+		NxVec3 o(0,0,0);
 		m.multiply(o,o);
-		DebugSphere( o.ptr(), distance*0.025f, yellow, dtime, useZ, false );
+		DebugSphere( &o.x, distance*0.025f, yellow, dtime, useZ, false );
 
 		// ok..now we need to draw the cone...
 		{
 			#define step 16
-			HeVec3 p[step];
-			HeF32 a = 0;
-			HeF32 da = (FM_PI*2)/step;
+			NxVec3 p[step];
+			NxF32 a = 0;
+			NxF32 da = (FM_PI*2)/step;
 
-			for (HeI32 i=0; i<step; i++)
+			for (NxI32 i=0; i<step; i++)
 			{
 				p[i].x = cosf(a)*side*3;
 				p[i].y = sinf(a)*side*3;
@@ -1409,30 +1411,30 @@ public:
 			}
 
 			{
-				HeVec3 ox(distance*1.2f,0,0);
-				HeVec3 oy(0,distance*1.2f,0);
-				HeVec3 oz(0,0,distance*1.2f);
+				NxVec3 ox(distance*1.2f,0,0);
+				NxVec3 oy(0,distance*1.2f,0);
+				NxVec3 oz(0,0,distance*1.2f);
 
 				m.multiply(ox,ox);
 				m.multiply(oy,oy);
 				m.multiply(oz,oz);
 
-				for (HeI32 i=0; i<step; i++)
+				for (NxI32 i=0; i<step; i++)
 				{
-					HeI32 i2 = i+1;
+					NxI32 i2 = i+1;
 					if ( i2 == step )
 						i2 = 0;
 
-					const HeVec3 &p1 = p[i];
-					const HeVec3 &p2 = p[i2];
+					const NxVec3 &p1 = p[i];
+					const NxVec3 &p2 = p[i2];
 
-					HeVec3 t1(distance, p1.x, p1.y );
-					HeVec3 t2(distance, p2.x, p2.y );
+					NxVec3 t1(distance, p1.x, p1.y );
+					NxVec3 t2(distance, p2.x, p2.y );
 
 					m.multiply(t1,t1);
 					m.multiply(t2,t2);
 
-					DebugTri(ox.ptr(), t1.ptr(), t2.ptr(), red, dtime, useZ );
+					DebugTri(&ox.x, &t1.x, &t2.x, red, dtime, useZ );
 
 					t1.set(p1.x,distance,p1.y);
 					t2.set(p2.x,distance,p2.y);
@@ -1440,7 +1442,7 @@ public:
 					m.multiply(t1,t1);
 					m.multiply(t2,t2);
 
-					DebugTri(oy.ptr(), t1.ptr(), t2.ptr(), green, dtime,useZ );
+					DebugTri(&oy.x, &t1.x, &t2.x, green, dtime,useZ );
 
 
 					t1.set(p1.x,p1.y,distance);
@@ -1449,7 +1451,7 @@ public:
 					m.multiply(t1,t1);
 					m.multiply(t2,t2);
 
-					DebugTri(oz.ptr(), t1.ptr(), t2.ptr(), blue, dtime, useZ );
+					DebugTri(&oz.x, &t1.x, &t2.x, blue, dtime, useZ );
 				}
 			}
 		}
@@ -1457,8 +1459,8 @@ public:
 
 	virtual void Reset( void )
 	{
-    HeI32 count = mDebug.Begin();
-    for (HeI32 i=0; i<count; i++)
+    NxI32 count = mDebug.Begin();
+    for (NxI32 i=0; i<count; i++)
     {
       WireTri *wt = mDebug.GetNext();
       mDebug.Release(wt);
@@ -1470,7 +1472,7 @@ public:
     return doShutdown();
   }
 
-	void DebugSolidTri(const HeF32 *p1,const HeF32 *p2,const HeF32 *p3,const HeF32 *n1,const HeF32 *n2,const HeF32 *n3,HeU32 color,HeF32 duration)
+	void DebugSolidTri(const NxF32 *p1,const NxF32 *p2,const NxF32 *p3,const NxF32 *n1,const NxF32 *n2,const NxF32 *n3,NxU32 color,NxF32 duration)
   {
     WireTri *tri = mDebug.GetFreeLink(); // pull a MEMALLOC_FREE triangle from the pool
     if ( tri )
@@ -1480,46 +1482,46 @@ public:
   }
 
 
-	void DebugCapsule(const HeF32 *pos,HeF32 radius,HeF32 height,HeU32 color,HeF32 duration,bool useZ)
+	void DebugCapsule(const NxF32 *pos,NxF32 radius,NxF32 height,NxU32 color,NxF32 duration,bool useZ)
   {
-    HeMat44 t;
-    HeVec3 p(pos);
+    NxMat44 t;
+    NxVec3 p(pos);
     t.setPosition(p);
     DebugOrientedCapsule(radius,height,t.ptr(),color,duration,useZ);
   }
 
-	void DebugOrientedCapsule(HeF32 radius,HeF32 height,const HeF32 *transform,HeU32 color,HeF32 duration,bool useZ)
+	void DebugOrientedCapsule(NxF32 radius,NxF32 height,const NxF32 *transform,NxU32 color,NxF32 duration,bool useZ)
   {
-    HeVec3 prev1;
-    HeVec3 prev2;
+    NxVec3 prev1;
+    NxVec3 prev2;
 
-    HeF32 h2 = height*0.5f;
+    NxF32 h2 = height*0.5f;
 
-    HeVec3 top(0,0,0);
-    HeVec3 bottom(0,0,0);
+    NxVec3 top(0,0,0);
+    NxVec3 bottom(0,0,0);
 
     top.y+=(height*0.5f)+radius;
     bottom.y-=(height*0.5f)+radius;
 
-    for (HeI32 a=0; a<=360; a+=15)
+    for (NxI32 a=0; a<=360; a+=15)
     {
-      HeF32 r = (HeF32)a*FM_DEG_TO_RAD;
+      NxF32 r = (NxF32)a*FM_DEG_TO_RAD;
 
-      HeF32 x = radius*cosf(r);
-      HeF32 z = radius*sinf(r);
+      NxF32 x = radius*cosf(r);
+      NxF32 z = radius*sinf(r);
 
-      HeVec3 p1(x,-h2,z);
-      HeVec3 p2(x,h2,z);
+      NxVec3 p1(x,-h2,z);
+      NxVec3 p2(x,h2,z);
 
-      DebugOrientedLine( p1.ptr(), p2.ptr(), transform, color, duration, useZ );
+      DebugOrientedLine( &p1.x, &p2.x, transform, color, duration, useZ );
 
-      DebugOrientedLine( p2.ptr(), top.ptr(), transform, color, duration, useZ);
-      DebugOrientedLine( p1.ptr(), bottom.ptr(), transform, color, duration, useZ );
+      DebugOrientedLine( &p2.x, &top.x, transform, color, duration, useZ);
+      DebugOrientedLine( &p1.x, &bottom.x, transform, color, duration, useZ );
 
       if ( a != 0 )
       {
-        DebugOrientedLine(prev1.ptr(), p1.ptr(), transform, color, duration, useZ );
-        DebugOrientedLine(prev2.ptr(), p2.ptr(), transform,color, duration, useZ );
+        DebugOrientedLine(&prev1.x, &p1.x, transform, color, duration, useZ );
+        DebugOrientedLine(&prev2.x, &p2.x, transform,color, duration, useZ );
       }
 
       prev1 = p1;
@@ -1535,12 +1537,12 @@ public:
     return ret;
   }
 
-  HeF32 getRenderScale(void)
+  NxF32 getRenderScale(void)
   {
     return mRenderScale;
   }
 
-  void  setRenderScale(HeF32 scale)
+  void  setRenderScale(NxF32 scale)
   {
     mRenderScale = scale;
   }
@@ -1609,7 +1611,7 @@ public:
   }
 
 
-  void DebugPlane(const HeF32 *plane,HeF32 radius1,HeF32 radius2,HeU32 color,HeF32 duration,bool useZ)
+  void DebugPlane(const NxF32 *plane,NxF32 radius1,NxF32 radius2,NxU32 color,NxF32 duration,bool useZ)
   {
 
     debugPlane(plane,radius1*0.25f, radius2*0.25f, color,duration,useZ,false);
@@ -1619,7 +1621,7 @@ public:
   }
 
 #pragma warning( disable : 4100 )
-  void batchTriangles(EmbedTexture texture,const GraphicsVertex *vertices,HeU32 vcount,bool wireframe,bool overlay)
+  void batchTriangles(EmbedTexture texture,const GraphicsVertex *vertices,NxU32 vcount,bool wireframe,bool overlay)
   {
     // if the driver is ready, then we need to render the triangles.
 #if USE_PD3D
@@ -1691,49 +1693,49 @@ public:
 #endif
   }
 
-  void DebugThickRay(const HeF32 *p1,
-                     const HeF32 *p2,
-                     HeF32 raySize,
-	                   HeF32 arrowSize,
-        	           HeU32 color,
-	                   HeU32 arrowColor,
-	                   HeF32 duration,
+  void DebugThickRay(const NxF32 *p1,
+                     const NxF32 *p2,
+                     NxF32 raySize,
+	                   NxF32 arrowSize,
+        	           NxU32 color,
+	                   NxU32 arrowColor,
+	                   NxF32 duration,
 	                   bool wireFrameArrow)
   {
 
-    HeF32 dir[3];
+    NxF32 dir[3];
 
     dir[0] = p2[0] - p1[0];
     dir[1] = p2[1] - p1[1];
     dir[2] = p2[2] - p1[2];
 
-    HeF32 mag = fm_normalize(dir);
+    NxF32 mag = fm_normalize(dir);
 
     if ( arrowSize > (mag*0.2f) )
     {
       arrowSize = mag*0.2f;
     }
 
-    HeF32 ref[3] = { 0, 1, 0 };
+    NxF32 ref[3] = { 0, 1, 0 };
 
-    HeF32 quat[4];
+    NxF32 quat[4];
 
     fm_rotationArc(ref,dir,quat);
 
-    HeF32 matrix[16];
+    NxF32 matrix[16];
     fm_quatToMatrix(quat,matrix);
     fm_setTranslation(p2,matrix);
 
 
-    HeU32 pcount = 0;
-    HeF32 points[24*3];
-    HeF32 *dest = points;
+    NxU32 pcount = 0;
+    NxF32 points[24*3];
+    NxF32 *dest = points;
 
-    for (HeF32 a=30; a<=360; a+=30)
+    for (NxF32 a=30; a<=360; a+=30)
     {
-      HeF32 r = a*FM_DEG_TO_RAD;
-      HeF32 x = cosf(r)*arrowSize;
-      HeF32 y = sinf(r)*arrowSize;
+      NxF32 r = a*FM_DEG_TO_RAD;
+      NxF32 x = cosf(r)*arrowSize;
+      NxF32 y = sinf(r)*arrowSize;
 
       dest[0] = x;
       dest[1] = -3*arrowSize;
@@ -1742,24 +1744,24 @@ public:
       pcount++;
     }
 
-    HeF32 *prev = &points[(pcount-1)*3];
-    HeF32 *p = points;
-    HeF32 center[3] = { 0, -2.5f*arrowSize, 0 };
-    HeF32 top[3]    = { 0, 0, 0 };
+    NxF32 *prev = &points[(pcount-1)*3];
+    NxF32 *p = points;
+    NxF32 center[3] = { 0, -2.5f*arrowSize, 0 };
+    NxF32 top[3]    = { 0, 0, 0 };
 
-    HeF32 _center[3];
-    HeF32 _top[3];
+    NxF32 _center[3];
+    NxF32 _top[3];
 
     fm_transform(matrix,center,_center);
     fm_transform(matrix,top,_top);
 
     DebugCylinder(p1,_center,raySize,color,duration,true,true);
 
-    for (HeU32 i=0; i<pcount; i++)
+    for (NxU32 i=0; i<pcount; i++)
     {
 
-      HeF32 _p[3];
-      HeF32 _prev[3];
+      NxF32 _p[3];
+      NxF32 _prev[3];
       fm_transform(matrix,p,_p);
       fm_transform(matrix,prev,_prev);
 
@@ -1778,30 +1780,30 @@ public:
   }
 
 #pragma warning(disable:4100)
-  void DebugCylinder(const HeF32 *p1,const HeF32 *p2,HeF32 radius,HeU32 color,HeF32 duration,bool useZ,bool solid)
+  void DebugCylinder(const NxF32 *p1,const NxF32 *p2,NxF32 radius,NxU32 color,NxF32 duration,bool useZ,bool solid)
   {
 
-    HeF32 dir[3];
+    NxF32 dir[3];
 
     dir[0] = p2[0] - p1[0];
     dir[1] = p2[1] - p1[1];
     dir[2] = p2[2] - p1[2];
 
-    HeF32 mag = fm_normalize(dir);
+    NxF32 mag = fm_normalize(dir);
 
     if ( radius > (mag*0.2f) )
     {
       radius = mag*0.2f;
     }
 
-    HeF32 ref[3] = { 0, 1, 0 };
+    NxF32 ref[3] = { 0, 1, 0 };
 
-    HeF32 quat[4];
+    NxF32 quat[4];
 
     fm_rotationArc(ref,dir,quat);
 
-    HeF32 matrix1[16];
-    HeF32 matrix2[16];
+    NxF32 matrix1[16];
+    NxF32 matrix2[16];
 
     fm_quatToMatrix(quat,matrix1);
     fm_setTranslation(p2,matrix1);
@@ -1810,20 +1812,20 @@ public:
     fm_setTranslation(p1,matrix2);
 
 
-    HeU32 pcount = 0;
-    HeF32 points1[24*3];
-    HeF32 points2[24*3];
-    HeF32 *dest1 = points1;
-    HeF32 *dest2 = points2;
+    NxU32 pcount = 0;
+    NxF32 points1[24*3];
+    NxF32 points2[24*3];
+    NxF32 *dest1 = points1;
+    NxF32 *dest2 = points2;
 
 
-    for (HeF32 a=30; a<=360; a+=30)
+    for (NxF32 a=30; a<=360; a+=30)
     {
-      HeF32 r = a*FM_DEG_TO_RAD;
-      HeF32 x = cosf(r)*radius;
-      HeF32 y = sinf(r)*radius;
+      NxF32 r = a*FM_DEG_TO_RAD;
+      NxF32 x = cosf(r)*radius;
+      NxF32 y = sinf(r)*radius;
 
-      HeF32 p[3] = { x, 0, y };
+      NxF32 p[3] = { x, 0, y };
 
       fm_transform(matrix1,p,dest1);
       fm_transform(matrix2,p,dest2);
@@ -1837,13 +1839,13 @@ public:
 
     if ( solid )
     {
-      HeF32 *prev1 = &points1[(pcount-1)*3];
-      HeF32 *prev2 = &points2[(pcount-1)*3];
+      NxF32 *prev1 = &points1[(pcount-1)*3];
+      NxF32 *prev2 = &points2[(pcount-1)*3];
 
-      HeF32 *scan1 = points1;
-      HeF32 *scan2 = points2;
+      NxF32 *scan1 = points1;
+      NxF32 *scan2 = points2;
 
-      for (HeU32 i=0; i<pcount; i++)
+      for (NxU32 i=0; i<pcount; i++)
       {
         DebugSolidTri(scan1,prev2,prev1,color,duration);
         DebugSolidTri(scan2,prev2,scan1,color,duration);
@@ -1859,12 +1861,12 @@ public:
     }
     else
     {
-      HeF32 *prev1 = &points1[(pcount-1)*3];
-      HeF32 *prev2 = &points2[(pcount-1)*3];
+      NxF32 *prev1 = &points1[(pcount-1)*3];
+      NxF32 *prev2 = &points2[(pcount-1)*3];
 
-      HeF32 *scan1 = points1;
-      HeF32 *scan2 = points2;
-      for (HeU32 i=0; i<pcount; i++)
+      NxF32 *scan1 = points1;
+      NxF32 *scan2 = points2;
+      for (NxU32 i=0; i<pcount; i++)
       {
         DebugLine(scan1,scan2,color,duration,useZ);
 
@@ -1886,20 +1888,20 @@ public:
 
   }
 
-  void DebugPolygon(HeU32 pcount,const HeF32 *points,HeU32 color,HeF32 duration,bool useZ,bool solid,bool clockwise)
+  void DebugPolygon(NxU32 pcount,const NxF32 *points,NxU32 color,NxF32 duration,bool useZ,bool solid,bool clockwise)
   {
     if ( pcount >= 3 )
     {
       if ( solid )
       {
-        const HeF32 *p1 = points;
-        const HeF32 *p2 = points+3;
-        const HeF32 *p3 = points+6;
+        const NxF32 *p1 = points;
+        const NxF32 *p2 = points+3;
+        const NxF32 *p3 = points+6;
         if ( clockwise )
           DebugSolidTri(p1,p2,p3,color,duration);
         else
           DebugSolidTri(p3,p2,p1,color,duration);
-        for (HeU32 i=3; i<pcount; i++)
+        for (NxU32 i=3; i<pcount; i++)
         {
           p2 = p3;
           p3+=3;
@@ -1911,9 +1913,9 @@ public:
       }
       else
       {
-        const HeF32 *prev = &points[(pcount-1)*3];
-        const HeF32 *p    = points;
-        for (HeU32 i=0; i<pcount; i++)
+        const NxF32 *prev = &points[(pcount-1)*3];
+        const NxF32 *p    = points;
+        for (NxU32 i=0; i<pcount; i++)
         {
           DebugLine(prev,p,color,duration,useZ);
           prev = p;
@@ -1923,21 +1925,21 @@ public:
     }
   }
 
-  HeU32 getColor(HeU32 r,HeU32 g,HeU32 b,HeF32 percent)
+  NxU32 getColor(NxU32 r,NxU32 g,NxU32 b,NxF32 percent)
   {
-    HeU32 dr = (HeU32)((HeF32)r*percent);
-    HeU32 dg = (HeU32)((HeF32)g*percent);
-    HeU32 db = (HeU32)((HeF32)b*percent);
+    NxU32 dr = (NxU32)((NxF32)r*percent);
+    NxU32 dg = (NxU32)((NxF32)g*percent);
+    NxU32 db = (NxU32)((NxF32)b*percent);
     r-=dr;
     g-=dg;
     b-=db;
-   	HeU32 c = (r<<16) | (g<<8) | b;
+   	NxU32 c = (r<<16) | (g<<8) | b;
    	return c;
   }
 
-  void SwapYZ(HeVec3 &p)
+  void SwapYZ(NxVec3 &p)
   {
-    HeF32 y = p.y;
+    NxF32 y = p.y;
     p.y = p.z;
     p.z = y;
   }
@@ -1945,24 +1947,24 @@ public:
 	void drawGrid(bool zup) // draw a grid.
   {
 
-    const HeI32  GRIDSIZE = 40;
+    const NxI32  GRIDSIZE = 40;
 
- 	  HeU32 c1 = getColor(133,153,181,0.1f);
- 	  HeU32 c2 = getColor(133,153,181,0.3f);
- 	  HeU32 c3 = getColor(133,153,181,0.5f);
+ 	  NxU32 c1 = getColor(133,153,181,0.1f);
+ 	  NxU32 c2 = getColor(133,153,181,0.3f);
+ 	  NxU32 c3 = getColor(133,153,181,0.5f);
 
- 	  const HeF32 TSCALE   = 1.0f;
+ 	  const NxF32 TSCALE   = 1.0f;
 
- 	  HeF32 BASELOC = 0-0.05f;
+ 	  NxF32 BASELOC = 0-0.05f;
 
-  	for (HeI32 x=-GRIDSIZE; x<=GRIDSIZE; x++)
+  	for (NxI32 x=-GRIDSIZE; x<=GRIDSIZE; x++)
   	{
-  	  HeU32 c = c1;
+  	  NxU32 c = c1;
       if ( (x%10) == 0 ) c = c2;
   		if ( (x%GRIDSIZE) == 0 ) c = c3;
 
-  		HeVec3 p1( (HeF32)x,(HeF32) -GRIDSIZE, BASELOC );
-  		HeVec3 p2( (HeF32)x,(HeF32) +GRIDSIZE, BASELOC );
+  		NxVec3 p1( (NxF32)x,(NxF32) -GRIDSIZE, BASELOC );
+  		NxVec3 p2( (NxF32)x,(NxF32) +GRIDSIZE, BASELOC );
 
  		  p1*=TSCALE;
  		  p2*=TSCALE;
@@ -1975,15 +1977,15 @@ public:
 
     }
 
- 	  for (HeI32 y=-GRIDSIZE; y<=GRIDSIZE; y++)
+ 	  for (NxI32 y=-GRIDSIZE; y<=GRIDSIZE; y++)
  	  {
- 		  HeU32 c = c1;
+ 		  NxU32 c = c1;
 
  		  if ( (y%10) == 0 ) c = c2;
  		  if ( (y%GRIDSIZE) == 0 ) c = c3;
 
- 		  HeVec3 p1((HeF32) -GRIDSIZE, (HeF32)y, BASELOC );
-  		HeVec3 p2( (HeF32)+GRIDSIZE, (HeF32)y, BASELOC );
+ 		  NxVec3 p1((NxF32) -GRIDSIZE, (NxF32)y, BASELOC );
+  		NxVec3 p2( (NxF32)+GRIDSIZE, (NxF32)y, BASELOC );
 
  		  p1*=TSCALE;
  		  p2*=TSCALE;
@@ -1997,64 +1999,64 @@ public:
   }
 
 
-  void         setScreenSize(HeU32 screenX,HeU32 screenY)
+  void         setScreenSize(NxU32 screenX,NxU32 screenY)
   {
     mScreenWidth = screenX;
     mScreenHeight = screenY;
   }
 
-  void         getScreenSize(HeU32 &screenX,HeU32 &screenY)
+  void         getScreenSize(NxU32 &screenX,NxU32 &screenY)
   {
     screenX = mScreenWidth;
     screenY = mScreenHeight;
   }
 
-  const HeF32 *getEyePos(void)
+  const NxF32 *getEyePos(void)
   {
-    return mEyePos.ptr();
+    return &mEyePos.x;
   }
 
-  void         setViewProjectionMatrix(const HeF32 *view,const HeF32 *projection)
+  void         setViewProjectionMatrix(const NxF32 *view,const NxF32 *projection)
   {
     mViewMatrix.set(view);
     mProjectionMatrix.set(projection);
     mViewProjectionMatrix.multiply(mViewMatrix,mProjectionMatrix);
 
     // grab the world-space eye position.
-    HeMat44 viewInverse;
+    NxMat44 viewInverse;
     if ( mViewMatrix.getInverse( viewInverse ) )
-      viewInverse.multiply( HeVec3( 0.0f, 0.0f, 0.0f ), mEyePos );
+      viewInverse.multiply( NxVec3( 0.0f, 0.0f, 0.0f ), mEyePos );
   }
 
-  const HeF32 *getViewProjectionMatrix(void) const
+  const NxF32 *getViewProjectionMatrix(void) const
   {
     return mViewProjectionMatrix.ptr();
   }
 
-  const HeF32 *getViewMatrix(void) const
+  const NxF32 *getViewMatrix(void) const
   {
     return mViewMatrix.ptr();
   }
 
-  const HeF32 *getProjectionMatrix(void) const
+  const NxF32 *getProjectionMatrix(void) const
   {
     return mProjectionMatrix.ptr();
   }
 
-  bool         screenToWorld(HeI32 sx,HeI32 sy,HeF32 *world,HeF32 *direction)
+  bool         screenToWorld(NxI32 sx,NxI32 sy,NxF32 *world,NxF32 *direction)
   {
     bool ret = false;
 
   #if 0
-    HeI32 wid = (HeI32) mScreenWidth;
-    HeI32 hit = (HeI32) mScrenHeight;
+    NxI32 wid = (NxI32) mScreenWidth;
+    NxI32 hit = (NxI32) mScrenHeight;
 
     if ( sx >= 0 && sx <= wid && sy >= 0 && sy <= hit )
     {
-    	HeVec3 vPickRayDir;
-    	HeVec3 vPickRayOrig;
+    	NxVec3 vPickRayDir;
+    	NxVec3 vPickRayOrig;
 
-    	HeVec3 ptCursor(sx,sy,0);
+    	NxVec3 ptCursor(sx,sy,0);
 
     	// Compute the vector of the pick ray in screen space
 
@@ -2110,7 +2112,7 @@ public:
   }
 
 private:
-  HeF32                     mRenderScale;
+  NxF32                     mRenderScale;
 	Pool< WireTri >           mDebug;       // the pool to work from.
 	DebugVertex               mLinePoints[MAXLINEPOINTS]; // our internal vertex buffer
   SolidVertex     mSolidPoints[MAXSOLIDPOINTS];
@@ -2134,12 +2136,12 @@ private:
   HeGrShader::ParamHandle   mTextureShaderTexture;
   HeTexture*                mDeviceTextures[ 3 ];
 #endif
-  HeU32      mScreenWidth;
-  HeU32      mScreenHeight;
-  HeMat44    mViewMatrix;
-  HeMat44    mProjectionMatrix;
-  HeMat44    mViewProjectionMatrix;
-  HeVec3     mEyePos;
+  NxU32      mScreenWidth;
+  NxU32      mScreenHeight;
+  NxMat44    mViewMatrix;
+  NxMat44    mProjectionMatrix;
+  NxMat44    mViewProjectionMatrix;
+  NxVec3     mEyePos;
 };
 
 
@@ -2162,7 +2164,7 @@ class RenderDebug;
 
 extern "C"
 {
-RENDER_DEBUG_API RenderDebug * getInterface(HeI32 version_number,SYSTEM_SERVICES::SystemServices *services);
+RENDER_DEBUG_API RenderDebug * getInterface(NxI32 version_number,SYSTEM_SERVICES::SystemServices *services);
 };
 
 
@@ -2178,9 +2180,9 @@ using namespace RENDER_DEBUG;
 extern "C"
 {
 #ifdef PLUGINS_EMBEDDED
-  RenderDebug * getInterfaceRenderDebug(HeI32 version_number,SYSTEM_SERVICES::SystemServices *services)
+  RenderDebug * getInterfaceRenderDebug(NxI32 version_number,SYSTEM_SERVICES::SystemServices *services)
 #else
-  RENDER_DEBUG_API RenderDebug * getInterface(HeI32 version_number,SYSTEM_SERVICES::SystemServices *services)
+  RENDER_DEBUG_API RenderDebug * getInterface(NxI32 version_number,SYSTEM_SERVICES::SystemServices *services)
 #endif
 {
 
@@ -2221,7 +2223,7 @@ BOOL APIENTRY DllMain( HANDLE /*hModule*/,
                        DWORD  ul_reason_for_call,
                        LPVOID /*lpReserved*/)
 {
-  HeI32 ret = 0;
+  NxI32 ret = 0;
 
   switch (ul_reason_for_call)
 	{

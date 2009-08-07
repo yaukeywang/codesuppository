@@ -57,15 +57,15 @@
 */
 
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 
 class QuickSortPointers
 {
 public:
-	void qsort(void **base,HeI32 num); // perform the qsort.
+	void qsort(void **base,NxI32 num); // perform the qsort.
 protected:
   // -1 less, 0 equal, +1 greater.
-	virtual HeI32 compare(void **p1,void **p2) = 0;
+	virtual NxI32 compare(void **p1,void **p2) = 0;
 private:
 	void inline swap(char **a,char **b);
 };

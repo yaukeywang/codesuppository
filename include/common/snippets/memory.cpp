@@ -52,7 +52,7 @@
 
 */
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 #include "memory.h"
 
 #if defined(LINUX)
@@ -61,14 +61,14 @@
 #include <unistd.h>
 #include <sys/types.h>
 
-HeU32 GetCurrentProcessMemoryUsage()
+NxU32 GetCurrentProcessMemoryUsage()
 {
 	char filename[128];
 	sprintf( filename, "/proc/%d/statm", getpid() );
 
 	FILE *fp = fopen( filename, "r" );
 
-	HeU32 size = 0;
+	NxU32 size = 0;
 	if( fp )
 	{
 		fscanf( fp, "%u", &size );
@@ -86,7 +86,7 @@ HeU32 GetCurrentProcessMemoryUsage()
 
 #if WIN32
 
-HeU32 GetCurrentProcessMemoryUsage()
+NxU32 GetCurrentProcessMemoryUsage()
 {
 	return 0;
 }
@@ -96,9 +96,9 @@ HeU32 GetCurrentProcessMemoryUsage()
 
 
 //==================================================================================
-HeU32 GetHeapSize(HeU32 &unused )
+NxU32 GetHeapSize(NxU32 &unused )
 {
-	HeU32 used = 0;
+	NxU32 used = 0;
 	unused = 0;
 
 #ifdef WIN32

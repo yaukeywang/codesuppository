@@ -60,7 +60,7 @@
 
 #include <string>
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 
 struct regexp;
 

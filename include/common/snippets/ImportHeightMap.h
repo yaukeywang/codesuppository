@@ -2,19 +2,19 @@
 
 #define IMPORT_HEIGHTMAP_H
 
-#include "He.h"
+#include "NxSimpleTypes.h"
 
 class ImportHeightMap
 {
 public:
 
   virtual bool  importHeightMap(const char *fname) = 0;
-  virtual HeU32 getWidth(void) const = 0;
-  virtual HeU32 getDepth(void) const = 0;
-  virtual HeF32 * getData(void) const = 0;
-  virtual HeF32 getPoint(HeU32 x,HeU32 y) = 0;
+  virtual NxU32 getWidth(void) const = 0;
+  virtual NxU32 getDepth(void) const = 0;
+  virtual NxF32 * getData(void) const = 0;
+  virtual NxF32 getPoint(NxU32 x,NxU32 y) = 0;
   virtual bool exportHeightMap(const char *fname) = 0;
-  virtual HeF32 getHeightRange(HeF32 &vlow,HeF32 &vhigh) = 0;
+  virtual NxF32 getHeightRange(NxF32 &vlow,NxF32 &vhigh) = 0;
 
 };
 

@@ -2,7 +2,7 @@
 
 #define CIRCLE_JERK_H
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 
 
 /*!  
@@ -58,7 +58,7 @@
 class CircleJerk
 {
 public:
-	CircleJerk(char *mem,HeU32 len)
+	CircleJerk(char *mem,NxU32 len)
 	{
 		mMemory = mem;
 		mLen    = len;
@@ -69,7 +69,7 @@ public:
 	{
 	}
 
-	char * Jerk(HeU32 len) // 'jerk' some memory from the circular buffer
+	char * Jerk(NxU32 len) // 'jerk' some memory from the circular buffer
 	{
 		char *ret = 0;
 
@@ -85,8 +85,8 @@ public:
 
 private:
 	char *mMemory;
-	HeU32 mIndex;
-	HeU32 mLen;
+	NxU32 mIndex;
+	NxU32 mLen;
 };
 
 #endif

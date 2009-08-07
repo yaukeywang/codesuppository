@@ -136,7 +136,7 @@ unsigned int getDebugColor(void)
 
 	if ( count == 8 ) count = 0;
 
-	HE_ASSERT( count >= 0 && count < 8 );
+	assert( count >= 0 && count < 8 );
 
 	unsigned int color = colors[count];
 
@@ -797,8 +797,8 @@ public:
 	{
 		unsigned int dcount = 0;
 
-		HE_ASSERT( i1 != i2 && i1 != i3 && i2 != i3 );
-		HE_ASSERT( ci1 != ci2 && ci1 != ci3 && ci2 != ci3 );
+		assert( i1 != i2 && i1 != i3 && i2 != i3 );
+		assert( ci1 != ci2 && ci1 != ci3 && ci2 != ci3 );
 
 		if ( i1 == ci1 || i1 == ci2 || i1 == ci3 ) dcount++;
 		if ( i2 == ci1 || i2 == ci2 || i2 == ci3 ) dcount++;
@@ -838,8 +838,8 @@ public:
 
     if ( mMergePercent < 0 ) return 0;
 
-		HE_ASSERT( a->mVolume > 0 );
-		HE_ASSERT( b->mVolume > 0 );
+		assert( a->mVolume > 0 );
+		assert( b->mVolume > 0 );
 
 		CHull *ret = 0;
 
@@ -1023,7 +1023,7 @@ public:
         {
           size_t otcount;
           size_t *oindices = mig->getIsland(i,otcount);
-          HE_ASSERT(oindices);
+          assert(oindices);
           if ( oindices )
           {
             size_t vcount = fm_copyUniqueVertices(desc.mVcount,desc.mVertices,scratch_vertices, otcount, oindices, oindices);
@@ -1427,7 +1427,7 @@ public:
             {
               size_t otcount;
               size_t *oindices = mig->getIsland(i,otcount);
-              HE_ASSERT(oindices);
+              assert(oindices);
               if ( oindices )
               {
                 size_t vcount = fm_copyUniqueVertices( leftMesh.mVcount, leftMesh.mVertices, scratch_vertices, otcount, oindices, oindices );
@@ -1463,7 +1463,7 @@ public:
             {
               size_t otcount;
               size_t *oindices = mig->getIsland(i,otcount);
-              HE_ASSERT(oindices);
+              assert(oindices);
               if ( oindices )
               {
                 size_t vcount = fm_copyUniqueVertices( rightMesh.mVcount, rightMesh.mVertices, scratch_vertices, otcount, oindices, oindices );

@@ -91,29 +91,29 @@ enum CullMode
 class Pd3dSolidVertex
 {
 public:
-  HeF32	       mPos[3];
-  HeF32        mNormal[3];
-  HeU32 mColor;
+  NxF32	       mPos[3];
+  NxF32        mNormal[3];
+  NxU32 mColor;
 };
 
 
 class Pd3dGraphicsVertex
 {
 public:
-  HeF32	       mPos[3];
-  HeF32        mNormal[3];
-  HeF32        mTexel[2];
+  NxF32	       mPos[3];
+  NxF32        mNormal[3];
+  NxF32        mTexel[2];
 };
 
 class Pd3dDeformVertex
 {
 public:
-	HeF32	         mPos[3];
-	HeF32          mNormal[3];
-	HeF32          mTexel1[2];
-	HeF32          mTexel2[2];
-	HeF32          mWeight[4];
-	HeU16 mBone[4];
+	NxF32	         mPos[3];
+	NxF32          mNormal[3];
+	NxF32          mTexel1[2];
+	NxF32          mTexel2[2];
+	NxF32          mWeight[4];
+	NxU16 mBone[4];
 };
 
 #define DEFAULT_EFFECT "effect=light"
@@ -139,7 +139,7 @@ public:
     mExternalMaterialSpec = 0;
   }
 
-	Pd3dMaterial(const char *name,const char *texture,HeU32 ambient,HeU32 diffuse,HeU32 specular,HeF32 specularPower)
+	Pd3dMaterial(const char *name,const char *texture,NxU32 ambient,NxU32 diffuse,NxU32 specular,NxF32 specularPower)
   {
     mName[0] = 0;
   	mTexture[0] = 0;
@@ -181,7 +181,7 @@ public:
 	  strcpy(mTexture,tm.mTexture);
     strcpy(mEffect,tm.mEffect);
 	  mSpecularPower = tm.mSpecularPower;
-	  for (HeI32 i=0; i<4; i++)
+	  for (NxI32 i=0; i<4; i++)
 	  {
 	  	mAmbientColor[i] = tm.mAmbientColor[i];
 	  	mDiffuseColor[i] = tm.mDiffuseColor[i];
@@ -216,35 +216,35 @@ public:
 	  return ret;
 	}
 
-	void setColor(HeU32 color,HeF32 *c)
+	void setColor(NxU32 color,NxF32 *c)
   {
-    HeU32 a = (color>>24)&0xFF;
-    HeU32 r = (color>>16)&0xFF;
-    HeU32 g = (color>>8)&0xFF;
-    HeU32 b = color&0xFF;
+    NxU32 a = (color>>24)&0xFF;
+    NxU32 r = (color>>16)&0xFF;
+    NxU32 g = (color>>8)&0xFF;
+    NxU32 b = color&0xFF;
 
-    c[0] = (HeF32)r/255.0f;
-    c[1] = (HeF32)g/255.0f;
-    c[2] = (HeF32)b/255.0f;
-    c[3] = (HeF32)a/255.0f;
+    c[0] = (NxF32)r/255.0f;
+    c[1] = (NxF32)g/255.0f;
+    c[2] = (NxF32)b/255.0f;
+    c[3] = (NxF32)a/255.0f;
   }
 
-	void setDiffuseColor(HeU32 color)
+	void setDiffuseColor(NxU32 color)
   {
     setColor(color,mDiffuseColor);
   }
 
-	void setAmbientColor(HeU32 color)
+	void setAmbientColor(NxU32 color)
   {
     setColor(color,mAmbientColor);
   }
 
-	void setSpecularColor(HeU32 color)
+	void setSpecularColor(NxU32 color)
   {
     setColor(color,mSpecularColor);
   }
 
-	void setSpecularPower(HeF32 power)
+	void setSpecularPower(NxF32 power)
   {
     mSpecularPower = power;
   }
@@ -252,10 +252,10 @@ public:
 	char                      mName[512];
 	char                      mTexture[512];
 	char                      mEffect[512];
-	HeF32                     mSpecularPower;
-	HeF32                     mAmbientColor[4];  // ARGB color
-	HeF32                     mDiffuseColor[4];
-	HeF32                     mSpecularColor[4];
+	NxF32                     mSpecularPower;
+	NxF32                     mAmbientColor[4];  // ARGB color
+	NxF32                     mDiffuseColor[4];
+	NxF32                     mSpecularColor[4];
 	Pd3dTexture             *mHandle; // handle to the device version
 	ExternalEffectSpec       *mExternalEffectSpec;
 	ExternalMaterialSpec     *mExternalMaterialSpec;
@@ -264,16 +264,16 @@ public:
 class Pd3dLineVertex
 {
 public:
-	HeF32 mPos[3];
-	HeU32 mColor;
+	NxF32 mPos[3];
+	NxU32 mColor;
 };
 
 class Pd3dScreenVertex
 {
 public:
-  HeF32 mPos[3];
-  HeF32 mTexel[3];
-  HeU32 mColor;
+  NxF32 mPos[3];
+  NxF32 mTexel[3];
+  NxU32 mColor;
 };
 
 
@@ -293,60 +293,60 @@ public:
 	virtual void   setWorldMatrix(const void *world) = 0;
 	virtual const void * getViewMatrix(void) const =  0;
 	virtual const void * getProjectionMatrix(void) const = 0;
-	virtual void * createVertexBuffer(HeU32 vcount,const Pd3dGraphicsVertex *vertices) = 0; // allocate a VB for this vertex data.
+	virtual void * createVertexBuffer(NxU32 vcount,const Pd3dGraphicsVertex *vertices) = 0; // allocate a VB for this vertex data.
 	virtual bool   releaseVertexBuffer(void *buffer)                    = 0;
 	virtual void * lockVertexBuffer(void *buffer)                       = 0;
 	virtual bool   unlockVertexBuffer(void *buffer)                     = 0;
-	virtual void * createIndexBuffer(HeU32 icount,const HeU32 *indices)   = 0;
-	virtual void * createIndexBuffer(HeU32 icount,const HeU16 *indices)   = 0;
+	virtual void * createIndexBuffer(NxU32 icount,const NxU32 *indices)   = 0;
+	virtual void * createIndexBuffer(NxU32 icount,const NxU16 *indices)   = 0;
 	virtual bool   releaseIndexBuffer(void *ibuffer)                    = 0;
 	virtual void * lockIndexBuffer(void *buffer)                        = 0;
 	virtual bool   unlockIndexBuffer(void *buffer)                      = 0;
-	virtual bool   renderSection(Pd3dMaterial *material,void *buffer,void *ibufferm,HeU32 vcount,HeU32 tcount)            = 0;
-	virtual bool   renderSection(Pd3dMaterial *material,void *vbuffer,HeU32 vcount) = 0;
-	virtual void   renderLines(HeU32 lcount,const Pd3dLineVertex *vtx,bool useZbuffer) = 0;
-  virtual void   renderSolid(HeU32 tcount,const Pd3dSolidVertex *vtx) = 0;
-	virtual bool   screenToWorld(HeI32 sx,      // screen x position
-                               HeI32 sy,      // screen y position
-                               HeF32 *world, // world position of the eye
-                               HeF32 *direction) = 0; // direction vector into the world
+	virtual bool   renderSection(Pd3dMaterial *material,void *buffer,void *ibufferm,NxU32 vcount,NxU32 tcount)            = 0;
+	virtual bool   renderSection(Pd3dMaterial *material,void *vbuffer,NxU32 vcount) = 0;
+	virtual void   renderLines(NxU32 lcount,const Pd3dLineVertex *vtx,bool useZbuffer) = 0;
+  virtual void   renderSolid(NxU32 tcount,const Pd3dSolidVertex *vtx) = 0;
+	virtual bool   screenToWorld(NxI32 sx,      // screen x position
+                               NxI32 sy,      // screen y position
+                               NxF32 *world, // world position of the eye
+                               NxF32 *direction) = 0; // direction vector into the world
 
-	virtual bool   renderSection(Pd3dMaterial *material,Pd3dGraphicsVertex *vbuffer,HeU32 *ibuffer,HeU32 vcount,HeU32 tcount) = 0;
-	virtual bool   renderSection(Pd3dMaterial *material,Pd3dGraphicsVertex *vbuffer,HeU32 vcount) = 0;
+	virtual bool   renderSection(Pd3dMaterial *material,Pd3dGraphicsVertex *vbuffer,NxU32 *ibuffer,NxU32 vcount,NxU32 tcount) = 0;
+	virtual bool   renderSection(Pd3dMaterial *material,Pd3dGraphicsVertex *vbuffer,NxU32 vcount) = 0;
 
-	virtual bool   renderSection(Pd3dTexture *texture,Pd3dScreenVertex *vbuffer,HeU16 *ibuffer,HeU32 vcount,HeU32 tcount) = 0;
+	virtual bool   renderSection(Pd3dTexture *texture,Pd3dScreenVertex *vbuffer,NxU16 *ibuffer,NxU32 vcount,NxU32 tcount) = 0;
 
-	virtual void renderScreenQuad(Pd3dTexture *texture,HeF32 x,HeF32 y,HeF32 z,HeF32 wid,HeF32 hit,HeU32 color)=0;
-	virtual void renderScreenQuad(Pd3dTexture *texture,HeI32 x,HeI32 y,HeF32 z,HeI32 wid,HeI32 hit,HeU32 color)=0;
+	virtual void renderScreenQuad(Pd3dTexture *texture,NxF32 x,NxF32 y,NxF32 z,NxF32 wid,NxF32 hit,NxU32 color)=0;
+	virtual void renderScreenQuad(Pd3dTexture *texture,NxI32 x,NxI32 y,NxF32 z,NxI32 wid,NxI32 hit,NxU32 color)=0;
 
-	virtual void renderScreenQuad(Pd3dTexture *texture,HeF32 x,HeF32 y,HeF32 z,HeF32 wid,HeF32 hit,HeF32 s0,HeF32 t0,HeF32 s1,HeF32 t1,HeU32 color)=0;
+	virtual void renderScreenQuad(Pd3dTexture *texture,NxF32 x,NxF32 y,NxF32 z,NxF32 wid,NxF32 hit,NxF32 s0,NxF32 t0,NxF32 s1,NxF32 t1,NxU32 color)=0;
 
   virtual Pd3dTexture * locateTexture(const char *fname) = 0;
 
-  virtual Pd3dTexture * createTexture(const char *fname,HeU32 width,HeU32 height,HeU32 depth,bool systemRam=false) = 0;
+  virtual Pd3dTexture * createTexture(const char *fname,NxU32 width,NxU32 height,NxU32 depth,bool systemRam=false) = 0;
   virtual bool          copyTexture(Pd3dTexture *source,Pd3dTexture *dest) = 0;
-  virtual void        * lockTexture(Pd3dTexture *texture,HeU32 &width,HeU32 &height,HeU32 &pitch) = 0;
+  virtual void        * lockTexture(Pd3dTexture *texture,NxU32 &width,NxU32 &height,NxU32 &pitch) = 0;
   virtual void          unlockTexture(Pd3dTexture *texture) = 0;
   virtual bool          releaseTexture(Pd3dTexture *texture) = 0;
 
   virtual void  flush(void) = 0; // flush pending draw calls
 
-	virtual void   getEyePos(HeF32 *eye)=0;
-  virtual const HeF32 *getViewProjection(void) const = 0; // return the current view projection matrix.
+	virtual void   getEyePos(NxF32 *eye)=0;
+  virtual const NxF32 *getViewProjection(void) const = 0; // return the current view projection matrix.
   virtual void setCullMode(CullMode mode) = 0;
 
-  virtual const char ** getVideoDevices(HeI32 &count) = 0;
-  virtual bool          startVideoDevice(const char *deviceName,HeI32 maxWidth,HeI32 maxHeight) = 0;
+  virtual const char ** getVideoDevices(NxI32 &count) = 0;
+  virtual bool          startVideoDevice(const char *deviceName,NxI32 maxWidth,NxI32 maxHeight) = 0;
   virtual bool          stopVideoDevice(const char *deviceName) = 0;
   virtual bool          stopAllVideoDevices(void) = 0;
-  virtual void *        lockVideoDevice(const char *deviceName,HeI32 &frameNumber) = 0;
+  virtual void *        lockVideoDevice(const char *deviceName,NxI32 &frameNumber) = 0;
   virtual bool          unlockVideoDevice(const char *deviceName) = 0;
-  virtual HeI32           getVideoDeviceAverageFrameTime(const char *deviceName) = 0;
-  virtual bool          getVideoDeviceDesc(const char *deviceName,HeI32 &width,HeI32 &height,HeI32 &depth) = 0;
+  virtual NxI32           getVideoDeviceAverageFrameTime(const char *deviceName) = 0;
+  virtual bool          getVideoDeviceDesc(const char *deviceName,NxI32 &width,NxI32 &height,NxI32 &depth) = 0;
   virtual bool          showVideoDeviceFilterProperties(const char *deviceName) = 0;
   virtual bool          showVideoDevicePinProperties(const char *deviceName) = 0;
 
-  virtual void          setClampConstants(HeF32 clampLow,HeF32 clampLogScale,HeF32 clampScale) = 0;
+  virtual void          setClampConstants(NxF32 clampLow,NxF32 clampLogScale,NxF32 clampScale) = 0;
   virtual void          setFractalMode(bool state) = 0;
   virtual bool          getFractalMode(void) = 0;
 

@@ -5,14 +5,14 @@
 
 #include "TestConvexDecomposition.h"
 
-#include "common/snippets/SendTextMessage.h"
+#include "SendTextMessage.h"
 
 
 #include "RenderDebug/RenderDebug.h"
-#include "common/snippets/wavefront.h"
-#include "common/snippets/ConvexDecomposition.h"
-#include "common/snippets/SendTextMessage.h"
-#include "common/snippets/FloatMath.h"
+#include "wavefront.h"
+#include "ConvexDecomposition.h"
+#include "SendTextMessage.h"
+#include "FloatMath.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
 
 #pragma warning(disable:4100)
@@ -37,7 +37,7 @@ public:
     if ( mFitObb )
     {
       float *vertices = (float *)MEMALLOC_MALLOC(sizeof(float)*result.mHullVcount*3);
-      for (HeU32 i=0; i<result.mHullVcount*3; i++)
+      for (NxU32 i=0; i<result.mHullVcount*3; i++)
       {
         vertices[i] = (float)result.mHullVertices[i];
       }
@@ -110,7 +110,7 @@ void testConvexDecomposition(MeshSystemHelper *ms,
       ConvexDecomposition::DecompDesc desc;
       desc.mVcount = mr->mVcount;
       double *dest = (double *)MEMALLOC_MALLOC( sizeof(double)*mr->mVcount*3);
-      for (HeU32 i=0; i<(HeU32)(mr->mVcount*3); i++)
+      for (NxU32 i=0; i<(NxU32)(mr->mVcount*3); i++)
       {
         float f = mr->mVertices[i];
         dest[i] = (double) f;

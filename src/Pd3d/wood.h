@@ -1,8 +1,8 @@
 #ifndef WOOD_H
 #define WOOD_H
 
-#include "common/snippets/HeSimpleTypes.h"
+#include "NxSimpleTypes.h"
 
-extern HeU8 g_wood[174904];
+extern NxU8 g_wood[174904];
 
 #endif

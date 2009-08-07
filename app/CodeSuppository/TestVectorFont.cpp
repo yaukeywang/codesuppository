@@ -1,5 +1,5 @@
 #include "TestVectorFont.h"
-#include "common/VectorFont/VectorFont.h"
+#include "VectorFont.h"
 #include "RenderDebug/RenderDebug.h"
 
 class TestVectorFont : public VectorFontInterface
@@ -7,8 +7,8 @@ class TestVectorFont : public VectorFontInterface
 public:
 	virtual void drawLine(float x1,float y1,float x2,float y2)
 	{
-		HeVec3 v1(x1,y1,0);
-		HeVec3 v2(x2,y2,0);
+		NxVec3 v1(x1,y1,0);
+		NxVec3 v2(x2,y2,0);
 		gRenderDebug->DebugLine(&v1.x,&v2.x,0xFFFF00,60.0f);
 	}
 };

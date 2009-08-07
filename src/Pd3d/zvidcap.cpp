@@ -40,7 +40,7 @@
 #include "olectl.h"
 #include "initguid.h"
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 
 DEFINE_GUID( CLSID_Vidcap_Filter, 0x17d93618, 0xe0a3, 0x4dde, 0x9b, 0x64, 0xea, 0x50, 0xa6, 0xfe, 0xa, 0x31);
 	// The GUID for our DirectShow filter which grabs the frame

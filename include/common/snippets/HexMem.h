@@ -51,12 +51,12 @@
 
 */
 
-#include "../../common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 
-HeU8 * getHexMem(const char *str,size_t &count);
-HeU8 * getHexMem(const char *str,size_t len,size_t &count);
-HeU8 * getHexMem(const wchar_t *str,size_t size_in,size_t &count);
+NxU8 * getHexMem(const char *str,size_t &count);
+NxU8 * getHexMem(const char *str,size_t len,size_t &count);
+NxU8 * getHexMem(const wchar_t *str,size_t size_in,size_t &count);
 
-void            deleteHexMem(const HeU8 *mem);
+void            deleteHexMem(const NxU8 *mem);
 
 #endif

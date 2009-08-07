@@ -2,7 +2,7 @@
 
 #define MESH_CONSLIDATE_H
 
-#include "HeSimpleTypes.h"
+#include "NxSimpleTypes.h"
 
 class MeshConsolidateOutput
 {
@@ -15,12 +15,12 @@ public:
     mIndices = 0;
     mSubMeshes = 0;
   }
-  HeU32        mVcount;
-  HeU32        mTcount;
+  NxU32        mVcount;
+  NxU32        mTcount;
   const float  *mVertices;
-  const HeU32 *mIndices;
-  const HeU32 *mIds;
-  const HeU32 *mSubMeshes;
+  const NxU32 *mIndices;
+  const NxU32 *mIds;
+  const NxU32 *mSubMeshes;
 };
 
 class MeshConsolidate
@@ -30,8 +30,8 @@ public:
   virtual bool addTriangle(const float *p1,
                            const float *p2,
                            const float *p3,
-                           HeU32 id,
-                           HeU32 subMesh) = 0;
+                           NxU32 id,
+                           NxU32 subMesh) = 0;
 
   virtual bool meshConsolidate(MeshConsolidateOutput &results) = 0;
 

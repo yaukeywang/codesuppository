@@ -62,14 +62,14 @@
 
 
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 #include "wavefront.h"
-#include "common/snippets/FloatMath.h"
+#include "FloatMath.h"
 
 #include <vector>
 
-typedef USER_STL::vector< HeI32 > IntVector;
-typedef USER_STL::vector< HeF32 > FloatVector;
+typedef USER_STL::vector< NxI32 > IntVector;
+typedef USER_STL::vector< NxF32 > FloatVector;
 
 namespace WAVEFRONT
 {
@@ -84,7 +84,7 @@ namespace WAVEFRONT
 class InPlaceParserInterface
 {
 public:
-	virtual HeI32 ParseLine(HeI32 lineno,HeI32 argc,const char **argv) =0;  // return TRUE to continue parsing, return FALSE to abort parsing process
+	virtual NxI32 ParseLine(NxI32 lineno,NxI32 argc,const char **argv) =0;  // return TRUE to continue parsing, return FALSE to abort parsing process
 };
 
 enum SeparatorType
@@ -103,7 +103,7 @@ public:
 		Init();
 	}
 
-	InPlaceParser(char *data,HeI32 len)
+	InPlaceParser(char *data,NxI32 len)
 	{
 		Init();
 		SetSourceData(data,len);
@@ -123,7 +123,7 @@ public:
 		mData = 0;
 		mLen  = 0;
 		mMyAlloc = false;
-		for (HeI32 i=0; i<256; i++)
+		for (NxI32 i=0; i<256; i++)
 		{
 			mHard[i] = ST_DATA;
 			mHardString[i*2] = (char)i;
@@ -138,18 +138,18 @@ public:
 
 	void SetFile(const char *fname); // use this file as source data to parse.
 
-	void SetSourceData(char *data,HeI32 len)
+	void SetSourceData(char *data,NxI32 len)
 	{
 		mData = data;
 		mLen  = len;
 		mMyAlloc = false;
 	};
 
-	HeI32  Parse(InPlaceParserInterface *callback); // returns true if entire file was parsed, false if it aborted for some reason
+	NxI32  Parse(InPlaceParserInterface *callback); // returns true if entire file was parsed, false if it aborted for some reason
 
-	HeI32 ProcessLine(HeI32 lineno,char *line,InPlaceParserInterface *callback);
+	NxI32 ProcessLine(NxI32 lineno,char *line,InPlaceParserInterface *callback);
 
-	const char ** GetArglist(char *source,HeI32 &count); // convert source string into an arg list, this is a destructive parse.
+	const char ** GetArglist(char *source,NxI32 &count); // convert source string into an arg list, this is a destructive parse.
 
 	void SetHardSeparator(char c) // add a hard separator
 	{
@@ -192,7 +192,7 @@ public:
 private:
 
 
-	inline char * AddHard(HeI32 &argc,const char **argv,char *foo);
+	inline char * AddHard(NxI32 &argc,const char **argv,char *foo);
 	inline bool   IsHard(char c);
 	inline char * SkipSpaces(char *foo);
 	inline bool   IsWhiteSpace(char c);
@@ -200,7 +200,7 @@ private:
 
 	bool   mMyAlloc; // whether or not *I* allocated the buffer and am responsible for deleting it.
 	char  *mData;  // ascii data to parse.
-	HeI32    mLen;   // length of data
+	NxI32    mLen;   // length of data
 	SeparatorType  mHard[256];
 	char   mHardString[256*2];
 	char           mQuoteChar;
@@ -228,7 +228,7 @@ void InPlaceParser::SetFile(const char *fname)
 		if ( mLen )
 		{
 			mData = (char *) MEMALLOC_MALLOC(sizeof(char)*(mLen+1));
-			HeI32 ok = fread(mData, mLen, 1, fph);
+			NxI32 ok = fread(mData, mLen, 1, fph);
 			if ( !ok )
 			{
 				MEMALLOC_FREE(mData);
@@ -259,7 +259,7 @@ bool InPlaceParser::IsHard(char c)
 	return mHard[c] == ST_HARD;
 }
 
-char * InPlaceParser::AddHard(HeI32 &argc,const char **argv,char *foo)
+char * InPlaceParser::AddHard(NxI32 &argc,const char **argv,char *foo)
 {
 	while ( IsHard(*foo) )
 	{
@@ -291,12 +291,12 @@ bool InPlaceParser::IsNonSeparator(char c)
 }
 
 
-HeI32 InPlaceParser::ProcessLine(HeI32 lineno,char *line,InPlaceParserInterface *callback)
+NxI32 InPlaceParser::ProcessLine(NxI32 lineno,char *line,InPlaceParserInterface *callback)
 {
-	HeI32 ret = 0;
+	NxI32 ret = 0;
 
 	const char *argv[MAXARGS];
-	HeI32 argc = 0;
+	NxI32 argc = 0;
 
 	char *foo = line;
 
@@ -380,14 +380,14 @@ HeI32 InPlaceParser::ProcessLine(HeI32 lineno,char *line,InPlaceParserInterface 
 	return ret;
 }
 
-HeI32  InPlaceParser::Parse(InPlaceParserInterface *callback) // returns true if entire file was parsed, false if it aborted for some reason
+NxI32  InPlaceParser::Parse(InPlaceParserInterface *callback) // returns true if entire file was parsed, false if it aborted for some reason
 {
-	HE_ASSERT( callback );
+	assert( callback );
 	if ( !mData ) return 0;
 
-	HeI32 ret = 0;
+	NxI32 ret = 0;
 
-	HeI32 lineno = 0;
+	NxI32 lineno = 0;
 
 	char *foo   = mData;
 	char *begin = foo;
@@ -402,7 +402,7 @@ HeI32  InPlaceParser::Parse(InPlaceParserInterface *callback) // returns true if
 
 			if ( *begin ) // if there is any data to parse at all...
 			{
-				HeI32 v = ProcessLine(lineno,begin,callback);
+				NxI32 v = ProcessLine(lineno,begin,callback);
 				if ( v ) ret = v;
 			}
 
@@ -418,7 +418,7 @@ HeI32  InPlaceParser::Parse(InPlaceParserInterface *callback) // returns true if
 
 	lineno++; // lasst line.
 
-	HeI32 v = ProcessLine(lineno,begin,callback);
+	NxI32 v = ProcessLine(lineno,begin,callback);
 	if ( v ) ret = v;
 	return ret;
 }
@@ -438,12 +438,12 @@ void InPlaceParser::DefaultSymbols(void)
 }
 
 
-const char ** InPlaceParser::GetArglist(char *line,HeI32 &count) // convert source string into an arg list, this is a destructive parse.
+const char ** InPlaceParser::GetArglist(char *line,NxI32 &count) // convert source string into an arg list, this is a destructive parse.
 {
 	const char **ret = 0;
 
 	static const char *argv[MAXARGS];
-	HeI32 argc = 0;
+	NxI32 argc = 0;
 
 	char *foo = line;
 
@@ -535,9 +535,9 @@ const char ** InPlaceParser::GetArglist(char *line,HeI32 &count) // convert sour
 class GeometryVertex
 {
 public:
-	HeF32        mPos[3];
-	HeF32        mNormal[3];
-	HeF32        mTexel[2];
+	NxF32        mPos[3];
+	NxF32        mNormal[3];
+	NxF32        mTexel[2];
 };
 
 
@@ -560,8 +560,8 @@ public:
 class OBJ : public InPlaceParserInterface
 {
 public:
-  HeI32          LoadMesh(const char *fname,GeometryInterface *callback);
-  HeI32 ParseLine(HeI32 lineno,HeI32 argc,const char **argv);  // return TRUE to continue parsing, return FALSE to abort parsing process
+  NxI32          LoadMesh(const char *fname,GeometryInterface *callback);
+  NxI32 ParseLine(NxI32 lineno,NxI32 argc,const char **argv);  // return TRUE to continue parsing, return FALSE to abort parsing process
 private:
 
   void GetVertex(GeometryVertex &v,const char *face) const;
@@ -578,9 +578,9 @@ private:
 /******************** Obj.cpp  ********************************/
 /*******************************************************************/
 
-HeI32 OBJ::LoadMesh(const char *fname,GeometryInterface *iface)
+NxI32 OBJ::LoadMesh(const char *fname,GeometryInterface *iface)
 {
-  HeI32 ret = 0;
+  NxI32 ret = 0;
 
   mVerts.clear();
   mTexels.clear();
@@ -609,17 +609,17 @@ void OBJ::GetVertex(GeometryVertex &v,const char *face) const
   v.mNormal[1] = 1;
   v.mNormal[2] = 0;
 
-  HeI32 index = atoi( face )-1;
+  NxI32 index = atoi( face )-1;
 
   const char *texel = strstr(face,"/");
 
   if ( texel )
   {
-    HeI32 tindex = atoi( texel+1) - 1;
+    NxI32 tindex = atoi( texel+1) - 1;
 
-    if ( tindex >=0 && tindex < (HeI32)(mTexels.size()/2) )
+    if ( tindex >=0 && tindex < (NxI32)(mTexels.size()/2) )
     {
-    	const HeF32 *t = &mTexels[tindex*2];
+    	const NxF32 *t = &mTexels[tindex*2];
 
       v.mTexel[0] = t[0];
       v.mTexel[1] = t[1];
@@ -629,11 +629,11 @@ void OBJ::GetVertex(GeometryVertex &v,const char *face) const
     const char *normal = strstr(texel+1,"/");
     if ( normal )
     {
-      HeI32 nindex = atoi( normal+1 ) - 1;
+      NxI32 nindex = atoi( normal+1 ) - 1;
 
-      if (nindex >= 0 && nindex < (HeI32)(mNormals.size()/3) )
+      if (nindex >= 0 && nindex < (NxI32)(mNormals.size()/3) )
       {
-      	const HeF32 *n = &mNormals[nindex*3];
+      	const NxF32 *n = &mNormals[nindex*3];
 
         v.mNormal[0] = n[0];
         v.mNormal[1] = n[1];
@@ -642,10 +642,10 @@ void OBJ::GetVertex(GeometryVertex &v,const char *face) const
     }
   }
 
-  if ( index >= 0 && index < (HeI32)(mVerts.size()/3) )
+  if ( index >= 0 && index < (NxI32)(mVerts.size()/3) )
   {
 
-    const HeF32 *p = &mVerts[index*3];
+    const NxF32 *p = &mVerts[index*3];
 
     v.mPos[0] = p[0];
     v.mPos[1] = p[1];
@@ -654,9 +654,9 @@ void OBJ::GetVertex(GeometryVertex &v,const char *face) const
 
 }
 
-HeI32 OBJ::ParseLine(HeI32 /*lineno*/,HeI32 argc,const char **argv)  // return TRUE to continue parsing, return FALSE to abort parsing process
+NxI32 OBJ::ParseLine(NxI32 /*lineno*/,NxI32 argc,const char **argv)  // return TRUE to continue parsing, return FALSE to abort parsing process
 {
-  HeI32 ret = 0;
+  NxI32 ret = 0;
 
   if ( argc >= 1 )
   {
@@ -665,25 +665,25 @@ HeI32 OBJ::ParseLine(HeI32 /*lineno*/,HeI32 argc,const char **argv)  // return T
     {
       if ( stricmp(argv[0],"v") == 0 && argc == 4 )
       {
-        HeF32 vx = (HeF32) atof( argv[1] );
-        HeF32 vy = (HeF32) atof( argv[2] );
-        HeF32 vz = (HeF32) atof( argv[3] );
+        NxF32 vx = (NxF32) atof( argv[1] );
+        NxF32 vy = (NxF32) atof( argv[2] );
+        NxF32 vz = (NxF32) atof( argv[3] );
         mVerts.push_back(vx);
         mVerts.push_back(vy);
         mVerts.push_back(vz);
       }
       else if ( stricmp(argv[0],"vt") == 0 && argc == 3 )
       {
-        HeF32 tx = (HeF32) atof( argv[1] );
-        HeF32 ty = (HeF32) atof( argv[2] );
+        NxF32 tx = (NxF32) atof( argv[1] );
+        NxF32 ty = (NxF32) atof( argv[2] );
         mTexels.push_back(tx);
         mTexels.push_back(ty);
       }
       else if ( stricmp(argv[0],"vn") == 0 && argc == 4 )
       {
-        HeF32 normalx = (HeF32) atof(argv[1]);
-        HeF32 normaly = (HeF32) atof(argv[2]);
-        HeF32 normalz = (HeF32) atof(argv[3]);
+        NxF32 normalx = (NxF32) atof(argv[1]);
+        NxF32 normaly = (NxF32) atof(argv[2]);
+        NxF32 normalz = (NxF32) atof(argv[3]);
         mNormals.push_back(normalx);
         mNormals.push_back(normaly);
         mNormals.push_back(normalz);
@@ -692,9 +692,9 @@ HeI32 OBJ::ParseLine(HeI32 /*lineno*/,HeI32 argc,const char **argv)  // return T
       {
         GeometryVertex v[32];
 
-        HeI32 vcount = argc-1;
+        NxI32 vcount = argc-1;
 
-        for (HeI32 i=1; i<argc; i++)
+        for (NxI32 i=1; i<argc; i++)
         {
           GetVertex(v[i-1],argv[i] );
         }
@@ -703,14 +703,14 @@ HeI32 OBJ::ParseLine(HeI32 /*lineno*/,HeI32 argc,const char **argv)  // return T
 #if 0 // not currently implemented
         if ( mNormals.empty() )
         {
-          Vector3d<HeF32> p1( v[0].mPos );
-          Vector3d<HeF32> p2( v[1].mPos );
-          Vector3d<HeF32> p3( v[2].mPos );
+          Vector3d<NxF32> p1( v[0].mPos );
+          Vector3d<NxF32> p2( v[1].mPos );
+          Vector3d<NxF32> p3( v[2].mPos );
 
-          Vector3d<HeF32> n;
+          Vector3d<NxF32> n;
           n.ComputeNormal(p3,p2,p1);
 
-          for (HeI32 i=0; i<vcount; i++)
+          for (NxI32 i=0; i<vcount; i++)
           {
             v[i].mNormal[0] = n.x;
             v[i].mNormal[1] = n.y;
@@ -724,7 +724,7 @@ HeI32 OBJ::ParseLine(HeI32 /*lineno*/,HeI32 argc,const char **argv)  // return T
 
         if ( vcount >=3 ) // do the fan
         {
-          for (HeI32 i=2; i<(vcount-1); i++)
+          for (NxI32 i=2; i<(vcount-1); i++)
           {
             mCallback->NodeTriangle(&v[0],&v[i],&v[i+1]);
           }
@@ -743,7 +743,7 @@ HeI32 OBJ::ParseLine(HeI32 /*lineno*/,HeI32 argc,const char **argv)  // return T
 class BuildMesh : public GeometryInterface
 {
 public:
-  BuildMesh(HeF32 weldDistance)
+  BuildMesh(NxF32 weldDistance)
   {
     mVertices = fm_createVertexIndex(weldDistance,false);
   }
@@ -761,16 +761,16 @@ public:
 		mIndices.push_back( mVertices->getIndex(v3->mPos,newPos) );
 	}
 
-  const HeF32 * getVertices(HeU32 &vcount)
+  const NxF32 * getVertices(NxU32 &vcount)
   {
     vcount = mVertices->getVcount();
     return mVertices->getVerticesFloat();
 
   }
 
-  const HeI32 * getIndices(HeU32 &tcount) const 
+  const NxI32 * getIndices(NxU32 &tcount) const 
   { 
-    const HeI32 *ret = 0;
+    const NxI32 *ret = 0;
     tcount = mIndices.size()/3;
     if ( tcount ) ret = &mIndices[0];
     return ret;
@@ -799,10 +799,10 @@ WavefrontObj::~WavefrontObj(void)
 	MEMALLOC_FREE(mVertices);
 }
 
-HeU32 WavefrontObj::loadObj(const char *fname,HeF32 weldDistance) // load a wavefront obj returns number of triangles that were loaded.  Data is persists until the class is destructed.
+NxU32 WavefrontObj::loadObj(const char *fname,NxF32 weldDistance) // load a wavefront obj returns number of triangles that were loaded.  Data is persists until the class is destructed.
 {
 
-	HeU32 ret = 0;
+	NxU32 ret = 0;
 
 	MEMALLOC_FREE(mVertices);
 	mVertices = 0;
@@ -819,19 +819,19 @@ HeU32 WavefrontObj::loadObj(const char *fname,HeF32 weldDistance) // load a wave
   obj.LoadMesh(fname,&bm);
 
 
-  HeU32 vcount;
-	const HeF32 *vlist = bm.getVertices(vcount);
-  HeU32 tcount;
-	const HeI32 *indices = bm.getIndices(tcount);
+  NxU32 vcount;
+	const NxF32 *vlist = bm.getVertices(vcount);
+  NxU32 tcount;
+	const NxI32 *indices = bm.getIndices(tcount);
 
 	if ( vcount )
 	{
 		mVertexCount = vcount;
-		mVertices = (HeF32 *) MEMALLOC_MALLOC(sizeof(HeF32)*mVertexCount*3);
-		memcpy( mVertices, vlist, sizeof(HeF32)*mVertexCount*3 );
+		mVertices = (NxF32 *) MEMALLOC_MALLOC(sizeof(NxF32)*mVertexCount*3);
+		memcpy( mVertices, vlist, sizeof(NxF32)*mVertexCount*3 );
 		mTriCount = tcount;
-		mIndices = (HeI32 *) MEMALLOC_MALLOC(sizeof(HeI32)*mTriCount*3*sizeof(HeI32));
-		memcpy(mIndices, indices, sizeof(HeI32)*mTriCount*3);
+		mIndices = (NxI32 *) MEMALLOC_MALLOC(sizeof(NxI32)*mTriCount*3*sizeof(NxI32));
+		memcpy(mIndices, indices, sizeof(NxI32)*mTriCount*3);
 		ret = mTriCount;
 	}
 
@@ -840,19 +840,19 @@ HeU32 WavefrontObj::loadObj(const char *fname,HeF32 weldDistance) // load a wave
 }
 
 
-bool WavefrontObj::saveObj(const char *fname,HeU32 vcount,const HeF32 *vertices,HeU32 tcount,const HeU32 *indices)
+bool WavefrontObj::saveObj(const char *fname,NxU32 vcount,const NxF32 *vertices,NxU32 tcount,const NxU32 *indices)
 {
   bool ret = false;
 
   FILE *fph = fopen(fname,"wb");
   if ( fph )
   {
-    for (HeU32 i=0; i<vcount; i++)
+    for (NxU32 i=0; i<vcount; i++)
     {
       fprintf(fph,"v %0.9f %0.9f %0.9f\r\n", vertices[0], vertices[1], vertices[2] );
       vertices+=3;
     }
-    for (HeU32 i=0; i<tcount; i++)
+    for (NxU32 i=0; i<tcount; i++)
     {
       fprintf(fph,"f %d %d %d\r\n", indices[0]+1, indices[1]+1, indices[2]+1 );
       indices+=3;

@@ -338,7 +338,7 @@ public:
       size_t e = mPoints[j];
       if ( e == i )
         return;
-      HE_ASSERT( e != i );
+      assert( e != i );
     }
 
 #if 1
@@ -792,7 +792,7 @@ public:
     closed = false;
     mResults.clear();
 
-    HE_ASSERT( polygonIndex < mRings.size() );
+    assert( polygonIndex < mRings.size() );
 
     if ( polygonIndex < mRings.size() )
     {
@@ -1262,9 +1262,9 @@ bool splitMesh(const SimpleMesh &inputMesh,SimpleMesh &leftMesh,SimpleMesh &righ
     size_t i2 = inputMesh.mIndices[i*3+1];
     size_t i3 = inputMesh.mIndices[i*3+2];
 
-    HE_ASSERT( i1 >= 0 && i1 < ivcount );
-    HE_ASSERT( i2 >= 0 && i2 < ivcount );
-    HE_ASSERT( i3 >= 0 && i3 < ivcount );
+    assert( i1 >= 0 && i1 < ivcount );
+    assert( i2 >= 0 && i2 < ivcount );
+    assert( i3 >= 0 && i3 < ivcount );
 
     const float *p1 = &inputMesh.mVertices[i1*3];
     const float *p2 = &inputMesh.mVertices[i2*3];
@@ -1486,9 +1486,9 @@ bool splitMesh(const SimpleMeshDouble &inputMesh,SimpleMeshDouble &leftMesh,Simp
     size_t i2 = inputMesh.mIndices[i*3+1];
     size_t i3 = inputMesh.mIndices[i*3+2];
 
-    HE_ASSERT( i1 >= 0 && i1 < ivcount );
-    HE_ASSERT( i2 >= 0 && i2 < ivcount );
-    HE_ASSERT( i3 >= 0 && i3 < ivcount );
+    assert( i1 >= 0 && i1 < ivcount );
+    assert( i2 >= 0 && i2 < ivcount );
+    assert( i3 >= 0 && i3 < ivcount );
 
     const double *p1 = &inputMesh.mVertices[i1*3];
     const double *p2 = &inputMesh.mVertices[i2*3];
@@ -1572,7 +1572,7 @@ bool splitMesh(const SimpleMeshDouble &inputMesh,SimpleMeshDouble &leftMesh,Simp
   for (size_t i=0; i<ivcount; i++)
   {
     size_t r = remap_indices[i]; // the original index mapped to this vertex...
-    HE_ASSERT( r < endVcount );
+    assert( r < endVcount );
     if ( r != 0xFFFFFF ) // make sure this vertice was referenced by the input mesh..
     {
       remap[r] = i;

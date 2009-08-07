@@ -14,7 +14,7 @@
 
 #define RENDERDEBUG_H
 
-#include "../common/HeMath/HeMat44.h"
+#include "NxMat44.h"
 #include "BaseRenderDebug.h"
 
 namespace PD3D
@@ -54,7 +54,7 @@ public:
 
   virtual void setPd3d(PD3D::Pd3d *p) = 0;
   virtual void Initialize( HEGRDRIVER::HeGrDriver* driver, HETEXTUREMANAGER::HeTextureManager* textureManager ) = 0;
-  virtual void Render(HeF32 dtime, bool flush, bool zPass) = 0;
+  virtual void Render(NxF32 dtime, bool flush, bool zPass) = 0;
   
 
 private:

@@ -2,7 +2,7 @@
 
 #define MERGED_PATH_H
 
-#include "HeSimpleTypes.h"
+#include "NxSimpleTypes.h"
 
 namespace MERGED_PATH
 {
@@ -11,13 +11,13 @@ class MergedPath
 {
 public:
 
-  virtual HeF32 * createMergedPath(const HeF32 *pos,
-                                   const HeF32 *pdir,
-                                   HeU32 pcount,
-                                   const HeF32 * points,
-                                   HeU32 pstride,
-                                   HeU32 &pout,
-                                   HeF32 maxDist)=0;
+  virtual NxF32 * createMergedPath(const NxF32 *pos,
+                                   const NxF32 *pdir,
+                                   NxU32 pcount,
+                                   const NxF32 * points,
+                                   NxU32 pstride,
+                                   NxU32 &pout,
+                                   NxF32 maxDist)=0;
 };
 
 

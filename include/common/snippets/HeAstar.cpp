@@ -13,7 +13,7 @@
 
 #if DEBUG_SHOW
 #include "RenderDebug/RenderDebug.h"
-#include "common/snippets/SendTextMessage.h"
+#include "SendTextMessage.h"
 #endif
 
 namespace HE_ASTAR
@@ -67,13 +67,13 @@ public:
   AstarNode  *getPreviousNode(void) const { return mPreviousNode; };
   void        setPreviousNode(AstarNode *a) { mPreviousNode = a; };
 
-  HeF32       getF(void) const { return mF; };
-  HeF32       getG(void) const { return mG; };
-  HeF32       getH(void) const { return mH; };
+  NxF32       getF(void) const { return mF; };
+  NxF32       getG(void) const { return mG; };
+  NxF32       getH(void) const { return mH; };
 
-  void        setF(HeF32 f) { mF = f; };
-  void        setG(HeF32 g) { mG = g; };
-  void        setH(HeF32 h) { mH = h; };
+  void        setF(NxF32 f) { mF = f; };
+  void        setG(NxF32 g) { mG = g; };
+  void        setH(NxF32 h) { mH = h; };
 
   // used by the pool allocator
   AstarNode * GetNext(void) const { return mNext; };
@@ -81,16 +81,16 @@ public:
   void        SetNext(AstarNode *a) { mNext = a; };
   void        SetPrevious(AstarNode *a) { mPrevious = a; };
 
-  HeU32 getHashValue(void) const
+  NxU32 getHashValue(void) const
   {
-    HeU32 ret = (HeU32) mNode;
+    NxU32 ret = (NxU32) mNode;
     return ret;
   }
 
 private:
-  HeF32      mH;
-  HeF32      mG;
-  HeF32      mF;
+  NxF32      mH;
+  NxF32      mG;
+  NxF32      mF;
 
   AI_Node   *mNode;
   AstarNode *mParent;
@@ -224,7 +224,7 @@ public:
   // insert it into the open-list based on its priority...
   void insert(AstarNode *successor)
   {
-    HeF32 f = successor->getF();
+    NxF32 f = successor->getF();
 
     AstarNode *previous = 0;
     AstarNode *scan = mOpenHead;
@@ -235,7 +235,7 @@ public:
       scan = scan->getNextNode();
 #if VALIDATION
       if ( scan )
-        HE_ASSERT( scan->getPreviousNode() == previous );
+        assert( scan->getPreviousNode() == previous );
 #endif
     }
 
@@ -258,7 +258,7 @@ public:
     else
     {
 #if VALIDATION
-      HE_ASSERT( previous == mOpenTail );
+      assert( previous == mOpenTail );
 #endif
       mOpenTail = successor; // it's the new tail
     }
@@ -289,7 +289,7 @@ public:
     mClosedCount++;
   }
 
-  virtual bool astarSearchStep(HeU32 &searchCount) // step the A star algorithm one time.  Return true if the search is completed.
+  virtual bool astarSearchStep(NxU32 &searchCount) // step the A star algorithm one time.  Return true if the search is completed.
   {
     bool ret = false;
 
@@ -322,9 +322,9 @@ public:
       }
       else
       {
-        HeU32 ecount = n->getAINode()->getEdgeCount(mUserData);
+        NxU32 ecount = n->getAINode()->getEdgeCount(mUserData);
 
-        for (HeU32 i=0; i<ecount; i++)
+        for (NxU32 i=0; i<ecount; i++)
         {
 
           AI_Node *next = n->getAINode()->getEdge(i,mUserData);
@@ -337,7 +337,7 @@ public:
               break;
             }
 
-            HeF32 newg = n->getG() + n->getAINode()->getCost(next,mUserData); // need to take the 'successor' into account!
+            NxF32 newg = n->getG() + n->getAINode()->getCost(next,mUserData); // need to take the 'successor' into account!
 
             AstarNode *open = findOpenList(next);
             if ( open && open->getG() <= newg )
@@ -399,36 +399,36 @@ public:
     if ( gBaseRenderDebug )
     {
       gBaseRenderDebug->Reset();
-      HeF32 s = gBaseRenderDebug->getRenderScale();
+      NxF32 s = gBaseRenderDebug->getRenderScale();
       gBaseRenderDebug->setRenderScale(0.1f);
       AstarNode *scan = mOpenHead;
       AstarNode *prev = 0;
-      HeU32 ocount = 0;
-      HeU32 ccount = 0;
+      NxU32 ocount = 0;
+      NxU32 ccount = 0;
 
       while ( scan )
       {
         ocount++;
-        HE_ASSERT( scan->getPreviousNode() == prev );
+        assert( scan->getPreviousNode() == prev );
         scan->getAINode()->debugRender(0xFF0000,600);
         prev = scan;
         scan = scan->getNextNode();
       }
-      HE_ASSERT( prev == mOpenTail );
+      assert( prev == mOpenTail );
 
       prev = 0;
       scan = mClosedHead;
       while ( scan )
       {
-        HE_ASSERT( scan->getPreviousNode() ==  prev );
+        assert( scan->getPreviousNode() ==  prev );
         ccount++;
         scan->getAINode()->debugRender(0x00FF00,600);
         prev = scan;
         scan = scan->getNextNode();
       }
-      HE_ASSERT( prev == mClosedTail );
-      HE_ASSERT( ocount == mOpenCount );
-      HE_ASSERT( ccount == mClosedCount );
+      assert( prev == mClosedTail );
+      assert( ocount == mOpenCount );
+      assert( ccount == mClosedCount );
       gBaseRenderDebug->setRenderScale(s);
       SEND_TEXT_MESSAGE(0,"Open: %d Closed: %d\r\n", mOpenCount, mClosedCount );
     }
@@ -455,7 +455,7 @@ public:
       scan = scan->getNextNode();
     }
 
-    HeU32 index = (HeU32)n;
+    NxU32 index = (NxU32)n;
     AstarNode *match=0;
     mOpenHash.exists(index,match);
 
@@ -463,7 +463,7 @@ public:
 
     return ret;
 #else
-    HeU32 index = (HeU32)n;
+    NxU32 index = (NxU32)n;
     AstarNode *match=0;
     mOpenHash.exists(index,match);
     return match;
@@ -486,15 +486,15 @@ public:
       scan = scan->getNextNode();
     }
 
-    HeU32 index = (HeU32)n;
+    NxU32 index = (NxU32)n;
     AstarNode *match = 0;
     mClosedHash.exists(index,match);
-    HE_ASSERT( match == ret );
+    assert( match == ret );
 
     return ret;
 #else
 
-    HeU32 index = (HeU32)n;
+    NxU32 index = (NxU32)n;
     AstarNode *match = 0;
     mClosedHash.exists(index,match);
     return match;
@@ -568,7 +568,7 @@ public:
 		mClosedCount--;
   }
 
-  virtual AI_Node **        getSolution(HeU32 &count)  // retrieve the solution.  If this returns a null pointer and count of zero, it means no solution could be found.
+  virtual AI_Node **        getSolution(NxU32 &count)  // retrieve the solution.  If this returns a null pointer and count of zero, it means no solution could be found.
   {
     AI_Node **ret = 0;
 
@@ -611,11 +611,11 @@ public:
   {
 #if VALIDATION
     AstarNode *match = 0;
-    HE_ASSERT( !mClosedHash.exists(i->getHashValue(),match) );
+    assert( !mClosedHash.exists(i->getHashValue(),match) );
 #endif
     mClosedHash.insert(i);
 #if VALIDATION
-    HE_ASSERT( mClosedHash.exists(i->getHashValue(),match) );
+    assert( mClosedHash.exists(i->getHashValue(),match) );
 #endif
   }
 
@@ -623,11 +623,11 @@ public:
   {
 #if VALIDATION
     AstarNode *match = 0;
-    HE_ASSERT( !mOpenHash.exists(i->getHashValue(),match) );
+    assert( !mOpenHash.exists(i->getHashValue(),match) );
 #endif
     mOpenHash.insert(i);
 #if VALIDATION
-    HE_ASSERT( mOpenHash.exists(i->getHashValue(),match) );
+    assert( mOpenHash.exists(i->getHashValue(),match) );
 #endif
   }
 
@@ -635,12 +635,12 @@ public:
   {
 #if VALIDATION
     AstarNode *match = 0;
-    HE_ASSERT( mClosedHash.exists(i->getHashValue(),match) );
+    assert( mClosedHash.exists(i->getHashValue(),match) );
 #endif
     bool ret = mClosedHash.remove(i);
 #if VALIDATION
-    HE_ASSERT(ret);
-    HE_ASSERT( !mClosedHash.exists(i->getHashValue(),match) );
+    assert(ret);
+    assert( !mClosedHash.exists(i->getHashValue(),match) );
 #endif
     return ret;
   }
@@ -649,13 +649,13 @@ public:
   {
 #if VALIDATION
     AstarNode *match = 0;
-    HE_ASSERT( mOpenHash.exists(i->getHashValue(),match) );
+    assert( mOpenHash.exists(i->getHashValue(),match) );
 #endif
     bool ret = mOpenHash.remove(i);
 
 #if VALIDATION
-    HE_ASSERT(ret);
-    HE_ASSERT( !mOpenHash.exists(i->getHashValue(),match) );
+    assert(ret);
+    assert( !mOpenHash.exists(i->getHashValue(),match) );
 #endif
 
     return ret;
@@ -675,12 +675,12 @@ private:
   AI_Node   *mFrom;
   AI_Node   *mTo;
   void      *mUserData;
-  HeU32      mMaxSearch;
-  HeU32      mOpenCount;
-  HeU32      mClosedCount;
+  NxU32      mMaxSearch;
+  NxU32      mOpenCount;
+  NxU32      mClosedCount;
 
   AstarNode *mSolutionNode;
-  HeU32      mSolutionCount;
+  NxU32      mSolutionCount;
 
   AstarNode *mOpenHead;
   AstarNode *mOpenTail;
@@ -713,8 +713,8 @@ static AstarNode * getAstarNode(void)
 
 static void        releaseAstarNode(AstarNode *a)
 {
-  HE_ASSERT( gAllocator );
-  HE_ASSERT( a );
+  assert( gAllocator );
+  assert( a );
   if ( a && gAllocator )
   {
     gAllocator->releaseAstarNode(a);

@@ -75,18 +75,18 @@ public:
     mScanLines = 0;
   }
 
-  void init(HeI32 width,HeI32 depth,const Type *data)
+  void init(NxI32 width,NxI32 depth,const Type *data)
   {
     mWidth = width;
     mDepth = depth;
     mMinV = 1e9;
     mMaxV = -1e9;
-    HeI32 size = width*depth;
+    NxI32 size = width*depth;
     mData = (Type *)MEMALLOC_MALLOC(size*sizeof(Type));
     memset(mData,0,sizeof(Type)*size);
     Type *scan = mData;
     mScanLines = (Type **)MEMALLOC_MALLOC( sizeof(Type*)*depth );
-    for (HeI32 i=0; i<depth; i++)
+    for (NxI32 i=0; i<depth; i++)
     {
       mScanLines[i] = scan;
       scan+=width;
@@ -94,7 +94,7 @@ public:
     if ( data )
     {
       memcpy(mData,data,sizeof(float)*size);
-      for (HeI32 i=0; i<size; i++)
+      for (NxI32 i=0; i<size; i++)
       {
         Type v = data[i];
         if ( v < mMinV ) mMinV = v;
@@ -108,7 +108,7 @@ public:
     MEMALLOC_FREE(mData);
   }
 
-  inline void set(HeI32 x,HeI32 z,Type v)
+  inline void set(NxI32 x,NxI32 z,Type v)
   {
     assert( x >= 0 && x < mWidth );
     assert( z >= 0 && z < mDepth );
@@ -116,7 +116,7 @@ public:
     scan[x] = v;
   }
 
-  inline void setMinMax(HeI32 x,HeI32 z,Type v)
+  inline void setMinMax(NxI32 x,NxI32 z,Type v)
   {
     assert( x >= 0 && x < mWidth );
     assert( z >= 0 && z < mDepth );
@@ -126,7 +126,7 @@ public:
     if ( v > mMaxV ) mMaxV = v;
   }
 
-  inline Type get(HeI32 x,HeI32 z) const
+  inline Type get(NxI32 x,NxI32 z) const
   {
     assert( x >= 0 && x < mWidth );
     assert( z >= 0 && z < mDepth );
@@ -134,28 +134,28 @@ public:
     return scan[x];
   }
 
-  inline HeI32 clampX(HeI32 x) const
+  inline NxI32 clampX(NxI32 x) const
   {
     if ( x < 0 ) x = 0;
     else if ( x >= mWidth ) x = mWidth-1;
     return x;
   }
 
-  inline HeI32 clampZ(HeI32 z) const
+  inline NxI32 clampZ(NxI32 z) const
   {
     if ( z < 0 ) z = 0;
     else if ( z >= mDepth ) z = mDepth-1;
     return z;
   }
 
-  inline void setSafe(HeI32 x,HeI32 z,Type v)
+  inline void setSafe(NxI32 x,NxI32 z,Type v)
   {
     x = clampX(x);
     z = clampZ(z);
     mScanLines[z][x] = v;
   }
 
-  inline Type getSafe(HeI32 x,HeI32 z) const
+  inline Type getSafe(NxI32 x,NxI32 z) const
   {
     x = clampX(x);
     z = clampZ(z);
@@ -168,8 +168,8 @@ public:
     if ( diff > 0 )
     {
       Type recip = 1.0f / diff;
-      HeI32 size = mWidth*mDepth;
-      for (HeI32 i=0; i<size; i++)
+      NxI32 size = mWidth*mDepth;
+      for (NxI32 i=0; i<size; i++)
       {
         Type v = mData[i];
         v = (v-mMinV)*recip;
@@ -178,16 +178,16 @@ public:
     }
   }
 
-  HeI32 getWidth(void) const { return mWidth; };
-  HeI32 getDepth(void) const { return mDepth; };
+  NxI32 getWidth(void) const { return mWidth; };
+  NxI32 getDepth(void) const { return mDepth; };
 
   Type * getData(void) const { return mData; };
 
 private:
   Type   mMinV;
   Type   mMaxV;
-  HeI32   mWidth;
-  HeI32   mDepth;
+  NxI32   mWidth;
+  NxI32   mDepth;
   Type  *mData;
   Type **mScanLines;
 };
@@ -202,17 +202,17 @@ public:
     mDesc = desc;
     if ( mDesc.mData )
     {
-      HeightMap<HeF32> temp;
+      HeightMap<NxF32> temp;
       temp.init(desc.mWidth,desc.mDepth,desc.mData);
 
       mHF.init(desc.mWidth+2,desc.mDepth+2,0);
       mHF2.init(desc.mWidth+2,desc.mDepth+2,0);
 
-      for (HeI32 z=-1; z<=desc.mDepth; z++)
+      for (NxI32 z=-1; z<=desc.mDepth; z++)
       {
-        for (HeI32 x=-1; x<=desc.mWidth; x++)
+        for (NxI32 x=-1; x<=desc.mWidth; x++)
         {
-          HeF32 v = temp.getSafe(x,z);
+          NxF32 v = temp.getSafe(x,z);
           mHF.setMinMax(x+1,z+1,v);
         }
       }
@@ -235,16 +235,16 @@ public:
 
   void findUpflow(void)
   {
-    HeI32 x, y,i;
-    HeI32 xn, yn;
-    HeI32 dir;
-    HeI32 inflows;                    /* #nodes flowing in */
-    HeF32 mval;            /* current minimum elevation value */
-    HeF32 maxv;            /* current maximum */
-    HeF32 tval;            /* temporary value */
+    NxI32 x, y,i;
+    NxI32 xn, yn;
+    NxI32 dir;
+    NxI32 inflows;                    /* #nodes flowing in */
+    NxF32 mval;            /* current minimum elevation value */
+    NxF32 maxv;            /* current maximum */
+    NxF32 tval;            /* temporary value */
 
-    HeI32 xsize = mHF.getWidth()-2;
-    HeI32 ysize = mHF.getDepth()-2;
+    NxI32 xsize = mHF.getWidth()-2;
+    NxI32 ysize = mHF.getDepth()-2;
 
     for (y = 0; y < ysize; y++)
     {
@@ -262,8 +262,8 @@ public:
   	      tval = mHF.get(x+xo[i]+1,y+yo[i]+1);       /* neighbor higher? */
       	  if (tval > maxv)
     	    {
-  	        maxv = (HeU8)tval;                /* yes, set uphill->this one */
-  	        mFlags.set(x,y,(HeU8)i);
+  	        maxv = (NxU8)tval;                /* yes, set uphill->this one */
+  	        mFlags.set(x,y,(NxU8)i);
   	      }
   	      xn = x + xo[i];
   	      yn = y + yo[i];
@@ -280,7 +280,7 @@ public:
 
   	    if (inflows == 0)
  	      {     /* no inflows: find_ua can start here */
-          HeU8 v = mFlags.get(x,y) | 0x10;  /* set b4: summed */
+          NxU8 v = mFlags.get(x,y) | 0x10;  /* set b4: summed */
   	      mFlags.set(x,y,v);  /* set b4: summed */
   	    }
 
@@ -303,29 +303,29 @@ public:
 
   void findFlow2(void)
   {
-    HeI32 xsize = mHF.getWidth()-2;
-    HeI32 ysize = mHF.getDepth()-2;
-    for (HeI32 y = 0; y < ysize; y++)
+    NxI32 xsize = mHF.getWidth()-2;
+    NxI32 ysize = mHF.getDepth()-2;
+    for (NxI32 y = 0; y < ysize; y++)
     {
-      for (HeI32 x = 0; x < xsize; x++)
+      for (NxI32 x = 0; x < xsize; x++)
       {
-        HeF32 slope;
-        HeU8 v = lowestn(mHF,x,y,slope);
+        NxF32 slope;
+        NxU8 v = lowestn(mHF,x,y,slope);
         mDirection.set(x,y,v);
       }
     }
   }
 
-  HeU8 lowestn(const HeightMap<HeF32> &hf,HeI32 x,HeI32 y,HeF32 &return_slope) // compute the direction of steepest descent
+  NxU8 lowestn(const HeightMap<NxF32> &hf,NxI32 x,NxI32 y,NxF32 &return_slope) // compute the direction of steepest descent
   {
-    HeF32 slope, vmin;
+    NxF32 slope, vmin;
 
-    HeI32 mini = 0;
-    vmin = (HeF32)1e30;
+    NxI32 mini = 0;
+    vmin = (NxF32)1e30;
 
-    HeF32 here = hf.get(x+1,y+1);
+    NxF32 here = hf.get(x+1,y+1);
 
-    for (HeI32 i=1;i<9;i++)
+    for (NxI32 i=1;i<9;i++)
     {
       slope = hf.get(x+xo[i]+1,y+yo[i]+1) - here;
       if ( (i&1) ) // if an odd entry..
@@ -337,18 +337,18 @@ public:
       }
     }
     return_slope = vmin;
-    return (HeU8) mini;
+    return (NxU8) mini;
   }
 
-  void quickFlow(const HeightMap<HeF32> &hf)
+  void quickFlow(const HeightMap<NxF32> &hf)
   {
-    HeI32 x1, y1;
-    HeI32 x, y,i;
-    HeF32 mval;            /* current minimum elevation value */
-    HeF32 tval;            /* temporary value */
+    NxI32 x1, y1;
+    NxI32 x, y,i;
+    NxF32 mval;            /* current minimum elevation value */
+    NxF32 tval;            /* temporary value */
 
-    HeI32 xsize = hf.getWidth()-2;
-    HeI32 ysize = hf.getDepth()-2;
+    NxI32 xsize = hf.getWidth()-2;
+    NxI32 ysize = hf.getDepth()-2;
 
     for (y = 0; y < ysize; y++)
     {
@@ -370,21 +370,21 @@ public:
     }
   }
 
-  int fillBasin(const HeightMap<HeF32> &hf1,HeightMap<HeF32> &hf2)
+  int fillBasin(const HeightMap<NxF32> &hf1,HeightMap<NxF32> &hf2)
   {
-    HeI32 ix,iy,i;
-    HeI32 changed;
-    HeF32 sum, hmax, neb, wavg;
-    HeF32 delta_h;         /* max elevation change this run */
-    HeF32 dhmax;           /* maximum elevation (?) */
+    NxI32 ix,iy,i;
+    NxI32 changed;
+    NxF32 sum, hmax, neb, wavg;
+    NxF32 delta_h;         /* max elevation change this run */
+    NxF32 dhmax;           /* maximum elevation (?) */
 
-    HeI32 xsize = hf1.getWidth()-2;
-    HeI32 ysize = hf1.getDepth()-2;
+    NxI32 xsize = hf1.getWidth()-2;
+    NxI32 ysize = hf1.getDepth()-2;
 
-    HeI32 tsize = (xsize+2)*(ysize+2);
-    HeF32 *dest = hf2.getData();
-    const HeF32 *source = hf1.getData();
-    memcpy(dest,source,sizeof(HeF32)*tsize);
+    NxI32 tsize = (xsize+2)*(ysize+2);
+    NxF32 *dest = hf2.getData();
+    const NxF32 *source = hf1.getData();
+    memcpy(dest,source,sizeof(NxF32)*tsize);
 
     changed = 0;                  /* no changes yet */
     dhmax = 0;
@@ -394,7 +394,7 @@ public:
       {
         if ( mDirection.get(ix-1,iy-1) == 0)
         {           /* local depression */
-        	sum = 0; hmax = (HeF32)-9E20;
+        	sum = 0; hmax = (NxF32)-9E20;
     	    for (i=1;i<9;i++)
    	      {
        	    neb = hf1.get(ix+xo[i],iy+yo[i]);      /* neighbor elev. */
@@ -406,14 +406,14 @@ public:
     	    delta_h = wavg - hf1.get(ix,iy);       /* diff between avg and this */
     	    if (delta_h > dhmax) dhmax = delta_h;
     	    hf2.set(ix,iy,wavg);       /* hf2(x,y) <- weighted local avg */
-          HeF32 bs = mBasin.get(ix-1,iy-1);
+          NxF32 bs = mBasin.get(ix-1,iy-1);
           bs+=delta_h;
           mBasin.set(ix-1,iy-1,bs); // accumulate in the basin
        	  changed++;
         } /* end if */
         else
         {    /* if not depression, just copy old mx to new */
-          HeF32 v = hf1.get(ix,iy);
+          NxF32 v = hf1.get(ix,iy);
           hf2.set(ix,iy,v);
         }
       }
@@ -443,15 +443,15 @@ public:
     int ix,iy;
     int i;
     int dir;              /* direction this element points in */
-    HeU8 ff;               /* flag variable for this loc */
+    NxU8 ff;               /* flag variable for this loc */
     int o_summed;         /* flag indicating all neighbors summed */
     long added;            /* # found unsummed nodes this pass */
     float area;           /* sum of uphill area for this element */
 
 
     /* first pass: set local highpoints to "summed", area to 1 */
-    HeI32 xsize = mHF.getWidth()-2;
-    HeI32 ysize = mHF.getDepth()-2;
+    NxI32 xsize = mHF.getWidth()-2;
+    NxI32 ysize = mHF.getDepth()-2;
 
     for (iy = 0; iy<ysize; iy++)
     {
@@ -464,7 +464,7 @@ public:
         if ( (mFlags.get(ix,iy) & 0x0f) == 0)
         {   /* this point is a peak */
       	  mUphill.set(ix,iy,1);                     /* peak: unit area */
-          HeU8 flag = mFlags.get(ix,iy) | 0x10;
+          NxU8 flag = mFlags.get(ix,iy) | 0x10;
       	  mFlags.set(ix,iy,flag);
         }
       }
@@ -501,7 +501,7 @@ public:
   	              area += mUphill.get(ix+xo[i],iy+yo[i]);
          	    }
   	          mUphill.set(ix,iy,area);
-              HeU8 flag = mFlags.get(ix,iy);
+              NxU8 flag = mFlags.get(ix,iy);
               mFlags.set(ix,iy,flag | 0x10 );
   	          added++;  /* increment count of nodes summed */
   	        }
@@ -530,13 +530,13 @@ public:
     int xx, yy;
     int tmp;
     int dir;              /* direction this element points in */
-    HeU8 ff;               /* flag variable for this loc */
+    NxU8 ff;               /* flag variable for this loc */
     int o_summed;         /* flag indicating all neighbors summed */
     int added=0;          /* if this node was added */
     float area;           /* sum of uphill area for this element */
 
-    HeI32 xsize = mHF.getWidth()-2;
-    HeI32 ysize = mHF.getDepth()-2;
+    NxI32 xsize = mHF.getWidth()-2;
+    NxI32 ysize = mHF.getDepth()-2;
 
 
     ff = mFlags.get(ix,iy);
@@ -573,7 +573,7 @@ public:
   	    }
     	  mUphill.set(ix,iy,area);
     	  tmp = mFlags.get(ix,iy);
-    	  mFlags.set(ix,iy,(HeU8)(tmp | 0x10));  /* set b4: node summed */
+    	  mFlags.set(ix,iy,(NxU8)(tmp | 0x10));  /* set b4: node summed */
     	  added = 1;
   	  }
     }
@@ -613,8 +613,8 @@ public:
     double slopefactor;            /* correction factor to scale slope */
     double h, dh, slope;  /* dh- delta height  dr- horizontal travel */
 
-    HeI32 xsize = hf1.getWidth()-2;
-    HeI32 ysize = hf1.getDepth()-2;
+    NxI32 xsize = hf1.getWidth()-2;
+    NxI32 ysize = hf1.getDepth()-2;
 
     slopefactor = MAXALT / (EDGELEN / xsize);  /* slope of 0.0 next to 1.0 */
 
@@ -685,8 +685,8 @@ public:
   				  /* ------------------------------- */
   				  /* the actual erosion. right here! */
   				  /* ------------------------------- */
-            hf2.set(ix+1,iy+1, (HeF32)(h - dh));
-            mBasin.set(ix,iy, mBasin.get(ix,iy)-(HeF32)dh);
+            hf2.set(ix+1,iy+1, (NxF32)(h - dh));
+            mBasin.set(ix,iy, mBasin.get(ix,iy)-(NxF32)dh);
           }
           else
           {  /* if point is a local minimum (oops!) */
@@ -714,10 +714,10 @@ public:
      int ix, iy;
      int dir;
      int fixed;              /* number of pixels with altitude adjusted */
-     HeF32 h, hdown;
+     NxF32 h, hdown;
 
-     HeI32 xsize = hf1.getWidth()-2;
-     HeI32 ysize = hf1.getDepth()-2;
+     NxI32 xsize = hf1.getWidth()-2;
+     NxI32 ysize = hf1.getDepth()-2;
 
      fixed = 0;
      for (iy = 0; iy < ysize; iy++)
@@ -730,8 +730,8 @@ public:
          if (hdown > h)
          {            /* oops, flow is uphill! we over-eroded */
            /* so, this pixel -> just a tad higher than the downflow neighbor */
-           hf2.set(ix+1,iy+1,0.0001f + (HeF32)hdown);
-           mBasin.set(ix,iy, mBasin.get(ix,iy) + (HeF32)(0.0001 + hdown - h) );
+           hf2.set(ix+1,iy+1,0.0001f + (NxF32)hdown);
+           mBasin.set(ix,iy, mBasin.get(ix,iy) + (NxF32)(0.0001 + hdown - h) );
            fixed++;
          }
          else
@@ -750,15 +750,15 @@ public:
   void slump(double rate)
   {
     int i,ix,iy;
-    HeF32 h,dh,avg,sum1,sum2;
-    HeF32 afac, n1, n2;
-    HeF32 af1, af2;
-    HeF32 dscale;    /* average difference between neighboring pixels */
+    NxF32 h,dh,avg,sum1,sum2;
+    NxF32 afac, n1, n2;
+    NxF32 af1, af2;
+    NxF32 dscale;    /* average difference between neighboring pixels */
     int dcount;
 
     /* find dscale by sampling a few pixels in the grid */
-    HeI32 xsize = mHF.getWidth()-2;
-    HeI32 ysize = mHF.getDepth()-2;
+    NxI32 xsize = mHF.getWidth()-2;
+    NxI32 ysize = mHF.getDepth()-2;
 
     dcount = 0;
     dscale = 0;
@@ -832,7 +832,7 @@ public:
         if (h < mDesc.mErodeThreshold )
         {        /* only smooth terrain below altitude limit */
           mHF2.set(ix+1,iy+1, h + afac);
-          HeF32 b = mBasin.get(ix,iy);
+          NxF32 b = mBasin.get(ix,iy);
           b+=afac;
           mBasin.set(ix,iy,b);
         }
@@ -857,14 +857,14 @@ public:
   {
     if ( mDesc.mData )
     {
-      HeF32 *dest = mDesc.mData;
-      HeI32 xsize = mHF.getWidth()-2;
-      HeI32 ysize = mHF.getDepth()-2;
-      for (HeI32 y=0; y<ysize; y++)
+      NxF32 *dest = mDesc.mData;
+      NxI32 xsize = mHF.getWidth()-2;
+      NxI32 ysize = mHF.getDepth()-2;
+      for (NxI32 y=0; y<ysize; y++)
       {
-        for (HeI32 x=0; x<xsize; x++)
+        for (NxI32 x=0; x<xsize; x++)
         {
-          HeF32 v = mHF.get(x+1,y+1);
+          NxF32 v = mHF.get(x+1,y+1);
           *dest++ = v;
         }
       }
@@ -913,14 +913,14 @@ private:
   bool      mFirst;
   ErodeDesc mDesc;
 
-  HeightMap<HeF32> mHF;
-  HeightMap<HeF32> mHF2;
+  HeightMap<NxF32> mHF;
+  HeightMap<NxF32> mHF2;
 
 //
-  HeightMap<HeU8>  mDirection;
-  HeightMap<HeU8>  mFlags;
-  HeightMap<HeF32> mUphill;
-  HeightMap<HeF32> mBasin;
+  HeightMap<NxU8>  mDirection;
+  HeightMap<NxU8>  mFlags;
+  HeightMap<NxF32> mUphill;
+  HeightMap<NxF32> mBasin;
 
 };
 

@@ -25,12 +25,7 @@
           snippets/FloatMath.cpp
           snippets/FloatMath.h
           snippets/FloatMath.inl
-          HeMath/*.cpp
-          HeMath/*.h
-          MemoryServices/MemoryContainer.h
-          MemoryServices/MemoryContainer.cpp
-         MemoryServices/GlobalNewDelete.cpp
-         MemoryServices/GlobalNewDelete.h
+          Foundation/*.h
 				</Files>
 				<Files name="Source Files" root="../../src/RenderDebug" type="source">
 					*.cpp
@@ -47,6 +42,8 @@
 				<ImpDir>../../lib/win32</ImpDir>
 				<SearchPaths type="header">
           ../../include
+          ../../include/common/Foundation
+          ../../include/common/snippets
           ../../src
 				</SearchPaths>
 				<SearchPaths type="library">

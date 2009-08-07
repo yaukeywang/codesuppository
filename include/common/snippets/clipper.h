@@ -51,7 +51,7 @@
 
 */
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 
 #define MAX_CLIP 64
 
@@ -76,16 +76,16 @@ class Vec3d
 {
 public:
   Vec3d(void) { };
-  Vec3d(const HeF32 *p) { x = p[0]; y = p[1]; z = p[2]; };
-  Vec3d(HeF32 _x,HeF32 _y,HeF32 _z) { x = _x; y = _y; z = _z; };
+  Vec3d(const NxF32 *p) { x = p[0]; y = p[1]; z = p[2]; };
+  Vec3d(NxF32 _x,NxF32 _y,NxF32 _z) { x = _x; y = _y; z = _z; };
 
-  void set(HeF32 _x,HeF32 _y,HeF32 _z) { x = _x; y = _y; z = _z; };
-  void set(const HeF32 *p) { x = p[0]; y = p[1]; z = p[2]; };
+  void set(NxF32 _x,NxF32 _y,NxF32 _z) { x = _x; y = _y; z = _z; };
+  void set(const NxF32 *p) { x = p[0]; y = p[1]; z = p[2]; };
 
 
-  HeF32 x;
-  HeF32 y;
-  HeF32 z;
+  NxF32 x;
+  NxF32 y;
+  NxF32 z;
 };
 
 
@@ -117,7 +117,7 @@ class ClipVertex
 public:
   ClipVertex(void) { };
 
-  ClipVertex(const Vec3d &pos,HeI32 code)
+  ClipVertex(const Vec3d &pos,NxI32 code)
   {
     mPos = pos;
     mClipCode = code;
@@ -128,10 +128,10 @@ public:
   ClipVertex(const ClipVertex &v1,
              const ClipVertex &v2,
              ClipPlane p,
-             HeF32 edge); // the clipping boundary..
+             NxF32 edge); // the clipping boundary..
 
 
-  void Set(const Vec3d &pos,HeI32 code)
+  void Set(const Vec3d &pos,NxI32 code)
   {
     mPos = pos;
     mClipCode = code;
@@ -140,14 +140,14 @@ public:
   const Vec3d& GetPos(void) const { return mPos; };
 
 
-  HeI32 GetClipCode(void) const { return mClipCode; };
-  void SetClipCode(HeI32 code) { mClipCode = code; };
+  NxI32 GetClipCode(void) const { return mClipCode; };
+  void SetClipCode(NxI32 code) { mClipCode = code; };
 
-  HeF32 GetX(void) const { return mPos.x; };
-  HeF32 GetY(void) const { return mPos.y; };
-  HeF32 GetZ(void) const { return mPos.z; };
+  NxF32 GetX(void) const { return mPos.x; };
+  NxF32 GetY(void) const { return mPos.y; };
+  NxF32 GetZ(void) const { return mPos.z; };
 
-  HeI32             mClipCode;
+  NxI32             mClipCode;
   Vec3d mPos;
 };
 
@@ -156,7 +156,7 @@ class FrustumClipper
 {
 public:
 
-  FrustumClipper(const HeF32 *fmin,const HeF32 *fmax)
+  FrustumClipper(const NxF32 *fmin,const NxF32 *fmax)
   {
     SetFrustum(fmin,fmax);
   };
@@ -168,7 +168,7 @@ public:
     SetFrustum(&minbound.x,&maxbound.x);
   };
 
-  void SetFrustum(const HeF32 *fmin,const HeF32 *fmax)
+  void SetFrustum(const NxF32 *fmin,const NxF32 *fmax)
   {
     mEdges[CP_LEFT]   = fmin[0];
     mEdges[CP_RIGHT]  = fmax[0];
@@ -180,18 +180,18 @@ public:
 
   // compute the cohen sutherland clipping bits for this 3d position
   // against the view frustum.
-  HeI32 ClipCode(const Vec3d &pos) const;
+  NxI32 ClipCode(const Vec3d &pos) const;
 
   // compute the cohen sutherland clipping codes, and *also* accumulate
   // the or bits and the and bits for a series of point tests.
-  HeI32 ClipCode(const Vec3d &pos,HeI32 &ocode,HeI32 &acode) const;
+  NxI32 ClipCode(const Vec3d &pos,NxI32 &ocode,NxI32 &acode) const;
 
   // clips input polygon against the frustum.  Places output polygon
   // in 'output'.
   ClipResult Clip(const Vec3d *input, // input vertices.
-  								HeU32           vcount,   // input vertex count.
+  								NxU32           vcount,   // input vertex count.
                   Vec3d       *output,
-                  HeU32          &ocount) const;
+                  NxU32          &ocount) const;
 
   ClipResult ClipRay(const Vec3d &r1a,
                      const Vec3d &r2a,
@@ -199,7 +199,7 @@ public:
                      Vec3d &r2b);
 
 private:
-  HeF32 mEdges[CP_LAST]; // define the clipping planes of the view frustum
+  NxF32 mEdges[CP_LAST]; // define the clipping planes of the view frustum
 
 };
 

@@ -47,17 +47,17 @@
           snippets/SystemServices.cpp
           snippets/FastXml.h
           snippets/FastXml.cpp
+          snippets/UserMemAlloc.h
+          Foundation/*.h
           FileInterface/*.cpp
           FileInterface/*.h
-          MemoryServices/MemoryContainer.cpp
-          MemoryServices/MemoryContainer.h
-         MemoryServices/GlobalNewDelete.cpp
-         MemoryServices/GlobalNewDelete.h
 				</Files>
 				<OutDir>../../bin/win32</OutDir>
 				<ImpDir>../../lib/win32</ImpDir>
 				<SearchPaths type="header">
-          ../../include
+                ../../include
+                ../../include/common/Foundation
+                ../../include/common/snippets
 				</SearchPaths>
 				<SearchPaths type="library">
          ../../lib/win32

@@ -26,23 +26,23 @@ class HtmlTableInterface;
 class HtmlTable
 {
 public:
-  virtual void                setColumnColor(HeU32 column,HeU32 color) = 0; // set a color for a specific column.
-  virtual void                setHeaderColor(HeU32 color) = 0;              // color for header lines
-  virtual void                setFooterColor(HeU32 color) = 0;             // color for footer lines
-  virtual void                setBodyColor(HeU32 color) = 0;
+  virtual void                setColumnColor(NxU32 column,NxU32 color) = 0; // set a color for a specific column.
+  virtual void                setHeaderColor(NxU32 color) = 0;              // color for header lines
+  virtual void                setFooterColor(NxU32 color) = 0;             // color for footer lines
+  virtual void                setBodyColor(NxU32 color) = 0;
   virtual void                addHeader(const char *fmt,...) = 0;      // Add a column header, each column designtated by CSV.  If any single colum has a forward slash, it is treated as a multi-line header.
   virtual void                addColumn(const char *data) = 0 ;      // add this single string to the next column. Also an optional 'color' that will control the background color of this column, starting with the current row.
-  virtual void                addColumn(HeF32 v) = 0 ;               // will add this floating point number, nicely formatted
-  virtual void                addColumn(HeI32 v) = 0;                 // will add this integer number nicely formatted.
-  virtual void                addColumn(HeU32 v) = 0;                 // will add this integer number nicely formatted.
+  virtual void                addColumn(NxF32 v) = 0 ;               // will add this floating point number, nicely formatted
+  virtual void                addColumn(NxI32 v) = 0;                 // will add this integer number nicely formatted.
+  virtual void                addColumn(NxU32 v) = 0;                 // will add this integer number nicely formatted.
   virtual void                addCSV(bool newRow,const char *fmt,...) = 0;       // add this line of data as a set of columns, using the comma character as a seperator.
   virtual void                nextRow(void) = 0;                         // advance to the next row.
   virtual HtmlDocument       *getDocument(void) = 0;                     // return the parent document.
   virtual HtmlTableInterface *getHtmlTableInterface(void) = 0;
   virtual void                computeTotals(void) = 0; // compute and display totals of numeric columns when displaying this table.
-  virtual void                excludeTotals(HeU32 column) = 0; // Column's are 1 base indexing.  Specifies a column to *excude* from totals, even if it contains numeric data.
-  virtual void                addSort(const char *sort_name,HeU32 primary_key,bool primary_ascending,HeU32 secondary_key,bool secondary_ascending) = 0; // adds a sorted result.  You can set up mulitple sort requests for a single table.
-  virtual HeU32               getColor(HeU32 column,bool isHeader,bool isFooter)= 0; // returns color for this column, or header, or footer
+  virtual void                excludeTotals(NxU32 column) = 0; // Column's are 1 base indexing.  Specifies a column to *excude* from totals, even if it contains numeric data.
+  virtual void                addSort(const char *sort_name,NxU32 primary_key,bool primary_ascending,NxU32 secondary_key,bool secondary_ascending) = 0; // adds a sorted result.  You can set up mulitple sort requests for a single table.
+  virtual NxU32               getColor(NxU32 column,bool isHeader,bool isFooter)= 0; // returns color for this column, or header, or footer
 };
 
 class HtmlDocument

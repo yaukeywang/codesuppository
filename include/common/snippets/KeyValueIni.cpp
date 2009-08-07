@@ -53,7 +53,7 @@
 #include <string.h>
 #include <assert.h>
 
-#include "common/snippets/UserMemAlloc.h"
+#include "KeyValueIni.h"
 
 #pragma warning(disable:4100 4267)
 
@@ -73,7 +73,6 @@ namespace KEYVALUEINI
 class FILE_INTERFACE
 {
 public:
-  DEFINE_MEMORYPOOL_IN_CLASS(FILE_INTERFACE);
 	FILE_INTERFACE(const char *fname,const char *spec,void *mem,size_t len)
 	{
 		mMyAlloc = false;
@@ -252,7 +251,7 @@ public:
   		}
   		else
   		{
-  			HE_ASSERT(0);
+  			assert(0);
   		}
   	}
   	return ret;
@@ -322,8 +321,6 @@ public:
 
 };
 
-
-IMPLEMENT_MEMORYPOOL_IN_CLASS(FILE_INTERFACE);
 
 FILE_INTERFACE * fi_fopen(const char *fname,const char *spec,void *mem=0,size_t len=0)
 {
@@ -479,7 +476,7 @@ void *     fi_getMemBuffer(FILE_INTERFACE *fph,size_t &outputLength)
 class InPlaceParserInterface
 {
 public:
-	virtual HeI32 ParseLine(HeI32 lineno,HeI32 argc,const char **argv) =0;  // return TRUE to continue parsing, return FALSE to abort parsing process
+	virtual NxI32 ParseLine(NxI32 lineno,NxI32 argc,const char **argv) =0;  // return TRUE to continue parsing, return FALSE to abort parsing process
 };
 
 enum SeparatorType
@@ -494,13 +491,12 @@ enum SeparatorType
 class InPlaceParser
 {
 public:
-  DEFINE_MEMORYPOOL_IN_CLASS(InPlaceParser);
 	InPlaceParser(void)
 	{
 		Init();
 	}
 
-	InPlaceParser(char *data,HeI32 len)
+	InPlaceParser(char *data,NxI32 len)
 	{
 		Init();
 		SetSourceData(data,len);
@@ -520,7 +516,7 @@ public:
 		mData = 0;
 		mLen  = 0;
 		mMyAlloc = false;
-		for (HeI32 i=0; i<256; i++)
+		for (NxI32 i=0; i<256; i++)
 		{
 			mHard[i] = ST_DATA;
 			mHardString[i*2] = (char)i;
@@ -535,7 +531,7 @@ public:
 
 	void SetFile(const char *fname); // use this file as source data to parse.
 
-	void SetSourceData(char *data,HeI32 len)
+	void SetSourceData(char *data,NxI32 len)
 	{
 		mData = data;
 		mLen  = len;
@@ -543,21 +539,21 @@ public:
 	};
 
 #ifdef _DEBUG
-  void validateMem(const char *data,HeI32 len)
+  void validateMem(const char *data,NxI32 len)
   {
-    for (HeI32 i=0; i<len; i++)
+    for (NxI32 i=0; i<len; i++)
     {
-      HE_ASSERT( data[i] );
+      assert( data[i] );
     }
   }
 #else
-  void validateMem(const char *,HeI32 )
+  void validateMem(const char *,NxI32 )
   {
 
   }
 #endif
 
-	void SetSourceDataCopy(const char *data,HeI32 len)
+	void SetSourceDataCopy(const char *data,NxI32 len)
 	{
     if ( len )
     {
@@ -575,27 +571,27 @@ public:
     }
 	};
 
-	HeI32  Parse(InPlaceParserInterface *callback); // returns true if entire file was parsed, false if it aborted for some reason
+	NxI32  Parse(InPlaceParserInterface *callback); // returns true if entire file was parsed, false if it aborted for some reason
 
-	HeI32 ProcessLine(HeI32 lineno,char *line,InPlaceParserInterface *callback);
+	NxI32 ProcessLine(NxI32 lineno,char *line,InPlaceParserInterface *callback);
 
-	void SetHardSeparator(HeU8 c) // add a hard separator
+	void SetHardSeparator(NxU8 c) // add a hard separator
 	{
 		mHard[c] = ST_HARD;
 	}
 
-	void SetHard(HeU8 c) // add a hard separator
+	void SetHard(NxU8 c) // add a hard separator
 	{
 		mHard[c] = ST_HARD;
 	}
 
 
-	void SetCommentSymbol(HeU8 c) // comment character, treated as 'end of string'
+	void SetCommentSymbol(NxU8 c) // comment character, treated as 'end of string'
 	{
 		mHard[c] = ST_COMMENT;
 	}
 
-	void ClearHardSeparator(HeU8 c)
+	void ClearHardSeparator(NxU8 c)
 	{
 		mHard[c] = ST_DATA;
 	}
@@ -603,7 +599,7 @@ public:
 
 	void DefaultSymbols(void); // set up default symbols for hard seperator and comment symbol of the '#' character.
 
-	bool EOS(HeU8 c)
+	bool EOS(NxU8 c)
 	{
 		if ( mHard[c] == ST_EOS || mHard[c] == ST_COMMENT )
 		{
@@ -618,20 +614,20 @@ public:
 	}
 
 
-  inline bool IsComment(HeU8 c) const;
+  inline bool IsComment(NxU8 c) const;
 
 private:
 
 
-	inline char * AddHard(HeI32 &argc,const char **argv,char *foo);
-	inline bool   IsHard(HeU8 c);
+	inline char * AddHard(NxI32 &argc,const char **argv,char *foo);
+	inline bool   IsHard(NxU8 c);
 	inline char * SkipSpaces(char *foo);
-	inline bool   IsWhiteSpace(HeU8 c);
-	inline bool   IsNonSeparator(HeU8 c); // non seperator,neither hard nor soft
+	inline bool   IsWhiteSpace(NxU8 c);
+	inline bool   IsNonSeparator(NxU8 c); // non seperator,neither hard nor soft
 
 	bool   mMyAlloc; // whether or not *I* allocated the buffer and am responsible for deleting it.
 	char  *mData;  // ascii data to parse.
-	HeI32    mLen;   // length of data
+	NxI32    mLen;   // length of data
 	SeparatorType  mHard[256];
 	char   mHardString[256*2];
 	char           mQuoteChar;
@@ -659,7 +655,7 @@ void InPlaceParser::SetFile(const char *fname)
 		if ( mLen )
 		{
 			mData = (char *) MEMALLOC_MALLOC(sizeof(char)*(mLen+1));
-			HeI32 ok = fread(mData, mLen, 1, fph);
+			NxI32 ok = fread(mData, mLen, 1, fph);
 			if ( !ok )
 			{
 				MEMALLOC_FREE(mData);
@@ -685,16 +681,16 @@ InPlaceParser::~InPlaceParser(void)
 
 #define MAXARGS 512
 
-bool InPlaceParser::IsHard(HeU8 c)
+bool InPlaceParser::IsHard(NxU8 c)
 {
 	return mHard[c] == ST_HARD;
 }
 
-char * InPlaceParser::AddHard(HeI32 &argc,const char **argv,char *foo)
+char * InPlaceParser::AddHard(NxI32 &argc,const char **argv,char *foo)
 {
 	while ( IsHard(*foo) )
 	{
-    HeU8 c = *foo;
+    NxU8 c = *foo;
 		const char *hard = &mHardString[c*2];
 		if ( argc < MAXARGS )
 		{
@@ -705,7 +701,7 @@ char * InPlaceParser::AddHard(HeI32 &argc,const char **argv,char *foo)
 	return foo;
 }
 
-bool   InPlaceParser::IsWhiteSpace(HeU8 c)
+bool   InPlaceParser::IsWhiteSpace(NxU8 c)
 {
 	return mHard[c] == ST_SOFT;
 }
@@ -716,25 +712,25 @@ char * InPlaceParser::SkipSpaces(char *foo)
 	return foo;
 }
 
-bool InPlaceParser::IsNonSeparator(HeU8 c)
+bool InPlaceParser::IsNonSeparator(NxU8 c)
 {
 	if ( !IsHard(c) && !IsWhiteSpace(c) && c != 0 ) return true;
 	return false;
 }
 
 
-bool InPlaceParser::IsComment(HeU8 c) const
+bool InPlaceParser::IsComment(NxU8 c) const
 {
   if ( mHard[c] == ST_COMMENT ) return true;
   return false;
 }
 
-HeI32 InPlaceParser::ProcessLine(HeI32 lineno,char *line,InPlaceParserInterface *callback)
+NxI32 InPlaceParser::ProcessLine(NxI32 lineno,char *line,InPlaceParserInterface *callback)
 {
-	HeI32 ret = 0;
+	NxI32 ret = 0;
 
 	const char *argv[MAXARGS];
-	HeI32 argc = 0;
+	NxI32 argc = 0;
 
   char *foo = SkipSpaces(line); // skip leading spaces...
 
@@ -795,14 +791,14 @@ HeI32 InPlaceParser::ProcessLine(HeI32 lineno,char *line,InPlaceParserInterface 
 	return ret;
 }
 
-HeI32  InPlaceParser::Parse(InPlaceParserInterface *callback) // returns true if entire file was parsed, false if it aborted for some reason
+NxI32  InPlaceParser::Parse(InPlaceParserInterface *callback) // returns true if entire file was parsed, false if it aborted for some reason
 {
-	HE_ASSERT( callback );
+	assert( callback );
 	if ( !mData ) return 0;
 
-	HeI32 ret = 0;
+	NxI32 ret = 0;
 
-	HeI32 lineno = 0;
+	NxI32 lineno = 0;
 
 	char *foo   = mData;
 	char *begin = foo;
@@ -817,7 +813,7 @@ HeI32  InPlaceParser::Parse(InPlaceParserInterface *callback) // returns true if
 
 			if ( *begin ) // if there is any data to parse at all...
 			{
-				HeI32 v = ProcessLine(lineno,begin,callback);
+				NxI32 v = ProcessLine(lineno,begin,callback);
 				if ( v ) ret = v;
 			}
 
@@ -833,7 +829,7 @@ HeI32  InPlaceParser::Parse(InPlaceParserInterface *callback) // returns true if
 
 	lineno++; // lasst line.
 
-	HeI32 v = ProcessLine(lineno,begin,callback);
+	NxI32 v = ProcessLine(lineno,begin,callback);
 	if ( v ) ret = v;
 	return ret;
 }
@@ -853,8 +849,6 @@ void InPlaceParser::DefaultSymbols(void)
 }
 
 
-IMPLEMENT_MEMORYPOOL_IN_CLASS(InPlaceParser);
-
 }; // END KEYVALUE INI NAMESPACE
 
 using namespace KEYVALUEINI;
@@ -863,8 +857,7 @@ using namespace KEYVALUEINI;
 class KeyValue
 {
 public:
-  DEFINE_MEMORYPOOL_IN_CLASS(KeyValue);
-  KeyValue(const char *key,const char *value,HeU32 lineno)
+  KeyValue(const char *key,const char *value,unsigned int lineno)
   {
     mKey = key;
     mValue = value;
@@ -873,7 +866,7 @@ public:
 
   const char * getKey(void) const { return mKey; };
   const char * getValue(void) const { return mValue; };
-  HeU32 getLineNo(void) const { return mLineNo; };
+  unsigned int getLineNo(void) const { return mLineNo; };
 
   void save(FILE_INTERFACE *fph) const
   {
@@ -886,7 +879,7 @@ public:
   }
 
 private:
-  HeU32 mLineNo;
+  unsigned int mLineNo;
   const char *mKey;
   const char *mValue;
 };
@@ -896,22 +889,21 @@ typedef USER_STL::vector< KeyValue > KeyValueVector;
 class KeyValueSection
 {
 public:
-  DEFINE_MEMORYPOOL_IN_CLASS(KeyValueSection);
-  KeyValueSection(const char *section,HeU32 lineno)
+  KeyValueSection(const char *section,unsigned int lineno)
   {
     mSection = section;
     mLineNo  = lineno;
   }
 
-  HeU32 getKeyCount(void) const { return mKeys.size(); };
+  unsigned int getKeyCount(void) const { return mKeys.size(); };
   const char * getSection(void) const { return mSection; };
-  HeU32 getLineNo(void) const { return mLineNo; };
+  unsigned int getLineNo(void) const { return mLineNo; };
 
-  const char * locateValue(const char *key,HeU32 lineno) const
+  const char * locateValue(const char *key,unsigned int lineno) const
   {
     const char *ret = 0;
 
-    for (HeU32 i=0; i<mKeys.size(); i++)
+    for (unsigned int i=0; i<mKeys.size(); i++)
     {
       const KeyValue &v = mKeys[i];
       if ( stricmp(key,v.getKey()) == 0 )
@@ -924,7 +916,7 @@ public:
     return ret;
   }
 
-  const char *getKey(HeU32 index,HeU32 &lineno) const
+  const char *getKey(unsigned int index,unsigned int &lineno) const
   {
     const char * ret  = 0;
     if ( index >= 0 && index < mKeys.size() )
@@ -936,7 +928,7 @@ public:
     return ret;
   }
 
-  const char *getValue(HeU32 index,HeU32 &lineno) const
+  const char *getValue(unsigned int index,unsigned int &lineno) const
   {
     const char * ret  = 0;
     if ( index >= 0 && index < mKeys.size() )
@@ -948,7 +940,7 @@ public:
     return ret;
   }
 
-  void addKeyValue(const char *key,const char *value,HeU32 lineno)
+  void addKeyValue(const char *key,const char *value,unsigned int lineno)
   {
     KeyValue kv(key,value,lineno);
     mKeys.push_back(kv);
@@ -965,7 +957,7 @@ public:
       fi_fprintf(fph,"\r\n");
       fi_fprintf(fph,"[%s]\r\n", mSection );
     }
-    for (HeU32 i=0; i<mKeys.size(); i++)
+    for (unsigned int i=0; i<mKeys.size(); i++)
     {
       mKeys[i].save(fph);
     }
@@ -976,7 +968,7 @@ public:
   {
     bool ret = false;
 
-    for (HeU32 i=0; i<mKeys.size(); i++)
+    for (unsigned int i=0; i<mKeys.size(); i++)
     {
       KeyValue &kv = mKeys[i];
       if ( strcmp(kv.getKey(),key) == 0 )
@@ -1003,7 +995,7 @@ public:
   }
 
 private:
-  HeU32 mLineNo;
+  unsigned int mLineNo;
   const char *mSection;
   KeyValueVector mKeys;
 };
@@ -1013,7 +1005,6 @@ typedef USER_STL::vector< KeyValueSection *> KeyValueSectionVector;
 class KeyValueIni : public InPlaceParserInterface
 {
 public:
-  DEFINE_MEMORYPOOL_IN_CLASS(KeyValueIni);
   KeyValueIni(const char *fname)
   {
     mData.SetFile(fname);
@@ -1027,7 +1018,7 @@ public:
     mData.Parse(this);
   }
 
-  KeyValueIni(const char *mem,HeU32 len)
+  KeyValueIni(const char *mem,unsigned int len)
   {
     if ( len )
     {
@@ -1068,9 +1059,9 @@ public:
     mCurrentSection = 0;
   }
 
-  HeU32 getSectionCount(void) const { return mSections.size(); };
+  unsigned int getSectionCount(void) const { return mSections.size(); };
 
-	HeI32 ParseLine(HeI32 lineno,HeI32 argc,const char **argv)  // return TRUE to continue parsing, return FALSE to abort parsing process
+	NxI32 ParseLine(NxI32 lineno,NxI32 argc,const char **argv)  // return TRUE to continue parsing, return FALSE to abort parsing process
   {
 
     if ( argc )
@@ -1090,12 +1081,12 @@ public:
           scan++;
         }
         mCurrentSection = -1;
-        for (HeU32 i=0; i<mSections.size(); i++)
+        for (unsigned int i=0; i<mSections.size(); i++)
         {
           KeyValueSection &kvs = *mSections[i];
           if ( stricmp(kvs.getSection(),key) == 0 )
           {
-            mCurrentSection = (HeI32) i;
+            mCurrentSection = (NxI32) i;
             break;
           }
         }
@@ -1120,10 +1111,10 @@ public:
     return 0;
   }
 
-  KeyValueSection * locateSection(const char *section,HeU32 &keys,HeU32 &lineno) const
+  KeyValueSection * locateSection(const char *section,unsigned int &keys,unsigned int &lineno) const
   {
     KeyValueSection *ret = 0;
-    for (HeU32 i=0; i<mSections.size(); i++)
+    for (unsigned int i=0; i<mSections.size(); i++)
     {
       KeyValueSection *s = mSections[i];
       if ( stricmp(section,s->getSection()) == 0 )
@@ -1137,7 +1128,7 @@ public:
     return ret;
   }
 
-  const KeyValueSection * getSection(HeU32 index,HeU32 &keys,HeU32 &lineno) const
+  const KeyValueSection * getSection(unsigned int index,unsigned int &keys,unsigned int &lineno) const
   {
     const KeyValueSection *ret=0;
     if ( index >= 0 && index < mSections.size() )
@@ -1156,7 +1147,7 @@ public:
     FILE_INTERFACE *fph = fi_fopen(fname,"wb");
     if ( fph )
     {
-      for (HeU32 i=0; i<mSections.size(); i++)
+      for (unsigned int i=0; i<mSections.size(); i++)
       {
         mSections[i]->save(fph);
       }
@@ -1166,13 +1157,13 @@ public:
     return ret;
   }
 
-  void * saveMem(HeU32 &len) const
+  void * saveMem(unsigned int &len) const
   {
     void *ret = 0;
     FILE_INTERFACE *fph = fi_fopen("mem","wmem");
     if ( fph )
     {
-      for (HeU32 i=0; i<mSections.size(); i++)
+      for (unsigned int i=0; i<mSections.size(); i++)
       {
         mSections[i]->save(fph);
       }
@@ -1194,7 +1185,7 @@ public:
   {
     KeyValueSection *ret = 0;
 
-    for (HeU32 i=0; i<mSections.size(); i++)
+    for (unsigned int i=0; i<mSections.size(); i++)
     {
       KeyValueSection *kvs = mSections[i];
       if ( strcmp(kvs->getSection(),section_name) == 0 )
@@ -1217,14 +1208,14 @@ public:
   }
 
 private:
-  HeI32                   mCurrentSection;
+  NxI32                   mCurrentSection;
   KeyValueSectionVector mSections;
   InPlaceParser         mData;
 };
 
 
 
-KeyValueIni *loadKeyValueIni(const char *fname,HeU32 &sections)
+KeyValueIni *loadKeyValueIni(const char *fname,unsigned int &sections)
 {
   KeyValueIni *ret = 0;
 
@@ -1239,7 +1230,7 @@ KeyValueIni *loadKeyValueIni(const char *fname,HeU32 &sections)
   return ret;
 }
 
-KeyValueIni *     loadKeyValueIni(const char *mem,HeU32 len,HeU32 &sections)
+KeyValueIni *     loadKeyValueIni(const char *mem,unsigned int len,unsigned int &sections)
 {
   KeyValueIni *ret = 0;
 
@@ -1254,7 +1245,7 @@ KeyValueIni *     loadKeyValueIni(const char *mem,HeU32 len,HeU32 &sections)
   return ret;
 }
 
-const KeyValueSection * locateSection(const KeyValueIni *ini,const char *section,HeU32 &keys,HeU32 &lineno)
+const KeyValueSection * locateSection(const KeyValueIni *ini,const char *section,unsigned int &keys,unsigned int &lineno)
 {
   KeyValueSection *ret = 0;
 
@@ -1266,7 +1257,7 @@ const KeyValueSection * locateSection(const KeyValueIni *ini,const char *section
   return ret;
 }
 
-const KeyValueSection * getSection(const KeyValueIni *ini,HeU32 index,HeU32 &keycount,HeU32 &lineno)
+const KeyValueSection * getSection(const KeyValueIni *ini,unsigned int index,unsigned int &keycount,unsigned int &lineno)
 {
   const KeyValueSection *ret = 0;
 
@@ -1278,7 +1269,7 @@ const KeyValueSection * getSection(const KeyValueIni *ini,HeU32 index,HeU32 &key
   return ret;
 }
 
-const char *      locateValue(const KeyValueSection *section,const char *key,HeU32 &lineno)
+const char *      locateValue(const KeyValueSection *section,const char *key,unsigned int &lineno)
 {
   const char *ret = 0;
 
@@ -1290,7 +1281,7 @@ const char *      locateValue(const KeyValueSection *section,const char *key,HeU
   return ret;
 }
 
-const char *      getKey(const KeyValueSection *section,HeU32 keyindex,HeU32 &lineno)
+const char *      getKey(const KeyValueSection *section,unsigned int keyindex,unsigned int &lineno)
 {
   const char *ret = 0;
 
@@ -1302,7 +1293,7 @@ const char *      getKey(const KeyValueSection *section,HeU32 keyindex,HeU32 &li
   return ret;
 }
 
-const char *      getValue(const KeyValueSection *section,HeU32 keyindex,HeU32 &lineno)
+const char *      getValue(const KeyValueSection *section,unsigned int keyindex,unsigned int &lineno)
 {
   const char *ret = 0;
 
@@ -1342,7 +1333,7 @@ bool  saveKeyValueIni(const KeyValueIni *ini,const char *fname)
   return ret;
 }
 
-void *  saveKeyValueIniMem(const KeyValueIni *ini,HeU32 &len)
+void *  saveKeyValueIniMem(const KeyValueIni *ini,unsigned int &len)
 {
   void *ret = 0;
 
@@ -1397,26 +1388,26 @@ bool              releaseIniMem(void *mem)
 #define TEST_MAIN 0
 
 #if TEST_MAIN
-void main(HeI32 argc,const char **argv) // test to see if INI files work.
+void main(NxI32 argc,const char **argv) // test to see if INI files work.
 {
   const char *fname = "test.ini";
-  HeU32 sections;
+  unsigned int sections;
   const KeyValueIni *ini = loadKeyValueIni(fname,sections);
   if ( ini )
   {
     printf("INI file '%s' has %d sections.\r\n", fname, sections);
-    for (HeU32 i=0; i<sections; i++)
+    for (unsigned int i=0; i<sections; i++)
     {
-      HeU32 lineno;
-      HeU32 keycount;
+      unsigned int lineno;
+      unsigned int keycount;
       const KeyValueSection *s = getSection(ini,i,keycount,lineno);
-      HE_ASSERT(s);
+      assert(s);
       const char *sname  = getSectionName(s);
-      HE_ASSERT(sname);
+      assert(sname);
       printf("Section %d=%s starts at line number %d and contains %d keyvalue pairs\r\n", i+1, sname, lineno, keycount );
-      for (HeU32 j=0; j<keycount; j++)
+      for (unsigned int j=0; j<keycount; j++)
       {
-        HeU32 lineno;
+        unsigned int lineno;
         const char *key = getKey(s,j,lineno);
         const char *value = getValue(s,j,lineno);
         if ( key && value )
@@ -1446,6 +1437,3 @@ void main(HeI32 argc,const char **argv) // test to see if INI files work.
 #endif
 
 
-IMPLEMENT_MEMORYPOOL_IN_CLASS(KeyValue);
-IMPLEMENT_MEMORYPOOL_IN_CLASS(KeyValueSection);
-IMPLEMENT_MEMORYPOOL_IN_CLASS(KeyValueIni);

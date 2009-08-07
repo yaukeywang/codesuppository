@@ -7,26 +7,25 @@
 
 #define NOMINMAX
 #include "common/dxut/dxstdafx.h"
-#include "ClientPhysics/ClientPhysics.h"
 #include "resource.h"
 #include "menu.h"
 #include "MeshImport/MeshImport.h"
-#include "common/snippets/cparser.h"
-#include "common/snippets/filesystem.h"
-#include "common/snippets/log.h"
+#include "cparser.h"
+#include "filesystem.h"
+#include "log.h"
 #include "common/tui/tui.h"
-#include "common/snippets/sutil.h"
-#include "common/snippets/wildcard.h"
-#include "common/snippets/ffind.h"
-#include "common/snippets/erode.h"
+#include "sutil.h"
+#include "wildcard.h"
+#include "ffind.h"
+#include "erode.h"
 #include "SplitMeshMain.h"
 #include "SplitMeshApp.h"
-#include "common/snippets/ImportHeightMap.h"
-#include "common/HeMath/HeVec3.h"
+#include "ImportHeightMap.h"
+#include "NxVec3.h"
 #include "RenderDebug/RenderDebug.h"
 #include "Pd3d/Pd3d.h"
 #include "CodeSuppository.h"
-#include "common/MemoryServices/MemoryReport.h"
+#include "SendTextMessage.h"
 #include <direct.h>
 
 enum MenuOptions
@@ -53,13 +52,13 @@ enum MyCommand
 class MenuItem
 {
 public:
-    void set(HeU32 p,const char *name)
+    void set(NxU32 p,const char *name)
     {
       mParameter = p;
       mName = name;
       mState = false;
     }
-  HeU32 mParameter;
+  NxU32 mParameter;
   const char *mName;
   bool  mState;
 };
@@ -89,27 +88,6 @@ public:
 
     mVisualizationMenu = 0;
 
-    if ( gClientPhysics )
-    {
-      m = CreatePopupMenu();
-      mVisualizationMenu = m;
-      AppendMenu(mMainMenu,MF_POPUP, (UINT_PTR)m,L"&Apex Debug Visualization");
-      AppendMenu(m,MF_STRING, MO_VISUALIZE_NONE, L"VISUALIZE_NONE");
-      CLIENT_PHYSICS::Apex *apex = gClientPhysics->getApex();
-      HeU32 pcount = apex->getNxParameterCount();
-      mMenuItems = MEMALLOC_NEW_ARRAY(MenuItem,pcount)[pcount];
-      mMenuCount = 0;
-      for (HeU32 i=0; i<pcount; i++)
-      {
-        const char *str = apex->getNxParameterString(i);
-        if ( str )
-        {
-          AppendMenuA(m, MF_STRING | MF_UNCHECKED, mMenuCount+1, str );
-          mMenuItems[mMenuCount].set(i,str);
-          mMenuCount++;
-        }
-      }
-    }
 
 	  // ok, now initialize the scripted menu interface.
 	  gFileSystem       = this;
@@ -227,7 +205,6 @@ public:
     CPARSER.Parse("TuiElement ShowMesh");
     CPARSER.Parse("TuiElement ShowCollision");
     CPARSER.Parse("TuiElement SelectCollision");
-    if ( gClientPhysics ) CPARSER.Parse("TuiElement CreateApexCloth");
     CPARSER.Parse("TuiElement PlayAnimation");
     CPARSER.Parse("TuiElement AnimationSpeed");
     CPARSER.Parse("TuiElement FlipWinding");
@@ -549,11 +526,11 @@ public:
   }
 
 
-  void getPoint(ImportHeightMap *h,HeVec3 &v,HeU32 x,HeU32 z)
+  void getPoint(ImportHeightMap *h,NxVec3 &v,NxU32 x,NxU32 z)
   {
     v.y = h->getPoint(x,z)*10;
-    v.x = (HeF32)x;
-    v.z = (HeF32)z;
+    v.x = (NxF32)x;
+    v.z = (NxF32)z;
   }
 
   bool processMenu(HWND hwnd,unsigned int cmd,float *bmin,float *bmax)
@@ -564,16 +541,6 @@ public:
   	switch ( cmd )
   	{
       case MO_VISUALIZE_NONE:
-        {
-          gApexScene->fetchResults();
-          CLIENT_PHYSICS::Apex *a = gClientPhysics->getApex();
-          for (HeU32 i=0; i<mMenuCount; i++)
-          {
-            a->setDebugState(mMenuItems[i].mName, 0 );
-            CheckMenuItem(mVisualizationMenu, i+1, MF_BYPOSITION | MF_UNCHECKED );
-            mMenuItems[i].mState = false;
-          }
-        }
         break;
       case MO_EXPORT_EZM:
         gCodeSuppository->processCommand(CSC_EXPORT_EZM);
@@ -614,39 +581,10 @@ public:
     		SendMessage(hwnd,WM_CLOSE,0,0);
   		  break;
       default:
-        if ( cmd >= 1 && cmd <= mMenuCount )
-        {
-          gApexScene->fetchResults();
-          CLIENT_PHYSICS::Apex *a = gClientPhysics->getApex();
-          MenuItem &mi = mMenuItems[cmd-1];
-          if ( mi.mState )
-          {
-            a->setDebugState(mi.mName,0);
-            mi.mState = false;
-            CheckMenuItem(mVisualizationMenu,cmd,MF_BYPOSITION | MF_UNCHECKED);
-          }
-          else
-          {
-            a->setDebugState(mi.mName,1);
-            mi.mState = true;
-            CheckMenuItem(mVisualizationMenu,cmd,MF_BYPOSITION | MF_CHECKED);
-          }
-        }
         break;
   	}
 
   	return ret;
-  }
-
-  void report(MemoryReport &mr,MemoryReport &summary,const char *header)
-  {
-#if HE_USE_MEMORY_TRACKING
-    mr.summaryReport(header);
-    summary.summaryReport(header);
-    mr.reportByClass(header);
-    mr.reportBySourceFile(header);
-    mr.fixedPoolReport(header);
-#endif
   }
 
   int CommandCallback(int token,int count,const char **arglist)
@@ -668,16 +606,6 @@ public:
 		switch ( token )
 		{
       case MC_MEMORY_REPORT:
-        if ( !mStartup )
-        {
-          MemoryReport summary;
-          MemoryReport mr;
-          report(mr,summary,"CodeSuppository");
-          summary.echoText(gSendTextMessage,HTML_TABLE::HST_TEXT);
-          SEND_TEXT_MESSAGE(0,"Saving detailed memory report to 'memory_report.txt'\r\n");
-          mr.saveFile("memory_report.txt",HTML_TABLE::HST_TEXT);
-
-        }
         break;
       case MC_TRIANGULATE_TYPE:
         if ( count == 2 )
@@ -918,7 +846,7 @@ public:
   HMENU	mMainMenu;
   HMENU mFileMenu;
   HMENU mVisualizationMenu;
-  HeU32 mMenuCount;
+  NxU32 mMenuCount;
   MenuItem *mMenuItems;
 };
 

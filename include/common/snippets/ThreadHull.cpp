@@ -6,7 +6,7 @@
 #include "StanHull.h"
 #include "ThreadHull.h"
 #include "JobSwarm.h"
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 
 #pragma warning(disable:4100)
 

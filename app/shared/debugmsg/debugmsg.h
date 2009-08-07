@@ -2,7 +2,7 @@
 
 #define DEBUG_MSG_H
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 
 #ifdef DEBUG_SERVER
 
@@ -12,12 +12,12 @@ bool processDebug(void);
 
 #endif
 
-void debugTri(const HeF32 *p1,const HeF32 *p2,const HeF32 *p3,HeU32 color=0xFFFFFFFF,HeF32 duration=0.001f,bool useZ=true);
-void debugSolidTri(const HeF32 *p1,const HeF32 *p2,const HeF32 *p3,HeU32 color=0xFFFFFFFF,HeF32 duration=0.001f);
-void debugPoint(const HeF32 *pos,HeF32 radius,HeU32 color=0xFFFFFFFF,HeF32 duration=0.001f,bool useZ=true);
-void debugLine(const HeF32 *p1,const HeF32 *p2,HeU32 color=0xFFFFFFFF,HeF32 duration=0.001f,bool useZ=true);
-void debugSolidTri(const HeF32 *p1,const HeF32 *p2,const HeF32 *p3,const HeF32 *n1,const HeF32 *n2,const HeF32 *n3,HeU32 color=0xFFFFFFFF,HeF32 duration=0.001f);
-void debugSphere(const HeF32 *pos,HeF32 radius,HeU32 color=0xFFFFFFFF,HeF32 duration=0.001f,bool useZ=true);
+void debugTri(const NxF32 *p1,const NxF32 *p2,const NxF32 *p3,NxU32 color=0xFFFFFFFF,NxF32 duration=0.001f,bool useZ=true);
+void debugSolidTri(const NxF32 *p1,const NxF32 *p2,const NxF32 *p3,NxU32 color=0xFFFFFFFF,NxF32 duration=0.001f);
+void debugPoint(const NxF32 *pos,NxF32 radius,NxU32 color=0xFFFFFFFF,NxF32 duration=0.001f,bool useZ=true);
+void debugLine(const NxF32 *p1,const NxF32 *p2,NxU32 color=0xFFFFFFFF,NxF32 duration=0.001f,bool useZ=true);
+void debugSolidTri(const NxF32 *p1,const NxF32 *p2,const NxF32 *p3,const NxF32 *n1,const NxF32 *n2,const NxF32 *n3,NxU32 color=0xFFFFFFFF,NxF32 duration=0.001f);
+void debugSphere(const NxF32 *pos,NxF32 radius,NxU32 color=0xFFFFFFFF,NxF32 duration=0.001f,bool useZ=true);
 
 void flushDebug(void);
 void resetDebug(void);

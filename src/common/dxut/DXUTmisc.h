@@ -9,7 +9,7 @@
 #ifndef DXUT_MISC_H
 #define DXUT_MISC_H
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 
 //--------------------------------------------------------------------------------------
 // XInput helper state/function

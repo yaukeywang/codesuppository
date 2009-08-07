@@ -51,7 +51,7 @@
 
 */
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 #include "viewtest.h"
 
 class FrustumPlane;
@@ -62,19 +62,19 @@ public:
 	Frustum(void);
 	~Frustum(void);
 
-					void     Set(const HeF32 *viewproj);
+					void     Set(const NxF32 *viewproj);
 
-	virtual ViewTest ViewTestAABB(const HeF32 *bound,ViewTest state);
-	const HeF32 * GetViewProjectionMatrix(void) const { return mViewProjectionMatrix; };
+	virtual ViewTest ViewTestAABB(const NxF32 *bound,ViewTest state);
+	const NxF32 * GetViewProjectionMatrix(void) const { return mViewProjectionMatrix; };
 
-	void GetPlane(HeU32 index,HeF32 *plane) const; // retrieve the plane equation as XYZD
+	void GetPlane(NxU32 index,NxF32 *plane) const; // retrieve the plane equation as XYZD
 
 private:
 
-	void ComputeExtreme(const HeF32 *bound,const FrustumPlane &plane,HeU32 &istate,ViewTest flag) const;
+	void ComputeExtreme(const NxF32 *bound,const FrustumPlane &plane,NxU32 &istate,ViewTest flag) const;
 
 	FrustumPlane   *m_frustumPlanes;    // view frustum
-	const HeF32    *mViewProjectionMatrix;
+	const NxF32    *mViewProjectionMatrix;
 };
 
 

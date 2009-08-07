@@ -5,7 +5,7 @@
 
 #include "TestSas.h"
 
-#include "common/snippets/SendTextMessage.h"
+#include "SendTextMessage.h"
 
 void testSas(void)
 {

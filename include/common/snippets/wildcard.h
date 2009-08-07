@@ -57,7 +57,7 @@
 */
 
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 
 #if defined(LINUX)
 #define stricmp strcasecmp

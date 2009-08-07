@@ -5,7 +5,7 @@
 
 #include "TestArrowHead.h"
 
-#include "common/snippets/SendTextMessage.h"
+#include "SendTextMessage.h"
 
 void testArrowHead(void)
 {

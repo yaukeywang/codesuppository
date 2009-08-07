@@ -8,13 +8,13 @@
 #pragma warning(disable:4702)
 
 #include "tui.h"
-#include "common/snippets/filesystem.h"
-#include "common/snippets/sutil.h"
-#include "common/snippets/log.h"
+#include "filesystem.h"
+#include "sutil.h"
+#include "log.h"
 
 TextUserInterface *gTui=0;
 
-static HeI32 gSaveFrame=0;
+static NxI32 gSaveFrame=0;
 
 const StringRef sShow  = "show";
 const StringRef sHide  = "hide";
@@ -211,12 +211,12 @@ TextUserInterface::~TextUserInterface(void)
 }
 
 //==================================================================================
-HeI32 TextUserInterface::CommandCallback(HeI32 token,HeI32 count,const char **arglist)
+NxI32 TextUserInterface::CommandCallback(NxI32 token,NxI32 count,const char **arglist)
 {
-	HeI32 ret = 0;
+	NxI32 ret = 0;
 
 #if 0
-  for (HeI32 i=0; i<count; i++)
+  for (NxI32 i=0; i<count; i++)
     gLog->Display("%s ",arglist[i]);
   gLog->Display("\r\n");
 #endif
@@ -238,7 +238,7 @@ HeI32 TextUserInterface::CommandCallback(HeI32 token,HeI32 count,const char **ar
 			if ( mFileOpen && count >= 2)
 			{
 
-				HeI32 start = 1;
+				NxI32 start = 1;
 				const char *check = arglist[1];
 				if ( strncmp(check,"@if_",4) == 0 )
 				{
@@ -254,7 +254,7 @@ HeI32 TextUserInterface::CommandCallback(HeI32 token,HeI32 count,const char **ar
 				}
 				if ( start )
 				{
-  				for (HeI32 i=start; i<count; i++)
+  				for (NxI32 i=start; i<count; i++)
   				{
   					const char *str = arglist[i];
   					if ( *str == '%' )
@@ -290,7 +290,7 @@ HeI32 TextUserInterface::CommandCallback(HeI32 token,HeI32 count,const char **ar
     case TUI_BUTTONWIDTH:
     	if ( count == 2 )
     	{
-    		HeI32 v = atoi( arglist[1] );
+    		NxI32 v = atoi( arglist[1] );
     		if ( mCurrent )
     		{
     			PageLayout &p = mCurrent->getPageLayout();
@@ -301,7 +301,7 @@ HeI32 TextUserInterface::CommandCallback(HeI32 token,HeI32 count,const char **ar
     case TUI_BUTTONHEIGHT:
     	if ( count == 2 )
     	{
-    		HeI32 v = atoi( arglist[1] );
+    		NxI32 v = atoi( arglist[1] );
     		if ( mCurrent )
     		{
     			PageLayout &p = mCurrent->getPageLayout();
@@ -312,7 +312,7 @@ HeI32 TextUserInterface::CommandCallback(HeI32 token,HeI32 count,const char **ar
     case TUI_BUTTONSPACING:
     	if ( count == 2 )
     	{
-    		HeI32 v = atoi( arglist[1] );
+    		NxI32 v = atoi( arglist[1] );
     		if ( mCurrent )
     		{
     			PageLayout &p = mCurrent->getPageLayout();
@@ -323,7 +323,7 @@ HeI32 TextUserInterface::CommandCallback(HeI32 token,HeI32 count,const char **ar
     case TUI_LAYOUTLEFTMARGIN:
     	if ( count == 2 )
     	{
-    		HeI32 v = atoi( arglist[1] );
+    		NxI32 v = atoi( arglist[1] );
     		if ( mCurrent )
     		{
     			PageLayout &p = mCurrent->getPageLayout();
@@ -334,7 +334,7 @@ HeI32 TextUserInterface::CommandCallback(HeI32 token,HeI32 count,const char **ar
     case TUI_LAYOUTWIDTH:
     	if ( count == 2 )
     	{
-    		HeI32 v = atoi( arglist[1] );
+    		NxI32 v = atoi( arglist[1] );
     		if ( mCurrent )
     		{
     			PageLayout &p = mCurrent->getPageLayout();
@@ -345,7 +345,7 @@ HeI32 TextUserInterface::CommandCallback(HeI32 token,HeI32 count,const char **ar
     case TUI_SLIDERSPACING:
     	if ( count == 2 )
     	{
-    		HeI32 v = atoi( arglist[1] );
+    		NxI32 v = atoi( arglist[1] );
     		if ( mCurrent )
     		{
     			PageLayout &p = mCurrent->getPageLayout();
@@ -356,7 +356,7 @@ HeI32 TextUserInterface::CommandCallback(HeI32 token,HeI32 count,const char **ar
     case TUI_SLIDERTEXTWIDTH:
     	if ( count == 2 )
     	{
-    		HeI32 v = atoi( arglist[1] );
+    		NxI32 v = atoi( arglist[1] );
     		if ( mCurrent )
     		{
     			PageLayout &p = mCurrent->getPageLayout();
@@ -367,7 +367,7 @@ HeI32 TextUserInterface::CommandCallback(HeI32 token,HeI32 count,const char **ar
     case TUI_SLIDERHEIGHT:
     	if ( count == 2 )
     	{
-    		HeI32 v = atoi( arglist[1] );
+    		NxI32 v = atoi( arglist[1] );
     		if ( mCurrent )
     		{
     			PageLayout &p = mCurrent->getPageLayout();
@@ -378,7 +378,7 @@ HeI32 TextUserInterface::CommandCallback(HeI32 token,HeI32 count,const char **ar
     case TUI_SLIDERWIDTH:
     	if ( count == 2 )
     	{
-    		HeI32 v = atoi( arglist[1] );
+    		NxI32 v = atoi( arglist[1] );
     		if ( mCurrent )
     		{
     			PageLayout &p = mCurrent->getPageLayout();
@@ -389,7 +389,7 @@ HeI32 TextUserInterface::CommandCallback(HeI32 token,HeI32 count,const char **ar
     case TUI_COMBOWIDTH:
     	if ( count == 2 )
     	{
-    		HeI32 v = atoi( arglist[1] );
+    		NxI32 v = atoi( arglist[1] );
     		if ( mCurrent )
     		{
     			PageLayout &p = mCurrent->getPageLayout();
@@ -400,7 +400,7 @@ HeI32 TextUserInterface::CommandCallback(HeI32 token,HeI32 count,const char **ar
     case TUI_COMBOSPACING:
     	if ( count == 2 )
     	{
-    		HeI32 v = atoi( arglist[1] );
+    		NxI32 v = atoi( arglist[1] );
     		if ( mCurrent )
     		{
     			PageLayout &p = mCurrent->getPageLayout();
@@ -411,7 +411,7 @@ HeI32 TextUserInterface::CommandCallback(HeI32 token,HeI32 count,const char **ar
     case TUI_COMBOHEIGHT:
     	if ( count == 2 )
     	{
-    		HeI32 v = atoi( arglist[1] );
+    		NxI32 v = atoi( arglist[1] );
     		if ( mCurrent )
     		{
     			PageLayout &p = mCurrent->getPageLayout();
@@ -422,7 +422,7 @@ HeI32 TextUserInterface::CommandCallback(HeI32 token,HeI32 count,const char **ar
     case TUI_COMBODROPDOWN:
     	if ( count == 2 )
     	{
-    		HeI32 v = atoi( arglist[1] );
+    		NxI32 v = atoi( arglist[1] );
     		if ( mCurrent )
     		{
     			PageLayout &p = mCurrent->getPageLayout();
@@ -433,7 +433,7 @@ HeI32 TextUserInterface::CommandCallback(HeI32 token,HeI32 count,const char **ar
     case TUI_LISTWIDTH:
     	if ( count == 2 )
     	{
-    		HeI32 v = atoi( arglist[1] );
+    		NxI32 v = atoi( arglist[1] );
     		if ( mCurrent )
     		{
     			PageLayout &p = mCurrent->getPageLayout();
@@ -444,7 +444,7 @@ HeI32 TextUserInterface::CommandCallback(HeI32 token,HeI32 count,const char **ar
     case TUI_TEXTSPACING:
     	if ( count == 2 )
     	{
-    		HeI32 v = atoi( arglist[1] );
+    		NxI32 v = atoi( arglist[1] );
     		if ( mCurrent )
     		{
     			PageLayout &p = mCurrent->getPageLayout();
@@ -471,11 +471,11 @@ HeI32 TextUserInterface::CommandCallback(HeI32 token,HeI32 count,const char **ar
 				{
   					char temp[512];
   					strcpy(temp,arglist[1]);
-  					HeI32 len = (HeI32)strlen(temp);
+  					NxI32 len = (NxI32)strlen(temp);
   					if ( len >= 4 )
   					{
   						temp[len-4] = 0;
-  						for (HeU32 i=0; i<1000; ++i)
+  						for (NxU32 i=0; i<1000; ++i)
   						{
   							char scratch[512];
   							sprintf(scratch,"%s%d.psc",temp, i+1);
@@ -543,7 +543,7 @@ HeI32 TextUserInterface::CommandCallback(HeI32 token,HeI32 count,const char **ar
 					if ( dot )
 					{
 						*dot = 0;
-						for (HeU32 i=1; i<100; ++i)
+						for (NxU32 i=1; i<100; ++i)
 						{
 							if ( strncmp(scratch,"fp_",3) != 0 )
 							{
@@ -647,7 +647,7 @@ HeI32 TextUserInterface::CommandCallback(HeI32 token,HeI32 count,const char **ar
 		{
 			if ( mCurrent )
 			{
-				HeU32 color = 0xffffffff;
+				NxU32 color = 0xffffffff;
 				if ( count == 4 )
 				{
 					color = (0xff << 24) + (atoi(arglist[1]) << 16) + (atoi(arglist[2]) << 8) + atoi(arglist[3]);
@@ -777,8 +777,8 @@ HeI32 TextUserInterface::CommandCallback(HeI32 token,HeI32 count,const char **ar
 		case TUI_SLIDER_RANGE:
 			if ( count == 3 && mCurrent )
 			{
-				HeF32 fmin = (HeF32) atof( arglist[1] );
-				HeF32 fmax = (HeF32) atof( arglist[2] );
+				NxF32 fmin = (NxF32) atof( arglist[1] );
+				NxF32 fmax = (NxF32) atof( arglist[2] );
 				mCurrent->SetMinMax(fmin,fmax);
 			}
 			break;
@@ -810,7 +810,7 @@ HeI32 TextUserInterface::CommandCallback(HeI32 token,HeI32 count,const char **ar
 
 				if ( ok )
 				{
-  					for (HeI32 i=1; i<count; ++i)
+  					for (NxI32 i=1; i<count; ++i)
   					{
   						StringRef key = SGET(arglist[i]);
   						TuiElement *tui = Locate(key);
@@ -839,7 +839,7 @@ HeI32 TextUserInterface::CommandCallback(HeI32 token,HeI32 count,const char **ar
 			if ( mCurrent && ( count >= 2 ) && ( count % 2 ) )
 			{
 				// k, check if the string matches HW or SW
-				for ( HeI32 i = 1; i < count; i += 2 )
+				for ( NxI32 i = 1; i < count; i += 2 )
 				{
 					if ( !stricmp( arglist[i], "SW" ) )
 					{
@@ -912,9 +912,9 @@ HeI32 TextUserInterface::CommandCallback(HeI32 token,HeI32 count,const char **ar
 }
 
 //==================================================================================
-HeI32 TextUserInterface::CommandFallback(HeI32 count,const char **arglist)
+NxI32 TextUserInterface::CommandFallback(NxI32 count,const char **arglist)
 {
-	HeI32 ret = 0;
+	NxI32 ret = 0;
 
 	if ( count )
 	{
@@ -951,7 +951,7 @@ void TextUserInterface::HelpAll(void)
 }
 
 //==================================================================================
-static bool IsDigit(const char *key,HeI32 &index)
+static bool IsDigit(const char *key,NxI32 &index)
 {
 	bool ret = true;
 
@@ -974,15 +974,15 @@ static bool IsDigit(const char *key,HeI32 &index)
 }
 
 //==================================================================================
-HeI32 TextUserInterface::SlashCommand(const char *key,HeI32 count,const char **arglist)
+NxI32 TextUserInterface::SlashCommand(const char *key,NxI32 count,const char **arglist)
 {
-	HeI32 ret = 0;
+	NxI32 ret = 0;
 
 	if ( stricmp(key,"help") == 0 || stricmp(key,"?") == 0 || stricmp(key,"h") == 0)
 	{
 		if ( count )
 		{
-			for (HeI32 i=0; i<count; ++i)
+			for (NxI32 i=0; i<count; ++i)
 			{
 				const char *str = arglist[i];
 				if ( stricmp(str,"all") == 0 )
@@ -1029,7 +1029,7 @@ HeI32 TextUserInterface::SlashCommand(const char *key,HeI32 count,const char **a
 	{
 		if ( count >= 1 )
 		{
-			for (HeI32 i=0; i<count; ++i)
+			for (NxI32 i=0; i<count; ++i)
 			{
 				const char *key = arglist[i];
 				TuiElement *t = Locate( SGET(key) );
@@ -1068,7 +1068,7 @@ HeI32 TextUserInterface::SlashCommand(const char *key,HeI32 count,const char **a
 	{
 		TuiElement *texecute = 0;
 
-		HeI32 index;
+		NxI32 index;
 		if ( IsDigit(key,index) )
 		{
 			if ( index )
@@ -1127,7 +1127,7 @@ HeI32 TextUserInterface::SlashCommand(const char *key,HeI32 count,const char **a
 }
 
 //==================================================================================
-void TextUserInterface::Begin(TuiType type,HeI32 count,const char **arglist)
+void TextUserInterface::Begin(TuiType type,NxI32 count,const char **arglist)
 {
 	End();
 
@@ -1177,7 +1177,7 @@ TuiElement * TextUserInterface::Locate(const StringRef &name) const // locate a 
 }
 
 //==================================================================================
-TuiElement::TuiElement(const StringRef &key,TuiType type,HeI32 count,const char **commands) :
+TuiElement::TuiElement(const StringRef &key,TuiType type,NxI32 count,const char **commands) :
 	mHWEnabled( true ),
 	mSWEnabled( true )
 {
@@ -1195,7 +1195,7 @@ TuiElement::TuiElement(const StringRef &key,TuiType type,HeI32 count,const char 
  	mNeedsUpdating	= false;
  	mVisible		= true;
 
-	for (HeI32 i=0; i<count; ++i)
+	for (NxI32 i=0; i<count; ++i)
 	{
 		const char *cmd = commands[i];
 		assert( strlen(cmd) );
@@ -1223,9 +1223,9 @@ void TuiElement::SetType(TuiType type)
 };
 
 //==================================================================================
-void TuiElement::SetTokens(HeI32 count,const char **args)
+void TuiElement::SetTokens(NxI32 count,const char **args)
 {
-	for (HeI32 i=0; i<count; ++i)
+	for (NxI32 i=0; i<count; ++i)
 	{
 		StringRef cmd = SGET( args[i] );
 		mTokens.push_back(cmd);
@@ -1233,9 +1233,9 @@ void TuiElement::SetTokens(HeI32 count,const char **args)
 }
 
 //==================================================================================
-void TuiElement::SetDescription(HeI32 count,const char **args)
+void TuiElement::SetDescription(NxI32 count,const char **args)
 {
-	for (HeI32 i=0; i<count; ++i)
+	for (NxI32 i=0; i<count; ++i)
 	{
 		StringRef cmd = SGET( args[i] );
 		mDescription.push_back(cmd);
@@ -1252,13 +1252,13 @@ void TuiElement::SetText( const char *text )
 }
 
 //==================================================================================
-void TuiElement::SetTextColor( HeU32 color )
+void TuiElement::SetTextColor( NxU32 color )
 {
 	mTextColor = color;
 }
 
 //==================================================================================
-void TuiElement::AddOnCheckShow( HeI32 count, const char **name )
+void TuiElement::AddOnCheckShow( NxI32 count, const char **name )
 {
  	if ( name )
  	{
@@ -1274,7 +1274,7 @@ void TuiElement::AddOnCheckShow( HeI32 count, const char **name )
  
  			if ( p )
  			{
- 				for ( HeI32 i = 0; i < count; ++i )
+ 				for ( NxI32 i = 0; i < count; ++i )
  				{
  					StringRef ref = SGET( name[i] );
  					p->push_back( ref );
@@ -1288,7 +1288,7 @@ void TuiElement::AddOnCheckShow( HeI32 count, const char **name )
  
  			if ( p )
  			{
- 				for ( HeI32 i = 0; i < count; ++i )
+ 				for ( NxI32 i = 0; i < count; ++i )
  				{
  					StringRef ref = SGET( name[i] );
  					p->push_back( ref );
@@ -1300,7 +1300,7 @@ void TuiElement::AddOnCheckShow( HeI32 count, const char **name )
 }
 
 //==================================================================================
-void TuiElement::AddOnCheckRescript( HeI32 count, const char **script )
+void TuiElement::AddOnCheckRescript( NxI32 count, const char **script )
 {
 	if ( script )
  	{
@@ -1312,7 +1312,7 @@ void TuiElement::AddOnCheckRescript( HeI32 count, const char **script )
  
  			if ( p )
  			{
- 				for ( HeI32 i = 0; i < count; ++i )
+ 				for ( NxI32 i = 0; i < count; ++i )
  				{
  					StringRef ref = SGET( script[i] );
  					p->push_back( ref );
@@ -1375,16 +1375,16 @@ void TuiElement::End(void)
 }
 
 //==================================================================================
-void TuiElement::Indent(HeI32 indent)
+void TuiElement::Indent(NxI32 indent)
 {
-	for (HeI32 j=0; j<indent; ++j)
+	for (NxI32 j=0; j<indent; ++j)
 	{
 		gLog->Display("  ");
 	}
 }
 
 //==================================================================================
-void TuiElement::ShowHelp(HeI32 indent,bool detailed,HeI32 index,bool showhelp)
+void TuiElement::ShowHelp(NxI32 indent,bool detailed,NxI32 index,bool showhelp)
 {
 	{
 		Indent(indent);
@@ -1435,7 +1435,7 @@ void TuiElement::ShowHelp(HeI32 indent,bool detailed,HeI32 index,bool showhelp)
 		{
 			gLog->Display("\r\n");
 			TuiChoiceVector::iterator i;
-			HeI32 index = 0;
+			NxI32 index = 0;
 			for (i=mChoices.begin(); i!=mChoices.end(); ++i)
 			{
 				index++;
@@ -1452,7 +1452,7 @@ void TuiElement::ShowHelp(HeI32 indent,bool detailed,HeI32 index,bool showhelp)
 		if ( mType == TT_PAGE ) 
 			showcount = true;
 
-		HeI32 index = 0;
+		NxI32 index = 0;
 		TuiElementVector::iterator i;
 		for (i=mElements.begin(); i!=mElements.end(); ++i)
 		{
@@ -1485,7 +1485,7 @@ bool TuiElement::ShowHelp(const char *str)
 }
 
 //==================================================================================
-TuiElement * TuiElement::Command(const StringRef &c,HeI32 count,const char **arglist,TextUserInterface *tui)
+TuiElement * TuiElement::Command(const StringRef &c,NxI32 count,const char **arglist,TextUserInterface *tui)
 {
 	TuiElement *ret = 0;
 
@@ -1516,7 +1516,7 @@ TuiElement * TuiElement::Command(const StringRef &c,HeI32 count,const char **arg
 		{
 			if ( count )
 			{
-				HeI32 index;
+				NxI32 index;
 				if (  IsDigit(arglist[0],index) )
 				{
 					if ( index )
@@ -1551,7 +1551,7 @@ bool TuiElement::NeedSpace(const char *foo)
 }
 
 //==================================================================================
-const char * TuiElement::GetCommand(const StringRef &c,HeI32 count,const char **arglist,TuiElement *parent,TextUserInterface *tui,bool toggleOk)
+const char * TuiElement::GetCommand(const StringRef &c,NxI32 count,const char **arglist,TuiElement *parent,TextUserInterface *tui,bool toggleOk)
 {
 	static char scratch[2048];
 
@@ -1569,7 +1569,7 @@ const char * TuiElement::GetCommand(const StringRef &c,HeI32 count,const char **
 		{
 			if ( foo[1] >= '1' && foo[1] <= '9' )
 			{
-				HeI32 c = foo[1] - '1';
+				NxI32 c = foo[1] - '1';
 				if ( c >= 0 && c < count )
 				{
 					foo = arglist[c];
@@ -1608,7 +1608,7 @@ const char * TuiElement::GetCommand(const StringRef &c,HeI32 count,const char **
 }
 
 //==================================================================================
-void TuiElement::Execute(HeI32 count,const char **arglist,TuiElement *parent,TextUserInterface *tui,bool toggleOk)
+void TuiElement::Execute(NxI32 count,const char **arglist,TuiElement *parent,TextUserInterface *tui,bool toggleOk)
 {
 	if ( mSaveFrame == gSaveFrame )
 	{
@@ -1620,9 +1620,9 @@ void TuiElement::Execute(HeI32 count,const char **arglist,TuiElement *parent,Tex
 	}
 
 	{
-		for (HeI32 i=0; i<count; ++i)
+		for (NxI32 i=0; i<count; ++i)
 		{
-			if ( i < (HeI32)mArgs.size() )
+			if ( i < (NxI32)mArgs.size() )
 			{
 				mArgs[i] = arglist[i];
 			}
@@ -1711,10 +1711,10 @@ const StringRef& TuiElement::GetName(void) const
 };
 
 //==================================================================================
-TuiElement * TuiElement::ExecuteElement(HeI32 index,HeI32 count,const char **arglist,TextUserInterface *tui,bool toggleOk)
+TuiElement * TuiElement::ExecuteElement(NxI32 index,NxI32 count,const char **arglist,TextUserInterface *tui,bool toggleOk)
 {
 	TuiElement *ret = 0;
-	if ( index >= 0 && index < (HeI32)mElements.size() )
+	if ( index >= 0 && index < (NxI32)mElements.size() )
 	{
 		ret = mElements[index];
 
@@ -1728,7 +1728,7 @@ TuiElement * TuiElement::ExecuteElement(HeI32 index,HeI32 count,const char **arg
 }
 
 //==================================================================================
-void  TuiElement::AddArg(HeI32 count,const char **arglist)
+void  TuiElement::AddArg(NxI32 count,const char **arglist)
 {
 	if ( !mArgs.empty() && !mFileSpecs.empty() )
 	{
@@ -1736,7 +1736,7 @@ void  TuiElement::AddArg(HeI32 count,const char **arglist)
 	}
 	else
 	{
-  	for (HeI32 i=0; i<count; ++i)
+  	for (NxI32 i=0; i<count; ++i)
   	{
   		StringRef ref = SGET(arglist[i]);
   		mArgs.push_back(ref);
@@ -1755,9 +1755,9 @@ void TuiElement::AddActors(void)
 }
 
 //==================================================================================
-void TuiElement::AddFiles(HeI32 count,const char **arglist)
+void TuiElement::AddFiles(NxI32 count,const char **arglist)
 {
-	for (HeI32 i=0; i<count; ++i)
+	for (NxI32 i=0; i<count; ++i)
 	{
 		const char *spec = arglist[i];
 		mFileSpecs.push_back( SGET(spec) );
@@ -1765,7 +1765,7 @@ void TuiElement::AddFiles(HeI32 count,const char **arglist)
 }
 
 //==================================================================================
-void  TuiElement::AddChoice(HeI32 count,const char **arglist)
+void  TuiElement::AddChoice(NxI32 count,const char **arglist)
 {
 	if ( count )
 	{
@@ -1792,9 +1792,9 @@ void  TuiElement::AddChoice(HeI32 count,const char **arglist)
 }
 
 //==================================================================================
-void  TuiElement::AddChoices(HeI32 count,const char **arglist)
+void  TuiElement::AddChoices(NxI32 count,const char **arglist)
 {
-	for (HeI32 i=0; i<count; ++i)
+	for (NxI32 i=0; i<count; ++i)
 	{
 		StringRef ref = SGET(arglist[i]);
 		TuiChoice c(ref,ref,true);
@@ -1804,10 +1804,10 @@ void  TuiElement::AddChoices(HeI32 count,const char **arglist)
 }
 
 //==================================================================================
-TuiElement * TuiElement::GetElement(HeI32 index)
+TuiElement * TuiElement::GetElement(NxI32 index)
 {
 	TuiElement *ret = 0;
-	if ( ( index >= 0 ) && ( index < (HeI32)mElements.size() ) )
+	if ( ( index >= 0 ) && ( index < (NxI32)mElements.size() ) )
 	{
 		ret = mElements[index];
 	}
@@ -1871,7 +1871,7 @@ const char * TuiElement::ArgumentLookup(const char *name)
   				ret = mArgs[0].Get();
 				if ( mRecip )
 				{
-					HeF32 v = (HeF32) atof(ret);
+					NxF32 v = (NxF32) atof(ret);
 					sprintf(rval,"%0.9f", 1.0f / v );
 					ret = rval;
 				}
@@ -1880,7 +1880,7 @@ const char * TuiElement::ArgumentLookup(const char *name)
   			{
   				char scratch[512];
   				strcpy(scratch,mArgs[0].Get());
-  				for (HeU32 i=1; i<mArgs.size(); ++i)
+  				for (NxU32 i=1; i<mArgs.size(); ++i)
   				{
   					strcat(scratch," ");
   					strcat(scratch,mArgs[i].Get());
@@ -1907,7 +1907,7 @@ const char * TuiElement::ArgumentLookup(const char *name)
 
 						if ( mRecip )
 						{
-							HeF32 v = (HeF32) atof(ret);
+							NxF32 v = (NxF32) atof(ret);
 							sprintf(rval,"%0.9f", 1.0f / v );
 							ret = rval;
 						}
@@ -1916,7 +1916,7 @@ const char * TuiElement::ArgumentLookup(const char *name)
       				{
       					char scratch[512];
       					strcpy(scratch,mArgs[0].Get());
-      					for (HeU32 i=1; i<mArgs.size(); ++i)
+      					for (NxU32 i=1; i<mArgs.size(); ++i)
       					{
       						strcat(scratch," ");
       						strcat(scratch,mArgs[i].Get());
@@ -1936,11 +1936,11 @@ const char * TuiElement::ArgumentLookup(const char *name)
 //==================================================================================
 // locate this argument, toggle the result and return.
 //==================================================================================
-const char *      TuiElement::GetToggleArg(HeI32 count,bool toggleOk) 
+const char *      TuiElement::GetToggleArg(NxI32 count,bool toggleOk) 
 {
 	const char * ret = "false";
 
-	if ( count >= 0 && count < (HeI32)mArgs.size() )
+	if ( count >= 0 && count < (NxI32)mArgs.size() )
 	{
 		ret = mArgs[count].Get();
     if ( toggleOk )
@@ -1963,7 +1963,7 @@ const char *      TuiElement::GetToggleArg(HeI32 count,bool toggleOk)
 }
 
 //==================================================================================
-bool TuiElement::GetArg(HeI32 count, char *arg) const
+bool TuiElement::GetArg(NxI32 count, char *arg) const
 {
 	bool ok = false;
 
@@ -1972,7 +1972,7 @@ bool TuiElement::GetArg(HeI32 count, char *arg) const
 		// default val
 		sprintf( arg, "0" );
 
-		if ( ( count >= 0 ) && ( count < (HeI32)mArgs.size() ) )
+		if ( ( count >= 0 ) && ( count < (NxI32)mArgs.size() ) )
 		{
 			ok = true;
 			if ( mType == TT_SLIDER )
@@ -1980,7 +1980,7 @@ bool TuiElement::GetArg(HeI32 count, char *arg) const
 				if ( mInt )
 				{
 					// convert our value to an integer
-					HeI32 val = atoi( mArgs[count].Get() );
+					NxI32 val = atoi( mArgs[count].Get() );
 					sprintf( arg, "%d", val );
 				}
 				else
@@ -1998,7 +1998,7 @@ bool TuiElement::GetArg(HeI32 count, char *arg) const
 }
 
 //==================================================================================
-bool TuiElement::GetArg_Actual(HeI32 count, char *arg) const
+bool TuiElement::GetArg_Actual(NxI32 count, char *arg) const
 {
 	bool ok = false;
 
@@ -2007,7 +2007,7 @@ bool TuiElement::GetArg_Actual(HeI32 count, char *arg) const
 		// default val
 		sprintf( arg, "0" );
 
-		if ( ( count >= 0 ) && ( count < (HeI32)mArgs.size() ) )
+		if ( ( count >= 0 ) && ( count < (NxI32)mArgs.size() ) )
 		{
 			ok = true;
 			sprintf( arg, mArgs[count].Get() );
@@ -2017,9 +2017,9 @@ bool TuiElement::GetArg_Actual(HeI32 count, char *arg) const
 }
 
 //==================================================================================
-void TuiElement::SetArg(HeI32 count,const char *c)
+void TuiElement::SetArg(NxI32 count,const char *c)
 {
-	if ( ( count >= 0 ) && ( count < (HeI32)mArgs.size() ) )
+	if ( ( count >= 0 ) && ( count < (NxI32)mArgs.size() ) )
 	{
 		mArgs[count] = SGET(c);
 	}
@@ -2028,9 +2028,9 @@ void TuiElement::SetArg(HeI32 count,const char *c)
 //==================================================================================
 // convert into a normalized tick value 0-1000
 //==================================================================================
-HeI32  TuiElement::GetSliderTick(HeF32 v) const 
+NxI32  TuiElement::GetSliderTick(NxF32 v) const 
 {
-	HeF32 tmpV = v;
+	NxF32 tmpV = v;
 
 	if ( tmpV < mMin ) 
 		tmpV = mMin;
@@ -2039,11 +2039,11 @@ HeI32  TuiElement::GetSliderTick(HeF32 v) const
 
 	tmpV -= mMin;
 
-	HeF32 recip = 1.0f / (mMax - mMin );
+	NxF32 recip = 1.0f / (mMax - mMin );
 
-	HeF32 modifiedV = 1000*recip*tmpV;
+	NxF32 modifiedV = 1000*recip*tmpV;
 
-	HeI32 intVal = (HeI32)modifiedV;
+	NxI32 intVal = (NxI32)modifiedV;
 
 	//if ( !mInt )
 	{
@@ -2065,11 +2065,11 @@ HeI32  TuiElement::GetSliderTick(HeF32 v) const
 //==================================================================================
 // convert integer tick (0-1000) into floating point value.
 //==================================================================================
-HeF32 TuiElement::GetSliderValue(HeI32 tick) const
+NxF32 TuiElement::GetSliderValue(NxI32 tick) const
 {
-	HeF32 scale = (HeF32) tick / 1000.0f;
+	NxF32 scale = (NxF32) tick / 1000.0f;
 
-	HeF32 v = (scale*(mMax-mMin))+mMin;
+	NxF32 v = (scale*(mMax-mMin))+mMin;
 	return v;
 }
 
@@ -2086,7 +2086,7 @@ void TuiElement::Save(FILE *fph)
   				command = mTokens[0].Get();
   			}
   			fprintf(fph,"/%s ", command );
-  			for (HeU32 i=0; i<mArgs.size(); ++i)
+  			for (NxU32 i=0; i<mArgs.size(); ++i)
   			{
   				fprintf(fph,"%s ", mArgs[i].Get() );
   			}
@@ -2109,7 +2109,7 @@ void TextUserInterface::Refresh(void)
 }
 
 //==================================================================================
-void TextUserInterface::NotifyAllPagesOfNewDimensions( HeU32 width, HeU32 height )
+void TextUserInterface::NotifyAllPagesOfNewDimensions( NxU32 width, NxU32 height )
 {
 	// k, go through our map and update the items with the new width, height
 	TuiElementMap::iterator i;
@@ -2202,20 +2202,20 @@ void TuiElement::Refresh(void)
 }
 
 //==================================================================================
-void TuiElement::OnCheckboxChange( bool state, HeI32 id )
+void TuiElement::OnCheckboxChange( bool state, NxI32 id )
 {
  	DetermineVisibleElements( state ? sTrue.Get() : sFalse.Get(), id );
 }
 
 //==================================================================================
-void TuiElement::OnComboBoxChange( const char *selectedItem, HeI32 id )
+void TuiElement::OnComboBoxChange( const char *selectedItem, NxI32 id )
 {
  	DetermineVisibleElements( selectedItem, id );
  	DetermineRescriptedItems( selectedItem, id );
 }
 
 //==================================================================================
-void TuiElement::DetermineVisibleElements( const char *selectedItem, HeI32 id )
+void TuiElement::DetermineVisibleElements( const char *selectedItem, NxI32 id )
 {
  	// k, find all checkboxes first and hide/show appropriate items
  	if ( GetType() == TT_PAGE )
@@ -2364,7 +2364,7 @@ void TuiElement::DetermineVisibleElements( const char *selectedItem, HeI32 id )
 }
  
 //==================================================================================
-void TuiElement::DetermineRescriptedItems( const char * /*selectedItem*/, HeI32 id )
+void TuiElement::DetermineRescriptedItems( const char * /*selectedItem*/, NxI32 id )
 {
  	// k, find all checkboxes first and hide/show appropriate items
  	if ( GetType() == TT_PAGE )
@@ -2417,8 +2417,8 @@ void TuiElement::DetermineRescriptedItems( const char * /*selectedItem*/, HeI32 
  							// check for items we should rescript and rescript them
  
  							StringRefVector::const_iterator i = srvPntr->begin();
- 							HeU32 cnt = 0;
- 							HeU32 size = (HeU32)srvPntr->size();
+ 							NxU32 cnt = 0;
+ 							NxU32 size = (NxU32)srvPntr->size();
  							for ( ; i != srvPntr->end(); ++i, ++cnt )
  							{
  								const StringRef &item = (*i);
@@ -2470,10 +2470,10 @@ void TuiElement::DetermineRescriptedItems( const char * /*selectedItem*/, HeI32 
 }
 
 //==================================================================================
-void TuiElement::AddExecuteOnLoad( const char **args, HeI32 count )
+void TuiElement::AddExecuteOnLoad( const char **args, NxI32 count )
 {
 	char buff[512];
-	for ( HeI32 i = 0; i < count; ++i )
+	for ( NxI32 i = 0; i < count; ++i )
 	{
 		if ( i == 0 )
 		{
@@ -2490,10 +2490,10 @@ void TuiElement::AddExecuteOnLoad( const char **args, HeI32 count )
 }
 
 //==================================================================================
-void TuiElement::AddExecuteOnExit( const char **args, HeI32 count )
+void TuiElement::AddExecuteOnExit( const char **args, NxI32 count )
 {
 	char buff[512];
-	for ( HeI32 i = 0; i < count; ++i )
+	for ( NxI32 i = 0; i < count; ++i )
 	{
 		if ( i == 0 )
 		{
@@ -2574,12 +2574,12 @@ void TuiElement::OnExit( TuiElement *exitingPage )
 }
 
 //==================================================================================
-HeI32 TuiElement::GetElementIndexOfTypeWithName( TuiType /*type*/, const char *name )
+NxI32 TuiElement::GetElementIndexOfTypeWithName( TuiType /*type*/, const char *name )
 {
-	HeI32 index = -1;
+	NxI32 index = -1;
 	if ( name )
 	{
-		HeI32 cnt = 0;
+		NxI32 cnt = 0;
 		TuiElementVector::iterator i;
 		for ( i = mElements.begin(); (index == -1) && (i != mElements.end()); ++i, ++cnt )
 		{
@@ -2600,7 +2600,7 @@ TuiElement * TuiElement::GetElementOfTypeWithName( TuiType /*type*/, const char 
 	TuiElement *ret = 0;
 	if ( name )
 	{
-		HeI32 cnt = 0;
+		NxI32 cnt = 0;
 		TuiElementVector::iterator i;
 		for ( i = mElements.begin(); !ret && (i != mElements.end()); ++i, ++cnt )
 		{
@@ -2616,7 +2616,7 @@ TuiElement * TuiElement::GetElementOfTypeWithName( TuiType /*type*/, const char 
 }
 
 //==================================================================================
-void TuiElement::GetOnLoadOnExitCommand( char *buff, HeI32 buffLen, const StringRef &command )
+void TuiElement::GetOnLoadOnExitCommand( char *buff, NxI32 buffLen, const StringRef &command )
 {
 	if ( buff )
 	{
@@ -2629,8 +2629,8 @@ void TuiElement::GetOnLoadOnExitCommand( char *buff, HeI32 buffLen, const String
 
 			// gotta get args
 			bool done = false;
-			HeI32 i = 0, j = 0;
-			HeI32 len = (HeI32)strlen( tmp );
+			NxI32 i = 0, j = 0;
+			NxI32 len = (NxI32)strlen( tmp );
 			while ( !done )
 			{
 				if ( i >= len )
@@ -2638,7 +2638,7 @@ void TuiElement::GetOnLoadOnExitCommand( char *buff, HeI32 buffLen, const String
 				else if ( tmp[i] == '%' )
 				{
 					++i;
-					HeU32 k = 0;
+					NxU32 k = 0;
 					char which[10];
 					while ( ( tmp[i] != ' ' ) && ( i < len ) )
 					{
@@ -2651,7 +2651,7 @@ void TuiElement::GetOnLoadOnExitCommand( char *buff, HeI32 buffLen, const String
 						char val[64];
 						sprintf( val, "%s", mArgs[k-1] );
 						strcat(  &buff[j], val );
-						j += (HeI32)strlen( val );
+						j += (NxI32)strlen( val );
 					}
 				}
 				else

@@ -2,13 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <hash_map>
 
 #pragma warning(disable:4702)
 
 #include "MeshConsolidate.h"
 #include "FloatMath.h"
-#include "He.h"
-#include "common/HeMath/HeVec3.h"
+#include "NxVec3.h"
 
 #pragma warning(disable:4100)
 
@@ -32,12 +32,12 @@ static void removePolyPoint(Edge *p,Edge **polyPoints);
 class TempTri
 {
 public:
-  HeU32     mI1;
-  HeU32     mI2;
-  HeU32     mI3;
-  HeU32     mId;
-  HeU32     mSubMesh;
-  HeVec3    mNormal;
+  NxU32     mI1;
+  NxU32     mI2;
+  NxU32     mI3;
+  NxU32     mId;
+  NxU32     mSubMesh;
+  NxVec3    mNormal;
 };
 
 class Polygon;
@@ -56,7 +56,7 @@ public:
     mNextPolyPoint = 0;
   }
 
-  void init(Polygon *p,HeU32 i1,HeU32 i2)
+  void init(Polygon *p,NxU32 i1,NxU32 i2)
   {
     mI1 = i1;
     mI2 = i2;
@@ -66,12 +66,12 @@ public:
     mNextPolygonEdge = 0;
   }
 
-  HeU32 getHash(void) const { return (mI2<<16)|mI1; };
-  HeU32 getInverseHash(void) const { return (mI1<<16)|mI2; };
+  NxU32 getHash(void) const { return (mI2<<16)|mI1; };
+  NxU32 getInverseHash(void) const { return (mI1<<16)|mI2; };
 
 
-  HeU32    mI1;
-  HeU32    mI2;
+  NxU32    mI1;
+  NxU32    mI2;
   Polygon *mParent;
 
   Edge    *mNext;             // linked list pointers inside a specific polygon
@@ -245,17 +245,17 @@ public:
 
   Edge * mergePolygon(Polygon *merge,Edge *e,Edge **polyPoints,MyMeshConsolidate *mmc);
 
-  HeU32   mId;
-  HeU32   mSubMesh;
-  HeU32   mEcount;
-  HeVec3  mNormal;
+  NxU32   mId;
+  NxU32   mSubMesh;
+  NxU32   mEcount;
+  NxVec3  mNormal;
   Edge   *mHead;
   Edge   *mTail;
   bool    mRemoved;
   bool    mMerged;
 };
 
-static bool hasPolyPoint(Polygon *p,HeU32 i,Edge **polyPoints)
+static bool hasPolyPoint(Polygon *p,NxU32 i,Edge **polyPoints)
 {
   bool ret = false;
 
@@ -275,7 +275,7 @@ static bool hasPolyPoint(Polygon *p,HeU32 i,Edge **polyPoints)
 
 static void addPolyPoint(Edge *p,Edge **polyPoints,Polygon *parent)
 {
-  HeU32 i = p->mI2;
+  NxU32 i = p->mI2;
 
 #ifdef _DEBUG
   Edge *scan = polyPoints[i];
@@ -293,7 +293,7 @@ static void addPolyPoint(Edge *p,Edge **polyPoints,Polygon *parent)
 
 static void removePolyPoint(Edge *p,Edge **polyPoints)
 {
-  HeU32 i = p->mI2;
+  NxU32 i = p->mI2;
 
   Edge *scan = polyPoints[i];
   Edge *prev = 0;
@@ -323,8 +323,8 @@ static void removePolyPoint(Edge *p,Edge **polyPoints)
 }
 
 typedef USER_STL::vector< TempTri > TempTriVector;
-typedef stdext::hash_map< HeU32, Edge * > EdgeHashMap;
-typedef USER_STL::vector< HeU32 > HeU32Vector;
+typedef USER_STL_EXT::hash_map< NxU32, Edge * > EdgeHashMap;
+typedef USER_STL::vector< NxU32 > HeU32Vector;
 
 class MyMeshConsolidate : public MeshConsolidate
 {
@@ -368,23 +368,23 @@ public:
     mPolyPoints = 0;
   }
 
-  virtual bool addTriangle(const HeF32 *p1,
-                           const HeF32 *p2,
-                           const HeF32 *p3,
-                           HeU32 id,
-                           HeU32 subMesh)
+  virtual bool addTriangle(const NxF32 *p1,
+                           const NxF32 *p2,
+                           const NxF32 *p3,
+                           NxU32 id,
+                           NxU32 subMesh)
   {
     bool ret = false;
 
-	HeF32 area = fm_computeArea(p1,p2,p3);
+	NxF32 area = fm_computeArea(p1,p2,p3);
 	area;
 	assert( area > 0 );
 
-	HeVec3 _vertices[3],vertices[64];
+	NxVec3 _vertices[3],vertices[64];
 	_vertices[0].set(p1);
 	_vertices[1].set(p2);
 	_vertices[2].set(p3);
-	HeU32 pcount = fm_consolidatePolygon(3,&_vertices[0].x,sizeof(HeF32)*3,&vertices[0].x,1-EPSILON);
+	NxU32 pcount = fm_consolidatePolygon(3,&_vertices[0].x,sizeof(NxF32)*3,&vertices[0].x,1-EPSILON);
 	if ( pcount == 3 )
 	{
 		bool np;
@@ -430,7 +430,7 @@ public:
         mVcount = mVertices->getVcount();
         mPolyPoints = MEMALLOC_NEW_ARRAY(Edge *,mVcount)[mVcount];
 		memset(mPolyPoints,0,sizeof(Edge *)*mVcount);
-        for (HeU32 i=0; i<mPolyCount; i++)
+        for (NxU32 i=0; i<mPolyCount; i++)
         {
             p->mId = tri->mId;
             p->mSubMesh = tri->mSubMesh;
@@ -446,7 +446,7 @@ public:
 
     {
         Polygon *p = mPolygons;
-        for (HeU32 i=0; i<mPolyCount; i++)
+        for (NxU32 i=0; i<mPolyCount; i++)
         {
             consolidate(p);
             p++;
@@ -458,7 +458,7 @@ public:
       Polygon *p = mPolygons;
       fm_Triangulate *t = fm_createTriangulate(); // create the 3d polygon triangulator
 
-      for (HeU32 j=0; j<mPolyCount; j++)
+      for (NxU32 j=0; j<mPolyCount; j++)
       {
         if ( !p->mRemoved )
         {
@@ -466,14 +466,14 @@ public:
           assert( p->mEcount < MAX_VERTS );
           if ( p->mEcount < MAX_VERTS )
           {
-            HeF32 _vertices[MAX_VERTS*3];
-			HeF32 vertices[MAX_VERTS*3];
+            NxF32 _vertices[MAX_VERTS*3];
+			NxF32 vertices[MAX_VERTS*3];
 			Edge *e = p->mHead;
-            HeU32 pcount = 0;
-            HeF32 *dest = _vertices;
+            NxU32 pcount = 0;
+            NxF32 *dest = _vertices;
             while ( e )
             {
-              const HeF32 *p = mVertices->getVertexFloat(e->mI2);
+              const NxF32 *p = mVertices->getVertexFloat(e->mI2);
               dest[0] = p[0];
               dest[1] = p[1];
               dest[2] = p[2];
@@ -482,7 +482,7 @@ public:
               e = e->mNext;
 			}
 
-            pcount = fm_consolidatePolygon(pcount,_vertices,sizeof(HeF32)*3,vertices,1-EPSILON);
+            pcount = fm_consolidatePolygon(pcount,_vertices,sizeof(NxF32)*3,vertices,1-EPSILON);
 
             switch ( pcount )
             {
@@ -496,25 +496,25 @@ public:
                 break;
               case 4:
                 {
-                  const HeF32 *p1 = vertices;
-                  const HeF32 *p2 = vertices+3;
-                  const HeF32 *p3 = vertices+6;
-                  const HeF32 *p4 = vertices+9;
+                  const NxF32 *p1 = vertices;
+                  const NxF32 *p2 = vertices+3;
+                  const NxF32 *p3 = vertices+6;
+                  const NxF32 *p4 = vertices+9;
                   addTriangleOutput(p,p1,p2,p3);
                   addTriangleOutput(p,p1,p3,p4);
                 }
                 break;
               default:
                 {
-                  HeU32 tcount;
-                  const HeF32 *triangles = t->triangulate3d(pcount,vertices,sizeof(HeF32)*3,tcount,false,EPSILON);
+                  NxU32 tcount;
+                  const NxF32 *triangles = t->triangulate3d(pcount,vertices,sizeof(NxF32)*3,tcount,false,EPSILON);
                   if ( triangles )
                   {
-                    for (HeU32 i=0; i<tcount; i++)
+                    for (NxU32 i=0; i<tcount; i++)
                     {
-                      const HeF32 *p1 = triangles;
-                      const HeF32 *p2 = triangles+3;
-                      const HeF32 *p3 = triangles+6;
+                      const NxF32 *p1 = triangles;
+                      const NxF32 *p2 = triangles+3;
+                      const NxF32 *p3 = triangles+6;
                       addTriangleOutput(p,p3,p2,p1);
                       triangles+=9;
                     }
@@ -522,16 +522,16 @@ public:
 				  else
 				  {
 					  SEND_TEXT_MESSAGE(0,"FAILED TO TRIANGULATE POLYGON WITH %d points!\r\n", pcount );
-					  const HeF32 *prev = &vertices[(pcount-1)*3];
-					  for (HeU32 i=0; i<pcount; i++)
+					  const NxF32 *prev = &vertices[(pcount-1)*3];
+					  for (NxU32 i=0; i<pcount; i++)
 					  {
-						  const HeF32 *point = &vertices[i*3];
+						  const NxF32 *point = &vertices[i*3];
 						  gRenderDebug->DebugPoint(point,0.1f,0xFFFF00,600.0f);
 						  gRenderDebug->DebugRay(prev,point,0.1f,0xFF0000,0xFFFF00,600.0f);
 						  prev = point;
 					  }
-                      pcount = fm_consolidatePolygon(pcount,_vertices,sizeof(HeF32)*3,vertices,0.999f);
-					  t->triangulate3d(pcount,vertices,sizeof(HeF32)*3,tcount,false,EPSILON);
+                      pcount = fm_consolidatePolygon(pcount,_vertices,sizeof(NxF32)*3,vertices,0.999f);
+					  t->triangulate3d(pcount,vertices,sizeof(NxF32)*3,tcount,false,EPSILON);
 				  }
                 }
                 break;
@@ -558,7 +558,7 @@ public:
     return ret;
   }
 
-  Edge * initEdge(Polygon *p,Edge *e,HeU32 i1,HeU32 i2)
+  Edge * initEdge(Polygon *p,Edge *e,NxU32 i1,NxU32 i2)
   {
     e->init(p,i1,i2);
     addEdge(e);
@@ -569,7 +569,7 @@ public:
 
   void addEdge(Edge *e)
   {
-    HeU32 hash = e->getHash();
+    NxU32 hash = e->getHash();
     EdgeHashMap::iterator found = mEdgeHash.find( hash );
     if ( found == mEdgeHash.end() )
     {
@@ -583,12 +583,12 @@ public:
     }
   }
 
-  void addTriangleOutput(const Polygon *p,const HeF32 *p1,const HeF32 *p2,const HeF32 *p3)
+  void addTriangleOutput(const Polygon *p,const NxF32 *p1,const NxF32 *p2,const NxF32 *p3)
   {
     bool np;
-    HeU32 i1 = mVertexOutput->getIndex(p1,np);
-    HeU32 i2 = mVertexOutput->getIndex(p2,np);
-    HeU32 i3 = mVertexOutput->getIndex(p3,np);
+    NxU32 i1 = mVertexOutput->getIndex(p1,np);
+    NxU32 i2 = mVertexOutput->getIndex(p2,np);
+    NxU32 i3 = mVertexOutput->getIndex(p3,np);
     mOutputIndices.push_back(i1);
     mOutputIndices.push_back(i2);
     mOutputIndices.push_back(i3);
@@ -598,7 +598,7 @@ public:
 
   void removeEdge(Edge *e)
   {
-    HeU32 hash = e->getHash();
+    NxU32 hash = e->getHash();
     EdgeHashMap::iterator found = mEdgeHash.find(hash);
     if ( found == mEdgeHash.end() )
     {
@@ -647,7 +647,7 @@ public:
     }
   }
 
-  Edge * locateSharedEdge(HeU32 hash,Polygon *p)
+  Edge * locateSharedEdge(NxU32 hash,Polygon *p)
   {
     Edge *ret = 0;
     EdgeHashMap::iterator found = mEdgeHash.find(hash);
@@ -685,7 +685,7 @@ public:
            Edge *insertion_point = p->determineInsertionPoint(merge,e,mPolyPoints);
            if ( insertion_point )
            {
-             HeU32 new_point = insertion_point->mI2;
+             NxU32 new_point = insertion_point->mI2;
              if ( hasPolyPoint(p,new_point,mPolyPoints) )
              {
                merge = 0;
@@ -731,9 +731,9 @@ public:
     removePolyPoint(e3,mPolyPoints);
   }
 
-  HeU32           mPolyCount;
-  HeU32           mEdgeCount;
-  HeU32           mVcount; // number of vertices
+  NxU32           mPolyCount;
+  NxU32           mEdgeCount;
+  NxU32           mVcount; // number of vertices
   Polygon        *mPolygons;
   Edge           *mEdges;
   Edge          **mPolyPoints;

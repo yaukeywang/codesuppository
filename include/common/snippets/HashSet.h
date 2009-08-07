@@ -48,7 +48,7 @@ public:
     bool ret = false;
 
 		// See if it exists a bucket
-		HeU32 bucketID = getBucketIndex(entry);
+		NxU32 bucketID = getBucketIndex(entry);
 
 		if(mBuckets[bucketID])
 		{
@@ -90,7 +90,7 @@ public:
 		if(mNumElements > 0 )
     {
   		// See if it exists a bucket
-  		HeU32 bucketID = getBucketIndex(entry);
+  		NxU32 bucketID = getBucketIndex(entry);
   		if(mBuckets[bucketID])
   		{
   			//have a bucket, check elements and insert if needed
@@ -109,14 +109,14 @@ public:
 		return ret;
   }
 
-  inline bool exists(HeU32 hashValue,T& entry)
+  inline bool exists(NxU32 hashValue,T& entry)
   {
     bool ret = false;
 
 		if(mNumElements > 0 )
     {
   		// See if it exists a bucket
-  		HeU32 bucketID = getBucketIndexHash(hashValue);
+  		NxU32 bucketID = getBucketIndexHash(hashValue);
   		if(mBuckets[bucketID])
   		{
   			//have a bucket, check elements and insert if needed
@@ -146,7 +146,7 @@ public:
 			return false; //cannot remove from empty set
 
 		// See if it exists a bucket
-		HeU32 bucketID = getBucketIndex(entry);
+		NxU32 bucketID = getBucketIndex(entry);
 
 		if(mBuckets[bucketID])
 		{
@@ -189,7 +189,7 @@ public:
 		if(mNumElements == 0)
 			return; //already empty
 
-		for(HeU32 i = 0; i < mNumBuckets; i++)
+		for(NxU32 i = 0; i < mNumBuckets; i++)
 		{
 			ElementType* e = mBuckets[i];
 			while(e)
@@ -208,7 +208,7 @@ public:
 	/*!
 	Get number of elements in hash set
 	*/
-	inline HeU32 getSize() const
+	inline NxU32 getSize() const
 	{
 		return mNumElements;
 	}
@@ -219,7 +219,7 @@ public:
 
 	Returns false if not being able to resize;
 	*/
-	inline bool tryResize(HeU32 newBucketCount)
+	inline bool tryResize(NxU32 newBucketCount)
 	{
 		if(mNumElements > 0 || newBucketCount == mNumBuckets)
 			return false;
@@ -235,8 +235,8 @@ public:
 		return true;
 	}
 private:
-	HeU32			mNumBuckets;
-	HeU32			mNumElements;
+	NxU32			mNumBuckets;
+	NxU32			mNumElements;
 
 	template<class T2>
 	struct HashElement
@@ -256,12 +256,12 @@ private:
 	ElementType**	mBuckets;
 
 	//Helpers
-	inline HeU32 getBucketIndex(const T& entry)
+	inline NxU32 getBucketIndex(const T& entry)
 	{
 		return HashFunction(entry->getHashValue()) & (mNumBuckets-1);
 	}
 
-	inline HeU32 getBucketIndexHash(HeU32 hashValue)
+	inline NxU32 getBucketIndexHash(NxU32 hashValue)
 	{
 		return HashFunction(hashValue) & (mNumBuckets-1);
 	}
@@ -319,7 +319,7 @@ public:
 private:
 	typedef HashSet<T>			HashType;
 	const HashType&					mHash;
-	HeU32							mBucket;
+	NxU32							mBucket;
 	typename HashType::ElementType*	mCurrentElement;
 };
 

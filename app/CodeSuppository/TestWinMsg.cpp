@@ -5,7 +5,7 @@
 
 #include "TestWinMsg.h"
 
-#include "common/snippets/SendTextMessage.h"
+#include "SendTextMessage.h"
 
 void testWinMsg(void)
 {

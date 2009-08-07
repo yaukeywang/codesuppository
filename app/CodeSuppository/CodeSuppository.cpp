@@ -4,15 +4,13 @@
 #include <assert.h>
 #include <vector>
 
-#include "common/snippets/UserMemAlloc.h"
-#include "common/snippets/fmem.h"
-#include "common/snippets/SendTextMessage.h"
+#include "UserMemAlloc.h"
+#include "fmem.h"
+#include "SendTextMessage.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
-#include "ClientPhysics/ClientPhysics.h"
 #include "CodeSuppository.h"
 #include "MeshImport/MeshImport.h"
-#include "common/HeMath/HeFoundation.h"
-#include "ApexRenderInterface.h"
+#include "NxFoundation.h"
 #include "TestBestFitOBB.h"
 #include "TestBestFitCapsule.h"
 #include "TestBestFitPlane.h"
@@ -33,7 +31,6 @@
 #include "TestAsc2Bin.h"
 #include "TestFileInterface.h"
 #include "TestKeyValueIni.h"
-#include "TestTinyXML.h"
 #include "TestKdTree.h"
 #include "TestMeshCleanup.h"
 #include "TestFastAstar.h"
@@ -51,11 +48,9 @@
 #include "TestVectorFont.h"
 #include "RenderDebug/RenderDebug.h"
 #include "SplitMeshApp.h"
-#include "common/snippets/JobSwarm.h"
+#include "JobSwarm.h"
 
 CodeSuppository *gCodeSuppository=0;
-CLIENT_PHYSICS::ApexScene *gApexScene=0;
-CLIENT_PHYSICS::Apex *gApex=0;
 
 class MyCodeSuppository : public CodeSuppository
 {
@@ -63,7 +58,6 @@ public:
   MyCodeSuppository(void)
   {
     mTestAutoGeometry = 0;
-    mApexCloth = 0;
     mMeshSystemHelper = 0;
     mShowSkeleton = true;
     mShowMesh = true;
@@ -243,7 +237,6 @@ public:
         testMeshCleanup();
         break;
       case CSC_TINY_XML:
-        testTinyXML();
         break;
       case CSC_KEY_VALUE_INI:
         testKeyValueIni();
@@ -327,9 +320,6 @@ public:
           mTestAutoGeometry = createTestAutoGeometry(mMeshSystemHelper);
         }
         break;
-      case CSC_APEX_CLOTH:
-        apexCloth();
-        break;
     }
   }
 
@@ -359,31 +349,6 @@ public:
 		}
     }
 
-    if ( mApexCloth )
-    {
-
-      if ( mPlayAnimation )
-      {
-        unsigned int bone_count;
-        const float *matrices = mMeshSystemHelper->getCompositeTransforms(bone_count);
-        if ( matrices )
-        {
-          mApexCloth->setCompositeTransforms(bone_count,matrices,false);
-
-          if ( gApexScene )
-          {
-            gApexScene->fetchResults();
-            gApexScene->simulate(1.0f/60.0f,false);
-          }
-
-          mApexCloth->render();
-          mMeshSystemHelper->debugRender(mShowMesh,mShowSkeleton,mShowWireframe,mPlayAnimation,mShowCollision,mFlipWinding);
-          mMeshSystemHelper->advanceAnimation(dtime,mAnimationSpeed);
-
-        }
-      }
-    }
-    else
     {
       if ( mMeshSystemHelper )
       {
@@ -393,10 +358,6 @@ public:
         }
         mMeshSystemHelper->debugRender(mShowMesh,mShowSkeleton,mShowWireframe,mPlayAnimation,mShowCollision,mFlipWinding);
       }
-    }
-    if ( gApexScene )
-    {
-      gApexScene->debugRender(gRenderDebug);
     }
   }
 
@@ -411,27 +372,6 @@ public:
     appSetMeshSystemHelper(mMeshSystemHelper);
   }
 
-  void apexCloth(void)
-  {
-    if ( mMeshSystemHelper )
-    {
-      MESHIMPORT::MeshSystem *ms = mMeshSystemHelper->getMeshSystem();
-      if ( ms )
-      {
-        MESHIMPORT::MeshSkeletonInstance *msi = gMeshImport->createMeshSkeletonInstance(*ms->mSkeletons[0]);
-        USER_STL::vector< HeMat44 > matrices;
-        for (int i=0; i<msi->mBoneCount; i++)
-        {
-          HeMat44 m;
-          m.set( msi->mBones[i].mInverseTransform );
-          matrices.push_back(m);
-        }
-//        mApexCloth = gApexScene->createApexCloth(0,matrices.size(),(const float *)&matrices[0],"clothsim_cape__cloth.aca");
-        mApexCloth = gApexScene->createApexCloth(0,matrices.size(),(const float *)&matrices[0],"clothsim_girl2_sleeves__cloth.aca");
-        gMeshImport->releaseMeshSkeletonInstance(msi);
-      }
-    }
-  }
 
   virtual void process(float /*dtime*/)
   {
@@ -459,7 +399,6 @@ private:
   bool               mShowCollision;
   float              mAnimationSpeed;
   MeshSystemHelper  *mMeshSystemHelper;
-  CLIENT_PHYSICS::ApexCloth         *mApexCloth;
   float mMergePercentage;
   float mConcavityPercentage;
   bool  mFitObb;

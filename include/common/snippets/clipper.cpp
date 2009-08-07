@@ -56,9 +56,9 @@
 
 
 
-HeI32 FrustumClipper::ClipCode(const Vec3d &pos) const
+NxI32 FrustumClipper::ClipCode(const Vec3d &pos) const
 {
-  HeI32 code = 0;
+  NxI32 code = 0;
 
   // build cohen sutherland clip codes.
   if ( pos.x < mEdges[CP_LEFT]   ) code|=(1<<CP_LEFT);
@@ -71,9 +71,9 @@ HeI32 FrustumClipper::ClipCode(const Vec3d &pos) const
   return code;
 }
 
-HeI32 FrustumClipper::ClipCode(const Vec3d &pos,HeI32 &ocode,HeI32 &acode) const
+NxI32 FrustumClipper::ClipCode(const Vec3d &pos,NxI32 &ocode,NxI32 &acode) const
 {
-  HeI32 code = ClipCode(pos);
+  NxI32 code = ClipCode(pos);
 
   ocode|=code; // build or mask
   acode&=code; // build and mask
@@ -82,12 +82,12 @@ HeI32 FrustumClipper::ClipCode(const Vec3d &pos,HeI32 &ocode,HeI32 &acode) const
 }
 
 
-ClipResult FrustumClipper::Clip(const Vec3d *polygon,HeU32 in_count,Vec3d *dest,HeU32 &ocount) const
+ClipResult FrustumClipper::Clip(const Vec3d *polygon,NxU32 in_count,Vec3d *dest,NxU32 &ocount) const
 {
 
 	ocount    = 0;
-  HeI32 ocode = 0;
-  HeI32 acode = 0xFFFF;
+  NxI32 ocode = 0;
+  NxI32 acode = 0xFFFF;
 
   ClipVertex	list1[MAX_CLIP];
   ClipVertex  list2[MAX_CLIP];
@@ -95,7 +95,7 @@ ClipResult FrustumClipper::Clip(const Vec3d *polygon,HeU32 in_count,Vec3d *dest,
 	ClipVertex *input  = list1;
 	ClipVertex *output = list2;
 
-  for (HeU32 i=0; i<in_count; i++)
+  for (NxU32 i=0; i<in_count; i++)
   {
   	input[i].Set( polygon[i], ClipCode(polygon[i], ocode, acode) );
   }
@@ -113,20 +113,20 @@ ClipResult FrustumClipper::Clip(const Vec3d *polygon,HeU32 in_count,Vec3d *dest,
 
   // ok..need to clip it!!
 
-  HeU32 l;
+  NxU32 l;
   l = CP_LAST;
 
-  for (HeU32 i=0; i<l; i++)
+  for (NxU32 i=0; i<l; i++)
   {
-    HeU32 mask = (1<<i); // this is the clip mask.
+    NxU32 mask = (1<<i); // this is the clip mask.
     if ( ocode & mask ) // if any vertices are clipped against this plane
     {
       ocount    = 0;
-      HeI32 new_ocode = 0;
-      HeI32 new_acode = 0xFFFF;
-      for (HeU32 j=0; j<in_count; j++)
+      NxI32 new_ocode = 0;
+      NxI32 new_acode = 0xFFFF;
+      for (NxU32 j=0; j<in_count; j++)
       {
-        HeU32 k = j+1;
+        NxU32 k = j+1;
         if ( k == in_count ) k = 0;
         ClipVertex &v1 = input[j];
         ClipVertex &v2 = input[k];
@@ -134,7 +134,7 @@ ClipResult FrustumClipper::Clip(const Vec3d *polygon,HeU32 in_count,Vec3d *dest,
         if ( (v1.GetClipCode() ^ v2.GetClipCode() ) & mask )
         {
           ClipVertex v0(v1,v2,(ClipPlane)i,mEdges[i]);
-          HeI32 code = ClipCode(v0.GetPos(),new_ocode,new_acode);
+          NxI32 code = ClipCode(v0.GetPos(),new_ocode,new_acode);
           v0.SetClipCode(code);
 					output[ocount] = v0;
 					ocount++;
@@ -162,7 +162,7 @@ ClipResult FrustumClipper::Clip(const Vec3d *polygon,HeU32 in_count,Vec3d *dest,
     }
   }
 
-	for (HeU32 i=0; i<in_count; i++)
+	for (NxU32 i=0; i<in_count; i++)
  	{
  		dest[i] = input[i].mPos;
  	}
@@ -177,9 +177,9 @@ ClipResult FrustumClipper::Clip(const Vec3d *polygon,HeU32 in_count,Vec3d *dest,
 ClipVertex::ClipVertex(const ClipVertex &v1,
                        const ClipVertex &v2,
                        ClipPlane p,
-                       HeF32 edge)  // the clipping boundary..
+                       NxF32 edge)  // the clipping boundary..
 {
-  HeF32 slope;
+  NxF32 slope;
 
   switch ( p )
   {
@@ -217,8 +217,8 @@ ClipResult FrustumClipper::ClipRay(const Vec3d &r1a,
                                    Vec3d &r1b,
                                    Vec3d &r2b)
 {
-  HeI32 ocode = 0;
-  HeI32 acode = 0xFFFF;
+  NxI32 ocode = 0;
+  NxI32 acode = 0xFFFF;
 
   ClipVertex ray1( r1a, ClipCode( r1a, ocode, acode ) );
   ClipVertex ray2( r2a, ClipCode( r2a, ocode, acode ) );
@@ -233,25 +233,25 @@ ClipResult FrustumClipper::ClipRay(const Vec3d &r1a,
   }
 
 
-  HeI32 l;
+  NxI32 l;
   l = CP_LAST;
 
-  for (HeI32 i=0; i<l; i++)
+  for (NxI32 i=0; i<l; i++)
   {
 
-    HeI32 mask = (1<<i); // this is the clip mask.
+    NxI32 mask = (1<<i); // this is the clip mask.
 
     if ( ocode & mask ) // if any vertices are clipped against this plane
     {
       // if this RAY is coming into or exiting out from this plane
-      HeI32 new_acode = 0xFFFF;
-      HeI32 new_ocode = 0;
+      NxI32 new_acode = 0xFFFF;
+      NxI32 new_ocode = 0;
 
       if ( (ray1.GetClipCode() ^ ray2.GetClipCode() ) & mask )
       {
 
         ClipVertex v0(ray1,ray2,(ClipPlane)i,mEdges[i]);
-        HeI32 code = ClipCode(v0.GetPos(),new_ocode,new_acode);
+        NxI32 code = ClipCode(v0.GetPos(),new_ocode,new_acode);
         v0.SetClipCode(code);
 
         if ( ray1.GetClipCode() & mask )

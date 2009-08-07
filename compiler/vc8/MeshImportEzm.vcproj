@@ -39,7 +39,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/WX /W4 /fp:fast /MDd /Zi "
 				Optimization="4"
-				AdditionalIncludeDirectories="&quot;../../include&quot;;"
+				AdditionalIncludeDirectories="&quot;../../include&quot;;&quot;../../include/common/Foundation&quot;;&quot;../../include/common/snippets&quot;;"
 				PreprocessorDefinitions="WIN32;_WINDOWS;UNICODE=1;_UNICODE=1;MESHIMPORTEZM_EXPORTS;_DEBUG;"
 				ExceptionHandling="1"
 				WarningLevel="3"
@@ -116,7 +116,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zi /WX /W4 /fp:fast /WX /MD /O2 "
 				Optimization="4"
-				AdditionalIncludeDirectories="&quot;../../include&quot;;"
+				AdditionalIncludeDirectories="&quot;../../include&quot;;&quot;../../include/common/Foundation&quot;;&quot;../../include/common/snippets&quot;;"
 				PreprocessorDefinitions="WIN32;_WINDOWS;UNICODE=1;_UNICODE=1;MESHIMPORTEZM_EXPORTS;NDEBUG;"
 				ExceptionHandling="1"
 				WarningLevel="3"
@@ -269,32 +269,8 @@
 					RelativePath="..\..\include\common\snippets\SystemServices.h"
 					>
 				</File>
-			</Filter>
-			<Filter
-				Name="FileInterface"
-				>
 				<File
-					RelativePath="..\..\include\common\FileInterface\FileInterface.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\FileInterface\FileInterface.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="MemoryServices"
-				>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\GlobalNewDelete.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\MemoryContainer.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\MemoryContainer.h"
+					RelativePath="..\..\include\common\snippets\UserMemAlloc.h"
 					>
 				</File>
 			</Filter>

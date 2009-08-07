@@ -37,6 +37,8 @@
           snippets/WinMsg.cpp
           snippets/telnet.h
           snippets/telnet.cpp
+          snippets/KeyValueIni.h
+          snippets/KeyValueIni.cpp
           snippets/BlobIO.h
           snippets/BlobIO.cpp
           snippets/FastXml.h
@@ -52,20 +54,19 @@
          snippets/StringDict.h
          snippets/UserMemAlloc.h
          snippets/stable.h
+         snippets/SendTextMessage.h
          snippets/SystemServices.h
          snippets/SystemServices.cpp
-         FileInterface/*.h
-         FileInterface/*.cpp
-         MemoryServices/MemoryContainer.cpp
-         MemoryServices/MemoryContainer.h
-         MemoryServices/GlobalNewDelete.cpp
-         MemoryServices/GlobalNewDelete.h
+         snippets/FileInterface.h
+         snippets/FileInterface.cpp
+         Foundation/*.h
 				</Files>
 				<OutDir>../../bin/win32</OutDir>
 				<ImpDir>../../lib/win32</ImpDir>
 				<SearchPaths type="header">
           ../../include
           ../../include/common/snippets
+          ../../include/common/Foundation
 				</SearchPaths>
 				<SearchPaths type="library">
        ../../lib/win32

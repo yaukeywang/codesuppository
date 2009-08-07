@@ -2,8 +2,8 @@
 
 #define CRC_H
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 
-HeU32 computeCRC(const HeU8 *data,HeU32 len);
+NxU32 computeCRC(const NxU8 *data,NxU32 len);
 
 #endif

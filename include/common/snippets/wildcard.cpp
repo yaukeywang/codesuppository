@@ -4,7 +4,7 @@
 #include <string.h>
 #include <assert.h>
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 #include "wildcard.h"
 #include "regexp.h"
 
@@ -99,9 +99,9 @@ WildCard::WildCard(const char *wild)
 
   std::string expression = "^";
 
-  HeU32 len = strlen(wild);
+  NxU32 len = strlen(wild);
 
-  for (HeU32 i=0; i<len; i++)
+  for (NxU32 i=0; i<len; i++)
   {
     switch ( wild[i] )
     {

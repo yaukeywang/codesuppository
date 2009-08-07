@@ -54,7 +54,7 @@
 #include <assert.h>
 #include <stdarg.h>
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 #include "cparser.h"
 #include "gauss.h"
 #include "filesystem.h"
@@ -84,18 +84,18 @@ public:
 	{
 	}
 
-	virtual HeI32 CommandCallback(HeI32 token,HeI32 count,const char **arglist)
+	virtual NxI32 CommandCallback(NxI32 token,NxI32 count,const char **arglist)
 	{
-		HeI32 ret = 0;
+		NxI32 ret = 0;
 
 		switch ( token )
 		{
 			case CPC_RUN:
 				if ( count >= 2 )
 				{
-					for (HeI32 i=1; i<count; i++)
+					for (NxI32 i=1; i<count; i++)
 					{
-						HeI32 v = gTheCommandParser->Batch( arglist[1] );
+						NxI32 v = gTheCommandParser->Batch( arglist[1] );
 						if ( v ) ret = v;
 					}
 				}
@@ -130,7 +130,7 @@ TheCommandParser::~TheCommandParser(void)
 }
 
 //==================================================================================
-void TheCommandParser::AddToken(const char *key, HeI32 token, CommandParserInterface *service)
+void TheCommandParser::AddToken(const char *key, NxI32 token, CommandParserInterface *service)
 {
 	StringRef rkey = SGET(key);
 	TokenTag ttype(token,service);
@@ -140,16 +140,16 @@ void TheCommandParser::AddToken(const char *key, HeI32 token, CommandParserInter
 	if ( found != mTokens.end() )
 	{
 		printf("Attempted to add the same token (%s) twice!!\n",key);
-		HE_ASSERT( 0 );
+		assert( 0 );
 	}
 	else
 		mTokens[ rkey ] = ttype;
 }
 
 //==================================================================================
-HeI32 TheCommandParser::GetTokenFromKey( const char *key )
+NxI32 TheCommandParser::GetTokenFromKey( const char *key )
 {
-	HeI32 ret = -1;
+	NxI32 ret = -1;
 
 	StringRef rkey = SGET(key);
 	TokenMap::iterator found;
@@ -164,13 +164,13 @@ HeI32 TheCommandParser::GetTokenFromKey( const char *key )
 }
 
 //==================================================================================
-const char *TheCommandParser::GetKeyFromToken( const char *prefix, HeI32 token )
+const char *TheCommandParser::GetKeyFromToken( const char *prefix, NxI32 token )
 {
 	const char *ret = 0;
 
 	if ( prefix )
 	{
-		HeI32 prefixLen = (HeI32)strlen( prefix );
+		NxI32 prefixLen = (NxI32)strlen( prefix );
 
 		TokenMap::iterator i;
 		for ( i = mTokens.begin(); !ret && (i != mTokens.end()); ++i )
@@ -202,7 +202,7 @@ void TheCommandParser::RemoveToken(const char *key)  // JWR  remove a token we d
 	}
 	else
 	{
-		HE_ASSERT( 0 );
+		assert( 0 );
 		printf("Attempted to remove token %s that didn't exist!\n",key);
 	}
 }
@@ -218,14 +218,14 @@ bool TheCommandParser::preParse(const char *fmt,...)
   {
     InPlaceParser ipp;
     ipp.DefaultSymbols();
-    HeI32 count;
+    NxI32 count;
     const char **alist = ipp.GetArglist(buff,count);
 
     if ( alist && count >= 3 )
     {
       Gauss duetime(alist[1]);
 
-      HeI32 scan = 2;
+      NxI32 scan = 2;
 
       Gauss repeat_count(0.0f);
       Gauss repeat_time(0.0f);
@@ -239,7 +239,7 @@ bool TheCommandParser::preParse(const char *fmt,...)
 
       char temp[2048];
       temp[0] = 0;
-      for (HeI32 i=scan; i<count; i++)
+      for (NxI32 i=scan; i<count; i++)
       {
         strcat(temp,alist[i]);
         if ( (i+1) != count )
@@ -247,7 +247,7 @@ bool TheCommandParser::preParse(const char *fmt,...)
           strcat(temp," ");
         }
       }
-      HeI32 len = strlen(temp);
+      NxI32 len = strlen(temp);
       if ( len )
       {
         char *cmd = (char *)MEMALLOC_MALLOC(len+1);
@@ -275,10 +275,10 @@ bool TheCommandParser::preParse(const char *fmt,...)
 }
 
 //==================================================================================
-HeI32 TheCommandParser::Parse(const char *fmt, ...)
+NxI32 TheCommandParser::Parse(const char *fmt, ...)
 {
 
- 	HeI32 ret = 0;
+ 	NxI32 ret = 0;
 
 	char buff[8192];
   buff[8191] = 0;
@@ -288,12 +288,12 @@ HeI32 TheCommandParser::Parse(const char *fmt, ...)
 
   if ( !processed )
   {
-  	HeU32 len = (HeU32)strlen(buff);
+  	NxU32 len = (NxU32)strlen(buff);
   	if ( len )
   	{
   		InPlaceParser ipp(buff,len);
   		ipp.DefaultSymbols();
-  		HeI32 v = ipp.Parse(this);
+  		NxI32 v = ipp.Parse(this);
   		if ( v ) ret = v;
   	}
   }
@@ -302,7 +302,7 @@ HeI32 TheCommandParser::Parse(const char *fmt, ...)
 }
 
 //==================================================================================
-HeI32 TheCommandParser::ParseLine(HeI32 lineno,HeI32 argc,const char **argv)
+NxI32 TheCommandParser::ParseLine(NxI32 lineno,NxI32 argc,const char **argv)
 {
 	mLineNo = lineno;
 	return CommandLine(argc,argv,true);
@@ -326,9 +326,9 @@ void TheCommandParser::DeRegister(CommandParserInterface *cinterface)
 }
 
 //==================================================================================
-HeI32 TheCommandParser::Batch(const char *fname)
+NxI32 TheCommandParser::Batch(const char *fname)
 {
-	HeI32 ok = -1;
+	NxI32 ok = -1;
 
 	const char *name = fname;
 	InPlaceParser ipp(name,gFileSystem);
@@ -343,9 +343,9 @@ HeI32 TheCommandParser::Batch(const char *fname)
 }
 
 //==================================================================================
-HeI32 TheCommandParser::CommandLine(HeI32 argc,const char **argv,bool fallbackok)
+NxI32 TheCommandParser::CommandLine(NxI32 argc,const char **argv,bool fallbackok)
 {
-	HeI32 ret = 0;
+	NxI32 ret = 0;
 
 	if ( argc )
 	{
@@ -368,7 +368,7 @@ HeI32 TheCommandParser::CommandLine(HeI32 argc,const char **argv,bool fallbackok
 
 			CommandParserInterface *cmd = ttype.GetService();
 
-			HeI32 v = cmd->CommandCallback( ttype.GetLocalToken(), argc, argv );
+			NxI32 v = cmd->CommandCallback( ttype.GetLocalToken(), argc, argv );
 
 			if ( v ) 
 				ret = v;
@@ -385,7 +385,7 @@ HeI32 TheCommandParser::CommandLine(HeI32 argc,const char **argv,bool fallbackok
 				for (i=mFallbacks.begin(); i!=mFallbacks.end(); ++i)
 				{
 					CommandParserInterface *iface = (*i);
-					HeI32 v = iface->CommandFallback(argc,argv);
+					NxI32 v = iface->CommandFallback(argc,argv);
 					if ( v ) ret = v;
 				}
 			}
@@ -408,19 +408,19 @@ void TheCommandParser::checkMessages(void)
 }
 
 //==================================================================================
-void CommandParserInterface::AddToken(const char *key,HeI32 token)
+void CommandParserInterface::AddToken(const char *key,NxI32 token)
 {
 	gTheCommandParser->AddToken(key,token,this);
 }
 
 //==================================================================================
-HeI32 CommandParserInterface::GetTokenFromKey(const char *key)
+NxI32 CommandParserInterface::GetTokenFromKey(const char *key)
 {
 	return gTheCommandParser->GetTokenFromKey( key );
 }
 
 //==================================================================================
-const char *CommandParserInterface::GetKeyFromToken( const char *prefix, HeI32 token )
+const char *CommandParserInterface::GetKeyFromToken( const char *prefix, NxI32 token )
 {
 	return gTheCommandParser->GetKeyFromToken( prefix, token );
 }
@@ -437,15 +437,15 @@ CommandParserInterface::~CommandParserInterface(void)
 }
 
 //==================================================================================
-CommandCapture::CommandCapture(HeI32 token,HeI32 count,const char **args)
+CommandCapture::CommandCapture(NxI32 token,NxI32 count,const char **args)
 {
 	mToken = token;
 	mCount = count;
 	mArgs = (char **) MEMALLOC_MALLOC(sizeof(char*)*mCount);
-	for (HeI32 i=0; i<count; i++)
+	for (NxI32 i=0; i<count; i++)
 	{
 		const char *foo = args[i];
-		HeU32 len = (HeU32)strlen(foo);
+		NxU32 len = (NxU32)strlen(foo);
 		mArgs[i] = (char *) MEMALLOC_MALLOC(len+1);
 		strcpy(mArgs[i],foo);
 	}
@@ -457,10 +457,10 @@ CommandCapture::CommandCapture(const CommandCapture &a) // copy constructor to d
 	mToken = a.mToken;
 	mCount = a.mCount;
 	mArgs = (char **) MEMALLOC_MALLOC(sizeof(char*)*mCount);
-	for (HeI32 i=0; i<mCount; i++)
+	for (NxI32 i=0; i<mCount; i++)
 	{
 		const char *foo = a.mArgs[i];
-		HeU32 len = (HeU32)strlen(foo);
+		NxU32 len = (NxU32)strlen(foo);
 		mArgs[i] = (char *) MEMALLOC_MALLOC(len+1);
 		strcpy(mArgs[i],foo);
 	}
@@ -471,7 +471,7 @@ CommandCapture::~CommandCapture(void)
 {
 	if ( mArgs )
 	{
-		for (HeI32 i=0; i<mCount; i++)
+		for (NxI32 i=0; i<mCount; i++)
 		{
 			char *mem = mArgs[i];
 			MEMALLOC_FREE(mem);
@@ -487,9 +487,9 @@ void CommandCapture::Invoke(CommandParserInterface *iface) // spool it as a call
 }
 
 
-HeI32 TheCommandParser::Batch(const char *data,HeU32 len) // from a block of memory.
+NxI32 TheCommandParser::Batch(const char *data,NxU32 len) // from a block of memory.
 {
-	HeI32 ok = -1;
+	NxI32 ok = -1;
 
   char *temp = (char *) MEMALLOC_MALLOC(len);
   memcpy(temp,data,len);
@@ -508,18 +508,18 @@ HeI32 TheCommandParser::Batch(const char *data,HeU32 len) // from a block of mem
 }
 
 
-void TheCommandParser::process(HeF32 dtime) // give up a time slice to the command parser to process outstanding timed events.
+void TheCommandParser::process(NxF32 dtime) // give up a time slice to the command parser to process outstanding timed events.
 {
   TIMED_EVENT::process(mTimedEventFactory,dtime);
 }
 
-void TheCommandParser::deleteEventCallback(void *user_data,HeI32 /* user_id */) //true if supposed to continue, false if done.
+void TheCommandParser::deleteEventCallback(void *user_data,NxI32 /* user_id */) //true if supposed to continue, false if done.
 {
   char *cmd = (char *) user_data;
   MEMALLOC_FREE(cmd);
 }
 
-bool TheCommandParser::timedEventCallback(void *user_data,HeI32 /* user_id */,bool /* alive */) //true if supposed to continue, false if done.
+bool TheCommandParser::timedEventCallback(void *user_data,NxI32 /* user_id */,bool /* alive */) //true if supposed to continue, false if done.
 {
   bool ret = true;
 

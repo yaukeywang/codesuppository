@@ -56,8 +56,8 @@
 
 */
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 
-HeI32 systemCall(const char* strFunct,const char* strstrParams,bool hideWindow);
+NxI32 systemCall(const char* strFunct,const char* strstrParams,bool hideWindow);
 
 #endif

@@ -5,7 +5,7 @@
 
 #include "TestAsc2Bin.h"
 
-#include "common/snippets/SendTextMessage.h"
+#include "SendTextMessage.h"
 
 void testAsc2Bin(void)
 {

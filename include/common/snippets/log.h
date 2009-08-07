@@ -57,7 +57,7 @@
 #include <string>
 #include <queue>
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 
 #define MAXNUMERIC 32  // JWR  support up to 16 32 character long numeric formated strings
 #define MAXFNUM    16
@@ -77,9 +77,6 @@ typedef USER_STL::queue< std::string > StringQueue;
 class Log
 {
 public:
-  DEFINE_MEMORYPOOL_IN_CLASS(Log);
-
-
 
 	Log(void);
 	Log(const char *fname,bool buffer=true);
@@ -90,7 +87,7 @@ public:
 
 	void AddBuffer(char *buffer,const char *fmt, ...);
 
-	const char * FormatNumber(HeI32 number); // JWR  format this integer into a fancy comma delimited string
+	const char * FormatNumber(NxI32 number); // JWR  format this integer into a fancy comma delimited string
 
 	void Flush(void);
 
@@ -106,17 +103,17 @@ public:
   bool getBufferMessages(void) const { return mBufferMessages; };
 
 private:
-	HeI32              mLogLevel;
+	NxI32              mLogLevel;
 	FILE            *mFph;
-	HeI32              mIndex;
+	NxI32              mIndex;
 	char             mFormat[MAXNUMERIC*MAXFNUM];
 	bool             mBufferMessages;
-	HeI32              mLogFrame;
+	NxI32              mLogFrame;
   char            *mDest;
 	char             mBuffer[1024];
   char             mTempBuffer[1024];
 	bool             mHaveLogMessages;
-	HeI32              mLogIndex;
+	NxI32              mLogIndex;
   StringQueue      mLogMessages;
 	TrapLog         *mTrapLog;
   bool             mEcho;

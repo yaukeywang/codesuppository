@@ -10,7 +10,7 @@ class AgScreenVertex
 {
 public:
 
-	void Set(HeF32 x,HeF32 y,HeF32 z,HeF32 tx,HeF32 ty,HeU32 color)
+	void Set(NxF32 x,NxF32 y,NxF32 z,NxF32 tx,NxF32 ty,NxU32 color)
 	{
 		mPos[0]   = x;
 		mPos[1]   = y;
@@ -23,9 +23,9 @@ public:
 		mColor    = color;
 	}
 
-	HeF32        mPos[3];
-	HeF32        mTexel[3];
-	HeU32 mColor;
+	NxF32        mPos[3];
+	NxF32        mTexel[3];
+	NxU32 mColor;
 };
 
 class AgScreenPipe
@@ -45,7 +45,7 @@ public:
 
 	void NewFrame(void);
 
-	void RenderScreenQuad(HeF32 x,HeF32 y,HeF32 z,HeF32 wid,HeF32 hit,HeF32 s0,HeF32 t0,HeF32 s1,HeF32 t1,HeU32 color)
+	void RenderScreenQuad(NxF32 x,NxF32 y,NxF32 z,NxF32 wid,NxF32 hit,NxF32 s0,NxF32 t0,NxF32 s1,NxF32 t1,NxU32 color)
 	{
 		if ( mFrameNo != gGlobalFrameNo )
 			NewFrame(); // not inlined to keep main routine fast
@@ -59,12 +59,12 @@ public:
 		dest[2].Set(x+wid,y+hit,z,s1,t1,color);
 		dest[3].Set(x,y+hit,z,    s0,t1,color);
 
-		mDest[0] = (HeU16)mVcount;
-		mDest[1] = (HeU16)(mVcount+1);
-		mDest[2] = (HeU16)(mVcount+2);
-		mDest[3] = (HeU16)mVcount;
-		mDest[4] = (HeU16)(mVcount+2);
-		mDest[5] = (HeU16)(mVcount+3);
+		mDest[0] = (NxU16)mVcount;
+		mDest[1] = (NxU16)(mVcount+1);
+		mDest[2] = (NxU16)(mVcount+2);
+		mDest[3] = (NxU16)mVcount;
+		mDest[4] = (NxU16)(mVcount+2);
+		mDest[5] = (NxU16)(mVcount+3);
 
 		mVcount+=4;
 		mDest+=6;
@@ -86,14 +86,14 @@ public:
 	}
 
 protected:
-			 HeU32    mFrameNo; // the current frame number this pipe stream is active for.
+			 NxU32    mFrameNo; // the current frame number this pipe stream is active for.
 			 AgScreenPipe   *mNext;
-			 HeU32    mVcount;
+			 NxU32    mVcount;
 			 AgScreenVertex *mVertices;
-			 HeU16 *mDest;
-			 HeU16 *mIndices;
+			 NxU16 *mDest;
+			 NxU16 *mIndices;
 
-static HeU32     gGlobalFrameNo;
+static NxU32     gGlobalFrameNo;
 static AgScreenPipe    *gHeadCurrent;
 static AgScreenPipe    *gTailCurrent;
 

@@ -3,7 +3,7 @@
 #define SPLIT_MESH_H
 
 #include <stdlib.h>
-#include "He.h"
+#include "NxSimpleTypes.h"
 
 #if 0
 #include "log.h"
@@ -1063,8 +1063,8 @@ public:
   void unlinkEdge(EdgeWalk *e)
   {
     // now patch the left and right edge lists..
-    HE_ASSERT( mLeftEdges[e->getI1()] );
-    HE_ASSERT( mRightEdges[e->getI2()] );
+    assert( mLeftEdges[e->getI1()] );
+    assert( mRightEdges[e->getI2()] );
 
     removeLeftEdge(e,e->getI1());
     removeRightEdge(e,e->getI2());

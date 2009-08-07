@@ -3,7 +3,7 @@
 
 #include <malloc.h>
 
-#include "../snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 
 #define DEFAULT_SIMPLE_VECTOR_SIZE 16 // on power-of-two boundary, but leave a little slop for headers.
 
@@ -57,7 +57,7 @@ public:
     {
 
       ElemType *t = mElements;
-      for (HeU32 i=0; i<mCount; i++)
+      for (NxU32 i=0; i<mCount; i++)
       {
         t->~ElemType();
         t++;
@@ -75,7 +75,7 @@ public:
   }
 
 
-	inline HeU32 size() const { return mCount; };
+	inline NxU32 size() const { return mCount; };
 
 	inline bool empty(void) const { return mCount == 0; };
 
@@ -99,7 +99,7 @@ public:
   {
     if ( mSize == 0 )
     {
-      HE_ASSERT(mElements==0);
+      assert(mElements==0);
       mSize = DEFAULT_SIMPLE_VECTOR_SIZE;
 
       while ( mSize < sizeof(ElemType) )
@@ -126,19 +126,19 @@ public:
       mElements = (ElemType *)MEMALLOC_REALLOC(mElements, mSize );
       #endif
     }
-    HE_ASSERT(mElements);
+    assert(mElements);
   }
 
 
-	inline const ElemType & operator[](HeU32 n) const
+	inline const ElemType & operator[](NxU32 n) const
 	{
-    HE_ASSERT( n < mCount );
+    assert( n < mCount );
     return mElements[n];
   }
 
-	inline ElemType & operator[](HeU32 n)
+	inline ElemType & operator[](NxU32 n)
   {
-    HE_ASSERT( n < mCount );
+    assert( n < mCount );
     return mElements[n];
   }
 
@@ -174,7 +174,7 @@ public:
 
 	inline void erase(iterator from)
 	{
-    HE_ASSERT(0); // not implemented yet!
+    assert(0); // not implemented yet!
 	}
 
 	inline MyType& operator=(const MyType& other)
@@ -209,9 +209,9 @@ private:
   }
 
   const char * mTag;           // a string identifier tag.
-  HeU32 mMaxCount;      // the maximum number of items that can fit into our currently allocated buffer size.
-  HeU32 mCount;         // the number of items currently in the vector.
-  HeU32 mSize;          // the total bytes of memory allocated for the array.
+  NxU32 mMaxCount;      // the maximum number of items that can fit into our currently allocated buffer size.
+  NxU32 mCount;         // the number of items currently in the vector.
+  NxU32 mSize;          // the total bytes of memory allocated for the array.
   ElemType    *mElements;      // the array of memory holding the elements.
 };
 

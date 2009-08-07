@@ -5556,3 +5556,20 @@ bool fm_isValidTriangle(const REAL *p1,const REAL *p2,const REAL *p3,REAL epsilo
   }
   return ret;
 }
+
+
+void  fm_multiplyQuat(const REAL *left,const REAL *right,REAL *quat)
+{
+	REAL a,b,c,d;
+
+	a = left[3]*right[3] - left[0]*right[0] - left[1]*right[1] - left[2]*right[2];
+	b = left[3]*right[0] + right[3]*left[0] + left[1]*right[2] - right[1]*left[2];
+	c = left[3]*right[1] + right[3]*left[1] + left[2]*right[0] - right[2]*left[0];
+	d = left[3]*right[2] + right[3]*left[2] + left[0]*right[1] - right[0]*left[1];
+
+	quat[3] = a;
+	quat[0] = b;
+	quat[1] = c;
+	quat[2] = d;
+}
+

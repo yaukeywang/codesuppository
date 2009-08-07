@@ -32,12 +32,6 @@
          ResourceInterface/*.h
          ResourceInterface/*.cpp
          ResourceInterface/*.c
-         FileInterface/*.cpp
-         FileInterface/*.h
-         MemoryServices/MemoryContainer.cpp
-         MemoryServices/MemoryContainer.h
-         MemoryServices/GlobalNewDelete.cpp
-         MemoryServices/GlobalNewDelete.h
          snippets/FloatMath.cpp
          snippets/FloatMath.inl
          snippets/FloatMath.h
@@ -65,6 +59,7 @@
          snippets/filesystem.h
          snippets/SystemServices.h
          snippets/SystemServices.cpp
+         snippets/Foundation/*.h
 				</Files>
 				<Files name="Common Source Files" root="../../src/common" type="header">
           comlayer/*.c
@@ -77,6 +72,8 @@
         ../../ext/DirectX_October2006
           ../../include
           ../../src
+          ../../include/common/Foundation
+          ../../include/common/snippets
 				"C:/Program Files/Microsoft DirectX SDK (October 2006)/Include"
 				</SearchPaths>
 				<SearchPaths type="library">

@@ -7,15 +7,15 @@
 
 #include "TestAutoGeometry.h"
 
-#include "common/snippets/SendTextMessage.h"
-#include "common/AutoGeometry/AutoGeometry.h"
+#include "SendTextMessage.h"
+#include "AutoGeometry.h"
 #include "MeshImport/MeshImport.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
-#include "common/snippets/UserMemAlloc.h"
-#include "common/snippets/sutil.h"
-#include "common/snippets/FloatMath.h"
+#include "UserMemAlloc.h"
+#include "sutil.h"
+#include "FloatMath.h"
 #include "RenderDebug/RenderDebug.h"
-#include "common/snippets/JobSwarm.h"
+#include "JobSwarm.h"
 
 #pragma warning(disable:4100)
 
@@ -92,9 +92,9 @@ public:
               {
                 for (unsigned int j=0; j<sm->mTriCount; j++)
                 {
-                  HeU32 i1 = sm->mIndices[j*3+0]+base_index;
-                  HeU32 i2 = sm->mIndices[j*3+1]+base_index;
-                  HeU32 i3 = sm->mIndices[j*3+2]+base_index;
+                  NxU32 i1 = sm->mIndices[j*3+0]+base_index;
+                  NxU32 i2 = sm->mIndices[j*3+1]+base_index;
+                  NxU32 i3 = sm->mIndices[j*3+2]+base_index;
 
                   const AUTO_GEOMETRY::SimpleSkinnedVertex &v1 = vertices[i1];
                   const AUTO_GEOMETRY::SimpleSkinnedVertex &v2 = vertices[i2];

@@ -51,15 +51,15 @@
 
 */
 
-#include "common/snippets/cparser.h"
-#include "common/snippets/stringdict.h"
+#include "cparser.h"
+#include "stringdict.h"
 
 #pragma warning(push)
 #pragma warning(disable:4100)
 
 extern bool gBadState;
 extern const char *gBadFile;
-extern HeU32 gBadLine;
+extern NxU32 gBadLine;
 
 //#ifdef _DEBUG
 #if 1
@@ -91,7 +91,7 @@ public:
   ~ComLayer(void);
 
 
-	virtual HeI32 CommandCallback(HeI32 token,HeI32 count,const char **arglist);
+	virtual NxI32 CommandCallback(NxI32 token,NxI32 count,const char **arglist);
 
   void setDescription(const char *description)
   {
@@ -100,7 +100,7 @@ public:
 
 
 protected:
-  HeU32  mClient;
+  NxU32  mClient;
   bool          mProcessed;
   StringRef     mDescription;
 };

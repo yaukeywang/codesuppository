@@ -4,12 +4,12 @@
 static Rand gRand;
 
 
-HeF32 ranf(void)
+NxF32 ranf(void)
 {
   return gRand.ranf();
 }
 
-HeF32 ranf(HeF32 low,HeF32 high)
+NxF32 ranf(NxF32 low,NxF32 high)
 {
   return gRand.ranf(low,high);
 }

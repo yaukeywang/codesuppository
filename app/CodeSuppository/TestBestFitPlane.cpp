@@ -5,11 +5,11 @@
 
 #include "TestBestFitPlane.h"
 #include "RenderDebug/RenderDebug.h"
-#include "common/snippets/FloatMath.h"
-#include "common/snippets/rand.h"
+#include "FloatMath.h"
+#include "rand.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
 
-#include "common/snippets/SendTextMessage.h"
+#include "SendTextMessage.h"
 
 void testBestFitPlane(MeshSystemHelper *ms)
 {

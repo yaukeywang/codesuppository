@@ -22,7 +22,7 @@
 #pragma warning(disable:4996)
 
 #include "zutil.h"
-#include "../FileInterface/FileInterface.h"
+#include "FileInterface.h"
 
 #ifdef NO_DEFLATE       /* for compatibility with old definition */
 #  define NO_GZCOMPRESS

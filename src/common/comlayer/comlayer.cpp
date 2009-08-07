@@ -1,5 +1,5 @@
-#include "common/snippets/UserMemAlloc.h"
-#include "common/snippets/JobSwarm.h"
+#include "UserMemAlloc.h"
+#include "JobSwarm.h"
 #include "comlayer.h"
 
 /*!
@@ -99,7 +99,7 @@
 
 
 
-#include "../include/common/snippets/cparser.h"
+#include "cparser.h"
 
 #pragma warning(disable:4100)
 #pragma warning(disable:4189)
@@ -110,7 +110,7 @@ bool gBadState=false;
 
 const char *gBadFile=0;
 
-HeU32 gBadLine=0;
+NxU32 gBadLine=0;
 
 
 
@@ -159,11 +159,11 @@ ComLayer::~ComLayer(void)
 }
 
 
-HeI32 ComLayer::CommandCallback(HeI32 token,HeI32 /* count */,const char ** /* arglist */)
+NxI32 ComLayer::CommandCallback(NxI32 token,NxI32 /* count */,const char ** /* arglist */)
 
 {
 
-  HeI32 ret = 0;
+  NxI32 ret = 0;
 
 
   SendTextMessage *stm = gSendTextMessage;

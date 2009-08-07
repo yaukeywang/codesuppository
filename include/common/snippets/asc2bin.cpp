@@ -52,8 +52,8 @@
 #include <float.h>
 #include <assert.h>
 
-#include "common/snippets/UserMemAlloc.h"
-#include "common/snippets/asc2bin.h"
+#include "UserMemAlloc.h"
+#include "asc2bin.h"
 
 
 static inline bool         IsWhitespace(char c)

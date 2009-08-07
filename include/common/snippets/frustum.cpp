@@ -62,7 +62,7 @@ enum PlaneBit
 class FrustumMatrix
 {
 public:
-	HeF32 mElement[4][4];
+	NxF32 mElement[4][4];
 };
 
 class FrustumPlane
@@ -71,7 +71,7 @@ public:
 
 	void ComputeIndex(void)
 	{
-		HeI32 index = 0;
+		NxI32 index = 0;
 
 		if ( N[0] >= 0.0f )
 		{
@@ -196,9 +196,9 @@ public:
 
 	}
 
-	inline void ComputeExtremes(const HeF32 *source,HeF32 *minExtreme,HeF32 *maxExtreme) const
+	inline void ComputeExtremes(const NxF32 *source,NxF32 *minExtreme,NxF32 *maxExtreme) const
 	{
-		const HeI32 *idx = mIndex;
+		const NxI32 *idx = mIndex;
 
 		minExtreme[0] = source[ *idx++ ];
 		maxExtreme[0] = source[ *idx++ ];
@@ -210,9 +210,9 @@ public:
 		maxExtreme[2] = source[ *idx   ];
 	}
 
-	HeI32             mIndex[6];
-	HeF32           N[3];
-	HeF32           D;
+	NxI32             mIndex[6];
+	NxF32           N[3];
+	NxF32           D;
 };
 
 
@@ -227,7 +227,7 @@ Frustum::~Frustum(void)
 	delete []m_frustumPlanes;
 }
 //** Plane Extraction method by Klaus 'Niki' Hartman
-void Frustum::Set(const HeF32 *viewproj)
+void Frustum::Set(const NxF32 *viewproj)
 {
 	mViewProjectionMatrix = viewproj;
 	const FrustumMatrix &vp = *(const FrustumMatrix *) viewproj;
@@ -317,20 +317,20 @@ void Frustum::Set(const HeF32 *viewproj)
 
 }
 
-void Frustum::ComputeExtreme(const HeF32 *bound,const FrustumPlane &plane,HeU32 &istate,ViewTest flag) const
+void Frustum::ComputeExtreme(const NxF32 *bound,const FrustumPlane &plane,NxU32 &istate,ViewTest flag) const
 {
-	HeF32 minExtreme[3];
-	HeF32 maxExtreme[3];
+	NxF32 minExtreme[3];
+	NxF32 maxExtreme[3];
 
 	plane.ComputeExtremes(bound,minExtreme,maxExtreme);
-	HeF32 d1 = plane.N[0] * minExtreme[0] + plane.N[1] * minExtreme[1] + plane.N[2] * minExtreme[2] + plane.D;
+	NxF32 d1 = plane.N[0] * minExtreme[0] + plane.N[1] * minExtreme[1] + plane.N[2] * minExtreme[2] + plane.D;
 	if ( d1 > 0.0f)
 	{
 		istate|=(VT_INSIDE_0 | VT_INSIDE_1 | VT_INSIDE_2 | VT_INSIDE_3 | VT_INSIDE_4 | VT_INSIDE_5 | VT_OUTSIDE | VT_PARTIAL);
 	}
 	else
 	{
-		HeF32 d2 = plane.N[0] * maxExtreme[0] + plane.N[1] * maxExtreme[1] +  plane.N[2] * maxExtreme[2] + plane.D;
+		NxF32 d2 = plane.N[0] * maxExtreme[0] + plane.N[1] * maxExtreme[1] +  plane.N[2] * maxExtreme[2] + plane.D;
 		if ( d2 >= 0.0f )
 			istate|=VT_PARTIAL;
 		else
@@ -340,9 +340,9 @@ void Frustum::ComputeExtreme(const HeF32 *bound,const FrustumPlane &plane,HeU32 
 
 
 
-ViewTest Frustum::ViewTestAABB(const HeF32 *bound,ViewTest state)
+ViewTest Frustum::ViewTestAABB(const NxF32 *bound,ViewTest state)
 {
-	HeU32 istate = state;
+	NxU32 istate = state;
 	istate&=~VT_PARTIAL; // turn off the partial bit...
 
 	if ( !(istate & VT_INSIDE_0) ) ComputeExtreme(bound,m_frustumPlanes[0],istate,VT_INSIDE_0);
@@ -359,9 +359,9 @@ ViewTest Frustum::ViewTestAABB(const HeF32 *bound,ViewTest state)
 }
 
 
-void Frustum::GetPlane(HeU32 index,HeF32 *plane) const // retrieve the plane equation as XYZD
+void Frustum::GetPlane(NxU32 index,NxF32 *plane) const // retrieve the plane equation as XYZD
 {
-	HE_ASSERT( index >= 0 && index < 6 );
+	assert( index >= 0 && index < 6 );
 	plane[0] = m_frustumPlanes[index].N[0];
 	plane[1] = m_frustumPlanes[index].N[1];
 	plane[2] = m_frustumPlanes[index].N[2];

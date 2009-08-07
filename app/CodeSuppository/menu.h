@@ -6,7 +6,7 @@
 #include <windows.h>
 
 HMENU createMyMenu(void);
-bool  processMenu(HWND hwnd,HeU32 cmd,HeF32 *bmin,HeF32 *bmax);
+bool  processMenu(HWND hwnd,NxU32 cmd,NxF32 *bmin,NxF32 *bmax);
 void  saveMenuState(void);
 
 #endif

@@ -5,7 +5,7 @@
 
 #include "TestMeshVolume.h"
 
-#include "common/snippets/SendTextMessage.h"
+#include "SendTextMessage.h"
 
 void testMeshVolume(void)
 {

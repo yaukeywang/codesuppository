@@ -2,7 +2,7 @@
 
 #define ERODE_H
 
-#include "HeSimpleTypes.h"
+#include "NxSimpleTypes.h"
 
 namespace ERODE
 {
@@ -26,20 +26,20 @@ public:
     mErodeCount = 0;
   }
 
-  HeU32        mFillBasin;
-  HeU32        mFillBasinPer;
-  HeU32        mErodeIterations;
-  HeU32        mErodeCount;
+  NxU32        mFillBasin;
+  NxU32        mFillBasinPer;
+  NxU32        mErodeIterations;
+  NxU32        mErodeCount;
 
-  HeF32        mErodeRate;
-  HeF32        mErodePower;
-  HeF32        mSmoothRate;
-  HeF32        mErodeThreshold;
-  HeF32        mErodeSedimentation;
+  NxF32        mErodeRate;
+  NxF32        mErodePower;
+  NxF32        mSmoothRate;
+  NxF32        mErodeThreshold;
+  NxF32        mErodeSedimentation;
 
-  HeI32        mWidth;
-  HeI32        mDepth;
-  HeF32       *mData;
+  NxI32        mWidth;
+  NxI32        mDepth;
+  NxF32       *mData;
 
 };
 

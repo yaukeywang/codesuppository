@@ -7,7 +7,7 @@
 #define USE_BZIP     0
 #define USE_LZMA     0
 
-#include "../snippets/HeSimpleTypes.h"
+#include "NxSimpleTypes.h"
 
 namespace COMPRESSION
 {
@@ -31,16 +31,16 @@ enum CompressionLevel
 };
 
 void *           compressData(const void *source,
-                              HeI32 len,
-                              HeI32 &outlen,
+                              NxI32 len,
+                              NxI32 &outlen,
                               CompressionType type,
-                              HeI32 versionNumber,
+                              NxI32 versionNumber,
                               CompressionLevel level=CL_BEST_SPEED);
 
-void *           decompressData(const void *source,HeI32 clen,HeI32 &outlen);
+void *           decompressData(const void *source,NxI32 clen,NxI32 &outlen);
 void             deleteData(const void* mem);
 
-CompressionType  getCompressionType(const void *mem,HeI32 len,HeI32 &versionNumber);
+CompressionType  getCompressionType(const void *mem,NxI32 len,NxI32 &versionNumber);
 
 };
 

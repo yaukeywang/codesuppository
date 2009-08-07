@@ -57,7 +57,7 @@
 
 */
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 
 class WavefrontObj
 {
@@ -66,14 +66,14 @@ public:
   WavefrontObj(void);
   ~WavefrontObj(void);
 
-	HeU32 loadObj(const char *fname,HeF32 weldDistance=0.001f); // load a wavefront obj returns number of triangles that were loaded.  Data is persists until the class is destructed.
+	NxU32 loadObj(const char *fname,NxF32 weldDistance=0.001f); // load a wavefront obj returns number of triangles that were loaded.  Data is persists until the class is destructed.
 
-  static bool saveObj(const char *fname,HeU32 vcount,const HeF32 *vertices,HeU32 tcount,const HeU32 *indices);
+  static bool saveObj(const char *fname,NxU32 vcount,const NxF32 *vertices,NxU32 tcount,const NxU32 *indices);
 
-  HeI32	          mVertexCount;
-  HeI32	          mTriCount;
-  HeI32          *mIndices;
-  HeF32        *mVertices;
+  NxI32	          mVertexCount;
+  NxI32	          mTriCount;
+  NxI32          *mIndices;
+  NxF32        *mVertices;
 };
 
 

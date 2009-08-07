@@ -68,14 +68,14 @@ void QuickSortPointers::swap(char **a,char **b)
 }
 
 
-void QuickSortPointers::qsort(void **b,HeI32 num)
+void QuickSortPointers::qsort(void **b,NxI32 num)
 {
 	char *lo,*hi;
 	char *mid;
 	char *bottom, *top;
-	HeI32 size;
+	NxI32 size;
 	char *lostk[30], *histk[30];
-	HeI32 stkptr;
+	NxI32 stkptr;
 	char **base = (char **)b;
 
 	if (num < 2 ) return;

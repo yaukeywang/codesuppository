@@ -2,8 +2,8 @@
 
 #define BASE_RENDER_DEBUG_H
 
-#include "../common/snippets/UserMemAlloc.h"
-#include "../common/HeMath/HeFoundation.h"
+#include "UserMemAlloc.h"
+#include "NxFoundation.h"
 #include <math.h>
 #include <float.h>
 
@@ -29,9 +29,9 @@ enum EmbedTexture
 class GraphicsVertex
 {
 public:
-  HeF32	       mPos[3];
-  HeF32        mNormal[3];
-  HeF32        mTexel[2];
+  NxF32	       mPos[3];
+  NxF32        mNormal[3];
+  NxF32        mTexel[2];
 };
 
 class BaseRenderDebug
@@ -40,69 +40,69 @@ public:
 
     virtual void         setEmbedTexture(EmbedTexture t,LPHETEXTURE texture) = 0;
 
-    virtual void         setScreenSize(HeU32 screenX,HeU32 screenY)                       = 0;
-    virtual void         getScreenSize(HeU32 &screenX,HeU32 &screenY)                     = 0;
-    virtual const HeF32 *getEyePos(void)                                                  = 0;
-	  virtual void         setViewProjectionMatrix(const HeF32 *view,const HeF32 *projection) = 0;
-    virtual const HeF32 *getViewProjectionMatrix(void) const                              = 0;
-    virtual const HeF32 *getViewMatrix(void) const                                        = 0;
-    virtual const HeF32 *getProjectionMatrix(void) const                                  = 0;
-    virtual bool         screenToWorld(HeI32 sx,HeI32 sy,HeF32 *world,HeF32 *direction)   = 0;
+    virtual void         setScreenSize(NxU32 screenX,NxU32 screenY)                       = 0;
+    virtual void         getScreenSize(NxU32 &screenX,NxU32 &screenY)                     = 0;
+    virtual const NxF32 *getEyePos(void)                                                  = 0;
+	  virtual void         setViewProjectionMatrix(const NxF32 *view,const NxF32 *projection) = 0;
+    virtual const NxF32 *getViewProjectionMatrix(void) const                              = 0;
+    virtual const NxF32 *getViewMatrix(void) const                                        = 0;
+    virtual const NxF32 *getProjectionMatrix(void) const                                  = 0;
+    virtual bool         screenToWorld(NxI32 sx,NxI32 sy,NxF32 *world,NxF32 *direction)   = 0;
 
 
-  	virtual void DebugLine(const HeF64 *_p1,const HeF64 *_p2,HeU32 color=0xFFFFFFFF,HeF32 duration=0.001f,bool useZ=true)
+  	virtual void DebugLine(const NxF64 *_p1,const NxF64 *_p2,NxU32 color=0xFFFFFFFF,NxF32 duration=0.001f,bool useZ=true)
     {
-      HeF32 p1[3];
-      HeF32 p2[3];
-      p1[0] = (HeF32)_p1[0];
-      p1[1] = (HeF32)_p1[1];
-      p1[2] = (HeF32)_p1[2];
+      NxF32 p1[3];
+      NxF32 p2[3];
+      p1[0] = (NxF32)_p1[0];
+      p1[1] = (NxF32)_p1[1];
+      p1[2] = (NxF32)_p1[2];
 
-      p2[0] = (HeF32)_p2[0];
-      p2[1] = (HeF32)_p2[1];
-      p2[2] = (HeF32)_p2[2];
+      p2[0] = (NxF32)_p2[0];
+      p2[1] = (NxF32)_p2[1];
+      p2[2] = (NxF32)_p2[2];
 
       DebugLine(p1,p2,color,duration,useZ);
 
     }
-    	virtual void DebugRay(const HeF64 *_p1,const HeF64 *_p2,HeF32 arrowSize=0.1f,HeU32 color=0xFFFFFFFF,HeU32 arrowColor=0x00FF0000,HeF32 duration=0.001f,bool useZ=true)
+    	virtual void DebugRay(const NxF64 *_p1,const NxF64 *_p2,NxF32 arrowSize=0.1f,NxU32 color=0xFFFFFFFF,NxU32 arrowColor=0x00FF0000,NxF32 duration=0.001f,bool useZ=true)
       {
-        HeF32 p1[3];
-        HeF32 p2[3];
-        p1[0] = (HeF32)_p1[0];
-        p1[1] = (HeF32)_p1[1];
-        p1[2] = (HeF32)_p1[2];
+        NxF32 p1[3];
+        NxF32 p2[3];
+        p1[0] = (NxF32)_p1[0];
+        p1[1] = (NxF32)_p1[1];
+        p1[2] = (NxF32)_p1[2];
 
-        p2[0] = (HeF32)_p2[0];
-        p2[1] = (HeF32)_p2[1];
-        p2[2] = (HeF32)_p2[2];
+        p2[0] = (NxF32)_p2[0];
+        p2[1] = (NxF32)_p2[1];
+        p2[2] = (NxF32)_p2[2];
 
         DebugRay(p1,p2,arrowSize,color,arrowColor,duration,useZ);
       }
 
-  virtual void DebugPolygon(HeU32 pcount,const HeF32 *points,HeU32 color=0xFFFFFF,HeF32 duration=0.001f,bool useZ=true,bool solid=true,bool clockwise=true) = 0;
+  virtual void DebugPolygon(NxU32 pcount,const NxF32 *points,NxU32 color=0xFFFFFF,NxF32 duration=0.001f,bool useZ=true,bool solid=true,bool clockwise=true) = 0;
 
-	virtual void DebugLine(const HeF32 *p1,const HeF32 *p2,HeU32 color=0xFFFFFFFF,HeF32 duration=0.001f,bool useZ=true) = 0;
-	virtual void DebugOrientedLine(const HeF32 *p1,const HeF32 *p2,const HeF32 *transform,HeU32 color=0xFFFFFFFF,HeF32 duration=0.001f,bool useZ=true) = 0;
+	virtual void DebugLine(const NxF32 *p1,const NxF32 *p2,NxU32 color=0xFFFFFFFF,NxF32 duration=0.001f,bool useZ=true) = 0;
+	virtual void DebugOrientedLine(const NxF32 *p1,const NxF32 *p2,const NxF32 *transform,NxU32 color=0xFFFFFFFF,NxF32 duration=0.001f,bool useZ=true) = 0;
 
-	virtual void DebugRay(const HeF32 *p1,const HeF32 *p2,HeF32 arrowSize=0.1f,HeU32 color=0xFFFFFFFF,HeU32 arrowColor=0x00FF0000,HeF32 duration=0.001f,bool useZ=true) = 0;
+	virtual void DebugRay(const NxF32 *p1,const NxF32 *p2,NxF32 arrowSize=0.1f,NxU32 color=0xFFFFFFFF,NxU32 arrowColor=0x00FF0000,NxF32 duration=0.001f,bool useZ=true) = 0;
 
-  virtual void DebugCylinder(const HeF32 *p1,const HeF32 *p2,HeF32 radius,HeU32 color=0xFFFFFFFF,HeF32 duration=0.0001f,bool useZ=true,bool solid=false) = 0;
+  virtual void DebugCylinder(const NxF32 *p1,const NxF32 *p2,NxF32 radius,NxU32 color=0xFFFFFFFF,NxF32 duration=0.0001f,bool useZ=true,bool solid=false) = 0;
 
-	virtual void DebugThickRay(const HeF32 *p1,
-	                           const HeF32 *p2,
-                             HeF32 raySize=0.02f,
-	                           HeF32 arrowSize=0.1f,
-	                           HeU32 color=0xFFFFFFFF,
-	                           HeU32 arrowColor=0x00FF0000,
-	                           HeF32 duration=0.001f,
+	virtual void DebugThickRay(const NxF32 *p1,
+	                           const NxF32 *p2,
+                             NxF32 raySize=0.02f,
+	                           NxF32 arrowSize=0.1f,
+	                           NxU32 color=0xFFFFFFFF,
+	                           NxU32 arrowColor=0x00FF0000,
+	                           NxF32 duration=0.001f,
 	                           bool wireFrameArrow=true) = 0;
 
-  virtual void DebugPlane(const HeF32 *plane,HeF32 radius1,HeF32 radius2,HeU32 color=0xFFFFFF,HeF32 duration=0.001f,bool useZ=true) = 0;
+  virtual void DebugPlane(const NxF32 *plane,NxF32 radius1,NxF32 radius2,NxU32 color=0xFFFFFF,NxF32 duration=0.001f,bool useZ=true) = 0;
 
-	virtual void DebugTri(const HeF32 *p1,const HeF32 *p2,const HeF32 *p3,HeU32 color=0xFFFFFFFF,HeF32 duration=0.001f,bool useZ=true) =0;
+	virtual void DebugTri(const NxF32 *p1,const NxF32 *p2,const NxF32 *p3,NxU32 color=0xFFFFFFFF,NxF32 duration=0.001f,bool useZ=true) =0;
 
-	virtual void DebugTri(const HeF64 *_p1,const HeF64 *_p2,const HeF64 *_p3,HeU32 color=0xFFFFFFFF,HeF32 duration=0.001f,bool useZ=true)
+	virtual void DebugTri(const NxF64 *_p1,const NxF64 *_p2,const NxF64 *_p3,NxU32 color=0xFFFFFFFF,NxF32 duration=0.001f,bool useZ=true)
   {
     float p1[3];
     float p2[3];
@@ -113,9 +113,9 @@ public:
     DebugTri(p1,p2,p3,color,duration,useZ);
   }
 
-	virtual void DebugSolidTri(const HeF32 *p1,const HeF32 *p2,const HeF32 *p3,HeU32 color=0xFFFFFFFF,HeF32 duration=0.001f) =0;
+	virtual void DebugSolidTri(const NxF32 *p1,const NxF32 *p2,const NxF32 *p3,NxU32 color=0xFFFFFFFF,NxF32 duration=0.001f) =0;
 
-  void DebugSolidTri(const HeF64 *_p1,const HeF64 *_p2,const HeF64 *_p3,HeU32 color=0xFFFFFFFF,HeF32 duration=0.001f) 
+  void DebugSolidTri(const NxF64 *_p1,const NxF64 *_p2,const NxF64 *_p3,NxU32 color=0xFFFFFFFF,NxF32 duration=0.001f) 
   {
     float p1[3];
     float p2[3];
@@ -126,51 +126,51 @@ public:
     DebugSolidTri(p1,p2,p3,color,duration);
   }
 
-	virtual void DebugSolidTri(const HeF32 *p1,const HeF32 *p2,const HeF32 *p3,const HeF32 *n1,const HeF32 *n2,const HeF32 *n3,HeU32 color=0xFFFFFFFF,HeF32 duration=0.001f) =0;
+	virtual void DebugSolidTri(const NxF32 *p1,const NxF32 *p2,const NxF32 *p3,const NxF32 *n1,const NxF32 *n2,const NxF32 *n3,NxU32 color=0xFFFFFFFF,NxF32 duration=0.001f) =0;
 
-	virtual void DebugBound(const HeF32 *bmin,const HeF32 *bmax,HeU32 color=0xFFFFFFFF,HeF32 duration=0.001f,bool useZ=true,bool solid=false) = 0;
+	virtual void DebugBound(const NxF32 *bmin,const NxF32 *bmax,NxU32 color=0xFFFFFFFF,NxF32 duration=0.001f,bool useZ=true,bool solid=false) = 0;
 
-  virtual void DebugBound(const HeF64 *bmin,const HeF64 *bmax,HeU32 color=0xFFFFFFFF,HeF32 duration=0.001f,bool useZ=true,bool solid=false)
+  virtual void DebugBound(const NxF64 *bmin,const NxF64 *bmax,NxU32 color=0xFFFFFFFF,NxF32 duration=0.001f,bool useZ=true,bool solid=false)
   {
-    HeF32 b1[3] = { (HeF32)bmin[0], (HeF32)bmin[1],(HeF32)bmin[2] };
-    HeF32 b2[3] = { (HeF32)bmax[0], (HeF32)bmax[1],(HeF32)bmax[2] };
+    NxF32 b1[3] = { (NxF32)bmin[0], (NxF32)bmin[1],(NxF32)bmin[2] };
+    NxF32 b2[3] = { (NxF32)bmax[0], (NxF32)bmax[1],(NxF32)bmax[2] };
     DebugBound(b1,b2,color,duration,useZ,solid);
   }
 
-	virtual void DebugOrientedBound(const HeF32 *sides,const HeF32 *transform,HeU32 color=0xFFFFFFFF,HeF32 duration=0.0001f,bool useZ=true,bool solid=false) = 0;
-	virtual void DebugOrientedBound(const HeF32 *bmin,const HeF32 *bmax,const HeF32 *pos,const HeF32 *quat,HeU32 color=0xFFFFFFFF,HeF32 duration=0.001f,bool useZ=true,bool solid=false) = 0; // the rotation as a quaternion
-	virtual void DebugOrientedBound(const HeF32 *bmin,const HeF32 *bmax,const HeF32 *xform,HeU32 color=0xFFFFFFFF,HeF32 duration=0.001f,bool useZ=true,bool solid=false) = 0; // the rotation as a quaternion
+	virtual void DebugOrientedBound(const NxF32 *sides,const NxF32 *transform,NxU32 color=0xFFFFFFFF,NxF32 duration=0.0001f,bool useZ=true,bool solid=false) = 0;
+	virtual void DebugOrientedBound(const NxF32 *bmin,const NxF32 *bmax,const NxF32 *pos,const NxF32 *quat,NxU32 color=0xFFFFFFFF,NxF32 duration=0.001f,bool useZ=true,bool solid=false) = 0; // the rotation as a quaternion
+	virtual void DebugOrientedBound(const NxF32 *bmin,const NxF32 *bmax,const NxF32 *xform,NxU32 color=0xFFFFFFFF,NxF32 duration=0.001f,bool useZ=true,bool solid=false) = 0; // the rotation as a quaternion
 
-	virtual void DebugSphere(const HeF32 *pos,HeF32 radius,HeU32 color=0xFFFFFFFF,HeF32 duration=0.001f,bool useZ=true,bool solid=false) = 0;
+	virtual void DebugSphere(const NxF32 *pos,NxF32 radius,NxU32 color=0xFFFFFFFF,NxF32 duration=0.001f,bool useZ=true,bool solid=false) = 0;
 
-  virtual void DebugSphere(const HeF64 *_pos,HeF64 radius,HeU32 color=0xFFFFFFFF,HeF32 duration=0.001f,bool useZ=true,bool solid=false)
+  virtual void DebugSphere(const NxF64 *_pos,NxF64 radius,NxU32 color=0xFFFFFFFF,NxF32 duration=0.001f,bool useZ=true,bool solid=false)
   {
-    HeF32 pos[3];
-    pos[0] = (HeF32)_pos[0];
-    pos[1] = (HeF32)_pos[1];
-    pos[2] = (HeF32)_pos[2];
+    NxF32 pos[3];
+    pos[0] = (NxF32)_pos[0];
+    pos[1] = (NxF32)_pos[1];
+    pos[2] = (NxF32)_pos[2];
     DebugSphere(pos,(float)radius,color,duration,useZ,solid);
   }
 
-	virtual void DebugOrientedSphere(HeF32 radius,const HeF32 *transform,HeU32 color=0xFFFFFFFF,HeF32 duration=0.001f,bool useZ=true,bool solid=false) = 0;
+	virtual void DebugOrientedSphere(NxF32 radius,const NxF32 *transform,NxU32 color=0xFFFFFFFF,NxF32 duration=0.001f,bool useZ=true,bool solid=false) = 0;
 
-	virtual void DebugCapsule(const HeF32 *center,HeF32 radius,HeF32 height,HeU32 color=0xFFFFFFFF,HeF32 duration=0.001f,bool useZ=true) = 0;
-	virtual void DebugOrientedCapsule(HeF32 radius,HeF32 height,const HeF32 *transform=0,HeU32 color=0xFFFFFFFF,HeF32 duration=0.001f,bool useZ=true) = 0;
+	virtual void DebugCapsule(const NxF32 *center,NxF32 radius,NxF32 height,NxU32 color=0xFFFFFFFF,NxF32 duration=0.001f,bool useZ=true) = 0;
+	virtual void DebugOrientedCapsule(NxF32 radius,NxF32 height,const NxF32 *transform=0,NxU32 color=0xFFFFFFFF,NxF32 duration=0.001f,bool useZ=true) = 0;
 
-	virtual void DebugPoint(const HeF32 *pos,HeF32 radius,HeU32 color=0xFFFFFFFF,HeF32 duration=0.001f,bool useZ=true) = 0;
+	virtual void DebugPoint(const NxF32 *pos,NxF32 radius,NxU32 color=0xFFFFFFFF,NxF32 duration=0.001f,bool useZ=true) = 0;
 
-	virtual void DebugAxes(const HeF32 *transform,HeF32 distance,HeF32 brightness,bool useZ) = 0;
+	virtual void DebugAxes(const NxF32 *transform,NxF32 distance,NxF32 brightness,bool useZ) = 0;
 
 	virtual void Reset( void ) = 0;
   virtual bool getWireFrame(void) = 0;
-  virtual HeF32 getRenderScale(void) = 0;
-  virtual void  setRenderScale(HeF32 scale) = 0;
+  virtual NxF32 getRenderScale(void) = 0;
+  virtual void  setRenderScale(NxF32 scale) = 0;
 
-  virtual void batchTriangles(EmbedTexture texture,const GraphicsVertex *vertices,HeU32 vcount,bool wireframe,bool overlay) = 0;
+  virtual void batchTriangles(EmbedTexture texture,const GraphicsVertex *vertices,NxU32 vcount,bool wireframe,bool overlay) = 0;
 
-  virtual HeU32 getDebugColor(bool reset_index=false)
+  virtual NxU32 getDebugColor(bool reset_index=false)
   {
-    HeU32 colors[8] =
+    NxU32 colors[8] =
     {
       0xFF0000,
       0x00FF00,
@@ -182,25 +182,25 @@ public:
       0x808080
     };
 
-    static HeU32 cindex = 0;
+    static NxU32 cindex = 0;
 
     if ( reset_index )
       cindex = 0;
 
-    HeU32 color = colors[cindex];
+    NxU32 color = colors[cindex];
     cindex++;
     if ( cindex == 8 ) cindex = 0;
 
     return color;
   }
 
-  void getSpherePoint(HeF32 *point,HeU32 x,HeU32 y,const HeF32 *center,HeF32 radius,HeF32 scale,HeU32 stepCount)
+  void getSpherePoint(NxF32 *point,NxU32 x,NxU32 y,const NxF32 *center,NxF32 radius,NxF32 scale,NxU32 stepCount)
   {
     if ( x == stepCount ) x = 0;
     if ( y == stepCount ) y = 0;
-    HeF32 a = (HeF32)x*scale;
-    HeF32 b = (HeF32)y*scale;
-    HeF32 tpos[3];
+    NxF32 a = (NxF32)x*scale;
+    NxF32 b = (NxF32)y*scale;
+    NxF32 tpos[3];
 
     tpos[0] = sinf(a)*cosf(b);
     tpos[1] = sinf(a)*sinf(b);
@@ -212,21 +212,21 @@ public:
 
   }
 
-	void DebugDetailedSphere(const HeF32 *pos,HeF32 radius,HeU32 stepCount,HeU32 color=0xFFFFFFFF,HeF32 duration=0.001f,bool useZ=true,bool solid=false)
+	void DebugDetailedSphere(const NxF32 *pos,NxF32 radius,NxU32 stepCount,NxU32 color=0xFFFFFFFF,NxF32 duration=0.001f,bool useZ=true,bool solid=false)
   {
     const float pi = 3.1415926535897932384626433832795028841971693993751f;
     const float pi2 = pi*2.0f;
 
-    HeF32 scale = pi2 / stepCount;
+    NxF32 scale = pi2 / stepCount;
 
-    for (HeU32 y=0; y<stepCount; y++)
+    for (NxU32 y=0; y<stepCount; y++)
     {
-      for (HeU32 x=0; x<stepCount; x++)
+      for (NxU32 x=0; x<stepCount; x++)
       {
-        HeF32 p1[3];
-        HeF32 p2[3];
-        HeF32 p3[3];
-        HeF32 p4[3];
+        NxF32 p1[3];
+        NxF32 p2[3];
+        NxF32 p3[3];
+        NxF32 p4[3];
 
         getSpherePoint(p1,x,y,pos,radius,scale,stepCount);
         getSpherePoint(p2,x+1,y,pos,radius,scale,stepCount);

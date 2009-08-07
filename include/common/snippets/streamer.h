@@ -2,7 +2,7 @@
 
 #define STREAMER_H
 
-#include "../snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 #include <assert.h>
 #include <string.h>
 
@@ -11,9 +11,9 @@
 class Streamer
 {
 public:
-  Streamer(const void *mem,HeU32 len) // read access
+  Streamer(const void *mem,NxU32 len) // read access
   {
-    HE_ASSERT(mem);
+    assert(mem);
     mAllocOk = false;
 		mMyAlloc = false;
 		mRead = true; // default is read access.
@@ -23,7 +23,7 @@ public:
     mGrowSize = DEFAULT_BUFFER_SIZE;
   }
 
-  Streamer(void *mem,HeU32 len) // write access
+  Streamer(void *mem,NxU32 len) // write access
   {
     mAllocOk = false;
 		mMyAlloc = false;
@@ -64,7 +64,7 @@ public:
   	}
   }
 
-  bool         read(HeU32 &v)
+  bool         read(NxU32 &v)
   {
     return readData(&v,sizeof(v));
   }
@@ -75,12 +75,12 @@ public:
   }
 
 
-  bool         read(HeF32 &v)
+  bool         read(NxF32 &v)
   {
     return readData(&v,sizeof(v));
   }
 
-  bool         read(HeU64 &v)
+  bool         read(NxU64 &v)
   {
     return readData(&v,sizeof(v));
   }
@@ -89,7 +89,7 @@ public:
   {
     const char *ret = 0;
 
-    HeU32 len;
+    NxU32 len;
     if ( read(len) )
     {
       if ( (mLoc+len+1) <= mLen )
@@ -102,7 +102,7 @@ public:
     return ret;
   }
 
-  bool         write(HeU32 v)
+  bool         write(NxU32 v)
   {
     return writeData(&v,sizeof(v));
   }
@@ -113,12 +113,12 @@ public:
   }
 
 
-  bool         write(HeU64 v)
+  bool         write(NxU64 v)
   {
     return writeData(&v,sizeof(v));
   }
 
-  bool         write(HeF32 v)
+  bool         write(NxF32 v)
   {
     return writeData(&v,sizeof(v));
   }
@@ -128,7 +128,7 @@ public:
     bool ret = false;
 
     if ( v == 0 ) v = "";
-    HeU32 len = (HeU32)strlen(v);
+    NxU32 len = (NxU32)strlen(v);
     ret = write(len);
     if ( ret )
     {
@@ -138,21 +138,21 @@ public:
     return ret;
   }
 
-  void * getWriteBuffer(HeU32 &len)
+  void * getWriteBuffer(NxU32 &len)
   {
     void *ret = 0;
     len = 0;
 
-    HE_ASSERT(!mRead);
+    assert(!mRead);
     if ( !mRead )
     {
       ret = mData;
-      len = (HeU32)mLoc;
+      len = (NxU32)mLoc;
     }
     return ret;
   }
 
-  bool         write(const char *v,HeU32 len)
+  bool         write(const char *v,NxU32 len)
   {
     return writeData(v,len);
   }
@@ -163,7 +163,7 @@ public:
   {
   	bool ret = false;
 
-    HE_ASSERT(mRead);
+    assert(mRead);
     if ( mRead )
     {
       char *data = (char *)_data;
@@ -181,7 +181,7 @@ public:
   {
   	bool ret = false;
 
-    HE_ASSERT( !mRead );
+    assert( !mRead );
     if ( !mRead )
     {
 
@@ -216,10 +216,10 @@ public:
   	return ret;
   }
 
-  bool setLoc(HeU32 loc)
+  bool setLoc(NxU32 loc)
   {
     bool ret = false;
-    HE_ASSERT( loc < mLen );
+    assert( loc < mLen );
     if ( loc < mLen )
     {
       mLoc = loc;
@@ -228,11 +228,11 @@ public:
     return ret;
   }
 
-  const void * getReadAddress(HeU32 size) //gets the address of the memory, advances the read counter, but doesn't do a memcpy.
+  const void * getReadAddress(NxU32 size) //gets the address of the memory, advances the read counter, but doesn't do a memcpy.
   {
   	const void *ret = 0;
 
-    HE_ASSERT(mRead);
+    assert(mRead);
     if ( mRead )
     {
     	if ( (mLoc+size) <= mLen )

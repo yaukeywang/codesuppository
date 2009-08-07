@@ -5,7 +5,7 @@
 //
 // Copyright (c) Microsoft Corporation. All rights reserved.
 //--------------------------------------------------------------------------------------
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 #include "dxstdafx.h"
 #undef min // use __min instead
 #undef max // use __max instead

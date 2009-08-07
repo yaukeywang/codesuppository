@@ -29,7 +29,7 @@
 		THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------*/
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 
 class Gauss;
 
@@ -42,8 +42,8 @@ class TimedEvent;
 class TimedEventInterface
 {
 public:
-	virtual bool timedEventCallback(void *user_data,HeI32 user_id,bool alive) = 0; //true if supposed to continue, false if done.
-	virtual void deleteEventCallback(void *user_data,HeI32 user_id) = 0; // notification that an event got cancelled, in case data has to be deleted.
+	virtual bool timedEventCallback(void *user_data,NxI32 user_id,bool alive) = 0; //true if supposed to continue, false if done.
+	virtual void deleteEventCallback(void *user_data,NxI32 user_id) = 0; // notification that an event got cancelled, in case data has to be deleted.
 
 private:
 };
@@ -55,29 +55,29 @@ TimedEventFactory * createTimedEventFactory(void);
 bool                releaseTimedEventFactory(TimedEventFactory *factory);
 
 // times are gaussians to introduce randomization into event triggers.
-HeI32 postTimedEvent(TimedEventFactory *factory,
+NxI32 postTimedEvent(TimedEventFactory *factory,
                    TimedEventInterface *callback,
 									 const Gauss &duetime,                 // by default, trigger it in one second.
 									 const Gauss &repeatcount,
 									 const Gauss &repeat_time,
 									 void *user_data,
-									 HeI32   user_id);
+									 NxI32   user_id);
 
 // explicit time
-HeI32 postTimedEvent(TimedEventFactory *factory,
+NxI32 postTimedEvent(TimedEventFactory *factory,
                    TimedEventInterface *callback,
-									 HeF32 duetime,                 // by default, trigger it in one second.
-									 HeI32 repeatcount,
-									 HeF32 repeat_time,
+									 NxF32 duetime,                 // by default, trigger it in one second.
+									 NxI32 repeatcount,
+									 NxF32 repeat_time,
 									 void *user_data,
-									 HeI32   user_id);
+									 NxI32   user_id);
 
 
-HeI32 process(TimedEventFactory *factory,HeF32 dtime); // process timed events based on this delta time since the last time we were called. returns the number of events that got fired.
+NxI32 process(TimedEventFactory *factory,NxF32 dtime); // process timed events based on this delta time since the last time we were called. returns the number of events that got fired.
 
-HeI32 cancelAll(TimedEventFactory *factory,TimedEventInterface *callback); // cancel all events that are pending with this callback.
-bool cancelTimedEvent(TimedEventFactory *factory,HeI32 id); // cancel a specific timed event based on its id number.
-HeI32 cancelAll(TimedEventFactory *factory);        // cancel all timed events including global events.
+NxI32 cancelAll(TimedEventFactory *factory,TimedEventInterface *callback); // cancel all events that are pending with this callback.
+bool cancelTimedEvent(TimedEventFactory *factory,NxI32 id); // cancel a specific timed event based on its id number.
+NxI32 cancelAll(TimedEventFactory *factory);        // cancel all timed events including global events.
 
 
 

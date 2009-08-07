@@ -1,4 +1,4 @@
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 #include "Ag.h"
 #include "AgScreenPipe.h"
 
@@ -9,7 +9,7 @@
 #include <cassert>
 
 
-HeU32        AgScreenPipe::gGlobalFrameNo  = 0;
+NxU32        AgScreenPipe::gGlobalFrameNo  = 0;
 AgScreenPipe *      AgScreenPipe::gHeadCurrent    = 0;
 AgScreenPipe *      AgScreenPipe::gTailCurrent    = 0;
 
@@ -20,7 +20,7 @@ void AgScreenPipe::NewFrame(void)
 	if ( mVertices == 0 )
 	{
 		mVertices = (AgScreenVertex *)MEMALLOC_MALLOC(sizeof(AgScreenVertex)*PIPESIZE*4);
-		mIndices  = (HeU16 *) MEMALLOC_MALLOC(sizeof(HeU16)*PIPESIZE*6);
+		mIndices  = (NxU16 *) MEMALLOC_MALLOC(sizeof(NxU16)*PIPESIZE*6);
 	}
 
 	mVcount = 0;

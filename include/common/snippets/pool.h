@@ -69,7 +69,7 @@
 #include <assert.h>
 #include <string.h>
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 
 #pragma warning(push)
 #pragma warning(disable:4100)
@@ -148,7 +148,7 @@ public:
     mInitialized = false;
 	};
 
-	void Set(HeI32 startcount,HeI32 growcount,HeI32 maxitems,const char *poolType,const char *file,int lineno)
+	void Set(NxI32 startcount,NxI32 growcount,NxI32 maxitems,const char *poolType,const char *file,int lineno)
 	{
     mPoolType = poolType;
     mFile     = file;
@@ -167,7 +167,7 @@ public:
       Type *data = (Type *) mData->mData;
       {
         Type *t = (Type *)mData->mData;
-        for (HeI32 i=0; i<mStartCount; i++)
+        for (NxI32 i=0; i<mStartCount; i++)
         {
           new ( t ) Type;
           t++;
@@ -176,7 +176,7 @@ public:
 		  mFree = data;
 		  mHead = 0;
       mTail = 0;
-		  HeI32 i;
+		  NxI32 i;
 		  for (i=0; i<(startcount-1); i++)
 		  {
 			  data[i].SetNext( &data[i+1] );
@@ -227,14 +227,14 @@ public:
 		return false;
 	};
 
-	HeI32 Begin(void)
+	NxI32 Begin(void)
 	{
 		mCurrent = mHead;
 		return mUsedCount;
 	};
 
-	HeI32 GetUsedCount(void) const { return mUsedCount; };
-	HeI32 GetFreeCount(void) const { return mFreeCount; };
+	NxI32 GetUsedCount(void) const { return mUsedCount; };
+	NxI32 GetFreeCount(void) const { return mFreeCount; };
 
 	Type * GetNext(void)
 	{
@@ -342,7 +342,7 @@ public:
       mData  = MEMALLOC_NEW(MPoolExtra)(sizeof(Type)*mGrowCount,mPoolType,mFile,mLineNo);
       {
         Type *t = (Type *)mData->mData;
-        for (HeI32 i=0; i<mGrowCount; i++)
+        for (NxI32 i=0; i<mGrowCount; i++)
         {
           new ( t ) Type;
           t++;
@@ -353,7 +353,7 @@ public:
 
       Type *data = (Type *) mData->mData;
   		mFree = data;     // new head of MEMALLOC_FREE list.
-  		HeI32 i;
+  		NxI32 i;
 	  	for (i=0; i<(mGrowCount-1); i++)
   		{
 	  		data[i].SetNext( &data[i+1] );
@@ -375,19 +375,19 @@ public:
 
 //private:
   bool         mInitialized;
-	HeI32        mMaxItems;
-  HeI32        mGrowCount;
-  HeI32        mStartCount;
-  HeI32        mCurrentCount; // this is total allocated, not MEMALLOC_FREE/used
+	NxI32        mMaxItems;
+  NxI32        mGrowCount;
+  NxI32        mStartCount;
+  NxI32        mCurrentCount; // this is total allocated, not MEMALLOC_FREE/used
 
 	Type       *mCurrent;
 	MPoolExtra *mData;
 	Type        *mHead;
   Type        *mTail;
 	Type        *mFree;
-	HeI32        mUsedCount;
-	HeI32        mFreeCount;
-	HeI32        mMaxUsed;
+	NxI32        mUsedCount;
+	NxI32        mFreeCount;
+	NxI32        mMaxUsed;
   const char *mPoolType;
   const char *mFile;
   int         mLineNo;

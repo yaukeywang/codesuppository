@@ -2,7 +2,7 @@
 #define HASHFUNCTION_H
 
 
-#include "HeSimpleTypes.h"
+#include "NxSimpleTypes.h"
 
 // Disable pointer trnc warning as we do this on purpose.
 #pragma warning(push)
@@ -14,38 +14,38 @@ Central definition of hash functions
 
 // Hash functions
 template<class T>
-HeU32 HashFunction(const T& key)
+NxU32 HashFunction(const T& key)
 {
-	return (HeU32)key;
+	return (NxU32)key;
 }
 
 // Thomas Wang's 32 bit mix
 // http://www.cris.com/~Ttwang/tech/inthash.htm
 template<>
-inline HeU32 HashFunction<HeU32>(const HeU32& key)
+inline NxU32 HashFunction<NxU32>(const NxU32& key)
 {
-	HeU32 k = key;
+	NxU32 k = key;
 	k += ~(k << 15);
 	k ^= (k >> 10);
 	k += (k << 3);
 	k ^= (k >> 6);
 	k += ~(k << 11);
 	k ^= (k >> 16);
-	return (HeU32)k;
+	return (NxU32)k;
 }
 
 template<>
-inline HeU32 HashFunction<HeI32>(const HeI32& key)
+inline NxU32 HashFunction<NxI32>(const NxI32& key)
 {
-	return HashFunction<HeU32>((HeU32)key);
+	return HashFunction<NxU32>((NxU32)key);
 }
 
 // Thomas Wang's 64 bit mix
 // http://www.cris.com/~Ttwang/tech/inthash.htm
 template<>
-inline HeU32 HashFunction<HeU64>(const HeU64& key)
+inline NxU32 HashFunction<NxU64>(const NxU64& key)
 {
-	HeU64 k = key;
+	NxU64 k = key;
 	k += ~(k << 32);
 	k ^= (k >> 22);
 	k += ~(k << 13);
@@ -54,29 +54,29 @@ inline HeU32 HashFunction<HeU64>(const HeU64& key)
 	k ^= (k >> 15);
 	k += ~(k << 27);
 	k ^= (k >> 31);
-	return (HeU32)k;
+	return (NxU32)k;
 }
 
 // Helper for pointer hashing
 template<int size>
-HeU32 PointerHash(void* ptr);
+NxU32 PointerHash(void* ptr);
 
 template<>
-inline HeU32 PointerHash<4>(void* ptr)
+inline NxU32 PointerHash<4>(void* ptr)
 {
-	return HashFunction<HeU32>(reinterpret_cast<HeU32>(ptr));
+	return HashFunction<NxU32>(reinterpret_cast<NxU32>(ptr));
 }
 
 
 template<>
-inline HeU32 PointerHash<8>(void* ptr)
+inline NxU32 PointerHash<8>(void* ptr)
 {
-	return HashFunction<HeU32>(reinterpret_cast<HeU32>(ptr));
+	return HashFunction<NxU32>(reinterpret_cast<NxU32>(ptr));
 }
 
 // Hash function for pointers
 template<class T>
-inline HeU32 HashFunction(T* key)
+inline NxU32 HashFunction(T* key)
 {
 	return PointerHash<sizeof(const void*)>(key);
 }

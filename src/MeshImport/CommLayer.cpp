@@ -1,7 +1,7 @@
 #include "CommLayer.h"
-#include "common/snippets/WinMsg.h"
-#include "common/snippets/Telnet.h"
-#include "common/snippets/UserMemAlloc.h"
+#include "WinMsg.h"
+#include "Telnet.h"
+#include "UserMemAlloc.h"
 
 #pragma warning(disable:4100 4996)
 

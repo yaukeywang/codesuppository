@@ -55,7 +55,7 @@ To do:
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #include <string.h>
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 #include "radixsort.h"
 
 
@@ -88,15 +88,15 @@ To do:
 
 #define CREATE_HISTOGRAMS(type, buffer)														\
 	/* Clear counters/histograms */															\
-	memset(mHistogram,0,256*4*sizeof(HeU32));											\
+	memset(mHistogram,0,256*4*sizeof(NxU32));											\
 																							\
 	/* Prepare to count */																	\
-	HeU8* p = (HeU8*)input;																\
-	HeU8* pe = &p[nb*4];																	\
-	HeU32* h0= &mHistogram[H0_OFFSET];	/* Histogram for first pass (LSB)	*/				\
-	HeU32* h1= &mHistogram[H1_OFFSET];	/* Histogram for second pass		*/				\
-	HeU32* h2= &mHistogram[H2_OFFSET];	/* Histogram for third pass			*/				\
-	HeU32* h3= &mHistogram[H3_OFFSET];	/* Histogram for last pass (MSB)	*/				\
+	NxU8* p = (NxU8*)input;																\
+	NxU8* pe = &p[nb*4];																	\
+	NxU32* h0= &mHistogram[H0_OFFSET];	/* Histogram for first pass (LSB)	*/				\
+	NxU32* h1= &mHistogram[H1_OFFSET];	/* Histogram for second pass		*/				\
+	NxU32* h2= &mHistogram[H2_OFFSET];	/* Histogram for third pass			*/				\
+	NxU32* h3= &mHistogram[H3_OFFSET];	/* Histogram for last pass (MSB)	*/				\
 																							\
 	bool AlreadySorted = true;	/* Optimism... */											\
 																							\
@@ -125,14 +125,14 @@ To do:
 		if(AlreadySorted)																	\
 		{																					\
 			mNbHits++;																		\
-			for(HeU32 i=0;i<nb;i++)	mRanks[i] = i;										\
+			for(NxU32 i=0;i<nb;i++)	mRanks[i] = i;										\
 			return *this;																	\
 		}																					\
 	}																						\
 	else																					\
 	{																						\
 		/* Prepare for temporal coherence */												\
-		HeU32* Indices = mRanks;															\
+		NxU32* Indices = mRanks;															\
 		type PrevVal = (type)buffer[*Indices];												\
 																							\
 		while(p!=pe)																		\
@@ -163,7 +163,7 @@ To do:
 
 #define CHECK_PASS_VALIDITY(pass)															\
 	/* Shortcut to current counters */														\
-	HeU32* CurCount = &mHistogram[pass<<8];												\
+	NxU32* CurCount = &mHistogram[pass<<8];												\
 																							\
 	/* Reset flag. The sorting pass is supposed to be performed. (default) */				\
 	bool PerformPass = true;																\
@@ -177,7 +177,7 @@ To do:
 	/* for words and O(n) for bytes. Running time for floats depends on actual values... */	\
 																							\
 	/* Get first byte */																	\
-	HeU8 UniqueVal = *(((HeU8*)input)+pass);												\
+	NxU8 UniqueVal = *(((NxU8*)input)+pass);												\
 																							\
 	/* Check that byte's counter */															\
 	if(CurCount[UniqueVal]==nb)	PerformPass=false;
@@ -215,7 +215,7 @@ RadixSort::~RadixSort()
  *	\return		true if success
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool RadixSort::Resize(HeU32 nb)
+bool RadixSort::Resize(NxU32 nb)
 {
 	if(mDeleteRanks)
 	{
@@ -224,16 +224,16 @@ bool RadixSort::Resize(HeU32 nb)
 		MEMALLOC_FREE(mRanks);
 
 		// Get some fresh one
-		mRanks	= (HeU32*)MEMALLOC_MALLOC(sizeof(HeU32)*nb);
-		mRanks2	= (HeU32*)MEMALLOC_MALLOC(sizeof(HeU32)*nb);
+		mRanks	= (NxU32*)MEMALLOC_MALLOC(sizeof(NxU32)*nb);
+		mRanks2	= (NxU32*)MEMALLOC_MALLOC(sizeof(NxU32)*nb);
 	}
 
 	return true;
 }
 
-inline void RadixSort::CheckResize(HeU32 nb)
+inline void RadixSort::CheckResize(NxU32 nb)
 {
-	HeU32 CurSize = CURRENT_SIZE;
+	NxU32 CurSize = CURRENT_SIZE;
 	if(nb!=CurSize)
 	{
 		if(nb>CurSize)	Resize(nb);
@@ -252,7 +252,7 @@ inline void RadixSort::CheckResize(HeU32 nb)
  *	\return		Self-Reference
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-RadixSort& RadixSort::Sort(const HeU32* input, HeU32 nb, RadixHint hint)
+RadixSort& RadixSort::Sort(const NxU32* input, NxU32 nb, RadixHint hint)
 {
 	// Checkings
 	if(!input || !nb || nb&0x80000000)	return *this;
@@ -264,30 +264,30 @@ RadixSort& RadixSort::Sort(const HeU32* input, HeU32 nb, RadixHint hint)
 	CheckResize(nb);
 
 	// Allocate histograms & offsets on the stack
-	HeU32 mHistogram[256*4];
-	HeU32* mLink[256];
+	NxU32 mHistogram[256*4];
+	NxU32* mLink[256];
 
 	// Create histograms (counters). Counters for all passes are created in one run.
 	// Pros:	read input buffer once instead of four times
 	// Cons:	mHistogram is 4Kb instead of 1Kb
 	// We must take care of signed/unsigned values for temporal coherence.... I just
 	// have 2 code paths even if just a single opcode changes. Self-modifying code, someone?
-	if(hint==RADIX_UNSIGNED)	{ CREATE_HISTOGRAMS(HeU32, input);	}
-	else						{ CREATE_HISTOGRAMS(HeI32, input);	}
+	if(hint==RADIX_UNSIGNED)	{ CREATE_HISTOGRAMS(NxU32, input);	}
+	else						{ CREATE_HISTOGRAMS(NxI32, input);	}
 
 	// Compute #negative values involved if needed
-	HeU32 NbNegativeValues = 0;
+	NxU32 NbNegativeValues = 0;
 	if(hint==RADIX_SIGNED)
 	{
 		// An efficient way to compute the number of negatives values we'll have to deal with is simply to sum the 128
 		// last values of the last histogram. Last histogram because that's the one for the Most Significant Byte,
 		// responsible for the sign. 128 last values because the 128 first ones are related to positive numbers.
-		HeU32* h3= &mHistogram[768];
-		for(HeU32 i=128;i<256;i++)	NbNegativeValues += h3[i];	// 768 for last histogram, 128 for negative part
+		NxU32* h3= &mHistogram[768];
+		for(NxU32 i=128;i<256;i++)	NbNegativeValues += h3[i];	// 768 for last histogram, 128 for negative part
 	}
 
 	// Radix sort, j is the pass number (0=LSB, 3=MSB)
-	for(HeU32 j=0;j<4;j++)
+	for(NxU32 j=0;j<4;j++)
 	{
 		CHECK_PASS_VALIDITY(j);
 
@@ -302,7 +302,7 @@ RadixSort& RadixSort::Sort(const HeU32* input, HeU32 nb, RadixHint hint)
 
 				// Create offsets
 				mLink[0] = mRanks2;
-				for(HeU32 i=1;i<256;i++)		mLink[i] = mLink[i-1] + CurCount[i-1];
+				for(NxU32 i=1;i<256;i++)		mLink[i] = mLink[i-1] + CurCount[i-1];
 			}
 			else
 			{
@@ -310,34 +310,34 @@ RadixSort& RadixSort::Sort(const HeU32* input, HeU32 nb, RadixHint hint)
 
 				// Create biased offsets, in order for negative numbers to be sorted as well
 				mLink[0] = &mRanks2[NbNegativeValues];										// First positive number takes place after the negative ones
-				for(HeU32 i=1;i<128;i++)		mLink[i] = mLink[i-1] + CurCount[i-1];		// 1 to 128 for positive numbers
+				for(NxU32 i=1;i<128;i++)		mLink[i] = mLink[i-1] + CurCount[i-1];		// 1 to 128 for positive numbers
 
 				// Fixing the wrong place for negative values
 				mLink[128] = mRanks2;
-				for(HeU32 i=129;i<256;i++)		mLink[i] = mLink[i-1] + CurCount[i-1];
+				for(NxU32 i=129;i<256;i++)		mLink[i] = mLink[i-1] + CurCount[i-1];
 			}
 
 			// Perform Radix Sort
-			HeU8* InputBytes	= (HeU8*)input;
+			NxU8* InputBytes	= (NxU8*)input;
             InputBytes += BYTES_INC;
 			if(INVALID_RANKS)
 			{
-				for(HeU32 i=0;i<nb;i++)	*mLink[InputBytes[i<<2]]++ = i;
+				for(NxU32 i=0;i<nb;i++)	*mLink[InputBytes[i<<2]]++ = i;
 				VALIDATE_RANKS;
 			}
 			else
 			{
-				HeU32* Indices		= mRanks;
-				HeU32* IndicesEnd	= &mRanks[nb];
+				NxU32* Indices		= mRanks;
+				NxU32* IndicesEnd	= &mRanks[nb];
 				while(Indices!=IndicesEnd)
 				{
-					HeU32 id = *Indices++;
+					NxU32 id = *Indices++;
 					*mLink[InputBytes[id<<2]]++ = id;
 				}
 			}
 
 			// Swap pointers for next pass. Valid indices - the most recent ones - are in mRanks after the swap.
-			HeU32* Tmp	= mRanks;	mRanks = mRanks2; mRanks2 = Tmp;
+			NxU32* Tmp	= mRanks;	mRanks = mRanks2; mRanks2 = Tmp;
 		}
 	}
 	return *this;
@@ -353,7 +353,7 @@ RadixSort& RadixSort::Sort(const HeU32* input, HeU32 nb, RadixHint hint)
  *	\warning	only sorts IEEE floating-point values
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-RadixSort& RadixSort::Sort(const HeF32* input2, HeU32 nb)
+RadixSort& RadixSort::Sort(const NxF32* input2, NxU32 nb)
 {
 	// Checkings
 	if(!input2 || !nb || nb&0x80000000)	return *this;
@@ -361,14 +361,14 @@ RadixSort& RadixSort::Sort(const HeF32* input2, HeU32 nb)
 	// Stats
 	mTotalCalls++;
 
-	HeU32* input = (HeU32*)input2;
+	NxU32* input = (NxU32*)input2;
 
 	// Resize lists if needed
 	CheckResize(nb);
 
 	// Allocate histograms & offsets on the stack
-	HeU32 mHistogram[256*4];
-	HeU32* mLink[256];
+	NxU32 mHistogram[256*4];
+	NxU32* mLink[256];
 
 	// Create histograms (counters). Counters for all passes are created in one run.
 	// Pros:	read input buffer once instead of four times
@@ -378,19 +378,19 @@ RadixSort& RadixSort::Sort(const HeF32* input2, HeU32 nb)
 	// is dreadful, this is surprisingly not such a performance hit - well, I suppose that's a big one on first
 	// generation Pentiums....We can't make comparison on integer representations because, as Chris said, it just
 	// wouldn't work with mixed positive/negative values....
-	{ CREATE_HISTOGRAMS(HeF32, input2); }
+	{ CREATE_HISTOGRAMS(NxF32, input2); }
 
 	// Compute #negative values involved if needed
-	HeU32 NbNegativeValues = 0;
+	NxU32 NbNegativeValues = 0;
 	// An efficient way to compute the number of negatives values we'll have to deal with is simply to sum the 128
 	// last values of the last histogram. Last histogram because that's the one for the Most Significant Byte,
 	// responsible for the sign. 128 last values because the 128 first ones are related to positive numbers.
 	// ### is that ok on Apple ?!
-	HeU32* h3= &mHistogram[768];
-	for(HeU32 i=128;i<256;i++)	NbNegativeValues += h3[i];	// 768 for last histogram, 128 for negative part
+	NxU32* h3= &mHistogram[768];
+	for(NxU32 i=128;i<256;i++)	NbNegativeValues += h3[i];	// 768 for last histogram, 128 for negative part
 
 	// Radix sort, j is the pass number (0=LSB, 3=MSB)
-	for(HeU32 j=0;j<4;j++)
+	for(NxU32 j=0;j<4;j++)
 	{
 		// Should we care about negative values?
 		if(j!=3)
@@ -402,29 +402,29 @@ RadixSort& RadixSort::Sort(const HeF32* input2, HeU32 nb)
 			{
 				// Create offsets
 				mLink[0] = mRanks2;
-				for(HeU32 i=1;i<256;i++)		mLink[i] = mLink[i-1] + CurCount[i-1];
+				for(NxU32 i=1;i<256;i++)		mLink[i] = mLink[i-1] + CurCount[i-1];
 
 				// Perform Radix Sort
-				HeU8* InputBytes = (HeU8*)input;
+				NxU8* InputBytes = (NxU8*)input;
                 InputBytes += BYTES_INC;
 				if(INVALID_RANKS)
 				{
-					for(HeU32 i=0;i<nb;i++)	*mLink[InputBytes[i<<2]]++ = i;
+					for(NxU32 i=0;i<nb;i++)	*mLink[InputBytes[i<<2]]++ = i;
 					VALIDATE_RANKS;
 				}
 				else
 				{
-					HeU32* Indices		= mRanks;
-					HeU32* IndicesEnd	= &mRanks[nb];
+					NxU32* Indices		= mRanks;
+					NxU32* IndicesEnd	= &mRanks[nb];
 					while(Indices!=IndicesEnd)
 					{
-						HeU32 id = *Indices++;
+						NxU32 id = *Indices++;
 						*mLink[InputBytes[id<<2]]++ = id;
 					}
 				}
 
 				// Swap pointers for next pass. Valid indices - the most recent ones - are in mRanks after the swap.
-				HeU32* Tmp	= mRanks;	mRanks = mRanks2; mRanks2 = Tmp;
+				NxU32* Tmp	= mRanks;	mRanks = mRanks2; mRanks2 = Tmp;
 			}
 		}
 		else
@@ -436,19 +436,19 @@ RadixSort& RadixSort::Sort(const HeF32* input2, HeU32 nb)
 			{
 				// Create biased offsets, in order for negative numbers to be sorted as well
 				mLink[0] = &mRanks2[NbNegativeValues];										// First positive number takes place after the negative ones
-				for(HeU32 i=1;i<128;i++)		mLink[i] = mLink[i-1] + CurCount[i-1];		// 1 to 128 for positive numbers
+				for(NxU32 i=1;i<128;i++)		mLink[i] = mLink[i-1] + CurCount[i-1];		// 1 to 128 for positive numbers
 
 				// We must reverse the sorting order for negative numbers!
 				mLink[255] = mRanks2;
-				for(HeU32 i=0;i<127;i++)	mLink[254-i] = mLink[255-i] + CurCount[255-i];		// Fixing the wrong order for negative values
-				for(HeU32 i=128;i<256;i++)	mLink[i] += CurCount[i];							// Fixing the wrong place for negative values
+				for(NxU32 i=0;i<127;i++)	mLink[254-i] = mLink[255-i] + CurCount[255-i];		// Fixing the wrong order for negative values
+				for(NxU32 i=128;i<256;i++)	mLink[i] += CurCount[i];							// Fixing the wrong place for negative values
 
 				// Perform Radix Sort
 				if(INVALID_RANKS)
 				{
-					for(HeU32 i=0;i<nb;i++)
+					for(NxU32 i=0;i<nb;i++)
 					{
-						HeU32 Radix = input[i]>>24;							// Radix byte, same as above. AND is useless here (unsigned int).
+						NxU32 Radix = input[i]>>24;							// Radix byte, same as above. AND is useless here (unsigned int).
 						// ### cmp to be killed. Not good. Later.
 						if(Radix<128)		*mLink[Radix]++ = i;		// Number is positive, same as above
 						else				*(--mLink[Radix]) = i;		// Number is negative, flip the sorting order
@@ -457,16 +457,16 @@ RadixSort& RadixSort::Sort(const HeF32* input2, HeU32 nb)
 				}
 				else
 				{
-					for(HeU32 i=0;i<nb;i++)
+					for(NxU32 i=0;i<nb;i++)
 					{
-						HeU32 Radix = input[mRanks[i]]>>24;							// Radix byte, same as above. AND is useless here (unsigned int).
+						NxU32 Radix = input[mRanks[i]]>>24;							// Radix byte, same as above. AND is useless here (unsigned int).
                         // ### cmp to be killed. Not good. Later.
 						if(Radix<128)		*mLink[Radix]++ = mRanks[i];		// Number is positive, same as above
 						else				*(--mLink[Radix]) = mRanks[i];		// Number is negative, flip the sorting order
 					}
 				}
 				// Swap pointers for next pass. Valid indices - the most recent ones - are in mRanks after the swap.
-				HeU32* Tmp	= mRanks;	mRanks = mRanks2; mRanks2 = Tmp;
+				NxU32* Tmp	= mRanks;	mRanks = mRanks2; mRanks2 = Tmp;
 			}
 			else
 			{
@@ -476,16 +476,16 @@ RadixSort& RadixSort::Sort(const HeF32* input2, HeU32 nb)
 					if(INVALID_RANKS)
 					{
 						// ###Possible?
-						for(HeU32 i=0;i<nb;i++)	mRanks2[i] = nb-i-1;
+						for(NxU32 i=0;i<nb;i++)	mRanks2[i] = nb-i-1;
 						VALIDATE_RANKS;
 					}
 					else
 					{
-						for(HeU32 i=0;i<nb;i++)	mRanks2[i] = mRanks[nb-i-1];
+						for(NxU32 i=0;i<nb;i++)	mRanks2[i] = mRanks[nb-i-1];
 					}
 
 					// Swap pointers for next pass. Valid indices - the most recent ones - are in mRanks after the swap.
-					HeU32* Tmp	= mRanks;	mRanks = mRanks2; mRanks2 = Tmp;
+					NxU32* Tmp	= mRanks;	mRanks = mRanks2; mRanks2 = Tmp;
 				}
 			}
 		}
@@ -499,14 +499,14 @@ RadixSort& RadixSort::Sort(const HeF32* input2, HeU32 nb)
  *	\return		memory used in bytes
  */
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-HeU32 RadixSort::GetUsedRam() const
+NxU32 RadixSort::GetUsedRam() const
 {
-	HeU32 UsedRam = sizeof(RadixSort);
-	UsedRam += 2*CURRENT_SIZE*sizeof(HeU32);	// 2 lists of indices
+	NxU32 UsedRam = sizeof(RadixSort);
+	UsedRam += 2*CURRENT_SIZE*sizeof(NxU32);	// 2 lists of indices
 	return UsedRam;
 }
 
-bool RadixSort::SetRankBuffers(HeU32* ranks0, HeU32* ranks1)
+bool RadixSort::SetRankBuffers(NxU32* ranks0, NxU32* ranks1)
 {
 	if(!ranks0 || !ranks1)	return false;
 

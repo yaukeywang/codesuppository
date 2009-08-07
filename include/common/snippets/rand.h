@@ -91,53 +91,53 @@
 //** This code submitted to FlipCode.com on July 23, 2000 by John W. Ratcliff
 //** It is released into the public domain on the same date.
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 
 class Rand
 {
 public:
 
-	Rand(HeI32 seed=0)
+	Rand(NxI32 seed=0)
   {
     mCurrent = seed;
   };
 
-	HeI32 get(void)
+	NxI32 get(void)
   {
     return( (mCurrent = mCurrent * 214013L + 2531011L)  & 0x7fffffff);
   };
 
   // random number between 0.0 and 1.0
-  HeF32 ranf(void)
+  NxF32 ranf(void)
   {
-  	HeI32 v = get()&0x7FFF;
-    return (HeF32)v*(1.0f/32767.0f);
+  	NxI32 v = get()&0x7FFF;
+    return (NxF32)v*(1.0f/32767.0f);
   };
 
-  HeF32 ranf(HeF32 low,HeF32 high)
+  NxF32 ranf(NxF32 low,NxF32 high)
   {
     return (high-low)*ranf()+low;
   }
 
-  void setSeed(HeI32 seed)
+  void setSeed(NxI32 seed)
   {
     mCurrent = seed;
   };
 
 private:
-	HeI32 mCurrent;
+	NxI32 mCurrent;
 };
 
 class RandPool
 {
 public:
-  RandPool(HeI32 size,HeI32 seed)  // size of random number bool.
+  RandPool(NxI32 size,NxI32 seed)  // size of random number bool.
   {
     mRand.setSeed(seed);       // init random number generator.
-    mData = MEMALLOC_NEW_ARRAY(HeI32,size)[size]; // allocate memory for random number bool.
+    mData = MEMALLOC_NEW_ARRAY(NxI32,size)[size]; // allocate memory for random number bool.
     mSize = size;
     mTop  = mSize;
-    for (HeI32 i=0; i<mSize; i++) mData[i] = i;
+    for (NxI32 i=0; i<mSize; i++) mData[i] = i;
   }
 
   ~RandPool(void)
@@ -149,7 +149,7 @@ public:
   // same number twice until the 'deck' (pool) has been exhausted.
   // Will set the shuffled flag to true if the deck/pool was exhausted
   // on this call.
-  HeI32 get(bool &shuffled)
+  NxI32 get(bool &shuffled)
   {
     if ( mTop == 0 ) // deck exhausted, shuffle deck.
     {
@@ -158,25 +158,25 @@ public:
     }
     else
       shuffled = false;
-    HeI32 entry = mRand.get()%mTop;
+    NxI32 entry = mRand.get()%mTop;
     mTop--;
-    HeI32 ret      = mData[entry]; // swap top of pool with entry
+    NxI32 ret      = mData[entry]; // swap top of pool with entry
     mData[entry] = mData[mTop];  // returned
     mData[mTop]  = ret;
     return ret;
   };
 
-	HeF32 ranf(void) { return mRand.ranf(); };
+	NxF32 ranf(void) { return mRand.ranf(); };
 
 private:
   Rand mRand;  // random number generator.
-  HeI32  *mData;  // random number bool.
-  HeI32   mSize;  // size of random number pool.
-  HeI32   mTop;   // current top of the random number pool.
+  NxI32  *mData;  // random number bool.
+  NxI32   mSize;  // size of random number pool.
+  NxI32   mTop;   // current top of the random number pool.
 };
 
 
-HeF32 ranf(void);
-HeF32 ranf(HeF32 low,HeF32 high);
+NxF32 ranf(void);
+NxF32 ranf(NxF32 low,NxF32 high);
 
 #endif

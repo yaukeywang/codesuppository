@@ -56,7 +56,7 @@
 
 */
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 
 
 enum ViewTest
@@ -76,7 +76,7 @@ enum ViewTest
 class FrustumInterface
 {
 public:
-	virtual ViewTest ViewTestAABB(const HeF32 *bound,ViewTest state) = 0;
+	virtual ViewTest ViewTestAABB(const NxF32 *bound,ViewTest state) = 0;
 private:
 };
 

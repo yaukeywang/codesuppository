@@ -30,38 +30,38 @@
 -----------------------------------------------------------------------*/
 
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 
 // If INT64 and UINT64 were not previously defined elsewhere, then define them here.
 
 namespace CLOCK
 {
 
-HeF32 getSystemTime(void);
-HeU32 getSystemTimeMS(void);
+NxF32 getSystemTime(void);
+NxU32 getSystemTimeMS(void);
 
-HeF32       getCurrentTime(void); // current time since startup in seconds.
+NxF32       getCurrentTime(void); // current time since startup in seconds.
 
-HeF32        getDeltaTime(void);   // get the delta frame time in seconds. (Times 1000 if you want milliseconds.)
+NxF32        getDeltaTime(void);   // get the delta frame time in seconds. (Times 1000 if you want milliseconds.)
 
-HeF32        doClockFrame(void);   // indicate a new frame, compute and return the delta time value in seconds.
+NxF32        doClockFrame(void);   // indicate a new frame, compute and return the delta time value in seconds.
 void         getDateTime(char *sdate,char *stime);
 const char * getProcessorAscii(void); // get the name of the processor as ascii
-HeU64       getClockSpeed(void);     // report the clock speed of the processor.
+NxU64       getClockSpeed(void);     // report the clock speed of the processor.
 void         init(void);              // initialize the clock system.
-HeU64       getCounter(void); // get the current performance counter.
-HeF32        getCounterDifference(HeU64 stime); // compute the difference and return it as a floating point number.
+NxU64       getCounter(void); // get the current performance counter.
+NxF32        getCounterDifference(NxU64 stime); // compute the difference and return it as a floating point number.
 
 
 class TimeTracker
 {
 public:
-  TimeTracker(HeU32 frames)
+  TimeTracker(NxU32 frames)
   {
     mTotalFrames = 0;
     mFrameCount = frames;
     mFrameNo    = 0;
-    mTimes = MEMALLOC_NEW_ARRAY(HeF32,frames)[frames];
+    mTimes = MEMALLOC_NEW_ARRAY(NxF32,frames)[frames];
   }
 
   ~TimeTracker(void)
@@ -83,11 +83,11 @@ public:
     mTotalFrames++;
   }
 
-  HeU32  mTotalFrames;  // total number we have tracked altogether.
-  HeU32  mFrameCount;   // number of frames we are tracking.
-  HeU32  mFrameNo;      // the current frame number.
-  HeU64        mTime;         // the start time.
-  HeF32        *mTimes;        // the delta frame time for that past N frames.
+  NxU32  mTotalFrames;  // total number we have tracked altogether.
+  NxU32  mFrameCount;   // number of frames we are tracking.
+  NxU32  mFrameNo;      // the current frame number.
+  NxU64        mTime;         // the start time.
+  NxF32        *mTimes;        // the delta frame time for that past N frames.
 };
 
 };

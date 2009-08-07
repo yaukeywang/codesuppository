@@ -5,14 +5,14 @@
 
 #include "MeshImport/MeshImport.h"
 #include "MeshSystemHelper.h"
-#include "common/snippets/UserMemAlloc.h"
-#include "common/snippets/fmem.h"
-#include "common/snippets/sutil.h"
-#include "common/snippets/SendTextMessage.h"
+#include "UserMemAlloc.h"
+#include "fmem.h"
+#include "sutil.h"
+#include "SendTextMessage.h"
 #include "RenderDebug/RenderDebug.h"
-#include "common/snippets/stringdict.h"
-#include "common/snippets/FloatMath.h"
-#include "common/HeMath/HeFoundation.h"
+#include "stringdict.h"
+#include "FloatMath.h"
+#include "NxFoundation.h"
 #include "Pd3d/pd3d.h"
 
 #pragma warning(disable:4100)
@@ -21,7 +21,7 @@ class MyMeshSystemHelper : public MeshSystemHelper
 {
 public:
 
-  typedef USER_STL::vector< HeMat44 > HeMat44Vector;
+  typedef USER_STL::vector< NxMat44 > HeMat44Vector;
 
   MyMeshSystemHelper(void)
   {
@@ -71,7 +71,7 @@ public:
     {
       if ( mMeshSystem && showMesh )
       {
-        for (HeU32 i=0; i<mMeshSystem->mMeshCount; i++)
+        for (NxU32 i=0; i<mMeshSystem->mMeshCount; i++)
         {
           debugRender( mMeshSystem->mMeshes[i], mSkeleton );
         }
@@ -96,7 +96,7 @@ public:
       {
         if ( mMeshSystem->mMeshCollisionCount )
         {
-          for (HeU32 i=0; i<mMeshSystem->mMeshCollisionCount; i++)
+          for (NxU32 i=0; i<mMeshSystem->mMeshCollisionCount; i++)
           {
             debugRender( mMeshSystem->mMeshCollisionRepresentations[i], mSkeleton, mSelectCollision );
           }
@@ -109,7 +109,7 @@ public:
       {
         if ( mShowBounds )
           gRenderDebug->DebugBound(mMeshSystem->mAABB.mMin, mMeshSystem->mAABB.mMax, 0xFFFFFF );
-        for (HeU32 i=0; i<mMeshSystem->mMeshCount; i++)
+        for (NxU32 i=0; i<mMeshSystem->mMeshCount; i++)
         {
           debugRender( mMeshSystem->mMeshes[i] );
         }
@@ -134,7 +134,7 @@ public:
       {
         if ( mMeshSystem->mMeshCollisionCount )
         {
-          for (HeU32 i=0; i<mMeshSystem->mMeshCollisionCount; i++)
+          for (NxU32 i=0; i<mMeshSystem->mMeshCollisionCount; i++)
           {
             debugRender( mMeshSystem->mMeshCollisionRepresentations[i],0, mSelectCollision );
           }
@@ -153,7 +153,7 @@ public:
         if ( mSelectCollision >= 0 )
         {
           MESHIMPORT::MeshCollisionRepresentation *cr = mMeshSystem->mMeshCollisionRepresentations[0];
-          if ( mSelectCollision < (HeI32)cr->mCollisionCount )
+          if ( mSelectCollision < (NxI32)cr->mCollisionCount )
           {
             MESHIMPORT::MeshCollision *c = cr->mCollisionGeometry[mSelectCollision];
             SEND_TEXT_MESSAGE(0,"Selected collision %s\r\n", c->mName );
@@ -167,7 +167,7 @@ public:
   {
     if ( selectCollision >= 0 )
     {
-      if ( selectCollision < (HeI32)m->mCollisionCount )
+      if ( selectCollision < (NxI32)m->mCollisionCount )
       {
         MESHIMPORT::MeshCollision *c = m->mCollisionGeometry[selectCollision];
         debugRender(c,skeleton);
@@ -175,7 +175,7 @@ public:
     }
     else
     {
-      for (HeU32 i=0; i<m->mCollisionCount; i++)
+      for (NxU32 i=0; i<m->mCollisionCount; i++)
       {
         MESHIMPORT::MeshCollision *c = m->mCollisionGeometry[i];
         debugRender(c,skeleton);
@@ -185,7 +185,7 @@ public:
 
   void debugRender(MESHIMPORT::MeshCollision *m,MESHIMPORT::MeshSkeletonInstance *skeleton)
   {
-    HeU32 color = gRenderDebug->getDebugColor();
+    NxU32 color = gRenderDebug->getDebugColor();
 
     float combined[16];
 
@@ -228,11 +228,11 @@ public:
       case MESHIMPORT::MCT_CONVEX:
         {
           MESHIMPORT::MeshCollisionConvex *c = static_cast< MESHIMPORT::MeshCollisionConvex *>(m);
-          for (HeU32 i=0; i<c->mTriCount; i++)
+          for (NxU32 i=0; i<c->mTriCount; i++)
           {
-            HeU32 i1 = c->mIndices[i*3+0];
-            HeU32 i2 = c->mIndices[i*3+1];
-            HeU32 i3 = c->mIndices[i*3+2];
+            NxU32 i1 = c->mIndices[i*3+0];
+            NxU32 i2 = c->mIndices[i*3+1];
+            NxU32 i3 = c->mIndices[i*3+2];
 
             const float *p1 = &c->mVertices[i1*3];
             const float *p2 = &c->mVertices[i2*3];
@@ -253,10 +253,10 @@ public:
 
   void debugRender(MESHIMPORT::Mesh *m)
   {
-    HeU32 color = gRenderDebug->getDebugColor();
+    NxU32 color = gRenderDebug->getDebugColor();
     if ( mShowBounds )
       gRenderDebug->DebugBound(m->mAABB.mMin, m->mAABB.mMax, 0xFFFF00 );
-    for (HeU32 i=0; i<m->mSubMeshCount; i++)
+    for (NxU32 i=0; i<m->mSubMeshCount; i++)
     {
       debugRender(m->mSubMeshes[i],color,m);
       color = gRenderDebug->getDebugColor();
@@ -269,8 +269,8 @@ public:
     MESHIMPORT::MeshVertex *vertices = MEMALLOC_NEW_ARRAY(MESHIMPORT::MeshVertex,vcount);
     gMeshImport->transformVertices(vcount,m->mVertices,vertices,skeleton);
 
-    HeU32 color = gRenderDebug->getDebugColor(true);
-    for (HeU32 i=0; i<m->mSubMeshCount; i++)
+    NxU32 color = gRenderDebug->getDebugColor(true);
+    for (NxU32 i=0; i<m->mSubMeshCount; i++)
     {
       debugRender(m->mSubMeshes[i],color,vertices);
       color = gRenderDebug->getDebugColor();
@@ -279,7 +279,7 @@ public:
     MEMALLOC_DELETE_ARRAY(MESHIMPORT::MeshVertex,vertices);
   }
 
-  void debugRender(MESHIMPORT::SubMesh *m,HeU32 color,MESHIMPORT::Mesh *pm)
+  void debugRender(MESHIMPORT::SubMesh *m,NxU32 color,MESHIMPORT::Mesh *pm)
   {
     if ( mShowBounds )
       gRenderDebug->DebugBound(m->mAABB.mMin, m->mAABB.mMax, color);
@@ -287,7 +287,7 @@ public:
     PD3D::Pd3dGraphicsVertex *vertices = MEMALLOC_NEW_ARRAY(PD3D::Pd3dGraphicsVertex,pm->mVertexCount)[pm->mVertexCount];
     PD3D::Pd3dGraphicsVertex *dest = vertices;
     const MESHIMPORT::MeshVertex *src = pm->mVertices;
-    for (HeU32 i=0; i<pm->mVertexCount; i++)
+    for (NxU32 i=0; i<pm->mVertexCount; i++)
     {
       dest->mPos[0] = src->mPos[0];
       dest->mPos[1] = src->mPos[1];
@@ -302,11 +302,11 @@ public:
     }
     if ( mShowWireframe )
     {
-      for (HeU32 i=0; i<m->mTriCount; i++)
+      for (NxU32 i=0; i<m->mTriCount; i++)
       {
-        HeU32 i1 = m->mIndices[i*3+0];
-        HeU32 i2 = m->mIndices[i*3+1];
-        HeU32 i3 = m->mIndices[i*3+2];
+        NxU32 i1 = m->mIndices[i*3+0];
+        NxU32 i2 = m->mIndices[i*3+1];
+        NxU32 i3 = m->mIndices[i*3+2];
         assert( i1 >= 0 && i1 < pm->mVertexCount );
         assert( i2 >= 0 && i2 < pm->mVertexCount );
         assert( i3 >= 0 && i3 < pm->mVertexCount );
@@ -320,7 +320,7 @@ public:
     {
       gPd3d->renderSection(&mMaterial,vertices,m->mIndices,pm->mVertexCount,m->mTriCount);
     }
-    suppress_unused_variable_warning(vertices);
+	vertices;
 
     MEMALLOC_DELETE_ARRAY(PD3D::Pd3dGraphicsVertex,vertices);
 
@@ -336,13 +336,13 @@ public:
 
   }
 
-  void debugRender(MESHIMPORT::SubMesh *m,HeU32 color,const MESHIMPORT::MeshVertex *vertices)
+  void debugRender(MESHIMPORT::SubMesh *m,NxU32 color,const MESHIMPORT::MeshVertex *vertices)
   {
-    for (HeU32 i=0; i<m->mTriCount; i++)
+    for (NxU32 i=0; i<m->mTriCount; i++)
     {
-      HeU32 i1 = m->mIndices[i*3+0];
-      HeU32 i2 = m->mIndices[i*3+1];
-      HeU32 i3 = m->mIndices[i*3+2];
+      NxU32 i1 = m->mIndices[i*3+0];
+      NxU32 i2 = m->mIndices[i*3+1];
+      NxU32 i3 = m->mIndices[i*3+2];
 
       const MESHIMPORT::MeshVertex &v1 = vertices[i1];
       const MESHIMPORT::MeshVertex &v2 = vertices[i2];
@@ -367,7 +367,7 @@ public:
 
     release();
 
-    HeU32 len;
+    NxU32 len;
     unsigned char *data = getLocalFile(fname,len);
     if ( data )
     {
@@ -404,7 +404,7 @@ public:
     }
   }
 
-  virtual const float * getCompositeTransforms(HeU32 &bone_count) 
+  virtual const float * getCompositeTransforms(NxU32 &bone_count) 
   {
     const float *ret = 0;
     bone_count = 0;
@@ -414,7 +414,7 @@ public:
       for (int i=0; i<mSkeleton->mBoneCount; i++)
       {
         MESHIMPORT::MeshBoneInstance &bi = mSkeleton->mBones[i];
-        HeMat44 m;
+        NxMat44 m;
         m.set(bi.mCompositeAnimTransform);
         mTransforms.push_back(m);
       }
@@ -636,20 +636,20 @@ public:
     if ( mMeshSystem )
     {
       ret = MEMALLOC_NEW(MeshSystemRaw);
-      typedef USER_STL::vector< HeU32 > HeU32Vector;
+      typedef USER_STL::vector< NxU32 > HeU32Vector;
       HeU32Vector indices;
       fm_VertexIndex *vi = fm_createVertexIndex(0.0001f,false);
-      for (HeU32 i=0; i<mMeshSystem->mMeshCount; i++)
+      for (NxU32 i=0; i<mMeshSystem->mMeshCount; i++)
       {
         MESHIMPORT::Mesh *m = mMeshSystem->mMeshes[i];
-        for (HeU32 j=0; j<m->mSubMeshCount; j++)
+        for (NxU32 j=0; j<m->mSubMeshCount; j++)
         {
           MESHIMPORT::SubMesh *sm = m->mSubMeshes[j];
-          for (HeU32 k=0; k<sm->mTriCount; k++)
+          for (NxU32 k=0; k<sm->mTriCount; k++)
           {
-            HeU32 i1 = sm->mIndices[k*3+0];
-            HeU32 i2 = sm->mIndices[k*3+1];
-            HeU32 i3 = sm->mIndices[k*3+2];
+            NxU32 i1 = sm->mIndices[k*3+0];
+            NxU32 i2 = sm->mIndices[k*3+1];
+            NxU32 i3 = sm->mIndices[k*3+2];
             assert( i1 >= 0 && i1 < m->mVertexCount );
             assert( i2 >= 0 && i2 < m->mVertexCount );
             assert( i3 >= 0 && i3 < m->mVertexCount );
@@ -672,10 +672,10 @@ public:
       if ( ret->mVcount )
       {
         ret->mTcount = indices.size()/3;
-        ret->mIndices = (HeU32 *)MEMALLOC_MALLOC(sizeof(HeU32)*ret->mTcount*3);
-        memcpy(ret->mIndices,&indices[0],sizeof(HeU32)*ret->mTcount*3);
-        ret->mVertices = (HeF32 *)MEMALLOC_MALLOC(sizeof(HeF32)*ret->mVcount*3);
-        memcpy(ret->mVertices, vi->getVerticesFloat(), sizeof(HeF32)*ret->mVcount*3);
+        ret->mIndices = (NxU32 *)MEMALLOC_MALLOC(sizeof(NxU32)*ret->mTcount*3);
+        memcpy(ret->mIndices,&indices[0],sizeof(NxU32)*ret->mTcount*3);
+        ret->mVertices = (NxF32 *)MEMALLOC_MALLOC(sizeof(NxF32)*ret->mVcount*3);
+        memcpy(ret->mVertices, vi->getVerticesFloat(), sizeof(NxF32)*ret->mVcount*3);
       }
       fm_releaseVertexIndex(vi);
     }
@@ -703,7 +703,7 @@ private:
   StringDict mStrings;
   HeMat44Vector mTransforms;
   PD3D::Pd3dMaterial mMaterial;
-  HeI32 mSelectCollision;
+  NxI32 mSelectCollision;
 };
 
 MeshSystemHelper * createMeshSystemHelper(void)

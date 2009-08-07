@@ -2,7 +2,7 @@
 
 #define COMM_LAYER_H
 
-#include "MeshImport/MeshImport.h"
+#include "MeshImport.h"
 
 namespace MESHIMPORT
 {

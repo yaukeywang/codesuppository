@@ -2,12 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <hash_map>
 
 #pragma warning(disable:4702)
 
 #include "ConsolidateMesh.h"
 #include "FloatMath.h"
-#include "He.h"
 
 #pragma warning(disable:4100)
 
@@ -29,7 +29,7 @@ class Edge;
 
 static void addPolyPoint(Edge *p,Edge **polyPoints,Polygon *parent);
 static void removePolyPoint(Edge *p,Edge **polyPoints);
-static bool hasPolyPoint(Polygon *p,HeU32 i,Edge **polyPoints);
+static bool hasPolyPoint(Polygon *p,NxU32 i,Edge **polyPoints);
 
 class Edge
 {
@@ -43,10 +43,10 @@ public:
     mParent = 0;
   }
 
-  void init(HeU32 i1,HeU32 i2,Polygon *parent)
+  void init(NxU32 i1,NxU32 i2,Polygon *parent)
   {
-    HE_ASSERT( i1 < 65536 );
-    HE_ASSERT( i2 < 65536 );
+    assert( i1 < 65536 );
+    assert( i2 < 65536 );
     mI1 = i1;
     mI2 = i2;
     mNext = 0;
@@ -54,12 +54,12 @@ public:
     mParent = parent;
   }
 
-  HeU32 getHash(void) const { return (mI2<<16)|mI1; };
-  HeU32 getReverseHash(void) const { return (mI1<<16)|mI2; };
+  NxU32 getHash(void) const { return (mI2<<16)|mI1; };
+  NxU32 getReverseHash(void) const { return (mI1<<16)|mI2; };
 
 
-  HeU32  mI1;
-  HeU32  mI2;
+  NxU32  mI1;
+  NxU32  mI2;
 
   Edge   *mNext;
   Edge   *mPrevious;
@@ -187,7 +187,7 @@ public:
     validatePolygon(polyPoints);
 #endif
 
-    HE_ASSERT( merge->mEcount == 3 );
+    assert( merge->mEcount == 3 );
 
     // This edge 'e' is getting collapsed...
     Edge *tri[3];
@@ -213,15 +213,15 @@ public:
     }
     else
     {
-      HE_ASSERT( tri[2]->getHash() == e->getReverseHash() );
+      assert( tri[2]->getHash() == e->getReverseHash() );
       scan = tri[2];
       scan_next = tri[0];
       scan_prev = tri[1];
     }
 
-    HE_ASSERT(scan); // we wouldn't be here unless we had a shared edge!
-    HE_ASSERT(scan_prev);
-    HE_ASSERT(scan_next);
+    assert(scan); // we wouldn't be here unless we had a shared edge!
+    assert(scan_prev);
+    assert(scan_next);
 
     Edge *e_prev = e->mPrevious ? e->mPrevious : mTail;
     Edge *e_next = e->mNext ? e->mNext : mRoot;
@@ -259,7 +259,7 @@ public:
     validatePolygon(polyPoints);
 #endif
 
-    HE_ASSERT( merge->mEcount == 3 );
+    assert( merge->mEcount == 3 );
     merge->mRemoved = true;
     mMerged = true;
 
@@ -289,15 +289,15 @@ public:
     }
     else
     {
-      HE_ASSERT( tri[2]->getHash() == e->getReverseHash() );
+      assert( tri[2]->getHash() == e->getReverseHash() );
       scan = tri[2];
       scan_next = tri[0];
       scan_prev = tri[1];
     }
 
-    HE_ASSERT(scan); // we wouldn't be here unless we had a shared edge!
-    HE_ASSERT(scan_prev);
-    HE_ASSERT(scan_next);
+    assert(scan); // we wouldn't be here unless we had a shared edge!
+    assert(scan_prev);
+    assert(scan_next);
 
     Edge *e_prev = e->mPrevious ? e->mPrevious : mTail;
     Edge *e_next = e->mNext ? e->mNext : mRoot;
@@ -346,8 +346,8 @@ public:
     if ( insert_one )
     {
       Edge *insert_at = kill1->mPrevious ? kill1->mPrevious : mTail;
-      HE_ASSERT( insert_at != kill1 );
-      HE_ASSERT( insert_at != kill2 );
+      assert( insert_at != kill1 );
+      assert( insert_at != kill2 );
 #ifdef _DEBUG
       validatePolygon(polyPoints);
 #endif
@@ -385,7 +385,7 @@ public:
       Edge *insert = scan_next;
       insert->mPrevious = previous;
 
-      HE_ASSERT(insert);
+      assert(insert);
 
       ret = insert;
 
@@ -393,12 +393,12 @@ public:
         previous->mNext = insert;
       else
       {
-        HE_ASSERT( e == mRoot );
+        assert( e == mRoot );
         mRoot = insert;
       }
 
       Edge *patch = insert->mNext ? insert->mNext : merge->mRoot;
-      HE_ASSERT( patch != scan );
+      assert( patch != scan );
       insert->mNext = patch;
 
       patch->mPrevious = insert;
@@ -436,30 +436,30 @@ public:
     Edge *e = mRoot;
     Edge *prev = 0;
 
-    HeU32 count = 0;
+    NxU32 count = 0;
 
     while ( e )
     {
       count++;
-      HE_ASSERT( e->mPrevious == prev );
+      assert( e->mPrevious == prev );
       if ( e->mPrevious )
       {
-        HE_ASSERT( e->mPrevious->mI2 == e->mI1 );
+        assert( e->mPrevious->mI2 == e->mI1 );
       }
       else
       {
-        HE_ASSERT( e == mRoot );
+        assert( e == mRoot );
       }
       if ( e->mNext )
       {
-        HE_ASSERT( e->mNext->mI1 == e->mI2 );
+        assert( e->mNext->mI1 == e->mI2 );
       }
 
       if ( prev )
       {
         if ( validate_bidirectional && prev->mI1 == e->mI2 && prev->mI2 == e->mI1 )
         {
-          HE_ASSERT(0);
+          assert(0);
         }
       }
 
@@ -467,19 +467,19 @@ public:
       e = e->mNext;
     }
 
-    HE_ASSERT( prev->mI2 == mRoot->mI1 );
-    HE_ASSERT( mTail == prev );
-    HE_ASSERT( count == mEcount );
+    assert( prev->mI2 == mRoot->mI1 );
+    assert( mTail == prev );
+    assert( count == mEcount );
 
     if ( validate_bidirectional && mRoot->mI1 == mTail->mI2 && mRoot->mI2 == mTail->mI1 )
     {
-      HE_ASSERT(0);
+      assert(0);
     }
 
     e = mRoot;
     while ( e )
     {
-      HE_ASSERT( hasPolyPoint(this,e->mI2,polyPoints) );
+      assert( hasPolyPoint(this,e->mI2,polyPoints) );
       e = e->mNext;
     }
 
@@ -489,17 +489,17 @@ public:
   bool    mMerged:1;
   bool    mRemoved:1;
 
-  HeU32  mEcount;
+  NxU32  mEcount;
   Edge   *mRoot;
   Edge   *mTail;
   float  mNormal[3];
-  HeU32 mIndex; // polygon index (used for debugging)
+  NxU32 mIndex; // polygon index (used for debugging)
 
   Polygon *mNextPolygonEdge;
 };
 
 
-static bool hasPolyPoint(Polygon *p,HeU32 i,Edge **polyPoints)
+static bool hasPolyPoint(Polygon *p,NxU32 i,Edge **polyPoints)
 {
   bool ret = false;
 
@@ -528,7 +528,7 @@ static bool hasPolyPoint(Polygon *p,HeU32 i,Edge **polyPoints)
     scan = scan->mNext;
   }
 
-    HE_ASSERT( ret == tret );
+    assert( ret == tret );
 #endif
 
   return ret;
@@ -537,12 +537,12 @@ static bool hasPolyPoint(Polygon *p,HeU32 i,Edge **polyPoints)
 
 static void addPolyPoint(Edge *p,Edge **polyPoints,Polygon *parent)
 {
-  HeU32 i = p->mI2;
+  NxU32 i = p->mI2;
 
   Edge *scan = polyPoints[i];
   while ( scan )
   {
-    HE_ASSERT( scan != p );
+    assert( scan != p );
     scan = scan->mNextPolyPoint;
   }
 
@@ -561,7 +561,7 @@ static void addPolyPoint(Edge *p,Edge **polyPoints,Polygon *parent)
 
 static void removePolyPoint(Edge *p,Edge **polyPoints)
 {
-  HeU32 i = p->mI2;
+  NxU32 i = p->mI2;
 
   Edge *scan = polyPoints[i];
   Edge *prev = 0;
@@ -572,8 +572,8 @@ static void removePolyPoint(Edge *p,Edge **polyPoints)
     scan = scan->mNextPolyPoint;
   }
 
-//  HE_ASSERT( scan );
-//  HE_ASSERT( scan == p );
+//  assert( scan );
+//  assert( scan == p );
 
   if ( scan )
   {
@@ -592,8 +592,8 @@ static void removePolyPoint(Edge *p,Edge **polyPoints)
 
 #define SPLIT_EPSILON 0.000001f
 
-typedef USER_STL::vector< HeU32 > HeU32Vector;
-typedef USER_STL::hash_map< HeU32, Polygon * > PolygonHashMap;
+typedef USER_STL::vector< NxU32 > HeU32Vector;
+typedef USER_STL_EXT::hash_map< NxU32, Polygon * > PolygonHashMap;
 
 class MyConsolidateMesh : public ConsolidateMesh
 {
@@ -659,9 +659,9 @@ public:
 
       bool np;
 
-      HeU32 i1 = mVertexIndex->getIndex(p1,np);
-      HeU32 i2 = mVertexIndex->getIndex(p2,np);
-      HeU32 i3 = mVertexIndex->getIndex(p3,np);
+      NxU32 i1 = mVertexIndex->getIndex(p1,np);
+      NxU32 i2 = mVertexIndex->getIndex(p2,np);
+      NxU32 i3 = mVertexIndex->getIndex(p3,np);
 
       if ( i1 == i2 || i1 == i3 || i2 == i3 )
       {
@@ -697,9 +697,9 @@ public:
 
       bool np;
 
-      HeU32 i1 = mVertexIndex->getIndex(p1,np);
-      HeU32 i2 = mVertexIndex->getIndex(p2,np);
-      HeU32 i3 = mVertexIndex->getIndex(p3,np);
+      NxU32 i1 = mVertexIndex->getIndex(p1,np);
+      NxU32 i2 = mVertexIndex->getIndex(p2,np);
+      NxU32 i3 = mVertexIndex->getIndex(p3,np);
 
       if ( i1 == i2 || i1 == i3 || i2 == i3 )
       {
@@ -720,7 +720,7 @@ public:
     return ret;
   }
 
-  Edge * addEdge(Edge *e,Polygon *p,HeU32 i1,HeU32 i2)
+  Edge * addEdge(Edge *e,Polygon *p,NxU32 i1,NxU32 i2)
   {
     e->init(i1,i2,p);
 
@@ -775,7 +775,7 @@ public:
         else
           mVertexOutput = fm_createVertexIndex((float)SPLIT_EPSILON,false);
 
-        HeU32 vcount = mVertexIndex->getVcount();
+        NxU32 vcount = mVertexIndex->getVcount();
         mPolyPoints = new Edge*[vcount];
         mPolygons = new Polygon[mPolygonCount];
         mEdges    = new Edge[mEdgeCount];
@@ -785,13 +785,13 @@ public:
         Polygon *p = mPolygons;
         Edge    *e = mEdges;
 
-        const HeU32 *scan = &mIndices[0];
-        for (HeU32 i=0; i<mPolygonCount; i++)
+        const NxU32 *scan = &mIndices[0];
+        for (NxU32 i=0; i<mPolygonCount; i++)
         {
 
-          HeU32 i1 = scan[0];
-          HeU32 i2 = scan[1];
-          HeU32 i3 = scan[2];
+          NxU32 i1 = scan[0];
+          NxU32 i2 = scan[1];
+          NxU32 i3 = scan[2];
 
           p->mIndex = i;
 
@@ -823,7 +823,7 @@ public:
         // Consolidate all triangles into polygons in a single pass.
         {
           Polygon *p = mPolygons;
-          for (HeU32 i=0; i<mPolygonCount; i++)
+          for (NxU32 i=0; i<mPolygonCount; i++)
           {
             consolidate(p,i);
             p++;
@@ -834,7 +834,7 @@ public:
         {
           Polygon *p = mPolygons;
           fm_Triangulate *t = fm_createTriangulate(); // create the 3d polygon triangulator
-          for (HeU32 j=0; j<mPolygonCount; j++)
+          for (NxU32 j=0; j<mPolygonCount; j++)
           {
             if ( !p->mRemoved )
             {
@@ -843,7 +843,7 @@ public:
               p->debug(0,mVertexIndex);
 #endif
               #define MAX_VERTS 2048
-              HE_ASSERT( p->mEcount < MAX_VERTS );
+              assert( p->mEcount < MAX_VERTS );
               if ( p->mEcount < MAX_VERTS )
               {
 
@@ -851,7 +851,7 @@ public:
                 double _vertices[MAX_VERTS*3];
 
                 Edge *e = p->mRoot;
-                HeU32 pcount = 0;
+                NxU32 pcount = 0;
                 double *dest = _vertices;
                 while ( e )
                 {
@@ -881,7 +881,7 @@ public:
                   case 0:
                   case 1:
                   case 2:
-//                    HE_ASSERT(0);
+//                    assert(0);
                     break;
                   case 3:
                     if ( mUseDouble )
@@ -925,12 +925,12 @@ public:
                     break;
                   default:
                     {
-                      HeU32 tcount;
+                      NxU32 tcount;
                       const double *triangles = t->triangulate3d(pcount,vertices,sizeof(double)*3,tcount,false,SPLIT_EPSILON);
 
                       if ( triangles )
                       {
-                        for (HeU32 i=0; i<tcount; i++)
+                        for (NxU32 i=0; i<tcount; i++)
                         {
                           const double *p1 = triangles;
                           const double *p2 = triangles+3;
@@ -957,7 +957,7 @@ public:
 
 //                        SEND_TEXT_MESSAGE(0,"Triangulation failed on %d points.\r\n", pcount);
 //
-//                        for (HeU32 i=0; i<pcount; i++)
+//                        for (NxU32 i=0; i<pcount; i++)
 //                        {
 //                          const double *p = &vertices[i*3];
 //                          SEND_TEXT_MESSAGE(0,"Point%d : %0.9f, %0.9f, %0.9f \r\n", i+1, (float)p[0],(float)p[1],(float)p[2]);
@@ -1008,7 +1008,7 @@ public:
     return dot >= 0.9999f && dot <= 1.0001f ? true : false;
   }
 
-  Polygon * sharedEdge(HeU32 hash,Polygon *check)
+  Polygon * sharedEdge(NxU32 hash,Polygon *check)
   {
     Polygon *ret = 0;
 
@@ -1019,7 +1019,7 @@ public:
       Polygon *p = (*found).second;
       while ( p )
       {
-        HE_ASSERT( p != check );
+        assert( p != check );
         if ( normalMatch(p->mNormal,check->mNormal) )
         {
 
@@ -1067,7 +1067,7 @@ public:
     }
     else
     {
-      HE_ASSERT(0); // impossible!
+      assert(0); // impossible!
     }
   }
 
@@ -1083,7 +1083,7 @@ public:
 
   void removePolyPoints(Polygon *p)
   {
-    HE_ASSERT( p->mEcount == 3 );
+    assert( p->mEcount == 3 );
     Edge *e1 = p->mRoot;
     Edge *e2 = e1->mNext;
     Edge *e3 = e2->mNext;
@@ -1092,10 +1092,10 @@ public:
     removePolyPoint(e3,mPolyPoints);
   }
 
-  void consolidate(Polygon *p,HeU32 index)
+  void consolidate(Polygon *p,NxU32 index)
   {
 
-    HeU32 merge_count = 0;
+    NxU32 merge_count = 0;
 
     if ( !p->mRemoved )  // if this is not a polygon which has already been removed (folded up into another)
     {
@@ -1116,7 +1116,7 @@ public:
 
           if ( insertion_point )
           {
-            HeU32 new_point = insertion_point->mI2;
+            NxU32 new_point = insertion_point->mI2;
             if ( hasPolyPoint(p,new_point,mPolyPoints) )
             {
               merge = 0;
@@ -1149,8 +1149,8 @@ public:
 #pragma warning(disable:4100)
   int getIndex(int x,int y,int wid,int hit) const
   {
-    HE_ASSERT( x >= 0 && x < wid );
-    HE_ASSERT( y >= 0 && y < hit );
+    assert( x >= 0 && x < wid );
+    assert( y >= 0 && y < hit );
     return (y*wid)+x+1;
   }
 #pragma warning(pop)
@@ -1161,11 +1161,11 @@ public:
     gRenderDebug->DebugSolidTri(p1,p2,p3,0x00FFFF,30.0f);
     gRenderDebug->DebugTri(p1,p2,p3,0xFFFF00,30.0f);
 #endif
-    HE_ASSERT( !mUseDouble );
+    assert( !mUseDouble );
     bool np;
-    HeU32 i1 = mVertexOutput->getIndex(p1,np);
-    HeU32 i2 = mVertexOutput->getIndex(p2,np);
-    HeU32 i3 = mVertexOutput->getIndex(p3,np);
+    NxU32 i1 = mVertexOutput->getIndex(p1,np);
+    NxU32 i2 = mVertexOutput->getIndex(p2,np);
+    NxU32 i3 = mVertexOutput->getIndex(p3,np);
     mOutputIndices.push_back(i1);
     mOutputIndices.push_back(i2);
     mOutputIndices.push_back(i3);
@@ -1178,11 +1178,11 @@ public:
     gRenderDebug->DebugTri(p1,p2,p3,0xFFFF00,30.0f);
 #endif
 
-    HE_ASSERT( mUseDouble );
+    assert( mUseDouble );
     bool np;
-    HeU32 i1 = mVertexOutput->getIndex(p1,np);
-    HeU32 i2 = mVertexOutput->getIndex(p2,np);
-    HeU32 i3 = mVertexOutput->getIndex(p3,np);
+    NxU32 i1 = mVertexOutput->getIndex(p1,np);
+    NxU32 i2 = mVertexOutput->getIndex(p2,np);
+    NxU32 i3 = mVertexOutput->getIndex(p3,np);
     mOutputIndices.push_back(i1);
     mOutputIndices.push_back(i2);
     mOutputIndices.push_back(i3);
@@ -1193,8 +1193,8 @@ public:
   Polygon               *mPolygons;
   Edge                  *mEdges;
   HeU32Vector           mIndices;
-  HeU32                 mPolygonCount;
-  HeU32                 mEdgeCount;
+  NxU32                 mPolygonCount;
+  NxU32                 mEdgeCount;
   PolygonHashMap         mPolygonEdges;
 
   fm_VertexIndex        *mVertexOutput;

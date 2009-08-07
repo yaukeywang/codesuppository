@@ -5,8 +5,8 @@
 
 #include "TestTjunctions.h"
 #include "MeshImport/MeshImport.h"
-#include "common/snippets/SendTextMessage.h"
-#include "common/snippets/RemoveTjunctions.h"
+#include "SendTextMessage.h"
+#include "RemoveTjunctions.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
 #include "RenderDebug/RenderDebug.h"
 

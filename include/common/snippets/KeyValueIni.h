@@ -51,7 +51,7 @@
 
 */
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 
 class KeyValueIni;
 class KeyValueSection;
@@ -86,7 +86,7 @@ class KeyValueSection;
  * Note also that all returned pointers are persistent up until the KeyValueIni file is released.  That means you can avoid string copies and instead only cache the
  * pointers internally so long as you keep the INI file loaded.
  */
-KeyValueIni *     loadKeyValueIni(const char *fname,HeU32 &sections);
+KeyValueIni *     loadKeyValueIni(const char *fname,unsigned int &sections);
 
 /*!
  * \brief
@@ -111,7 +111,7 @@ KeyValueIni *     loadKeyValueIni(const char *fname,HeU32 &sections);
  *
  * Comment symbols for INI files are '#' '!' and ';'
  */
-KeyValueIni *     loadKeyValueIni(const char *mem,HeU32 len,HeU32 &sections);
+KeyValueIni *     loadKeyValueIni(const char *mem,unsigned int len,unsigned int &sections);
 
 /*!
  * \brief
@@ -133,7 +133,7 @@ KeyValueIni *     loadKeyValueIni(const char *mem,HeU32 len,HeU32 &sections);
  * Returns an opaque pointer to the corresponding section.
  *
  */
-const KeyValueSection * locateSection(const KeyValueIni *ini,const char *section,HeU32 &keycount,HeU32 &lineno);
+const KeyValueSection * locateSection(const KeyValueIni *ini,const char *section,unsigned int &keycount,unsigned int &lineno);
 
 /*!
  * \brief
@@ -154,7 +154,7 @@ const KeyValueSection * locateSection(const KeyValueIni *ini,const char *section
  * \returns
  * Returns an opaque pointer to the corresponding section, or null if the array index is out of ragne.
  */
-const KeyValueSection * getSection(const KeyValueIni *ini,HeU32 index,HeU32 &keycount,HeU32 &lineno);
+const KeyValueSection * getSection(const KeyValueIni *ini,unsigned int index,unsigned int &keycount,unsigned int &lineno);
 
 /*!
  * \brief
@@ -186,7 +186,7 @@ const char *            getSectionName(const KeyValueSection *section);
  * Returns a pointer to the value component.  If this is null it means only a key was found when the file was parsed, no corresponding value was encountered.
  * 
  */
-const char *      locateValue(const KeyValueSection *section,const char *key,HeU32 &lineno);
+const char *      locateValue(const KeyValueSection *section,const char *key,unsigned int &lineno);
 
 /*!
  * \brief
@@ -204,7 +204,7 @@ const char *      locateValue(const KeyValueSection *section,const char *key,HeU
  * \returns
  * Returns the key found at this location.
  */
-const char *      getKey(const KeyValueSection *section,HeU32 keyindex,HeU32 &lineno);
+const char *      getKey(const KeyValueSection *section,unsigned int keyindex,unsigned int &lineno);
 
 /*!
  * \brief
@@ -223,7 +223,7 @@ const char *      getKey(const KeyValueSection *section,HeU32 keyindex,HeU32 &li
  * Returns a pointer to the value at this entry or a null if there was only a key but no value.
  *
  */
-const char *      getValue(const KeyValueSection *section,HeU32 keyindex,HeU32 &lineno);
+const char *      getValue(const KeyValueSection *section,unsigned int keyindex,unsigned int &lineno);
 
 /*!
  * \brief
@@ -237,7 +237,7 @@ const char *      getValue(const KeyValueSection *section,HeU32 keyindex,HeU32 &
 void              releaseKeyValueIni(const KeyValueIni *ini);
 
 bool              saveKeyValueIni(const KeyValueIni *ini,const char *fname);
-void *            saveKeyValueIniMem(const KeyValueIni *ini,HeU32 &len); // save it to a buffer in memory..
+void *            saveKeyValueIniMem(const KeyValueIni *ini,unsigned int &len); // save it to a buffer in memory..
 bool              releaseIniMem(void *mem);
 
 KeyValueIni      *createKeyValueIni(void); // create an empty .INI file in memory for editing.

@@ -14,7 +14,7 @@
 #include "FloatMath.h"
 
 #define SHOW_DEBUG 0
-#include "He.h"
+#include "NxSimpleTypes.h"
 
 #if SHOW_DEBUG
 #include "RenderDebug/RenderDebug.h"
@@ -102,8 +102,8 @@ public:
 
   void init(size_t i1,size_t i2,Triangle *parent)
   {
-    HE_ASSERT( i1 < 65536 );
-    HE_ASSERT( i2 < 65536 );
+    assert( i1 < 65536 );
+    assert( i2 < 65536 );
 
     mI1 = i1;
     mI2 = i2;
@@ -285,7 +285,7 @@ void Triangle::buildBox(const float *vertices_f,const double *vertices_d,size_t 
     minmax(p3,mBox);
   }
 
-  HE_ASSERT(mIsland);
+  assert(mIsland);
   if ( mIsland )
   {
     if ( mBox.mMin[0] < mIsland->mMin[0] ) mIsland->mMin[0] = mBox.mMin[0];
@@ -420,7 +420,7 @@ public:
         while ( edge )
         {
           Triangle *t = edge->mParent;
-          HE_ASSERT(!t->mConsumed);
+          assert(!t->mConsumed);
           i->add(t,mTriangles);
           removeTriangle(t); // remove this triangle from the triangle-edges hashmap
 
@@ -565,7 +565,7 @@ private:
     if ( found != mTriangleEdges.end() )
     {
       ret = (*found).second;
-      HE_ASSERT( ret->mHash == e->mReverseHash );
+      assert( ret->mHash == e->mReverseHash );
     }
     return ret;
   }
@@ -605,12 +605,12 @@ private:
       }
       else
       {
-        HE_ASSERT(0);
+        assert(0);
       }
     }
     else
     {
-      HE_ASSERT(0); // impossible!
+      assert(0); // impossible!
     }
   }
 
@@ -719,7 +719,7 @@ private:
         }
         else
         {
-          HE_ASSERT(0);
+          assert(0);
         }
       }
 

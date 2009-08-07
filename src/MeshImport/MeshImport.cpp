@@ -3,13 +3,16 @@
 #include <vector>
 
 #include "CommLayer.h"
-#include "./MeshImport/MeshImport.h"
+#include "MeshImport.h"
 #include "VtxWeld.h"
 #include "MeshImportBuilder.h"
-#include "common/snippets/UserMemAlloc.h"
-#include "common/FileInterface/FileInterface.h"
-#include "common/snippets/sutil.h"
-#include "common/snippets/FloatMath.h"
+#include "UserMemAlloc.h"
+#include "FileInterface.h"
+#include "sutil.h"
+#include "FloatMath.h"
+#include "SendTextMessage.h"
+#include "SystemServices.h"
+#include "KeyValueIni.h"
 
 #pragma warning(disable:4996)
 
@@ -26,8 +29,6 @@
 
 #pragma warning(disable:4100)
 
-bool doShutdown(void);
-
 #ifndef PLUGINS_EMBEDDED
 SendTextMessage *gSendTextMessage=0;
 #endif
@@ -39,6 +40,43 @@ extern "C"
 
 namespace MESHIMPORT
 {
+
+class MyVertexIndex : public VertexIndex
+{
+public:
+  MyVertexIndex(float granularity)
+  {
+    mVertexIndex = fm_createVertexIndex(granularity,false);
+  }
+
+  ~MyVertexIndex(void)
+  {
+    fm_releaseVertexIndex(mVertexIndex);
+  }
+
+  virtual unsigned int    getIndex(const float pos[3],bool &newPos)  // get welded index for this float vector[3]
+  {
+    return mVertexIndex->getIndex(pos,newPos);
+  }
+
+  virtual const float *   getVertices(void) const
+  {
+    return mVertexIndex->getVerticesFloat();
+  }
+
+  virtual const float *   getVertex(unsigned int index) const
+  {
+    return mVertexIndex->getVertexFloat(index);
+  }
+
+  virtual unsigned int    getVcount(void) const
+  {
+    return mVertexIndex->getVcount();
+  }
+
+private:
+  fm_VertexIndex *mVertexIndex;
+};
 
 class MyMeshImportApplicationResource : public MeshImportApplicationResource
 {
@@ -79,15 +117,25 @@ public:
   MyMeshImport(void)
   {
     mApplicationResource = this;
+    unsigned int sections;
+    mINI = loadKeyValueIni("MeshImportMaterialTranslate.ini",sections);
   }
 
   ~MyMeshImport(void)
   {
+    releaseKeyValueIni(mINI);
   }
 
-  bool shutdown(void)
+  VertexIndex *            createVertexIndex(float granularity)  // create an indexed vertext system for floats
   {
-    return doShutdown();
+    MyVertexIndex *m = MEMALLOC_NEW(MyVertexIndex)(granularity);
+    return static_cast< VertexIndex *>(m);
+  }
+
+  void                     releaseVertexIndex(VertexIndex *vindex)
+  {
+    MyVertexIndex *m = static_cast< MyVertexIndex *>(vindex);
+    MEMALLOC_DELETE(MyVertexIndex,m);
   }
 
   virtual MeshImporter *   locateMeshImporter(const char *fname) // based on this file name, find a matching mesh importer.
@@ -170,7 +218,7 @@ public:
     MeshImporter *mi = locateMeshImporter(meshName);
     if ( mi )
     {
-      MeshBuilder *b = createMeshBuilder(meshName,data,dlen,mi,options,mApplicationResource);
+      MeshBuilder *b = createMeshBuilder(mINI,meshName,data,dlen,mi,options,mApplicationResource);
       if ( b )
       {
         ret = (MeshSystemContainer *)b;
@@ -1125,13 +1173,13 @@ public:
     fi_fprintf(exfph,"</skeleton>\r\n");
   }
 
-  typedef USER_STL::vector< HeU32 > HeU32Vector;
+  typedef USER_STL::vector< NxU32 > NxU32Vector;
 
   class Msave
   {
     public:
       const char *mMaterialName;
-      HeU32Vector mIndices;
+      NxU32Vector mIndices;
   };
 
   typedef USER_STL::vector< Msave > MsaveVector;
@@ -1149,7 +1197,7 @@ public:
     strcat(scratch,".mtl");
     fi_fprintf(fph,"mtllib %s\r\n", scratch );
 
-    for (HeU32 i=0; i<mesh->mMaterialCount; i++)
+    for (NxU32 i=0; i<mesh->mMaterialCount; i++)
     {
       const MeshMaterial &m = mesh->mMaterials[i];
       fi_fprintf(exfph,"newmtl %s\r\n", m.mName );
@@ -1266,22 +1314,22 @@ public:
         }
       }
 
-      HeI32 vcount = bigPool.GetVertexCount();
+      NxI32 vcount = bigPool.GetVertexCount();
 
       if ( vcount )
       {
         MeshVertex *vb = bigPool.GetBuffer();
-        for (HeI32 i=0; i<vcount; i++)
+        for (NxI32 i=0; i<vcount; i++)
         {
           const MeshVertex &v = vb[i];
           fi_fprintf(fph,"v %s %s %s\r\n", FloatString(v.mPos[0]), FloatString(v.mPos[1]), FloatString(v.mPos[2]));
         }
-        for (HeI32 i=0; i<vcount; i++)
+        for (NxI32 i=0; i<vcount; i++)
         {
           const MeshVertex &v = vb[i];
           fi_fprintf(fph,"vt %s %s\r\n", FloatString(v.mTexel1[0]), FloatString(v.mTexel1[1]));
         }
-        for (HeI32 i=0; i<vcount; i++)
+        for (NxI32 i=0; i<vcount; i++)
         {
           MeshVertex &v = vb[i];
           fmi_normalize(v.mNormal);
@@ -1292,13 +1340,13 @@ public:
         {
           Msave &ms = (*i);
           fi_fprintf(fph,"usemtl %s\r\n", ms.mMaterialName );
-          HeU32 tcount = ms.mIndices.size()/3;
-          HeU32 *indices = &ms.mIndices[0];
-          for (HeU32 k=0; k<tcount; k++)
+          NxU32 tcount = ms.mIndices.size()/3;
+          NxU32 *indices = &ms.mIndices[0];
+          for (NxU32 k=0; k<tcount; k++)
           {
-            HeU32 i1 = indices[k*3+0];
-            HeU32 i2 = indices[k*3+1];
-            HeU32 i3 = indices[k*3+2];
+            NxU32 i1 = indices[k*3+0];
+            NxU32 i2 = indices[k*3+1];
+            NxU32 i3 = indices[k*3+2];
             fi_fprintf(fph,"f %d/%d/%d %d/%d/%d %d/%d/%d\r\n", i1, i1, i1, i2, i2, i2, i3, i3, i3 );
           }
         }
@@ -1383,22 +1431,22 @@ public:
           meshes.push_back(ms);
         }
       }
-      HeI32 vcount = bigPool.GetVertexCount();
+      NxI32 vcount = bigPool.GetVertexCount();
 
       if ( vcount )
       {
         MeshVertex *vb = bigPool.GetBuffer();
-        for (HeI32 i=0; i<vcount; i++)
+        for (NxI32 i=0; i<vcount; i++)
         {
           const MeshVertex &v = vb[i];
           fi_fprintf(fph,"v %s %s %s\r\n", FloatString(v.mPos[0]), FloatString(v.mPos[1]), FloatString(v.mPos[2]));
         }
-        for (HeI32 i=0; i<vcount; i++)
+        for (NxI32 i=0; i<vcount; i++)
         {
           const MeshVertex &v = vb[i];
           fi_fprintf(fph,"vt %s %s\r\n", FloatString(v.mTexel1[0]), FloatString(v.mTexel1[1]));
         }
-        for (HeI32 i=0; i<vcount; i++)
+        for (NxI32 i=0; i<vcount; i++)
         {
           MeshVertex &v = vb[i];
           fmi_normalize(v.mNormal);
@@ -1409,13 +1457,13 @@ public:
         {
           Msave &ms = (*i);
           fi_fprintf(fph,"usemtl %s\r\n", ms.mMaterialName );
-          HeU32 tcount = ms.mIndices.size()/3;
-          HeU32 *indices = &ms.mIndices[0];
-          for (HeU32 k=0; k<tcount; k++)
+          NxU32 tcount = ms.mIndices.size()/3;
+          NxU32 *indices = &ms.mIndices[0];
+          for (NxU32 k=0; k<tcount; k++)
           {
-            HeU32 i1 = indices[k*3+0];
-            HeU32 i2 = indices[k*3+1];
-            HeU32 i3 = indices[k*3+2];
+            NxU32 i1 = indices[k*3+0];
+            NxU32 i2 = indices[k*3+1];
+            NxU32 i3 = indices[k*3+2];
             fi_fprintf(fph,"f %d/%d/%d %d/%d/%d %d/%d/%d\r\n", i1, i1, i1, i2, i2, i2, i3, i3, i3 );
           }
         }
@@ -1694,6 +1742,15 @@ public:
     }
   }
 
+  virtual void rotate(MeshSystemContainer *msc,float rotX,float rotY,float rotZ)  // rotate mesh system using these euler angles expressed as degrees.
+  {
+    MeshBuilder *b = (MeshBuilder *)msc;
+    if ( b )
+    {
+      b->rotate(rotX,rotY,rotZ);
+    }
+  }
+
   virtual void scale(MeshSystemContainer *msc,float s)
   {
     MeshBuilder *b = (MeshBuilder *)msc;
@@ -1745,7 +1802,7 @@ private:
   std::string         mFileRequest;
   MeshImporterVector  mImporters;
   MeshImportApplicationResource *mApplicationResource;
-
+  KeyValueIni        *mINI;
 };
 
 };  // End of Namespace
@@ -1783,17 +1840,6 @@ extern "C"
 using namespace MESHIMPORT;
 
 #ifndef PLUGINS_EMBEDDED
-bool doShutdown(void)
-{
-  bool ret = false;
-  if ( gInterface )
-  {
-    ret = true;
-    delete gInterface;
-    gInterface = 0;
-  }
-  return ret;
-}
 
 using namespace MESHIMPORT;
 

@@ -523,6 +523,13 @@ public:
     mMessage = 0;
   }
 
+  WindowsMessage & operator = (const WindowsMessage & msg)
+  {
+    assert(0);
+    return *this;
+  }
+
+
   WindowsMessage(const char *message)
   {
     mType = 0;
@@ -531,9 +538,9 @@ public:
     memcpy(mMessage,message,mLen);
   }
 
-  WindowsMessage(const char *blobType,const void *mem,HeU32 len)
+  WindowsMessage(const char *blobType,const void *mem,NxU32 len)
   {
-    HeU32 slen = strlen(blobType)+1;
+    NxU32 slen = strlen(blobType)+1;
     mType = (char *)MEMALLOC_MALLOC(slen);
     memcpy(mType,blobType,slen);
     mLen = len;
@@ -543,16 +550,7 @@ public:
 
   WindowsMessage(const WindowsMessage &msg)
   {
-    mLen = msg.mLen;
-    mMessage = (char *)MEMALLOC_MALLOC(mLen);
-    memcpy(mMessage,msg.mMessage,mLen);
-    mType = 0;
-    if ( msg.mType )
-    {
-      HeU32 slen = strlen(msg.mType)+1;
-      mType = (char *)MEMALLOC_MALLOC(slen);
-      memcpy(mType,msg.mType,slen);
-    }
+    assert(0);
   }
 
   ~WindowsMessage(void)
@@ -563,10 +561,10 @@ public:
 
   char    *mType;
   char    *mMessage;
-  HeU32    mLen;
+  NxU32    mLen;
 };
 
-typedef USER_STL::queue< WindowsMessage > WindowsMessageQueue;
+typedef USER_STL::queue< WindowsMessage *> WindowsMessageQueue;
 
 class MyWinMsg : public WinMsg
 {
@@ -575,6 +573,24 @@ public:
 	~MyWinMsg(void)
 	{
 #ifdef WIN32
+        if ( mCurrent )
+        {
+            MEMALLOC_DELETE(WindowsMessage,mCurrent);
+        }
+        while ( !mStrings.empty() )
+        {
+            WindowsMessage *wm = mStrings.front();
+            MEMALLOC_DELETE(WindowsMessage,wm);
+            mStrings.pop();
+        }
+        while ( !mBlobs.empty() )
+        {
+            WindowsMessage *wm = mBlobs.front();
+            MEMALLOC_DELETE(WindowsMessage,wm);
+            mBlobs.pop();
+        }
+
+
 		if ( mHwnd )
 		{
 			HWND msgWindow = (HWND) mHwnd;
@@ -587,6 +603,7 @@ public:
     {
 #ifdef WIN32
         mHwnd = 0;
+		mCurrent = 0;
         if ( app )
         {
      		HWND msgWindow = 0;
@@ -629,12 +646,12 @@ public:
 
 
 
-    void * getDataBlob(const char *key,const char *value,const void *mem,HeU32 len,HeU32 &olen)
+    void * getDataBlob(const char *key,const char *value,const void *mem,NxU32 len,NxU32 &olen)
     {
-        HeU32 klen = strlen(key);
-        HeU32 vlen = strlen(value);
+        NxU32 klen = strlen(key);
+        NxU32 vlen = strlen(value);
 
-        olen = klen+vlen+2+sizeof(HeU32)+len;
+        olen = klen+vlen+2+sizeof(NxU32)+len;
 
         char *blob = (char *)MEMALLOC_MALLOC(olen);
 
@@ -643,9 +660,9 @@ public:
         dest+=(klen+1);
         memcpy(dest,value,vlen+1);
         dest+=(vlen+1);
-        HeU32 *destlen = (HeU32 *)dest;
+        NxU32 *destlen = (NxU32 *)dest;
         *destlen = len;
-        dest+=sizeof(HeU32);
+        dest+=sizeof(NxU32);
         memcpy(dest,mem,len);
 
         return blob;
@@ -658,25 +675,27 @@ public:
 
         if ( !mStrings.empty() )
         {
+            MEMALLOC_DELETE(WindowsMessage,mCurrent);
             mCurrent = mStrings.front();
             mStrings.pop();
-            ret = mCurrent.mMessage;
+            ret = mCurrent->mMessage;
         }
 
 		return ret;
     }
 
-	virtual const char * receiveWindowsMessageBlob(const void *&msg,HeU32 &len)
+	virtual const char * receiveWindowsMessageBlob(const void *&msg,NxU32 &len)
     {
 		const char *ret = 0;
         checkWinMsg();
         if ( !mBlobs.empty() )
         {
+            MEMALLOC_DELETE(WindowsMessage,mCurrent);
             mCurrent = mBlobs.front();
             mBlobs.pop();
-            ret = mCurrent.mType;
-            msg = mCurrent.mMessage;
-            len = mCurrent.mLen;
+            ret = mCurrent->mType;
+            msg = mCurrent->mMessage;
+            len = mCurrent->mLen;
         }
 		return ret;
     }
@@ -725,9 +744,9 @@ public:
     		ret = true;
     		char buffer[8192];
       	    _vsnprintf(buffer, 8192, fmt, (char *)(&fmt+1));
-    		HeU32 len = (HeU32)strlen(buffer);
+    		NxU32 len = (NxU32)strlen(buffer);
 
-            HeU32 olen;
+            NxU32 olen;
             void *mem = getDataBlob("WinMsg","Text",buffer,len+1,olen);
 
             COPYDATASTRUCT copydata;
@@ -746,7 +765,7 @@ public:
 
 
 
-    virtual bool sendWinMsgBinary(const char *app,const char *blobType,const void *mem,HeU32 len)
+    virtual bool sendWinMsgBinary(const char *app,const char *blobType,const void *mem,NxU32 len)
     {
     	bool ret = false;
 
@@ -763,7 +782,7 @@ public:
     	{
     		ret = true;
 
-            HeU32 olen;
+            NxU32 olen;
             void *omem = getDataBlob("WinMsgBlob",blobType,mem,len,olen);
 
              COPYDATASTRUCT copydata;
@@ -804,15 +823,15 @@ public:
       return ret;
     }
 
-    void queueMessageBlob(const char *blobType,const void *mem,HeU32 len)
+    void queueMessageBlob(const char *blobType,const void *mem,NxU32 len)
     {
-        WindowsMessage wm(blobType,mem,len);
+        WindowsMessage *wm = MEMALLOC_NEW(WindowsMessage)(blobType,mem,len);
         mBlobs.push(wm);
     }
 
     void queueMessage(const char *msg)
     {
-        WindowsMessage wm(msg);
+        WindowsMessage *wm = MEMALLOC_NEW(WindowsMessage)(msg);
         mStrings.push(wm);
     }
 
@@ -822,7 +841,7 @@ private:
     HWND mHwnd;
 	char mParseBuffer[MAXPARSEBUFFER];
 	InPlaceParser mParser;
-    WindowsMessage      mCurrent;
+    WindowsMessage     *mCurrent;
     WindowsMessageQueue mStrings;
     WindowsMessageQueue mBlobs;
 #endif
@@ -856,8 +875,8 @@ static INT_PTR CALLBACK _MsgWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARA
                         msg++;
                     }
                     msg++;
-                    const HeU32 *dlen = (const HeU32 *)msg;
-                    msg+=sizeof(HeU32);
+                    const NxU32 *dlen = (const NxU32 *)msg;
+                    msg+=sizeof(NxU32);
 	                winmsg->queueMessageBlob(blobType,msg,dlen[0]);
                 }
                 else
@@ -867,8 +886,8 @@ static INT_PTR CALLBACK _MsgWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARA
                         msg++;
                     }
                     msg++;
-                    const HeU32 *dlen = (const HeU32 *)msg;
-                    msg+=sizeof(HeU32);
+                    const NxU32 *dlen = (const NxU32 *)msg;
+                    msg+=sizeof(NxU32);
 	                winmsg->queueMessage(msg);
                 }
             }

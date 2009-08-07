@@ -9,7 +9,7 @@
 
 #include "RemoveTjunctions.h"
 #include "FloatMath.h"
-#include "He.h"
+#include "NxSimpleTypes.h"
 
 #pragma warning(disable:4127)
 #pragma warning(disable:4189)
@@ -217,8 +217,8 @@ public:
   {
     mTriangle = t;
     mNextEdge = 0;
-    HE_ASSERT( i1 < 65536 );
-    HE_ASSERT( i2 < 65536 );
+    assert( i1 < 65536 );
+    assert( i2 < 65536 );
     if ( i1 < i2 )
     {
       mHash = (i1<<16)|i2;
@@ -435,16 +435,16 @@ public:
     size_t t1 = (size_t)(scan-mInputTriangles);
     size_t t2 = (size_t)(t-mInputTriangles);
 
-    HE_ASSERT( t1 < mTcount );
-    HE_ASSERT( t2 < mTcount );
+    assert( t1 < mTcount );
+    assert( t2 < mTcount );
 
-    HE_ASSERT( scan->mI1 < mVcount );
-    HE_ASSERT( scan->mI2 < mVcount );
-    HE_ASSERT( scan->mI3 < mVcount );
+    assert( scan->mI1 < mVcount );
+    assert( scan->mI2 < mVcount );
+    assert( scan->mI3 < mVcount );
 
-    HE_ASSERT( t->mI1 < mVcount );
-    HE_ASSERT( t->mI2 < mVcount );
-    HE_ASSERT( t->mI3 < mVcount );
+    assert( t->mI1 < mVcount );
+    assert( t->mI2 < mVcount );
+    assert( t->mI3 < mVcount );
 
 
     size_t intersection_index;
@@ -484,7 +484,7 @@ public:
           j3 = t->mI2;
           break;
         default:
-          HE_ASSERT(0);
+          assert(0);
           i1 = i2 = i3 = 0;
           j1 = j2 = j3 = 0;
           break;

@@ -34,7 +34,7 @@
 #include <sys/types.h>
 #include <sys/timeb.h>
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 
 #if defined(WIN32)
 #define NOMINMAX
@@ -53,7 +53,7 @@
 
 
 #include "clock.h"
-#include "common/snippets/cycle.h"
+#include "cycle.h"
 
 namespace CLOCK
 {
@@ -63,11 +63,11 @@ namespace CLOCK
 //-- modified from xbox sample code
 struct TimeInfo
 {
-	HeU64 qwTime;
-	HeU64 qwAppTime;
-	HeF32 fAppTime;
-	HeF32 fElapsedTime;
-	HeF32 fSecsPerTick;
+	NxU64 qwTime;
+	NxU64 qwAppTime;
+	NxF32 fAppTime;
+	NxF32 fElapsedTime;
+	NxF32 fSecsPerTick;
 }gTimeInfo;
 #endif
 
@@ -138,44 +138,44 @@ const char * getProcessorAscii(void) // get the name of the processor as ascii
 }
 
 
-HeU64 getCPUFrequency(HeU32 /*uiMeasureMSecs*/)
+NxU64 getCPUFrequency(NxU32 /*uiMeasureMSecs*/)
 {
-  HeU64 freq=0;
+  NxU64 freq=0;
 #ifdef WIN32
 	QueryPerformanceFrequency((LARGE_INTEGER *) &freq);
 #endif
 	return freq;
 }
 
-HeU64       getClockSpeed(void)     // report the clock speed of the processor.
+NxU64       getClockSpeed(void)     // report the clock speed of the processor.
 {
 	return getCPUFrequency(10);
 }
 
-static HeU64 gProcessorSpeed=0;       // speed of the processor
-static HeU64 gLastTimeRTDSC=0;        // the last value of our call to RTDSC
-static HeF32  gProcessorRecip=0;
-static HeF32  gCurrentTime=0;
-static HeF32 gDtime;
+static NxU64 gProcessorSpeed=0;       // speed of the processor
+static NxU64 gLastTimeRTDSC=0;        // the last value of our call to RTDSC
+static NxF32  gProcessorRecip=0;
+static NxF32  gCurrentTime=0;
+static NxF32 gDtime;
 
 void init(void)
 {
   gProcessorSpeed = getClockSpeed();
-  gProcessorRecip = 1.0f / (HeF32) gProcessorSpeed;
+  gProcessorRecip = 1.0f / (NxF32) gProcessorSpeed;
   gCurrentTime    = 0;
   QueryPerformanceCounter((LARGE_INTEGER *) &gLastTimeRTDSC);
   //gLastTimeRTDSC  = Cycle::getRTDSC();
 }
 
-HeF32       doClockFrame(void)   // indicate a new frame, compute and return the delta time value.
+NxF32       doClockFrame(void)   // indicate a new frame, compute and return the delta time value.
 {
-  HeF32 ret = 0;
+  NxF32 ret = 0;
 
   if ( gProcessorSpeed == 0 )
     init();
 
-  HeU64 cycle;
-  HeU64 cdiff;
+  NxU64 cycle;
+  NxU64 cdiff;
 	QueryPerformanceCounter((LARGE_INTEGER *) &cycle);
   if ( cycle >= gLastTimeRTDSC )
   {
@@ -183,10 +183,10 @@ HeF32       doClockFrame(void)   // indicate a new frame, compute and return the
   }
   else // the CPU counter has rolled over since the last time.
   {
-    HeU64 maxv = (HeU64)0xFFFFFFFFFFFFFFFFLL;
+    NxU64 maxv = (NxU64)0xFFFFFFFFFFFFFFFFLL;
     cdiff = (maxv-gLastTimeRTDSC)+cycle;
   }
-  ret = gDtime = (HeF32)cdiff*gProcessorRecip;
+  ret = gDtime = (NxF32)cdiff*gProcessorRecip;
   gCurrentTime+=gDtime; // advance our total time counter.
   gLastTimeRTDSC        = cycle;
 
@@ -194,49 +194,49 @@ HeF32       doClockFrame(void)   // indicate a new frame, compute and return the
 }
 
 
-HeF32 getSystemTime(void)
+NxF32 getSystemTime(void)
 {
   DWORD t = timeGetTime();
-  HeF32 ret = (HeF32)t*(1.0f/1000.0f);
+  NxF32 ret = (NxF32)t*(1.0f/1000.0f);
   return ret;
 }
 
-HeU32 getSystemTimeMS(void)
+NxU32 getSystemTimeMS(void)
 {
   DWORD t = timeGetTime();
   return t;
 }
 
 
-HeF32        getCurrentTime(void)
+NxF32        getCurrentTime(void)
 {
   return gCurrentTime;
 }
 
-HeF32        getDeltaTime(void)   // get the delta frame time.
+NxF32        getDeltaTime(void)   // get the delta frame time.
 {
   return gDtime;
 }
 
-HeU64       getCounter(void) // get the current performance counter.
+NxU64       getCounter(void) // get the current performance counter.
 {
-  HeU64 ret = 0;
+  NxU64 ret = 0;
 
 	QueryPerformanceCounter((LARGE_INTEGER *) &ret);
 
   return ret;
 }
 
-HeF32        getCounterDifference(HeU64 stime) // compute the difference and return it as a floating point number.
+NxF32        getCounterDifference(NxU64 stime) // compute the difference and return it as a floating point number.
 {
 
-  HeU64 ctime;
+  NxU64 ctime;
 
 	QueryPerformanceCounter((LARGE_INTEGER *) &ctime);
 
-  HeU64 cdiff = (ctime-stime);
+  NxU64 cdiff = (ctime-stime);
 
-  HeF32 ret = (HeF32)cdiff*gProcessorRecip;
+  NxF32 ret = (NxF32)cdiff*gProcessorRecip;
 
   return ret;
 

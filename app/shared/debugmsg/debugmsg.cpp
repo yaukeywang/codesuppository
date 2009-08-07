@@ -1,5 +1,5 @@
 #include "debugmsg.h"
-#include "common/snippets/winmsg.h"
+#include "winmsg.h"
 #include <assert.h>
 #include <string.h>
 
@@ -48,7 +48,7 @@ enum SingleTriFlag
 class SingleTri
 {
 public:
-  void set(const HeF32 *p1,const HeF32 *p2,const HeF32 *p3,HeU32 color,HeF32 duration,SingleTriFlag flag)
+  void set(const NxF32 *p1,const NxF32 *p2,const NxF32 *p3,NxU32 color,NxF32 duration,SingleTriFlag flag)
   {
     mP1[0] = p1[0];
     mP1[1] = p1[1];
@@ -70,7 +70,7 @@ public:
     mFlags = flag;
   }
 
-  void set(const HeF32 *p1,const HeF32 *p2,const HeF32 *p3,const HeF32 *n1,const HeF32 *n2,const HeF32 *n3,HeU32 color,HeF32 duration,SingleTriFlag flag)
+  void set(const NxF32 *p1,const NxF32 *p2,const NxF32 *p3,const NxF32 *n1,const NxF32 *n2,const NxF32 *n3,NxU32 color,NxF32 duration,SingleTriFlag flag)
   {
     mP1[0] = p1[0];
     mP1[1] = p1[1];
@@ -101,7 +101,7 @@ public:
     mFlags = flag;
   }
 
-  void set(const HeF32 *pos,HeF32 radius,HeU32 color,HeF32 duration,SingleTriFlag flag)
+  void set(const NxF32 *pos,NxF32 radius,NxU32 color,NxF32 duration,SingleTriFlag flag)
   {
     mP1[0] = pos[0];
     mP1[1] = pos[1];
@@ -124,17 +124,17 @@ public:
   }
 
 
-  HeF32         mP1[3];
-  HeF32         mP2[3];
-  HeF32         mP3[3];
+  NxF32         mP1[3];
+  NxF32         mP2[3];
+  NxF32         mP3[3];
 
-  HeF32         mN1[3];
-  HeF32         mN2[3];
-  HeF32         mN3[3];
+  NxF32         mN1[3];
+  NxF32         mN2[3];
+  NxF32         mN3[3];
 
-  HeU32  mColor;
-  HeF32         mDuration;
-  HeU32  mFlags;
+  NxU32  mColor;
+  NxF32         mDuration;
+  NxU32  mFlags;
 };
 
 #define BATCHCOUNT 4096
@@ -148,7 +148,7 @@ public:
     mCount = 0;
   }
 
-  bool add(const HeF32 *p1,const HeF32 *p2,const HeF32 *p3,HeU32 color,HeF32 duration,SingleTriFlag flag)
+  bool add(const NxF32 *p1,const NxF32 *p2,const NxF32 *p3,NxU32 color,NxF32 duration,SingleTriFlag flag)
   {
     bool ret = false;
 
@@ -159,7 +159,7 @@ public:
     return ret;
   }
 
-  bool add(const HeF32 *p1,const HeF32 *p2,const HeF32 *p3,const HeF32 *n1,const HeF32 *n2,const HeF32 *n3,HeU32 color,HeF32 duration,SingleTriFlag flag)
+  bool add(const NxF32 *p1,const NxF32 *p2,const NxF32 *p3,const NxF32 *n1,const NxF32 *n2,const NxF32 *n3,NxU32 color,NxF32 duration,SingleTriFlag flag)
   {
     bool ret = false;
 
@@ -170,7 +170,7 @@ public:
     return ret;
   }
 
-  bool add(const HeF32 *pos,HeF32 radius,HeU32 color,HeF32 duration,SingleTriFlag flag)
+  bool add(const NxF32 *pos,NxF32 radius,NxU32 color,NxF32 duration,SingleTriFlag flag)
   {
     bool ret = false;
 
@@ -181,7 +181,7 @@ public:
     return ret;
   }
 
-  HeI32       mCount;
+  NxI32       mCount;
   SingleTri mSingleTri[BATCHCOUNT];
 };
 
@@ -196,13 +196,13 @@ class DebugSystem
 {
 public:
 
-	bool receiveMessage(const char *msg,HeU32 len)
+	bool receiveMessage(const char *msg,NxU32 len)
   {
     bool ret = false;
 
     if ( len >= 6 && msg[0] == 'J' && msg[1] == 'O' && msg[2] == 'H' && msg[3] == 'N' )
     {
-      const HeI32 *value = (const HeI32 *)&msg[4];
+      const NxI32 *value = (const NxI32 *)&msg[4];
       switch ( *value )
       {
         case DMT_RESET:
@@ -218,7 +218,7 @@ public:
               DebugMessageTri dmt;
               memcpy(&dmt,msg,len);
               SingleTri *st = dmt.mSingleTri;
-              for (HeI32 i=0; i<dmt.mCount; i++)
+              for (NxI32 i=0; i<dmt.mCount; i++)
               {
 
                 if ( st->hasSingleTriFlag(STF_POINT) )
@@ -287,9 +287,9 @@ bool processDebug(void)
 
 #endif
 
-void debugTri(const HeF32 *p1,const HeF32 *p2,const HeF32 *p3,HeU32 color,HeF32 duration,bool useZ)
+void debugTri(const NxF32 *p1,const NxF32 *p2,const NxF32 *p3,NxU32 color,NxF32 duration,bool useZ)
 {
-  HeU32 flag = 0;
+  NxU32 flag = 0;
   if ( useZ ) flag=STF_USEZ;
 
   bool send = sendTri.add(p1,p2,p3,color,duration,(SingleTriFlag) flag);
@@ -300,7 +300,7 @@ void debugTri(const HeF32 *p1,const HeF32 *p2,const HeF32 *p3,HeU32 color,HeF32 
   }
 }
 
-void debugSolidTri(const HeF32 *p1,const HeF32 *p2,const HeF32 *p3,HeU32 color,HeF32 duration)
+void debugSolidTri(const NxF32 *p1,const NxF32 *p2,const NxF32 *p3,NxU32 color,NxF32 duration)
 {
   bool send = sendTri.add(p1,p2,p3,color,duration,STF_SOLID);
   if ( send )
@@ -310,7 +310,7 @@ void debugSolidTri(const HeF32 *p1,const HeF32 *p2,const HeF32 *p3,HeU32 color,H
   }
 }
 
-void debugSolidTri(const HeF32 *p1,const HeF32 *p2,const HeF32 *p3,const HeF32 *n1,const HeF32 *n2,const HeF32 *n3,HeU32 color,HeF32 duration)
+void debugSolidTri(const NxF32 *p1,const NxF32 *p2,const NxF32 *p3,const NxF32 *n1,const NxF32 *n2,const NxF32 *n3,NxU32 color,NxF32 duration)
 {
   bool send = sendTri.add(p1,p2,p3,n1,n2,n3,color,duration,(SingleTriFlag)(STF_SOLID | STF_NORMALS));
   if ( send )
@@ -320,9 +320,9 @@ void debugSolidTri(const HeF32 *p1,const HeF32 *p2,const HeF32 *p3,const HeF32 *
   }
 }
 
-void debugLine(const HeF32 *p1,const HeF32 *p2,HeU32 color,HeF32 duration,bool useZ)
+void debugLine(const NxF32 *p1,const NxF32 *p2,NxU32 color,NxF32 duration,bool useZ)
 {
-  HeU32 flag = STF_LINE;
+  NxU32 flag = STF_LINE;
   if ( useZ ) flag=STF_USEZ;
 
   bool send = sendTri.add(p1,p2,0,color,duration,(SingleTriFlag) flag);
@@ -343,9 +343,9 @@ void flushDebug(void)
 }
 
 
-void debugSphere(const HeF32 *pos,HeF32 radius,HeU32 color,HeF32 duration,bool useZ)
+void debugSphere(const NxF32 *pos,NxF32 radius,NxU32 color,NxF32 duration,bool useZ)
 {
-  HeU32 flag = STF_SPHERE;
+  NxU32 flag = STF_SPHERE;
   if ( useZ ) flag|=STF_USEZ;
 
   bool send = sendTri.add(pos,radius,color,duration,(SingleTriFlag) flag);
@@ -357,9 +357,9 @@ void debugSphere(const HeF32 *pos,HeF32 radius,HeU32 color,HeF32 duration,bool u
 }
 
 
-void debugPoint(const HeF32 *pos,HeF32 radius,HeU32 color,HeF32 duration,bool useZ)
+void debugPoint(const NxF32 *pos,NxF32 radius,NxU32 color,NxF32 duration,bool useZ)
 {
-  HeU32 flag = STF_POINT;
+  NxU32 flag = STF_POINT;
   if ( useZ ) flag|=STF_USEZ;
 
   bool send = sendTri.add(pos,radius,color,duration,(SingleTriFlag) flag);

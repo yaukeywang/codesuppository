@@ -6,10 +6,10 @@
 #pragma warning(disable:4996)
 
 
-#include "common/snippets/sutil.h"
+#include "sutil.h"
 #include "GuiTui.h"
 #include "dxstdafx.h"
-#include "common/snippets/log.h"
+#include "log.h"
 
 #define MAXMESSAGE 8
 
@@ -18,13 +18,13 @@ static ID3DXFont*              g_pLargeFont = NULL;    // Font for drawing text
 static ID3DXSprite*            g_pTextSprite = NULL;   // Sprite for batching draw text calls
 static ID3DXFont*              g_pTinyFont=0;          // Font for drawing text
 
-#include "common/snippets/cparser.h"
+#include "cparser.h"
 #include "common/tui/tui.h"
 
-extern HeF32 gFPS;
+extern NxF32 gFPS;
 
-HeI32 gWINDOW_WIDE=1024;
-HeI32 gWINDOW_TALL=768;
+NxI32 gWINDOW_WIDE=1024;
+NxI32 gWINDOW_TALL=768;
 
 #define STATIC_ID_START 10000
 
@@ -34,7 +34,7 @@ GuiTui *gGuiTui=0;
 static CDXUTDialog *console = 0;
 
 //==================================================================================
-void CALLBACK gOnUIPageEvent( UINT nEvent, HeI32 nControlID, CDXUTControl* pControl,void *pUserContext )
+void CALLBACK gOnUIPageEvent( UINT nEvent, NxI32 nControlID, CDXUTControl* pControl,void *pUserContext )
 {
 	CDXUTDialog *dialog = pControl->m_pDialog;
 
@@ -63,8 +63,8 @@ void CALLBACK gOnUIPageEvent( UINT nEvent, HeI32 nControlID, CDXUTControl* pCont
 							{
 								CDXUTListBox *pListBox = (CDXUTListBox *)pControl;
 								TuiChoiceVector &choices = ret->GetChoices();
-								HeI32 count = (HeI32)choices.size();
-								for (HeI32 i=0; i<count; i++)
+								NxI32 count = (NxI32)choices.size();
+								for (NxI32 i=0; i<count; i++)
 								{
 									DXUTListBoxItem *item = pListBox->GetItem(i);
 									TuiChoice  &choice = choices[i];
@@ -94,8 +94,8 @@ void CALLBACK gOnUIPageEvent( UINT nEvent, HeI32 nControlID, CDXUTControl* pCont
 				case TT_SLIDER:
 					{
 						CDXUTSlider *slider = (CDXUTSlider *) pControl;
-						HeI32 v = slider->GetValue();
-						HeF32 fv = ret->GetSliderValue(v);
+						NxI32 v = slider->GetValue();
+						NxF32 fv = ret->GetSliderValue(v);
 						char scratch[512];
   						sprintf(scratch,"%0.3f", fv );
 
@@ -229,9 +229,9 @@ GuiTui::~GuiTui(void)
 }
 
 //==================================================================================
-HeI32 GuiTui::CommandCallback(HeI32 token,HeI32 count,const char **arglist)
+NxI32 GuiTui::CommandCallback(NxI32 token,NxI32 count,const char **arglist)
 {
-	HeI32 ret = 0;
+	NxI32 ret = 0;
 
 
 	return ret;
@@ -256,7 +256,7 @@ void GuiTui::HideAllGuiForTuiPages()
 }
 
 //==================================================================================
-bool GuiTui::MsgProc(void *hwnd,HeU32 msg,HeU32 wparam,HeU32 lparam)
+bool GuiTui::MsgProc(void *hwnd,NxU32 msg,NxU32 wparam,NxU32 lparam)
 {
 	bool ret = false;
 
@@ -325,17 +325,17 @@ bool GuiTui::MsgProc(void *hwnd,HeU32 msg,HeU32 wparam,HeU32 lparam)
 }
 
 //==================================================================================
-void GuiTui::OnMouseDown(HeU32 uiX, HeU32 uiY, HeU32 uiButtons)
+void GuiTui::OnMouseDown(NxU32 uiX, NxU32 uiY, NxU32 uiButtons)
 {
 }
 
 //==================================================================================
-void GuiTui::OnMouseMove(HeU32 uiX, HeU32 uiY, HeU32 uiButtons)
+void GuiTui::OnMouseMove(NxU32 uiX, NxU32 uiY, NxU32 uiButtons)
 {
 }
 
 //==================================================================================
-void GuiTui::OnMouseUp(HeU32 uiX, HeU32 uiY, HeU32 uiButtons)
+void GuiTui::OnMouseUp(NxU32 uiX, NxU32 uiY, NxU32 uiButtons)
 {
 }
 
@@ -361,7 +361,7 @@ const char *GuiTui::getCurrentPage(void)
 
 void GuiTui::Render(void)
 {
-	HeI32 fontSize = 16;
+	NxI32 fontSize = 16;
 
   TextUserInterface *tui = gTui;
 
@@ -411,13 +411,13 @@ void GuiTui::Render(void)
  				txtHelper.Begin();
    			txtHelper.SetForegroundColor( 0xFFFFFF00 );
 
-				HeI32 maxPos		= mHeight - 2*fontSize - 2;
-				HeI32 addAmt		= fontSize;
-				HeI32 menuHeight  = fontSize;
-				HeI32 startPos	= maxPos - addAmt * CONSOLE_LINES - menuHeight;
+				NxI32 maxPos		= mHeight - 2*fontSize - 2;
+				NxI32 addAmt		= fontSize;
+				NxI32 menuHeight  = fontSize;
+				NxI32 startPos	= maxPos - addAmt * CONSOLE_LINES - menuHeight;
 
 				// ok..print console text!
- 				for (HeI32 i=0; i<CONSOLE_LINES; i++)
+ 				for (NxI32 i=0; i<CONSOLE_LINES; i++)
  				{
  					const char *msg = GetConsoleMessage(i);
 					if ( !msg )
@@ -442,11 +442,11 @@ void GuiTui::Render(void)
 
    				// ok..print console text!
 
-				HeI32 maxPos		= mHeight - fontSize;
-				HeI32 addAmt		= fontSize;
-				HeI32 startPos	= maxPos - addAmt * 5;
+				NxI32 maxPos		= mHeight - fontSize;
+				NxI32 addAmt		= fontSize;
+				NxI32 startPos	= maxPos - addAmt * 5;
 
- 				for (HeI32 i=(CONSOLE_LINES-5); i<CONSOLE_LINES; i++)
+ 				for (NxI32 i=(CONSOLE_LINES-5); i<CONSOLE_LINES; i++)
  				{
  					const char *msg = GetConsoleMessage(i);
 					if ( !msg )
@@ -502,30 +502,30 @@ void GuiTui::Render(void)
 
 					const PageLayout &pl   = page->getPageLayout();
 
-					HeI32 bwidth             = pl.mButtonWidth;
-					HeI32 lmargin            = pl.mLayoutLeftMargin;
-					HeI32 layout_width       = pl.mLayoutWidth;
-					HeI32 button_spacing     = pl.mButtonSpacing;
-					HeI32 bhit               = pl.mButtonHeight;
-					HeI32 checkbox_spacing   = DFLT_CHECKBOX_SPACING;
+					NxI32 bwidth             = pl.mButtonWidth;
+					NxI32 lmargin            = pl.mLayoutLeftMargin;
+					NxI32 layout_width       = pl.mLayoutWidth;
+					NxI32 button_spacing     = pl.mButtonSpacing;
+					NxI32 bhit               = pl.mButtonHeight;
+					NxI32 checkbox_spacing   = DFLT_CHECKBOX_SPACING;
 
-					HeI32 text_spacing       = pl.mTextSpacing;
-					HeI32 slider_spacing     = pl.mSliderSpacing;
-					HeI32 slider_text_width  = pl.mSliderTextWidth;
-					HeI32 slider_height      = pl.mSliderHeight;
-					HeI32 slider_width       = pl.mSliderWidth;
+					NxI32 text_spacing       = pl.mTextSpacing;
+					NxI32 slider_spacing     = pl.mSliderSpacing;
+					NxI32 slider_text_width  = pl.mSliderTextWidth;
+					NxI32 slider_height      = pl.mSliderHeight;
+					NxI32 slider_width       = pl.mSliderWidth;
 
-					HeI32 combo_width        = pl.mComboWidth;
-					HeI32 combo_spacing      = pl.mComboSpacing;
-					HeI32 combo_height       = pl.mComboHeight;
-					HeI32 combo_dropdown     = pl.mComboDropdown;
+					NxI32 combo_width        = pl.mComboWidth;
+					NxI32 combo_spacing      = pl.mComboSpacing;
+					NxI32 combo_height       = pl.mComboHeight;
+					NxI32 combo_dropdown     = pl.mComboDropdown;
 
-					HeI32 list_width         = pl.mListWidth;
+					NxI32 list_width         = pl.mListWidth;
 
-					HeI32 xloc     = lmargin;
-					HeI32 yloc     = 10;
-					HeI32 id       = 0;
-					HeI32 staticId = STATIC_ID_START;
+					NxI32 xloc     = lmargin;
+					NxI32 yloc     = 10;
+					NxI32 id       = 0;
+					NxI32 staticId = STATIC_ID_START;
 
 					page->SetUserPtr(dialog);
 
@@ -621,7 +621,7 @@ void GuiTui::Render(void)
 											// ok..populate the combo box now..
 											TuiChoiceVector &choices = tui->GetChoices();
 											TuiChoiceVector::iterator i;
-											HeI32 index = 0;
+											NxI32 index = 0;
 											for (i=choices.begin(); i!=choices.end(); ++i)
 											{
 												wchar_t scratch[512];
@@ -646,7 +646,7 @@ void GuiTui::Render(void)
 										}
 										TuiChoiceVector &choices = tui->GetChoices();
 
-										HeI32 list_height = choices.size()*15;
+										NxI32 list_height = choices.size()*15;
 
 										if ( (yloc+list_height) > 700 )
 										{
@@ -662,7 +662,7 @@ void GuiTui::Render(void)
 										{
 											// ok..populate the combo box now..
 											TuiChoiceVector::iterator i;
-											HeI32 index = 0;
+											NxI32 index = 0;
 											for (i=choices.begin(); i!=choices.end(); ++i)
 											{
 												wchar_t scratch[512];
@@ -699,7 +699,7 @@ void GuiTui::Render(void)
  				if ( dialogExists )
 				{
 					// static's that are just static's have id's of 10000+
-					HeI32 id = STATIC_ID_START;
+					NxI32 id = STATIC_ID_START;
 
 					CDXUTControl *ctrl = dialog->GetControl( id++ );
 					while ( ctrl )
@@ -711,7 +711,7 @@ void GuiTui::Render(void)
 							if ( element && userData )
 							{
 								//element->FontColor.Current = D3DCOLOR_ARGB(255, 255, 255, 0);
-								element->FontColor.Current = (HeU32)( userData );
+								element->FontColor.Current = (NxU32)( userData );
 							}
 						}
 						ctrl = dialog->GetControl( id++ );
@@ -748,7 +748,7 @@ void GuiTui::Render(void)
 				{
   				txtHelper.SetForegroundColor( D3DXCOLOR( 1.0f, 1.0f, 1.0f, 1.0f ) );
 					wchar_t temp[512];
-          StringCchPrintf(temp,512, L"FPS: %3d", (HeI32)gFPS);
+          StringCchPrintf(temp,512, L"FPS: %3d", (NxI32)gFPS);
   				txtHelper.DrawTextLine(temp);
   				txtHelper.DrawTextLine( L"Press F1 to toggle UI" );
   				{
@@ -770,7 +770,7 @@ void GuiTui::Render(void)
 }
 
 
-void GuiTui::PrintText(const char *str,HeI32 x,HeI32 y,HeU32 color)
+void GuiTui::PrintText(const char *str,NxI32 x,NxI32 y,NxU32 color)
 {
   CDXUTTextHelper txtHelper( g_pTinyFont, g_pTextSprite, 15 );
 
@@ -808,7 +808,7 @@ void GuiTui::Update(void)
 	// and if so, we may need to update some elements!!!
 
 
-	HeI32 id   = 0;
+	NxI32 id   = 0;
 	TuiElementVector &elements = page->GetElements();
 	TuiElementVector::iterator i;
 	for (i=elements.begin(); i!=elements.end(); ++i)
@@ -838,8 +838,8 @@ void GuiTui::Update(void)
 					CDXUTStatic *label  = dialog->GetStatic(id+1000);
 					if ( pslider && label )
 					{
-						HeF32 v = (HeF32) atof(actualVal);
-						HeI32 slider = tui->GetSliderTick(v); // convert the slider value into a tick point 0-1000
+						NxF32 v = (NxF32) atof(actualVal);
+						NxI32 slider = tui->GetSliderTick(v); // convert the slider value into a tick point 0-1000
 
 						wchar_t wvalue[512];
 						CharToWide( displayVal, wvalue, 512 );
@@ -909,7 +909,7 @@ bool GuiTui::ToggleUI(void)
 }
 
 //==================================================================================
-void GuiTui::NotifyWindowResized( HeU32 newWidth, HeU32 newHeight )
+void GuiTui::NotifyWindowResized( NxU32 newWidth, NxU32 newHeight )
 {
 	mWidth	= newWidth;
 	mHeight	= newHeight;
@@ -951,7 +951,7 @@ void GuiTui::NotifySceneTypeChanged( bool hardwareOn )
 			TuiElement *page = tui->GetElementOfTypeWithName( TT_PAGE, "Physics" );
 			if ( page )
 			{
-				HeI32 index = page->GetElementIndexOfTypeWithName( TT_CHECKBOX, "Always Use 6DOF" );
+				NxI32 index = page->GetElementIndexOfTypeWithName( TT_CHECKBOX, "Always Use 6DOF" );
 				if ( index >= 0 )
 				{
 					const char *args[1] = { "true" };
@@ -963,7 +963,7 @@ void GuiTui::NotifySceneTypeChanged( bool hardwareOn )
 }
 
 //==================================================================================
-void PageLayout::Modify( HeU32 newScreenWidth, HeU32 newScreenHeight )
+void PageLayout::Modify( NxU32 newScreenWidth, NxU32 newScreenHeight )
 {
 	// k, we are being told what the new screen width and height is, so we might need
 	// to adjust ourselves

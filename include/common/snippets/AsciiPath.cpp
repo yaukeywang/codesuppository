@@ -2,12 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <vector>
 
 #include "AsciiPath.h"
 #include "UserMemAlloc.h"
 
 
-typedef USER_STL::vector< HeF32 > HeF32Vector;
+typedef USER_STL::vector< NxF32 > HeF32Vector;
 
 class MyAsciiPath : public AsciiPath
 {
@@ -38,26 +39,26 @@ public:
     return data;
   }
 
-  HeU32 setData(const char *data)
+  NxU32 setData(const char *data)
   {
-    HeU32 ret = 0;
+    NxU32 ret = 0;
 
     release();
 
     if ( data )
     {
-      HeU32 count = atoi(data);
-      HeU32 i;
+      NxU32 count = atoi(data);
+      NxU32 i;
       for (i=0; i<count; i++)
       {
         data = nextData(data);
         if ( data )
         {
-          HeF32 x = (float)atof(data);
+          NxF32 x = (float)atof(data);
           data = nextData(data);
           if ( data )
           {
-            HeF32 y = (float)atof(data);
+            NxF32 y = (float)atof(data);
             mPoints.push_back(x);
             mPoints.push_back(y);
           }
@@ -85,13 +86,13 @@ public:
     return ret;
   }
 
-  bool  getPoint(HeU32 index,HeF32 &x,HeF32 &y) const
+  bool  getPoint(NxU32 index,NxF32 &x,NxF32 &y) const
   {
     bool ret = false;
 
     if ( !mPoints.empty() )
     {
-      HE_ASSERT( index >= 0 && index < mCount );
+      assert( index >= 0 && index < mCount );
       if ( index >= 0 && index < mCount )
       {
         x = mPoints[index*2+0];
@@ -103,13 +104,13 @@ public:
     return ret;
   }
 
-  HeU32 getPointCount(void) const
+  NxU32 getPointCount(void) const
   {
     return mCount;
   }
 
 private:
-  HeU32       mCount;
+  NxU32       mCount;
   HeF32Vector mPoints;
 };
 

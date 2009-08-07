@@ -19,15 +19,15 @@ namespace IMPORT_HEIGHTMAP
 	If ints are not 32 bits long on your
 	system, change the following typedef.
 */
-typedef HeI32				INT32;
-typedef HeU32	UINT32;
+typedef NxI32				INT32;
+typedef NxU32	UINT32;
 
 
 /* Basic Leveller types */
 typedef INT32	FIX32;			/* One of Leveller's internal elevation storage formats */
 typedef UINT32	LEV_POS;		/* A heightfield location coordinate member */
 typedef UINT32	LEV_SIZE;		/* A heightfield dimension member */
-typedef HeF32	ELEV;			/* Ideal elevation type */
+typedef NxF32	ELEV;			/* Ideal elevation type */
 
 
 /* Heightfield object */
@@ -47,7 +47,7 @@ typedef struct
 LEV_HF*	LevHF_Create(LEV_SIZE w, LEV_SIZE b);
 void	LevHF_Delete(LEV_HF*);
 LEV_HF* LevHF_Read(const char* pszFile);
-HeI32		LevHF_Write(const LEV_HF*, const char* pszFile, HeI32 ver);
+NxI32		LevHF_Write(const LEV_HF*, const char* pszFile, NxI32 ver);
 void	LevHF_GetSpan(const LEV_HF*, ELEV*, ELEV*);
 void	LevHF_SetSpan(LEV_HF*, ELEV, ELEV);
 void	LevHF_Flatten(LEV_HF*, ELEV);
@@ -117,7 +117,7 @@ void	LevHF_SetHeight(LEV_HF*, LEV_POS x, LEV_POS z, ELEV);
 /* Comment out the following macro to disable the sample main() function. */
 //#define INCLUDE_MAIN
 
-#define ASSERT_HF_OKAY(phf)	{ HE_ASSERT(phf != NULL); HE_ASSERT(phf->pElevs != NULL); }
+#define ASSERT_HF_OKAY(phf)	{ assert(phf != NULL); assert(phf->pElevs != NULL); }
 
 
 /*
@@ -274,8 +274,8 @@ void LevHF_Flatten(LEV_HF* pHF, ELEV h)
 ELEV LevHF_GetHeight(const LEV_HF* pHF, LEV_POS x, LEV_POS z)
 {
 	ASSERT_HF_OKAY(pHF);
-	HE_ASSERT(x < pHF->width);
-	HE_ASSERT(z < pHF->breadth);
+	assert(x < pHF->width);
+	assert(z < pHF->breadth);
 
 	return pHF->pElevs[z * pHF->width + x];
 }
@@ -291,8 +291,8 @@ ELEV LevHF_GetHeight(const LEV_HF* pHF, LEV_POS x, LEV_POS z)
 void LevHF_SetHeight(LEV_HF* pHF, LEV_POS x, LEV_POS z, ELEV hv)
 {
 	ASSERT_HF_OKAY(pHF);
-	HE_ASSERT(x < pHF->width);
-	HE_ASSERT(z < pHF->breadth);
+	assert(x < pHF->width);
+	assert(z < pHF->breadth);
 
 	pHF->pElevs[z * pHF->width + x] = hv;
 }
@@ -325,33 +325,33 @@ static Endianness sEndiannessOfData = endian_undefined;
 void byteswapper_init(Endianness endiannessOfData)
 {
 	char*	psz = "\x00\x01";
-	sEndianness = (*((HeI16*)psz) == 0x0001 ? endian_big : endian_little);
-	HE_ASSERT(endiannessOfData != endian_undefined);
+	sEndianness = (*((NxI16*)psz) == 0x0001 ? endian_big : endian_little);
+	assert(endiannessOfData != endian_undefined);
 	sEndiannessOfData = endiannessOfData;
 }
 
 void byteswap_int16(void* p)
 {
-	HeU8 c;
-	HeU8* pc;
-	HE_ASSERT(sEndianness != endian_undefined);
-	HE_ASSERT(sizeof(HeI16) == 2);
+	NxU8 c;
+	NxU8* pc;
+	assert(sEndianness != endian_undefined);
+	assert(sizeof(NxI16) == 2);
 	if(sEndianness != sEndiannessOfData)
 	{
-		pc = (HeU8*)p;
+		pc = (NxU8*)p;
 		SWAP(pc[0], pc[1], c);
 	}
 }
 
 void byteswap_int32(void* p)
 {
-	HeI16 w;
-	HeI16* pw;
-	HE_ASSERT(sEndianness != endian_undefined);
-	HE_ASSERT(sizeof(INT32) == 4);
+	NxI16 w;
+	NxI16* pw;
+	assert(sEndianness != endian_undefined);
+	assert(sizeof(INT32) == 4);
 	if(sEndianness != sEndiannessOfData)
 	{
-		pw = (HeI16*)p;
+		pw = (NxI16*)p;
 		byteswap_int16(pw);
 		byteswap_int16(pw+1);
 		SWAP(pw[0], pw[1], w);
@@ -369,16 +369,16 @@ void byteswap_int32(void* p)
 
 typedef struct
 {
-	HeU8		descriptorLen;
+	NxU8		descriptorLen;
 	char				descriptor[MAX_DESCLEN+1];  // Note: not null-terminated
 	UINT32				dataLen;
 	void*				pData;
 } Chunk;
 
 
-HeI32 readf(void* pv, size_t bytes, FILE* f)
+NxI32 readf(void* pv, size_t bytes, FILE* f)
 {
-	HE_ASSERT(pv != NULL && f != NULL);
+	assert(pv != NULL && f != NULL);
 	if(1 == fread(pv, bytes, 1, f))
 		return TRUE;
 	fclose(f);
@@ -386,23 +386,23 @@ HeI32 readf(void* pv, size_t bytes, FILE* f)
 }
 
 
-HeI32 readf_int16(void* pv, FILE* f)
+NxI32 readf_int16(void* pv, FILE* f)
 {
 	if(!readf(pv, 2, f)) { return FALSE; }
 	byteswap_int16(pv); return TRUE;
 }
 
 
-HeI32 readf_int32(void* pv, FILE* f)
+NxI32 readf_int32(void* pv, FILE* f)
 {
 	if(!readf(pv, 4, f)) { return FALSE; }
 	byteswap_int32(pv); return TRUE;
 }
 
 
-HeI32 writef(void* pv, size_t bytes, FILE* f)
+NxI32 writef(void* pv, size_t bytes, FILE* f)
 {
-	HE_ASSERT(pv != NULL && f != NULL);
+	assert(pv != NULL && f != NULL);
 	if(1 == fwrite(pv, bytes, 1, f))
 		return TRUE;
 	fclose(f);
@@ -410,7 +410,7 @@ HeI32 writef(void* pv, size_t bytes, FILE* f)
 }
 
 
-HeI32 writef_int16(void* pv, FILE* f)
+NxI32 writef_int16(void* pv, FILE* f)
 {
 	byteswap_int16(pv);
 	if(!writef(pv, 2, f)) { byteswap_int16(pv); return FALSE; }
@@ -418,7 +418,7 @@ HeI32 writef_int16(void* pv, FILE* f)
 }
 
 
-HeI32 writef_int32(void* pv, FILE* f)
+NxI32 writef_int32(void* pv, FILE* f)
 {
 	byteswap_int32(pv);
 	if(!writef(pv, 4, f)) { byteswap_int32(pv); return FALSE; }
@@ -426,7 +426,7 @@ HeI32 writef_int32(void* pv, FILE* f)
 }
 
 
-HeI32 write_chunkheader(FILE* f, Chunk* pChunk)
+NxI32 write_chunkheader(FILE* f, Chunk* pChunk)
 {
 	return (write_item(pChunk->descriptorLen) &&
 		fputs(pChunk->descriptor, f) >= 0  &&
@@ -434,7 +434,7 @@ HeI32 write_chunkheader(FILE* f, Chunk* pChunk)
 }
 
 
-HeI32 write_chunk(FILE* f, Chunk* pChunk)
+NxI32 write_chunk(FILE* f, Chunk* pChunk)
 {
 	if(!write_chunkheader(f, pChunk)) 
 		return FALSE;
@@ -447,12 +447,12 @@ HeI32 write_chunk(FILE* f, Chunk* pChunk)
 }
 
 
-HeI32 write_int32chunk(FILE* f, char* pszDesc, INT32 i)
+NxI32 write_int32chunk(FILE* f, char* pszDesc, INT32 i)
 {
 	Chunk chunk;
 	INT32	n;
 
-	chunk.descriptorLen = (HeU8)strlen(pszDesc);
+	chunk.descriptorLen = (NxU8)strlen(pszDesc);
 	strcpy(chunk.descriptor, pszDesc);
 	n = i;
 	chunk.dataLen = sizeof(n);
@@ -481,12 +481,12 @@ LEV_HF*	LevHF_Read(const char* pszFile)
 
 	/* Elevation data block transfer vars. */
 	FIX32			buf[BUFSIZE];	/* Transfer buffer */
-	HeI32			hfDataLoc = 0;	/* Location of elevation values block */
+	NxI32			hfDataLoc = 0;	/* Location of elevation values block */
 	UINT32			hfDataLen=0;		/* Byte length of elevation values block */
 	UINT32			elevsToRead, elevsToXfer;
 	UINT32			i;
 	ELEV*			p = NULL;
-	HeI32				ver;
+	NxI32				ver;
 
 	byteswapper_init(endian_intel);
 
@@ -618,7 +618,7 @@ LEV_HF*	LevHF_Read(const char* pszFile)
 
 	Returns TRUE if okay, FALSE otherwise.
 */
-HeI32	LevHF_Write(const LEV_HF* pHF, const char* pszFile, HeI32 ver)
+NxI32	LevHF_Write(const LEV_HF* pHF, const char* pszFile, NxI32 ver)
 {
 	UINT32			i;
 	FILE*			f;
@@ -714,29 +714,29 @@ public:
       mWidth = hf->width;
       mDepth = hf->breadth;
 
-      HeU32 size = mWidth*mDepth;
-      HeF32 minv = hf->pElevs[0];
-      HeF32 maxv = hf->pElevs[0];
-      for (HeU32 i=1; i<size; i++)
+      NxU32 size = mWidth*mDepth;
+      NxF32 minv = hf->pElevs[0];
+      NxF32 maxv = hf->pElevs[0];
+      for (NxU32 i=1; i<size; i++)
       {
-        HeF32 v = hf->pElevs[i];
+        NxF32 v = hf->pElevs[i];
         if ( v < minv ) minv = v;
         if ( v > maxv ) maxv = v;
       }
 
-      HeF32 diff = maxv-minv;
-      HeF32 recip = 1;
+      NxF32 diff = maxv-minv;
+      NxF32 recip = 1;
       if ( diff > 0 )
       {
         recip = 1.0f / diff;
       }
 
 
-      mData  = (HeF32 *)MEMALLOC_MALLOC( sizeof(HeF32)*mWidth*mDepth);
+      mData  = (NxF32 *)MEMALLOC_MALLOC( sizeof(NxF32)*mWidth*mDepth);
 
-      for (HeU32 i=0; i<size; i++)
+      for (NxU32 i=0; i<size; i++)
       {
-        HeF32 v = hf->pElevs[i];
+        NxF32 v = hf->pElevs[i];
         v = (v-minv)*recip;
         mData[i] = v;
       }
@@ -748,12 +748,12 @@ public:
     return ret;
   }
 
-  HeU32 getWidth(void) const { return mWidth; };
-  HeU32 getDepth(void) const { return mDepth; };
-  HeF32 * getData(void) const { return mData; };
-  HeF32 getPoint(HeU32 x,HeU32 y)
+  NxU32 getWidth(void) const { return mWidth; };
+  NxU32 getDepth(void) const { return mDepth; };
+  NxF32 * getData(void) const { return mData; };
+  NxF32 getPoint(NxU32 x,NxU32 y)
   {
-    HeF32 ret = 0;
+    NxF32 ret = 0;
 
     if ( mData )
     {
@@ -762,7 +762,7 @@ public:
       if ( x >= 0 && x < mWidth &&
            y >= 0 && y < mDepth )
       {
-        HeU32 index = y*mWidth+x;
+        NxU32 index = y*mWidth+x;
         ret = mData[index];
       }
     }
@@ -799,9 +799,9 @@ private:
   float         mVhigh;
   float         mVlow;
 
-  HeU32  mWidth;
-  HeU32  mDepth;
-  HeF32 *mData;
+  NxU32  mWidth;
+  NxU32  mDepth;
+  NxF32 *mData;
 
 };
 

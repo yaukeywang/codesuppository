@@ -19,7 +19,7 @@
 #include <string>
 #include <vector>
 
-#include "He.h"
+#include "NxSimpleTypes.h"
 #include "htmltable.h"
 
 #if defined(LINUX)
@@ -183,10 +183,10 @@ static inline const char * tf(bool v)
 class QuickSortPointers
 {
 public:
-	void qsort(void **base,HeI32 num); // perform the qsort.
+	void qsort(void **base,NxI32 num); // perform the qsort.
 protected:
   // -1 less, 0 equal, +1 greater.
-	virtual HeI32 compare(void **p1,void **p2) = 0;
+	virtual NxI32 compare(void **p1,void **p2) = 0;
 private:
 	void inline swap(char **a,char **b);
 };
@@ -205,14 +205,14 @@ void QuickSortPointers::swap(char **a,char **b)
 }
 
 
-void QuickSortPointers::qsort(void **b,HeI32 num)
+void QuickSortPointers::qsort(void **b,NxI32 num)
 {
 	char *lo,*hi;
 	char *mid;
 	char *bottom, *top;
-	HeI32 size;
+	NxI32 size;
 	char *lostk[30], *histk[30];
-	HeI32 stkptr;
+	NxI32 stkptr;
 	char **base = (char **)b;
 
 	if (num < 2 ) return;
@@ -224,7 +224,7 @@ void QuickSortPointers::qsort(void **b,HeI32 num)
 
 nextone:
 
-	size = (HeI32)(hi - lo) / sizeof(char**) + 1;
+	size = (NxI32)(hi - lo) / sizeof(char**) + 1;
 
 	mid = lo + (size / 2) * sizeof(char **);
 	swap((char **)mid,(char **)lo);
@@ -480,7 +480,7 @@ public:
   	size_t ret = 0;
   	if ( mFph )
   	{
-  		ret = fseek(mFph,(HeI32)loc,(HeI32)mode);
+  		ret = fseek(mFph,(NxI32)loc,(NxI32)mode);
   	}
   	else
   	{
@@ -498,7 +498,7 @@ public:
   		}
   		else
   		{
-  			HE_ASSERT(0);
+  			assert(0);
   		}
   	}
   	return ret;
@@ -717,8 +717,8 @@ void *     fi_getMemBuffer(FILE_INTERFACE *fph,size_t &outputLength)
 class InPlaceParserInterface
 {
 public:
-	virtual HeI32 ParseLine(HeI32 lineno,HeI32 argc,const char **argv) =0;  // return TRUE to continue parsing, return FALSE to abort parsing process
-  virtual bool preParseLine(HeI32 /*lineno*/,const char * /*line */)  { return false; }; // optional chance to pre-parse the line as raw data.  If you return 'true' the line will be skipped assuming you snarfed it.
+	virtual NxI32 ParseLine(NxI32 lineno,NxI32 argc,const char **argv) =0;  // return TRUE to continue parsing, return FALSE to abort parsing process
+  virtual bool preParseLine(NxI32 /*lineno*/,const char * /*line */)  { return false; }; // optional chance to pre-parse the line as raw data.  If you return 'true' the line will be skipped assuming you snarfed it.
 };
 
 enum SeparatorType
@@ -738,7 +738,7 @@ public:
 		Init();
 	}
 
-	InPlaceParser(char *data,HeI32 len)
+	InPlaceParser(char *data,NxI32 len)
 	{
 		Init();
 		SetSourceData(data,len);
@@ -758,7 +758,7 @@ public:
 		mData = 0;
 		mLen  = 0;
 		mMyAlloc = false;
-		for (HeI32 i=0; i<256; i++)
+		for (NxI32 i=0; i<256; i++)
 		{
 			mHard[i] = ST_DATA;
 			mHardString[i*2] = (char)i;
@@ -773,19 +773,19 @@ public:
 
 	void SetFile(const char *fname);
 
-	void SetSourceData(char *data,HeI32 len)
+	void SetSourceData(char *data,NxI32 len)
 	{
 		mData = data;
 		mLen  = len;
 		mMyAlloc = false;
 	};
 
-	HeI32  Parse(const char *str,InPlaceParserInterface *callback); // returns true if entire file was parsed, false if it aborted for some reason
-	HeI32  Parse(InPlaceParserInterface *callback); // returns true if entire file was parsed, false if it aborted for some reason
+	NxI32  Parse(const char *str,InPlaceParserInterface *callback); // returns true if entire file was parsed, false if it aborted for some reason
+	NxI32  Parse(InPlaceParserInterface *callback); // returns true if entire file was parsed, false if it aborted for some reason
 
-	HeI32 ProcessLine(HeI32 lineno,char *line,InPlaceParserInterface *callback);
+	NxI32 ProcessLine(NxI32 lineno,char *line,InPlaceParserInterface *callback);
 
-	const char ** GetArglist(char *source,HeI32 &count); // convert source string into an arg list, this is a destructive parse.
+	const char ** GetArglist(char *source,NxI32 &count); // convert source string into an arg list, this is a destructive parse.
 
 	void SetHardSeparator(char c) // add a hard separator
 	{
@@ -848,7 +848,7 @@ public:
 
 private:
 
-	inline char * AddHard(HeI32 &argc,const char **argv,char *foo);
+	inline char * AddHard(NxI32 &argc,const char **argv,char *foo);
 	inline bool   IsHard(char c);
 	inline char * SkipSpaces(char *foo);
 	inline bool   IsWhiteSpace(char c);
@@ -856,7 +856,7 @@ private:
 
 	bool   mMyAlloc; // whether or not *I* allocated the buffer and am responsible for deleting it.
 	char  *mData;  // ascii data to parse.
-	HeI32    mLen;   // length of data
+	NxI32    mLen;   // length of data
 	SeparatorType  mHard[256];
 	char   mHardString[256*2];
 	char           mQuoteChar;
@@ -883,7 +883,7 @@ void InPlaceParser::SetFile(const char *fname)
 		if ( mLen )
 		{
 			mData = (char *) HTML_MALLOC(sizeof(char)*(mLen+1));
-			HeI32 read = (HeI32)fread(mData,mLen,1,fph);
+			NxI32 read = (NxI32)fread(mData,mLen,1,fph);
 			if ( !read )
 			{
 				HTML_FREE(mData);
@@ -917,7 +917,7 @@ bool InPlaceParser::IsHard(char c)
 }
 
 //==================================================================================
-char * InPlaceParser::AddHard(HeI32 &argc,const char **argv,char *foo)
+char * InPlaceParser::AddHard(NxI32 &argc,const char **argv,char *foo)
 {
 	while ( IsHard(*foo) )
 	{
@@ -952,12 +952,12 @@ bool InPlaceParser::IsNonSeparator(char c)
 }
 
 //==================================================================================
-HeI32 InPlaceParser::ProcessLine(HeI32 lineno,char *line,InPlaceParserInterface *callback)
+NxI32 InPlaceParser::ProcessLine(NxI32 lineno,char *line,InPlaceParserInterface *callback)
 {
-	HeI32 ret = 0;
+	NxI32 ret = 0;
 
 	const char *argv[MAXARGS];
-	HeI32 argc = 0;
+	NxI32 argc = 0;
 
 	char *foo = line;
 
@@ -1044,11 +1044,11 @@ HeI32 InPlaceParser::ProcessLine(HeI32 lineno,char *line,InPlaceParserInterface 
 }
 
 
-HeI32  InPlaceParser::Parse(const char *str,InPlaceParserInterface *callback) // returns true if entire file was parsed, false if it aborted for some reason
+NxI32  InPlaceParser::Parse(const char *str,InPlaceParserInterface *callback) // returns true if entire file was parsed, false if it aborted for some reason
 {
-  HeI32 ret = 0;
+  NxI32 ret = 0;
 
-  mLen = (HeI32)strlen(str);
+  mLen = (NxI32)strlen(str);
   if ( mLen )
   {
     mData = (char *)HTML_MALLOC(mLen+1);
@@ -1062,13 +1062,13 @@ HeI32  InPlaceParser::Parse(const char *str,InPlaceParserInterface *callback) //
 //==================================================================================
 // returns true if entire file was parsed, false if it aborted for some reason
 //==================================================================================
-HeI32  InPlaceParser::Parse(InPlaceParserInterface *callback)
+NxI32  InPlaceParser::Parse(InPlaceParserInterface *callback)
 {
-	HeI32 ret = 0;
-	HE_ASSERT( callback );
+	NxI32 ret = 0;
+	assert( callback );
 	if ( mData )
 	{
-		HeI32 lineno = 0;
+		NxI32 lineno = 0;
 
 		char *foo   = mData;
 		char *begin = foo;
@@ -1084,7 +1084,7 @@ HeI32  InPlaceParser::Parse(InPlaceParserInterface *callback)
           bool snarfed = callback->preParseLine(lineno,begin);
           if ( !snarfed )
           {
-  					HeI32 v = ProcessLine(lineno,begin,callback);
+  					NxI32 v = ProcessLine(lineno,begin,callback);
   					if ( v )
   						ret = v;
           }
@@ -1103,7 +1103,7 @@ HeI32  InPlaceParser::Parse(InPlaceParserInterface *callback)
 
 		lineno++; // lasst line.
 
-		HeI32 v = ProcessLine(lineno,begin,callback);
+		NxI32 v = ProcessLine(lineno,begin,callback);
 		if ( v )
 			ret = v;
 	}
@@ -1127,12 +1127,12 @@ void InPlaceParser::DefaultSymbols(void)
 //==================================================================================
 // convert source string into an arg list, this is a destructive parse.
 //==================================================================================
-const char ** InPlaceParser::GetArglist(char *line,HeI32 &count)
+const char ** InPlaceParser::GetArglist(char *line,NxI32 &count)
 {
 	const char **ret = 0;
 
 	static const char *argv[MAXARGS];
-	HeI32 argc = 0;
+	NxI32 argc = 0;
 
 	char *foo = line;
 
@@ -1258,9 +1258,9 @@ static bool isNumeric(const std::string &str)
 #define MAXFNUM    16
 
 static	char  gFormat[MAXNUMERIC*MAXFNUM];
-static HeI32    gIndex=0;
+static NxI32    gIndex=0;
 
-const char * formatNumber(HeI32 number) // JWR  format this integer into a fancy comma delimited string
+const char * formatNumber(NxI32 number) // JWR  format this integer into a fancy comma delimited string
 {
 	char * dest = &gFormat[gIndex*MAXNUMERIC];
 	gIndex++;
@@ -1275,10 +1275,10 @@ const char * formatNumber(HeI32 number) // JWR  format this integer into a fancy
 #endif
 
 	char *str = dest;
-	HeU32 len = (HeU32)strlen(scratch);
-	for (HeU32 i=0; i<len; i++)
+	NxU32 len = (NxU32)strlen(scratch);
+	for (NxU32 i=0; i<len; i++)
 	{
-		HeI32 place = (len-1)-i;
+		NxI32 place = (len-1)-i;
 		*str++ = scratch[i];
 		if ( place && (place%3) == 0 ) *str++ = ',';
 	}
@@ -1308,7 +1308,7 @@ void stripFraction(char *fraction)
   }
 }
 
-HeF32 getFloatValue(const char *data)
+NxF32 getFloatValue(const char *data)
 {
   char temp[512];
   char *dest = temp;
@@ -1322,13 +1322,13 @@ HeF32 getFloatValue(const char *data)
     }
   }
   *dest = 0;
-  HeF32 v = (HeF32)atof(temp);
+  NxF32 v = (NxF32)atof(temp);
   return v;
 }
 
-void getFloat(HeF32 v,std::string &ret)
+void getFloat(NxF32 v,std::string &ret)
 {
-  HeI32 ivalue = (HeI32)v;
+  NxI32 ivalue = (NxI32)v;
 
   if ( v == 0 )
   {
@@ -1351,7 +1351,7 @@ void getFloat(HeF32 v,std::string &ret)
   }
   else
   {
-    v-=(HeF32)ivalue;
+    v-=(NxF32)ivalue;
     v = fabsf(v);
     if (v < 0.00001f ) 
       v = 0;
@@ -1362,8 +1362,8 @@ void getFloat(HeF32 v,std::string &ret)
     {
       char fraction[512];
       sprintf(fraction,"%0.9f", v );
-      HE_ASSERT( fraction[0] == '0' );
-      HE_ASSERT( fraction[1] == '.' );
+      assert( fraction[0] == '0' );
+      assert( fraction[1] == '.' );
       stripFraction(fraction);
       char scratch[512];
       sprintf(scratch,"%s%s", temp, &fraction[1] );
@@ -1383,7 +1383,7 @@ public:
   {
 
   }
-  SortRequest(const char *sort_name,HeU32 primary_key,bool primary_ascending,HeU32 secondary_key,bool secondary_ascending)
+  SortRequest(const char *sort_name,NxU32 primary_key,bool primary_ascending,NxU32 secondary_key,bool secondary_ascending)
   {
     if ( sort_name )
       mSortName = sort_name;
@@ -1397,8 +1397,8 @@ public:
 
 
   std::string           mSortName;
-  HeU32          mPrimaryKey;
-  HeU32          mSecondaryKey;
+  NxU32          mPrimaryKey;
+  NxU32          mSecondaryKey;
   bool                  mPrimaryAscending:1;
   bool                  mSecondaryAscending:1;
 };
@@ -1448,11 +1448,11 @@ public:
       {
         char *temp = (char *)HTML_MALLOC(sizeof(char)*(len+1));
         memcpy(temp,data,len+1);
-        HeI32 count;
+        NxI32 count;
         const char **args = parser.GetArglist(temp,count);
         if ( args )
         {
-          for (HeI32 i=0; i<count; i++)
+          for (NxI32 i=0; i<count; i++)
           {
             const char *arg = args[i];
             if ( arg[0] != ',' )
@@ -1473,7 +1473,7 @@ public:
       std::string str = data;
       if ( isNumeric(data) )
       {
-        HeF32 v = getFloatValue(data);
+        NxF32 v = getFloatValue(data);
         getFloat(v,str);
       }
       mRow.push_back(str);
@@ -1514,13 +1514,13 @@ public:
     {
       fi_fprintf(fph,"<TR>");
 
-      HeU32 column = 1;
+      NxU32 column = 1;
 
       StringVector::iterator i;
       for (i=mRow.begin(); i!=mRow.end(); ++i)
       {
 
-        HeU32 color = table->getColor(column,mHeader,mFooter);
+        NxU32 color = table->getColor(column,mHeader,mFooter);
 
         const char *str = (*i).c_str();
 
@@ -1563,13 +1563,13 @@ public:
     {
       fprintf(fph,"<TR>");
 
-      HeU32 column = 1;
+      NxU32 column = 1;
 
       StringVector::iterator i;
       for (i=mRow.begin(); i!=mRow.end(); ++i)
       {
 
-        HeU32 color = table->getColor(column,mHeader,mFooter);
+        NxU32 color = table->getColor(column,mHeader,mFooter);
 
         const char *str = (*i).c_str();
 
@@ -1699,9 +1699,9 @@ public:
     fi_fprintf(fph,"%c);\r\n",34);
   }
 
-  HeI32 compare(const HtmlRow &r,const SortRequest &s)
+  NxI32 compare(const HtmlRow &r,const SortRequest &s)
   {
-    HeI32 ret = 0;
+    NxI32 ret = 0;
 
     std::string p1;  // primary 1
     std::string p2;  // primary 2
@@ -1713,8 +1713,8 @@ public:
 
     if (isNumeric(p1) && isNumeric(p2) )
     {
-      HeF32 v1 = getFloatValue(p1.c_str());
-      HeF32 v2 = getFloatValue(p2.c_str());
+      NxF32 v1 = getFloatValue(p1.c_str());
+      NxF32 v2 = getFloatValue(p2.c_str());
       if ( v1 < v2 )
         ret = -1;
       else if ( v1 > v2 )
@@ -1744,8 +1744,8 @@ public:
       r.getString(s.mSecondaryKey-1,p2);
       if (isNumeric(p1) && isNumeric(p2) )
       {
-        HeF32 v1 = getFloatValue(p1.c_str());
-        HeF32 v2 = getFloatValue(p2.c_str());
+        NxF32 v1 = getFloatValue(p1.c_str());
+        NxF32 v2 = getFloatValue(p2.c_str());
         if ( v1 < v2 )
           ret = -1;
         else if ( v1 > v2 )
@@ -1815,7 +1815,7 @@ public:
     reset();
   }
 
-	HeI32 compare(void **p1,void **p2)
+	NxI32 compare(void **p1,void **p2)
   {
     HtmlRow **r1 = (HtmlRow **)p1;
     HtmlRow **r2 = (HtmlRow **)p2;
@@ -1823,11 +1823,11 @@ public:
     HtmlRow *row1 = r1[0];
     HtmlRow *row2 = r2[0];
 
-    HE_ASSERT( !row1->isHeader() );
-    HE_ASSERT( !row1->isFooter() );
+    assert( !row1->isHeader() );
+    assert( !row1->isFooter() );
 
-    HE_ASSERT( !row2->isHeader() );
-    HE_ASSERT( !row2->isFooter() );
+    assert( !row2->isHeader() );
+    assert( !row2->isFooter() );
 
     return row1->compare(*row2,mSortRequest);
   }
@@ -1918,12 +1918,12 @@ public:
 
         char *temp = (char *)HTML_MALLOC(sizeof(char)*(len+1));
         memcpy(temp,sdata.c_str(),len+1);
-        HeI32 count;
+        NxI32 count;
         const char **args = mParser.GetArglist(temp,count);
 
         if ( args )
         {
-          for (HeI32 i=0; i<count; i++)
+          for (NxI32 i=0; i<count; i++)
           {
             const char *arg = args[i];
             if ( arg[0] == ',' )
@@ -1999,20 +1999,20 @@ public:
     mCurrent->addColumn(data);
   }
 
-  void addColumn(HeF32 v)
+  void addColumn(NxF32 v)
   {
     std::string str;
     getFloat(v,str);
     addColumn(str.c_str());
   }
 
-  void addColumn(HeI32 v)
+  void addColumn(NxI32 v)
   {
     const char *temp = formatNumber(v);
     addColumn(temp);
   }
 
-  void addColumn(HeU32 v)
+  void addColumn(NxU32 v)
   {
     const char *temp = formatNumber(v);
     addColumn(temp);
@@ -2051,7 +2051,7 @@ public:
   void printLeft(FILE_INTERFACE *fph,const std::string &str,size_t width)
   {
     size_t swid = str.size();
-    HE_ASSERT( swid <= width );
+    assert( swid <= width );
 
     size_t justify = (width-swid)-1;
     fi_fprintf(fph,"%c", 32 );
@@ -2065,7 +2065,7 @@ public:
   void printRight(FILE_INTERFACE *fph,const std::string &str,size_t width)
   {
     size_t swid = str.size();
-    HE_ASSERT( swid <= width );
+    assert( swid <= width );
     size_t justify = (width-swid)-1;
 
     for (size_t i=0; i<justify; i++)
@@ -2103,7 +2103,7 @@ public:
     }
     if ( count < width )
     {
-      HE_ASSERT( (count+1) == width );
+      assert( (count+1) == width );
       fi_fprintf(fph,"%c", 32 );
     }
   }
@@ -2200,7 +2200,7 @@ public:
     mSortRequest = sr;
 
     size_t rcount = mBody.size();
-    HeI32 index  = 0;
+    NxI32 index  = 0;
 
     HtmlRow **rows = (HtmlRow **) HTML_MALLOC(sizeof(HtmlRow *)*rcount);
     size_t   *indices = (size_t *) HTML_MALLOC(sizeof(size_t)*rcount);
@@ -2219,7 +2219,7 @@ public:
 
     qsort( (void **)rows,index);
 
-    for (HeI32 i=0; i<index; i++)
+    for (NxI32 i=0; i<index; i++)
     {
       HtmlRow *row = rows[i];
       size_t   dest = indices[i];
@@ -2307,9 +2307,9 @@ public:
     return ret;
   }
 
-  HeF32 computeTotal(size_t column)
+  NxF32 computeTotal(size_t column)
   {
-    HeF32 ret = 0;
+    NxF32 ret = 0;
     HtmlRowVector::iterator i;
     for (i=mBody.begin(); i!=mBody.end(); i++)
     {
@@ -2320,7 +2320,7 @@ public:
         row->getString(column,str);
         if ( isNumeric(str) )
         {
-          HeF32 v = getFloatValue(str.c_str());
+          NxF32 v = getFloatValue(str.c_str());
           ret+=v;
         }
       }
@@ -2360,7 +2360,7 @@ public:
             first_row->getString(i,str);
             if ( isNumeric(str) )
             {
-              HeF32 v = computeTotal(i);
+              NxF32 v = computeTotal(i);
               std::string str;
               getFloat(v,str);
               totals->addColumn(str.c_str());
@@ -2514,7 +2514,7 @@ public:
         std::string str;
         row.getString(i,str);
 
-        HE_ASSERT( str.size() < csize[i] );
+        assert( str.size() < csize[i] );
 
         if ( lastHeader )
         {
@@ -2587,42 +2587,42 @@ public:
     mComputeTotals = true;
   }
 
-  void excludeTotals(HeU32 column)
+  void excludeTotals(NxU32 column)
   {
     mExcludeTotals.push_back(column);
   }
 
-  void addSort(const char *sort_name,HeU32 primary_key,bool primary_ascending,HeU32 secondary_key,bool secondary_ascending) // adds a sorted result.  You can set up mulitple sort requests for a single table.
+  void addSort(const char *sort_name,NxU32 primary_key,bool primary_ascending,NxU32 secondary_key,bool secondary_ascending) // adds a sorted result.  You can set up mulitple sort requests for a single table.
   {
     SortRequest sr(sort_name,primary_key,primary_ascending,secondary_key,secondary_ascending);
     mSortRequests.push_back(sr);
   }
 
-  void  setColumnColor(HeU32 column,HeU32 color) // set a color for a specific column.
+  void  setColumnColor(NxU32 column,NxU32 color) // set a color for a specific column.
   {
     mColumnColors.push_back(column);
     mColumnColors.push_back(color);
   }
 
-  void  setHeaderColor(HeU32 color)               // color for header lines
+  void  setHeaderColor(NxU32 color)               // color for header lines
   {
     mHeaderColor = color;
   }
 
-  void setFooterColor(HeU32 color)              // color for footer lines
+  void setFooterColor(NxU32 color)              // color for footer lines
   {
     mFooterColor = color;
   }
 
-  void setBodyColor(HeU32 color)
+  void setBodyColor(NxU32 color)
   {
     mBodyColor = color;
   }
 
-  HeU32 getColor(HeU32 column,bool isHeader,bool isFooter)
+  NxU32 getColor(NxU32 column,bool isHeader,bool isFooter)
   {
 
-    HeU32 ret = mBodyColor;
+    NxU32 ret = mBodyColor;
 
     if ( isHeader )
     {
@@ -2634,11 +2634,11 @@ public:
     }
     else
     {
-      HeU32 count = HeU32(mColumnColors.size())/2;
-      for (HeU32 i=0; i<count; i++)
+      NxU32 count = NxU32(mColumnColors.size())/2;
+      for (NxU32 i=0; i<count; i++)
       {
-        HeU32 c = HeU32(mColumnColors[i*2+0]);
-        HeU32 color = HeU32(mColumnColors[i*2+1]);
+        NxU32 c = NxU32(mColumnColors[i*2+0]);
+        NxU32 color = NxU32(mColumnColors[i*2+1]);
         if ( column == c )
         {
           ret = color;
@@ -2653,10 +2653,10 @@ public:
   const std::string & getHeading(void) const { return mHeading; };
 
 private:
-  HeU32                        mHeaderColor;
-  HeU32                        mFooterColor;
-  HeU32                        mBodyColor;
-  std::vector< HeU32 > mColumnColors;
+  NxU32                        mHeaderColor;
+  NxU32                        mFooterColor;
+  NxU32                        mBodyColor;
+  std::vector< NxU32 > mColumnColors;
   HtmlDocument        *mParent;
   std::string          mHeading;
   HtmlRow             *mCurrent;
@@ -2666,22 +2666,22 @@ private:
   SortRequestVector    mSortRequests;
 
   bool                        mComputeTotals;
-  std::vector< HeU32 > mExcludeTotals;
+  std::vector< NxU32 > mExcludeTotals;
 
-  HeU8 UPPER_LEFT_BORDER;
-  HeU8 UPPER_RIGHT_BORDER;
-  HeU8 LOWER_LEFT_BORDER;
-  HeU8 LOWER_RIGHT_BORDER;
-  HeU8 TOP_SEPARATOR;
-  HeU8 BOTTOM_SEPARATOR;
-  HeU8 TOP_BORDER;
-  HeU8 BOTTOM_BORDER;
-  HeU8 LEFT_BORDER;
-  HeU8 RIGHT_BORDER;
-  HeU8 VERTICAL_SEPARATOR;
-  HeU8 LEFT_SIDE_BORDER;
-  HeU8 RIGHT_SIDE_BORDER;
-  HeU8 CROSS_BORDER;
+  NxU8 UPPER_LEFT_BORDER;
+  NxU8 UPPER_RIGHT_BORDER;
+  NxU8 LOWER_LEFT_BORDER;
+  NxU8 LOWER_RIGHT_BORDER;
+  NxU8 TOP_SEPARATOR;
+  NxU8 BOTTOM_SEPARATOR;
+  NxU8 TOP_BORDER;
+  NxU8 BOTTOM_BORDER;
+  NxU8 LEFT_BORDER;
+  NxU8 RIGHT_BORDER;
+  NxU8 VERTICAL_SEPARATOR;
+  NxU8 LEFT_SIDE_BORDER;
+  NxU8 RIGHT_SIDE_BORDER;
+  NxU8 CROSS_BORDER;
 
 
 };
@@ -2875,7 +2875,7 @@ public:
         dest_name = bname;
         *slash = 0;
         dot = lastDot(bname);
-        HE_ASSERT(dot);
+        assert(dot);
         if ( dot )
         {
           char temp[512];
@@ -2909,7 +2909,7 @@ public:
     char scratch[512];
     sprintf(scratch,"%s%s", root_dir.c_str(), dest_name.c_str() );
 
-    HeU32 tableCount = HeU32(mTables.size());
+    NxU32 tableCount = NxU32(mTables.size());
 
     FILE *fph = fopen(scratch,"wb");
 
@@ -2943,7 +2943,7 @@ public:
       fprintf(fph,"%s\r\n","</xml><![endif]--><![if !supportTabStrip]>");
 
       {
-        HeU32 index = 0;
+        NxU32 index = 0;
         HtmlTableVector::iterator i;
         for (i=mTables.begin(); i!=mTables.end(); ++i)
         {
@@ -2968,7 +2968,7 @@ public:
       fprintf(fph,"%s\r\n"," var c_rgszSh=new Array(c_lTabs);");
 
       {
-        HeU32 index = 0;
+        NxU32 index = 0;
         HtmlTableVector::iterator i;
         for (i=mTables.begin(); i!=mTables.end(); ++i)
         {
@@ -3255,7 +3255,7 @@ public:
       fprintf(fph,"%s\r\n","  <x:ExcelWorksheets>");
 
       {
-        HeU32 index = 0;
+        NxU32 index = 0;
         HtmlTableVector::iterator i;
         for (i=mTables.begin(); i!=mTables.end(); ++i)
         {
@@ -3304,7 +3304,7 @@ public:
       fprintf(fph," <o:File HRef=\"stylesheet.css\"/>\r\n");
       fprintf(fph," <o:File HRef=\"tabstrip.htm\"/>\r\n");
 
-      for (HeU32 i=0; i<tableCount; i++)
+      for (NxU32 i=0; i<tableCount; i++)
       {
         fprintf(fph," <o:File HRef=\"sheet%03d.htm\"/>\r\n", i+1);
       }
@@ -3401,7 +3401,7 @@ public:
       fprintf(fph,"<body topmargin=0 leftmargin=0 bgcolor=\"#808080\">\r\n");
       fprintf(fph,"<table border=0 cellspacing=1>\r\n");
       fprintf(fph," <tr>\r\n");
-      for (HeU32 i=0; i<tableCount; i++)
+      for (NxU32 i=0; i<tableCount; i++)
       {
         fprintf(fph," <td bgcolor=\"#FFFFFF\" nowrap><b><small><small>&nbsp;<a href=\"sheet%03d.htm\" target=\"frSheet\"><font face=\"Arial\" color=\"#000000\">Sheet%d</font></a>&nbsp;</small></small></b></td>\r\n", i+1, i+1);
       }
@@ -3415,7 +3415,7 @@ public:
 
 
     {
-      HeU32 index = 0;
+      NxU32 index = 0;
       HtmlTableVector::iterator i;
       for (i=mTables.begin(); i!=mTables.end(); ++i)
       {
@@ -3547,7 +3547,7 @@ public:
 
   void           releaseHtmlDocument(HtmlDocument *document)      // release a previously created HTML document
   {
-    HE_ASSERT(document);
+    assert(document);
     _HtmlDocument *doc = static_cast< _HtmlDocument *>(document);
     HTML_DELETE(_HtmlDocument,doc);
   }

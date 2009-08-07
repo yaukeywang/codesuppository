@@ -6,13 +6,9 @@
 		<Import root=".\" file="Pd3d.xpj"/>
 		<Import root=".\" file="RenderDebugPd3d.xpj"/>
 		<Import root=".\" file="MeshImport.xpj"/>
-		<Import root=".\" file="MeshImportAssimp.xpj"/>
 		<Import root=".\" file="MeshImportEzm.xpj"/>
-		<Import root=".\" file="MeshImportLeveller.xpj"/>
 		<Import root=".\" file="MeshImportObj.xpj"/>
 		<Import root=".\" file="MeshImportOgre.xpj"/>
-		<Import root=".\" file="TestMeshImport.xpj"/>
-		<Import root=".\" file="ThreadFrac.xpj"/>
 
 		<Target name="CodeSuppository">
 			<Export platform="win32" tool="vc7">../vc7</Export>
@@ -42,8 +38,9 @@
 				</Preprocessor>
 				<SearchPaths type="header">
           ../../include
+          ../../include/common/snippets
+          ../../include/common/compression
           ../../app
-          ../../ext/boost/include
 				</SearchPaths>
 				<SearchPaths type="library">
 					../../ext/DirectX_October2006
@@ -63,6 +60,7 @@
 				<SearchPaths type="header">
           ../../include
           ../../app
+          ../../include/common/snippets
 				</SearchPaths>
 				<SearchPaths type="library">
 					../../ext/DirectX_October2006
@@ -119,9 +117,6 @@
         *.h
 			</Files>
 			<Files name="Common Source Files" root="../../src/common" type="source">
-				snippets/*.cpp
-        snippets/*.c
-        snippets/*.h
         tui/*.cpp
         tui/*.h
         Dxut/*.cpp
@@ -132,109 +127,26 @@
         binding/*.h
 				ResourceInterface/*.cpp
         ResourceInterface/*.h
-        MemoryServices/*.cpp
-        MemoryServices/*.c
-        MemoryServices/*.h
-        VectorFont/*.h
-        VectorFont/*.cpp
-         snippets/Asc2Bin.cpp
-         snippets/Asc2Bin.h
-         snippets/cparser.cpp
-         snippets/cparser.h
-         snippets/filesystem.cpp
-         snippets/filesystem.h
-         snippets/FloatMath.inl
-         snippets/FloatMath.cpp
-         snippets/FloatMath.h
-         snippets/gauss.cpp
-         snippets/gauss.h
-         snippets/HexMem.cpp
-         snippets/HexMem.h
-         snippets/inparser.cpp
-         snippets/inparser.h
-         snippets/keyvalue.cpp
-         snippets/keyvalue.h
-         snippets/keyvalueini.cpp
-         snippets/keyvalueini.h
-         snippets/keyvaluespec.cpp
-         snippets/keyvaluespec.h
-         snippets/log.cpp
-         snippets/log.h
-         snippets/stable.h
-         snippets/stringdict.cpp
-         snippets/stringdict.h
-         snippets/sutil.cpp
-         snippets/sutil.h
-         snippets/timedevent.cpp
-         snippets/timedevent.h
-         snippets/wavefront.h
-         snippets/wavefront.cpp
-         snippets/winmsg.h
-         snippets/winmsg.cpp
-         snippets/splitmesh.h
-         snippets/splitmesh.cpp
-         snippets/OpenClosedMesh.h
-         snippets/OpenClosedMesh.cpp
-         snippets/ConsolidateMesh.h
-         snippets/ConsolidateMesh.cpp
-         snippets/MeshConslidate.h
-         snippets/MeshConsolidate.cpp
-         snippets/RemoveTjunctions.h
-         snippets/RemoveTjunctions.cpp
-         snippets/ImportHeightMap.h
-         snippets/ImportHeightMap.cpp
-         snippets/Triangulator.h
-         snippets/Triangulator.cpp
-         snippets/StanHull.h
-         snippets/StanHull.cpp
-         snippets/cd_hull.h
-         snippets/cd_hull.cpp
-         snippets/perlin4.h
-         snippets/perlin4.cpp
-         snippets/ConvexDecomposition.h
-         snippets/ConvexDecomposition.cpp
-         snippets/erode.h
-         snippets/erode.cpp
-         snippets/HtmlTable.cpp
-         snippets/HtmlTable.h
-         snippets/gauss.h
-         snippets/gauss.cpp
-         snippets/MeshIslandGeneration.h
-         snippets/MeshIslandGeneration.cpp
-         snippets/rand.h
-         snippets/rand.cpp
-         snippets/ThreadConfig.h
-         snippets/ThreadConfig.cpp
-         snippets/LockFreeQ.h
-         snippets/LockFreeQ.cpp
-         snippets/JobSwarm.h
-         snippets/JobSwarm.cpp
+         snippets/*.inl
+         snippets/*.c
+         snippets/*.cpp
+         snippets/*.h
         compression/*.cpp
         compression/*.c
         compression/*.h
-        FileInterface/*.cpp
-        FileInterface/*.h
-        AutoGeometry/*.h
-        AutoGeometry/*.cpp
 			</Files>
 			<Files name="Plugin Dependencies" root="../../include" type="source">
         Pd3d/*.h
         RenderDebug/*.h
-        HeRender/*.h
 			</Files>
 			<Dependencies type="link">
 			  Pd3d
-        RenderDebug
-        Pgraphics
+            RenderDebug
+            Pgraphics
      		MeshImport
     		MeshImportEzm
-    		MeshImportLeveller
     		MeshImportObj
     		MeshImportOgre
-		    MeshImportGranny
-    		MeshImportSpeedTree
-    		MeshImportHeTerrain
-    		MeshImportHeWater
 			</Dependencies>
 
 		</Target>

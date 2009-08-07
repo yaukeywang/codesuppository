@@ -7,10 +7,10 @@
 #pragma warning(disable:4702) // disabling a warning that only shows up when building VC7
 
 #include "ImportOgre.h"
-#include "MeshImport/MeshImport.h"
-#include "common/snippets/stringdict.h"
-#include "common/snippets/sutil.h"
-#include "common/snippets/FastXml.h"
+#include "MeshImport.h"
+#include "stringdict.h"
+#include "sutil.h"
+#include "FastXml.h"
 
 #pragma warning(disable:4100)
 #pragma warning(disable:4996)
@@ -153,7 +153,7 @@ public:
     mMaterial = material;
     mFaceCount = fcount;
     mFaceIndex = -1;
-    mFaces = MEMALLOC_NEW_ARRAY(Face,mFaceCount);
+    mFaces = MEMALLOC_NEW_ARRAY(Face,mFaceCount)[mFaceCount];
   }
   ~MySubMesh(void)
   {

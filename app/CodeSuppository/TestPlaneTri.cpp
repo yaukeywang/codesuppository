@@ -5,7 +5,7 @@
 
 #include "TestPlaneTri.h"
 
-#include "common/snippets/SendTextMessage.h"
+#include "SendTextMessage.h"
 
 void testPlaneTri(void)
 {

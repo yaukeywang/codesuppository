@@ -4,7 +4,7 @@
 
 #include <vector>
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 
 class KdTreeNode;
 
@@ -34,13 +34,13 @@ public:
     mDistance = 0;
   }
   KdTreeNode  *mNode;
-  HeF32        mDistance;
+  NxF32        mDistance;
 };
 
 class KdTreeInterface
 {
 public:
-  virtual void foundNode(KdTreeNode *node,HeF32 distanceSquared) = 0;
+  virtual void foundNode(KdTreeNode *node,NxF32 distanceSquared) = 0;
 };
 
 class KdTreeNode
@@ -57,7 +57,7 @@ public:
     mRight = 0;
   }
 
-  KdTreeNode(HeF32 x,HeF32 y,HeF32 z,HeF32 /*radius*/,void *userData,HeU32 index)
+  KdTreeNode(NxF32 x,NxF32 y,NxF32 z,NxF32 /*radius*/,void *userData,NxU32 index)
   {
     mX = x;
     mY = y;
@@ -129,18 +129,18 @@ public:
 
   }
 
-  HeF32        getX(void) const { return mX;  }
-  HeF32        getY(void) const {  return mY; };
-  HeF32        getZ(void) const { return mZ; };
-  HeU32 getIndex(void) const { return mIndex; };
+  NxF32        getX(void) const { return mX;  }
+  NxF32        getY(void) const {  return mY; };
+  NxF32        getZ(void) const { return mZ; };
+  NxU32 getIndex(void) const { return mIndex; };
   void *       getUserData(void) const { return mUserData; };
 
-  void search(Axes axis,const HeF32 *pos,HeF32 radius,HeU32 &count,HeU32 maxObjects,KdTreeFindNode *found,bool xzOnly,KdTreeFilter *filter)
+  void search(Axes axis,const NxF32 *pos,NxF32 radius,NxU32 &count,NxU32 maxObjects,KdTreeFindNode *found,bool xzOnly,KdTreeFilter *filter)
   {
 
-    HeF32 dx = pos[0] - getX();
-    HeF32 dy = pos[1] - getY();
-    HeF32 dz = pos[2] - getZ();
+    NxF32 dx = pos[0] - getX();
+    NxF32 dy = pos[1] - getY();
+    NxF32 dz = pos[2] - getZ();
 
     KdTreeNode *search1 = 0;
     KdTreeNode *search2 = 0;
@@ -212,8 +212,8 @@ public:
     if ( ok )
     {
 
-      HeF32 r2 = radius*radius;
-      HeF32 m = dx*dx+dz*dz;
+      NxF32 r2 = radius*radius;
+      NxF32 m = dx*dx+dz*dz;
 
       if ( !xzOnly )
       {
@@ -253,14 +253,14 @@ public:
             {
               bool inserted = false;
 
-              for (HeU32 i=0; i<count; i++)
+              for (NxU32 i=0; i<count; i++)
               {
                 if ( m < found[i].mDistance ) // if this one is closer than a pre-existing one...
                 {
                   // insertion sort...
-                  HeU32 scan = count;
+                  NxU32 scan = count;
                   if ( scan >= maxObjects ) scan=maxObjects-1;
-                  for (HeU32 j=scan; j>i; j--)
+                  for (NxU32 j=scan; j>i; j--)
                   {
                     found[j] = found[j-1];
                   }
@@ -293,12 +293,12 @@ public:
 	  	search2->search( axis, pos,radius, count, maxObjects, found,xzOnly,filter);
   }
 
-  void search(Axes axis,const HeF32 *pos,HeF32 radius,HeU32 &count,KdTreeInterface *callback)
+  void search(Axes axis,const NxF32 *pos,NxF32 radius,NxU32 &count,KdTreeInterface *callback)
   {
 
-    HeF32 dx = pos[0] - getX();
-    HeF32 dy = pos[1] - getY();
-    HeF32 dz = pos[2] - getZ();
+    NxF32 dx = pos[0] - getX();
+    NxF32 dy = pos[1] - getY();
+    NxF32 dz = pos[2] - getZ();
 
     KdTreeNode *search1 = 0;
     KdTreeNode *search2 = 0;
@@ -352,8 +352,8 @@ public:
         break;
     }
 
-    HeF32 r2 = radius*radius;
-    HeF32 m  = dx*dx+dy*dy+dz*dz;
+    NxF32 r2 = radius*radius;
+    NxF32 m  = dx*dx+dy*dy+dz*dz;
 
     if ( m < r2 )
     {
@@ -378,11 +378,11 @@ private:
 	KdTreeNode *getLeft(void)         { return mLeft; }
 	KdTreeNode *getRight(void)        { return mRight; }
 
-  HeU32    mIndex;
+  NxU32    mIndex;
   void           *mUserData;
-  HeF32           mX;
-  HeF32           mY;
-  HeF32           mZ;
+  NxF32           mX;
+  NxF32           mY;
+  NxF32           mZ;
   KdTreeNode     *mLeft;
   KdTreeNode     *mRight;
 };
@@ -406,7 +406,7 @@ public:
 
   KdTreeNode * getNextNode(void)
   {
-    HE_ASSERT(mIndex<MAX_BUNDLE_SIZE);
+    assert(mIndex<MAX_BUNDLE_SIZE);
     KdTreeNode *ret = &mNodes[mIndex];
     mIndex++;
     return ret;
@@ -436,27 +436,27 @@ public:
     reset();
   }
 
-  HeU32 search(const HeF32 *pos,HeF32 radius,HeU32 maxObjects,KdTreeFindNode *found,KdTreeFilter *filter) const
+  NxU32 search(const NxF32 *pos,NxF32 radius,NxU32 maxObjects,KdTreeFindNode *found,KdTreeFilter *filter) const
   {
     if ( !mRoot )	return 0;
-    HeU32 count = 0;
+    NxU32 count = 0;
     mRoot->search(X_AXIS,pos,radius,count,maxObjects,found,false,filter);
     return count;
   }
 
-  HeU32 searchXZ(const HeF32 *pos,HeF32 radius,HeU32 maxObjects,KdTreeFindNode *found,KdTreeFilter *filter) const
+  NxU32 searchXZ(const NxF32 *pos,NxF32 radius,NxU32 maxObjects,KdTreeFindNode *found,KdTreeFilter *filter) const
   {
     if ( !mRoot )	return 0;
-    HeU32 count = 0;
+    NxU32 count = 0;
     mRoot->search(X_AXIS,pos,radius,count,maxObjects,found,true,filter);
     return count;
   }
 
 
-  HeU32 search(const HeF32 *pos,HeF32 radius,KdTreeInterface *callback) const
+  NxU32 search(const NxF32 *pos,NxF32 radius,KdTreeInterface *callback) const
   {
     if ( !mRoot )	return 0;
-    HeU32 count = 0;
+    NxU32 count = 0;
     mRoot->search(X_AXIS,pos,radius,count,callback);
     return count;
   }
@@ -477,9 +477,9 @@ public:
     mVcount = 0;
   }
 
-  HeU32 add(HeF32 x,HeF32 y,HeF32 z,HeF32 radius,void *userData)
+  NxU32 add(NxF32 x,NxF32 y,NxF32 z,NxF32 radius,void *userData)
   {
-    HeU32 ret = mVcount;
+    NxU32 ret = mVcount;
     mVcount++;
     KdTreeNode *node = getNewNode(ret);
     new ( node ) KdTreeNode( x, y, z, radius, userData, ret );
@@ -495,13 +495,13 @@ public:
   }
 
 
-  HeU32 getNearest(const HeF32 *pos,HeF32 radius,bool &_found) const // returns the nearest possible neighbor's index.
+  NxU32 getNearest(const NxF32 *pos,NxF32 radius,bool &_found) const // returns the nearest possible neighbor's index.
   {
-    HeU32 ret = 0;
+    NxU32 ret = 0;
 
     _found = false;
     KdTreeFindNode found[1];
-    HeU32 count = search(pos,radius,1,found,0);
+    NxU32 count = search(pos,radius,1,found,0);
     if ( count )
     {
       KdTreeNode *node = found[0].mNode;
@@ -533,7 +533,7 @@ public:
 
 
 private:
-  HeU32            mVcount;
+  NxU32            mVcount;
   KdTreeNode      *mRoot;
   KdTreeNodeBundle       *mBundle;
 };

@@ -27,7 +27,7 @@
 
 */
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 #include "inparser.h"       // include the in-place file parser
 #include "stringdict.h"     // include the string dictionary
 #include "timedevent.h"
@@ -50,11 +50,11 @@ public:
 	CommandParserInterface(void);
 	virtual ~CommandParserInterface(void);
 
-	virtual HeI32 CommandCallback(HeI32 token,HeI32 count,const char **arglist) = 0;
+	virtual NxI32 CommandCallback(NxI32 token,NxI32 count,const char **arglist) = 0;
 
-	virtual HeI32 CommandFallback(HeI32 /* count */,const char ** /* arglist */)
+	virtual NxI32 CommandFallback(NxI32 /* count */,const char ** /* arglist */)
 	{
-		HeI32 ret = 0;
+		NxI32 ret = 0;
 		return ret;
 	}
 
@@ -65,9 +65,9 @@ public:
     return ret;
   }
 
-	void AddToken(const char *key,HeI32 token);
-	HeI32 GetTokenFromKey(const char *key);
-	const char *GetKeyFromToken( const char *prefix, HeI32 token );
+	void AddToken(const char *key,NxI32 token);
+	NxI32 GetTokenFromKey(const char *key);
+	const char *GetKeyFromToken( const char *prefix, NxI32 token );
 
 private:
 };
@@ -81,15 +81,15 @@ class TokenTag
 {
 public:
 	TokenTag(void) { };
-	TokenTag(HeI32 tlocal,CommandParserInterface *service)
+	TokenTag(NxI32 tlocal,CommandParserInterface *service)
 	{
 		mLocalToken = tlocal;
 		mService = service;
 	};
-	HeI32 GetLocalToken(void) const { return mLocalToken; };
+	NxI32 GetLocalToken(void) const { return mLocalToken; };
 	CommandParserInterface * GetService(void) const { return mService; }
 private:
-	HeI32 mLocalToken; // JWR  local internal token for this command.
+	NxI32 mLocalToken; // JWR  local internal token for this command.
 	CommandParserInterface *mService;
 };
 
@@ -104,42 +104,42 @@ public:
 	TheCommandParser(bool timedEventFactory=false);
 	~TheCommandParser(void);
 
-	HeI32 Parse(const char *fmt, ...);
+	NxI32 Parse(const char *fmt, ...);
 
-	void AddToken(const char *key,HeI32 token,CommandParserInterface *service);
-	HeI32 GetTokenFromKey(const char *key);
-	const char *GetKeyFromToken( const char *prefix, HeI32 token );
+	void AddToken(const char *key,NxI32 token,CommandParserInterface *service);
+	NxI32 GetTokenFromKey(const char *key);
+	const char *GetKeyFromToken( const char *prefix, NxI32 token );
 
 	void RemoveToken(const char *key);
 
 	void DeRegister(CommandParserInterface *service);
 
-	HeI32 Batch(const char *fname);
-  HeI32 Batch(const char *data,HeU32 len); // from a block of memory.
+	NxI32 Batch(const char *fname);
+  NxI32 Batch(const char *data,NxU32 len); // from a block of memory.
 
-	virtual HeI32 ParseLine(HeI32 lineno,HeI32 argc,const char **argv);
+	virtual NxI32 ParseLine(NxI32 lineno,NxI32 argc,const char **argv);
 
-	HeI32 CommandLine(HeI32 argc,const char **argv,bool fallbackok=true);
+	NxI32 CommandLine(NxI32 argc,const char **argv,bool fallbackok=true);
 
 	void AddFallback(CommandParserInterface *iface)
 	{
 		mFallbacks.push_back(iface);
 	}
 
-	HeI32 GetLineNo(void) const { return mLineNo; };
+	NxI32 GetLineNo(void) const { return mLineNo; };
 
 	bool receiveMessage(const char *msg);
 
 	void checkMessages(void);
 
-  void process(HeF32 dtime); // give up a time slice to the command parser to process outstanding timed events.
+  void process(NxF32 dtime); // give up a time slice to the command parser to process outstanding timed events.
 
-	bool timedEventCallback(void *user_data,HeI32 user_id,bool alive); //true if supposed to continue, false if done.
-  void deleteEventCallback(void *user_data,HeI32 user_id); //true if supposed to continue, false if done.
+	bool timedEventCallback(void *user_data,NxI32 user_id,bool alive); //true if supposed to continue, false if done.
+  void deleteEventCallback(void *user_data,NxI32 user_id); //true if supposed to continue, false if done.
 
   bool preParse(const char *fmt,...);
 
-  bool preParseLine(HeI32 /* lineno */,const char *line)
+  bool preParseLine(NxI32 /* lineno */,const char *line)
   {
     return preParse("%s",line);
   }
@@ -149,7 +149,7 @@ private:
 	RootCommands   *mRoot;
 	TokenMap        mTokens; // JWR  token id's organized based on ascii name.
 	CommandParserInterfaceVector mFallbacks;
-	HeI32 mLineNo;
+	NxI32 mLineNo;
   TIMED_EVENT::TimedEventFactory *mTimedEventFactory; // handles timed event calls
 };
 
@@ -158,17 +158,17 @@ private:
 class CommandCapture
 {
 public:
-	CommandCapture(HeI32 token,HeI32 count,const char **args);
+	CommandCapture(NxI32 token,NxI32 count,const char **args);
 	CommandCapture(const CommandCapture &a); // copy constructor to do a 'deep' copy.
 	~CommandCapture(void);
 
 	void Invoke(CommandParserInterface *iface); // spool it as a callback.
 	const char ** GetArgs(void) const { return (const char **)mArgs; };
-	HeU32 GetCount(void) const { return (HeU32) mCount; };
+	NxU32 GetCount(void) const { return (NxU32) mCount; };
 
 private:
-	HeI32    mToken;
-	HeI32    mCount;
+	NxI32    mToken;
+	NxI32    mCount;
 	char **mArgs;
 };
 

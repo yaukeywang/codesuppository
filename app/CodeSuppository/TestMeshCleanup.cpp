@@ -5,7 +5,7 @@
 
 #include "TestMeshCleanup.h"
 
-#include "common/snippets/SendTextMessage.h"
+#include "SendTextMessage.h"
 
 void testMeshCleanup(void)
 {

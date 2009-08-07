@@ -6,9 +6,9 @@
 
 class SmoothPath;
 
-SmoothPath  * sp_createSmoothPath(const HeF32 *points,HeU32 pstride,HeU32 count,HeF32 &length);
-HeF32         sp_getPoint(SmoothPath *sp,HeF32 *dest,HeF32 ftime,HeU32 &index);
-HeF32         sp_getPointLinear(SmoothPath *sp,HeF32 *dest,HeF32 ftime,HeU32 &index);
+SmoothPath  * sp_createSmoothPath(const NxF32 *points,NxU32 pstride,NxU32 count,NxF32 &length);
+NxF32         sp_getPoint(SmoothPath *sp,NxF32 *dest,NxF32 ftime,NxU32 &index);
+NxF32         sp_getPointLinear(SmoothPath *sp,NxF32 *dest,NxF32 ftime,NxU32 &index);
 void          sp_releaseSmoothPath(SmoothPath *sp);
 
 

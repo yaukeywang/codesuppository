@@ -3,9 +3,9 @@
 #include <string.h>
 #include <assert.h>
 
-#include "../../common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 #include "compression.h"
-#include "../FileInterface/FileInterface.h"
+#include "FileInterface.h"
 
 
 #if USE_MINI_LZO
@@ -35,24 +35,24 @@ void deleteData(const void* mem)
 
 struct CompressionHeader
 {
-  HeI32             mRawLength;
-  HeI32             mCompressedLength;
-  HeI32             mVersionNumber;
+  NxI32             mRawLength;
+  NxI32             mCompressedLength;
+  NxI32             mVersionNumber;
   char              mId[4];
 };
 
 
-void * compressMiniLZO(const void * /*source*/,HeI32 /*len*/,HeI32 &outlen,CompressionLevel /*level*/,HeI32 /*versionNumber*/)
+void * compressMiniLZO(const void * /*source*/,NxI32 /*len*/,NxI32 &outlen,CompressionLevel /*level*/,NxI32 /*versionNumber*/)
 {
 #if USE_MINI_LZO
-  const HeI32 SCRATCHPAD=65536;
+  const NxI32 SCRATCHPAD=65536;
   char wrkmem[LZO1X_1_MEM_COMPRESS];
 
   CompressionHeader *h = (CompressionHeader *) MEMALLOC_MALLOC(len+SCRATCHPAD+sizeof(CompressionHeader));
-  HeU8 *dest = (HeU8 *)h;
+  NxU8 *dest = (NxU8 *)h;
   dest+=sizeof(CompressionHeader);
   lzo_init();
-  HeI32 r = lzo1x_1_compress((const HeU8 *)source,len,dest,(HeU32 *)&outlen,wrkmem);
+  NxI32 r = lzo1x_1_compress((const NxU8 *)source,len,dest,(NxU32 *)&outlen,wrkmem);
 
   if ( r == LZO_E_OK )
   {
@@ -84,17 +84,17 @@ void * compressMiniLZO(const void * /*source*/,HeI32 /*len*/,HeI32 &outlen,Compr
 }
 
 
-void * compressZLIB(const void *source,HeI32 len,HeI32 &outlen,CompressionLevel /*level*/,HeI32 versionNumber)
+void * compressZLIB(const void *source,NxI32 len,NxI32 &outlen,CompressionLevel /*level*/,NxI32 versionNumber)
 {
 
   uLong csize = compressBound(len);
 
   CompressionHeader *h = (CompressionHeader *) MEMALLOC_MALLOC(csize+sizeof(CompressionHeader));
-  HeU8 *dest = (HeU8 *)h;
+  NxU8 *dest = (NxU8 *)h;
   dest+=sizeof(CompressionHeader);
 
 
-  HeI32 err = compress2((Bytef *)dest,&csize,(Bytef *)source,len, Z_BEST_SPEED);
+  NxI32 err = compress2((Bytef *)dest,&csize,(Bytef *)source,len, Z_BEST_SPEED);
 
   if ( err == Z_OK )
   {
@@ -120,17 +120,17 @@ void * compressZLIB(const void *source,HeI32 len,HeI32 &outlen,CompressionLevel 
 }
 
 #if USE_BZIP
-void * compressBZIP(const void *source,HeI32 len,HeI32 &outlen,CompressionLevel /*level*/,HeI32 versionNumber)
+void * compressBZIP(const void *source,NxI32 len,NxI32 &outlen,CompressionLevel /*level*/,NxI32 versionNumber)
 {
 
-  HeU32 csize = len+65536;
+  NxU32 csize = len+65536;
 
   CompressionHeader *h = (CompressionHeader *) MEMALLOC_MALLOC(csize+sizeof(CompressionHeader));
-  HeU8 *dest = (HeU8 *)h;
+  NxU8 *dest = (NxU8 *)h;
   dest+=sizeof(CompressionHeader);
 
 
-  HeI32 err = BZ2_bzBuffToBuffCompress((char *)dest,&csize,(char *)source,(HeU32)len,1,0,30);
+  NxI32 err = BZ2_bzBuffToBuffCompress((char *)dest,&csize,(char *)source,(NxU32)len,1,0,30);
 
   if ( err == 0 )
   {
@@ -157,17 +157,17 @@ void * compressBZIP(const void *source,HeI32 len,HeI32 &outlen,CompressionLevel 
 #endif
 
 #if USE_LZMA
-void * compressLZMA(const void * /*source*/,HeI32 len,HeI32 &outlen,CompressionLevel /*level*/,HeI32 versionNumber)
+void * compressLZMA(const void * /*source*/,NxI32 len,NxI32 &outlen,CompressionLevel /*level*/,NxI32 versionNumber)
 {
 
   uLong csize = compressBound(len);
 
   CompressionHeader *h = (CompressionHeader *) MEMALLOC_MALLOC(csize+sizeof(CompressionHeader));
-  HeU8 *dest = (HeU8 *)h;
+  NxU8 *dest = (NxU8 *)h;
   dest+=sizeof(CompressionHeader);
 
 
-  HeI32 err = -1;
+  NxI32 err = -1;
   //  int err = compress2((Bytef *)dest,&csize,(Bytef *)source,len, Z_BEST_SPEED);
 
   if ( err == 0 )
@@ -194,7 +194,7 @@ void * compressLZMA(const void * /*source*/,HeI32 len,HeI32 &outlen,CompressionL
 }
 #endif
 
-void * compressGZIP(const void * source,HeI32 len,HeI32 &outlen,CompressionLevel /*level*/,HeI32 /*versionNumber*/)
+void * compressGZIP(const void * source,NxI32 len,NxI32 &outlen,CompressionLevel /*level*/,NxI32 /*versionNumber*/)
 {
   void *ret = 0;
 
@@ -224,7 +224,7 @@ void * compressGZIP(const void * source,HeI32 len,HeI32 &outlen,CompressionLevel
 
 
 
-void * compressData(const void *source,HeI32 len,HeI32 &outlen,CompressionType type,HeI32 versionNumber,CompressionLevel level)
+void * compressData(const void *source,NxI32 len,NxI32 &outlen,CompressionType type,NxI32 versionNumber,CompressionLevel level)
 {
   void *ret = 0;
 
@@ -255,7 +255,7 @@ void * compressData(const void *source,HeI32 len,HeI32 &outlen,CompressionType t
 
 
 
-void * decompressMiniLZO(const void * /*source*/,HeI32 /*clen*/,HeI32 &outlen)
+void * decompressMiniLZO(const void * /*source*/,NxI32 /*clen*/,NxI32 &outlen)
 {
 #if USE_MINI_LZO
 
@@ -266,21 +266,21 @@ void * decompressMiniLZO(const void * /*source*/,HeI32 /*clen*/,HeI32 &outlen)
   {
     const char *data = (const char *) h;
     data+=sizeof(CompressionHeader);
-    HeU32 slen = clen-sizeof(CompressionHeader);
+    NxU32 slen = clen-sizeof(CompressionHeader);
     {
       outlen = h->mRawLength;
       char *dest = (char *)MEMALLOC_MALLOC(h->mRawLength);
       lzo_init();
 
-      HeI32 r = lzo1x_decompress((const HeU8 *)data,
+      NxI32 r = lzo1x_decompress((const NxU8 *)data,
                                slen,
-                               (HeU8 *)dest,
-                               (HeU32 *)&outlen,0);
+                               (NxU8 *)dest,
+                               (NxU32 *)&outlen,0);
 
       if ( r == LZO_E_OK )
       {
         ret = dest;
-        HE_ASSERT( outlen == h->mRawLength );
+        assert( outlen == h->mRawLength );
         outlen = h->mRawLength;
       }
       else
@@ -298,7 +298,7 @@ void * decompressMiniLZO(const void * /*source*/,HeI32 /*clen*/,HeI32 &outlen)
 #endif
 }
 
-void * decompressZLIB(const void *source,HeI32 clen,HeI32 &outlen)
+void * decompressZLIB(const void *source,NxI32 clen,NxI32 &outlen)
 {
   void * ret = 0;
 
@@ -308,19 +308,19 @@ void * decompressZLIB(const void *source,HeI32 clen,HeI32 &outlen)
 
     const char *data = (const char *) h;
     data+=sizeof(CompressionHeader);
-    HeU32 slen = clen-sizeof(CompressionHeader);
+    NxU32 slen = clen-sizeof(CompressionHeader);
     {
 
       outlen = h->mRawLength;
       char *dest = (char *)MEMALLOC_MALLOC(h->mRawLength);
 
-      HeI32 err;
+      NxI32 err;
 
       uLongf destLen = outlen;
 
       err = uncompress( (Bytef *) dest,&destLen,(Bytef *) data, slen );
 
-      HE_ASSERT( destLen == (uLongf)outlen );
+      assert( destLen == (uLongf)outlen );
       if ( destLen != (uLongf) outlen )
         err = -1;
 
@@ -342,7 +342,7 @@ void * decompressZLIB(const void *source,HeI32 clen,HeI32 &outlen)
 
 
 #if USE_BZIP
-void * decompressBZIP(const void *source,HeI32 clen,HeI32 &outlen)
+void * decompressBZIP(const void *source,NxI32 clen,NxI32 &outlen)
 {
   void * ret = 0;
 
@@ -352,19 +352,19 @@ void * decompressBZIP(const void *source,HeI32 clen,HeI32 &outlen)
 
     const char *data = (const char *) h;
     data+=sizeof(CompressionHeader);
-    HeU32 slen = clen-sizeof(CompressionHeader);
+    NxU32 slen = clen-sizeof(CompressionHeader);
     {
 
       outlen = h->mRawLength;
       char *dest = (char *)MEMALLOC_MALLOC(h->mRawLength);
 
-      HeI32 err;
+      NxI32 err;
 
-      HeU32 destLen = outlen;
+      NxU32 destLen = outlen;
 
       err = BZ2_bzBuffToBuffDecompress( (char *)dest, &destLen, (char *)data, slen, 0, 0);
 
-      HE_ASSERT( destLen == (uLongf)outlen );
+      assert( destLen == (uLongf)outlen );
       if ( destLen != (uLongf)outlen )
         err = -1;
 
@@ -386,7 +386,7 @@ void * decompressBZIP(const void *source,HeI32 clen,HeI32 &outlen)
 #endif
 
 #if USE_LZMA
-void * decompressLZMA(const void *source,HeI32 clen,HeI32 &outlen)
+void * decompressLZMA(const void *source,NxI32 clen,NxI32 &outlen)
 {
   void * ret = 0;
 
@@ -396,25 +396,25 @@ void * decompressLZMA(const void *source,HeI32 clen,HeI32 &outlen)
 
     const char *data = (const char *) h;
     data+=sizeof(CompressionHeader);
-    HeU32 slen = clen-sizeof(CompressionHeader);
+    NxU32 slen = clen-sizeof(CompressionHeader);
     {
 
       outlen = h->mRawLength;
       char *dest = (char *)MEMALLOC_MALLOC(h->mRawLength);
 
-      HeI32 err = -1;
+      NxI32 err = -1;
 
       CLzmaDecoderState state;
 
       SizeT inSizeProcessed;
       SizeT outSizeProcessed;
 
-      LzmaDecode(&state, (const HeU8 *)data, slen, &inSizeProcessed, (HeU8 *)dest, outlen, &outSizeProcessed );
+      LzmaDecode(&state, (const NxU8 *)data, slen, &inSizeProcessed, (NxU8 *)dest, outlen, &outSizeProcessed );
 #if 0
       uLongf destLen = outlen;
       err = uncompress( (Bytef *) dest,&destLen,(Bytef *) data, slen );
 
-      HE_ASSERT( destLen == outlen );
+      assert( destLen == outlen );
       if ( destLen != outlen )
         err = -1;
 #endif
@@ -437,12 +437,12 @@ void * decompressLZMA(const void *source,HeI32 clen,HeI32 &outlen)
 #endif
 
 
-void * decompressData(const void *source,HeI32 clen,HeI32 &outlen)
+void * decompressData(const void *source,NxI32 clen,NxI32 &outlen)
 {
   void * ret = 0;
 
   outlen = 0;
-  HeI32 versionNumber;
+  NxI32 versionNumber;
   switch ( getCompressionType(source,clen,versionNumber) )
   {
     case CT_GZIP:
@@ -472,7 +472,7 @@ void * decompressData(const void *source,HeI32 clen,HeI32 &outlen)
             void *mem = fi_getMemBuffer(fpout,&olen);
             if ( mem )
             {
-              outlen = (HeI32)olen;
+              outlen = (NxI32)olen;
               ret = MEMALLOC_MALLOC(outlen);
               memcpy(ret,mem,outlen);
             }
@@ -523,13 +523,13 @@ void * decompressData(const void *source,HeI32 clen,HeI32 &outlen)
 
 
 
-CompressionType getCompressionType(const void *mem,HeI32 len,HeI32 &versionNumber)
+CompressionType getCompressionType(const void *mem,NxI32 len,NxI32 &versionNumber)
 {
   CompressionType ret = CT_INVALID;
 
   versionNumber = 0;
 
-  const HeU8 *scan = (const HeU8 *) mem;
+  const NxU8 *scan = (const NxU8 *) mem;
   if ( len >= 2 && (scan[0] == 0x1F) && (scan[1] == 0x8B) ) // has the 'magic' bytes that indicate this is in GZIP format!
   {
     ret = CT_GZIP;

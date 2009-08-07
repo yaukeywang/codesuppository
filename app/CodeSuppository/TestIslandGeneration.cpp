@@ -5,8 +5,8 @@
 
 #include "TestIslandGeneration.h"
 #include "MeshImport/MeshImport.h"
-#include "common/snippets/SendTextMessage.h"
-#include "common/snippets/MeshIslandGeneration.h"
+#include "SendTextMessage.h"
+#include "MeshIslandGeneration.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
 #include "RenderDebug/RenderDebug.h"
 

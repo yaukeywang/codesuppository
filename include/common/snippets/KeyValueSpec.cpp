@@ -17,7 +17,7 @@
 class MyKeyValue : public KeyValueDataItem
 {
 public:
-  MyKeyValue(HeU32 index,const char *name)
+  MyKeyValue(NxU32 index,const char *name)
   {
     mName = name;
     mType = KVT_NONE;
@@ -29,7 +29,7 @@ public:
 
   MyKeyValue(const MyKeyValue &/*k*/)
   {
-    HE_ASSERT(0); // should never happen..the index field being copied would not make sense...
+    assert(0); // should never happen..the index field being copied would not make sense...
   }
 
   ~MyKeyValue(void)
@@ -44,14 +44,14 @@ public:
     str+=t;
   }
 
-  void add(std::string &str,HeI32 v)
+  void add(std::string &str,NxI32 v)
   {
     char scratch[512];
     sprintf(scratch,"%d", v );
     add(str,scratch);
   }
 
-  void add(std::string &str,HeF32 v)
+  void add(std::string &str,NxF32 v)
   {
     const char *fv = FloatString(v);
     add(str,fv);
@@ -146,7 +146,7 @@ public:
   // Usage:   <key><=><type>,<default_value>,<min_value>,<max_value>
   //             0  1    2   3 4 5 6 7 8 9 10
   //          <key><=><type> , ( x , y , z )
-  void set(KeyValueType type,HeI32 argc,const char **argv)
+  void set(KeyValueType type,NxI32 argc,const char **argv)
   {
     release();
 
@@ -192,12 +192,12 @@ public:
         if ( minValue )
           tmin.mMinValue = atoi( minValue );
         else
-          tmin.mMinValue = HE_MIN_I32;
+          tmin.mMinValue = NX_MIN_I32;
 
         if ( maxValue )
           tmax.mMaxValue = atoi(maxValue);
         else
-          tmax.mMaxValue = HE_MAX_I32;
+          tmax.mMaxValue = NX_MAX_I32;
 
         if ( t.mValue < tmin.mMinValue )
           t.mValue = tmin.mMinValue;
@@ -215,12 +215,12 @@ public:
         if ( minValue )
           tmin.mMinValueF = (float)atof( minValue );
         else
-          tmin.mMinValueF = HE_MIN_F32;
+          tmin.mMinValueF = NX_MIN_F32;
 
         if ( maxValue )
           tmax.mMaxValueF = (float)atof(maxValue);
         else
-          tmax.mMaxValueF = HE_MAX_F32;
+          tmax.mMaxValueF = NX_MAX_F32;
 
         if ( t.mValueF < tmin.mMinValueF )
           t.mValueF = tmin.mMinValueF;
@@ -267,7 +267,7 @@ public:
     }
   }
 
-  HeU32         mIndex;
+  NxU32         mIndex;
 };
 
 typedef USER_STL::map< StringRef, MyKeyValue * > MyKeyValueMap;
@@ -294,7 +294,7 @@ friend class MyKeyValueData;
     release();
   }
 
-  HeU32        getVersionNumber(void) const
+  NxU32        getVersionNumber(void) const
   {
     return mVersionNumber;
   }
@@ -305,21 +305,21 @@ friend class MyKeyValueData;
     return mName.Get();
   }
 
-  HeU32        getSpecCount(void) // return the number of data items in the specification.
+  NxU32        getSpecCount(void) // return the number of data items in the specification.
   {
-    HeU32 ret = 0;
+    NxU32 ret = 0;
 
-    ret = (HeU32)mValues.size();
+    ret = (NxU32)mValues.size();
 
     return ret;
   }
 
-  bool         getSpecItem(HeU32 index,KeyValueDataItem &d)
+  bool         getSpecItem(NxU32 index,KeyValueDataItem &d)
   {
     bool ret = false;
 
-    HeU32 count = (HeU32)mValues.size();
-    HE_ASSERT( index < count );
+    NxU32 count = (NxU32)mValues.size();
+    assert( index < count );
     if ( index < count )
     {
       MyKeyValueMap::iterator i;
@@ -333,7 +333,7 @@ friend class MyKeyValueData;
           break;
         }
       }
-      HE_ASSERT(ret);
+      assert(ret);
     }
 
     return ret;
@@ -377,7 +377,7 @@ friend class MyKeyValueData;
   {
     KeyValueType ret = KVT_NONE;
 
-    HeU32 v;
+    NxU32 v;
     if ( mKeyValueTypes->Get(str,v) )
     {
       ret = (KeyValueType)v;
@@ -386,9 +386,9 @@ friend class MyKeyValueData;
   }
 
 
-	HeI32 ParseLine(HeI32 /*lineno*/,HeI32 argc,const char **argv)   // return TRUE to continue parsing, return FALSE to abort parsing process
+	NxI32 ParseLine(NxI32 /*lineno*/,NxI32 argc,const char **argv)   // return TRUE to continue parsing, return FALSE to abort parsing process
   {
-    HeI32 ret = 0;
+    NxI32 ret = 0;
 
 
     //            0   1   2   3      4        5   6       7   8
@@ -441,12 +441,12 @@ friend class MyKeyValueData;
     }
   }
 
-  HeU32 getCount(void) const
+  NxU32 getCount(void) const
   {
-    return (HeU32)mValues.size();
+    return (NxU32)mValues.size();
   }
 
-  bool getIndex(const char *key,HeU32 &index)
+  bool getIndex(const char *key,NxU32 &index)
   {
     bool ret = false;
 
@@ -473,12 +473,12 @@ friend class MyKeyValueData;
     return ret;
   }
 
-  void         setUserId(HeU32 id)
+  void         setUserId(NxU32 id)
   {
     mUserId = id;
   }
 
-  HeU32        getUserId(void)
+  NxU32        getUserId(void)
   {
     return mUserId;
   }
@@ -513,7 +513,7 @@ friend class MyKeyValueData;
     return ret;
   }
 
-  HeU32        getDefaultData(void)  // retrieve a data Id that corresponds to the default values for this specification.
+  NxU32        getDefaultData(void)  // retrieve a data Id that corresponds to the default values for this specification.
   {
     if ( mDefaultData == 0 )
     {
@@ -523,17 +523,17 @@ friend class MyKeyValueData;
   }
 
 private:
-  HeU32             mUserId;
+  NxU32             mUserId;
   void             *mUserData;
-  HeU32             mIndex;
-  HeU32             mVersionNumber;
+  NxU32             mIndex;
+  NxU32             mVersionNumber;
   StringDict        mDictionary;
   StringTableInt   *mKeyValueTypes;
   StringRef         mName;
   MyKeyValueMap     mValues;
   std::string       mSpecification;
   KeyValueSpecFactory *mFactory;
-  HeU32             mDefaultData;
+  NxU32             mDefaultData;
 };
 
 typedef USER_STL::map< StringRef, MyKeyValueSpec * > MyKeyValueSpecMap;
@@ -665,7 +665,7 @@ public:
       {
         MyKeyValue *kv = (*i).second;
 
-        HeU32 index = kv->mIndex;
+        NxU32 index = kv->mIndex;
 
         KeyData &dest = mData[index];
 
@@ -686,7 +686,7 @@ public:
   }
 
 
-  virtual HeU32        getVersionNumber(void) const
+  virtual NxU32        getVersionNumber(void) const
   {
     return mVersionNumber;
   }
@@ -712,10 +712,10 @@ public:
 
     if ( data )
     {
-      HeU32 count;
+      NxU32 count;
       KeyValue k;
       const char **kv = k.getKeyValues(data,count);
-      for (HeU32 i=0; i<count; i++)
+      for (NxU32 i=0; i<count; i++)
       {
         const char *key   = kv[0];
         const char *value = kv[1];
@@ -811,7 +811,7 @@ public:
   {
     KeyData *ret = 0;
 
-    HeU32 index;
+    NxU32 index;
     if ( mSpec->getIndex(key,index) )
     {
       if ( index < mCount )
@@ -819,13 +819,13 @@ public:
         ret = &mData[index];
         if ( ret->mType != type )
         {
-          HE_ASSERT(0);
+          assert(0);
           ret = 0;
         }
       }
       else
       {
-        HE_ASSERT(0);
+        assert(0);
       }
     }
     return ret;
@@ -835,7 +835,7 @@ public:
   {
     KeyData *ret = 0;
 
-    HeU32 index;
+    NxU32 index;
     if ( mSpec->getIndex(key,index) )
     {
       if ( index < mCount )
@@ -845,7 +845,7 @@ public:
       }
       else
       {
-        HE_ASSERT(0);
+        assert(0);
       }
     }
     return ret;
@@ -865,7 +865,7 @@ public:
     return ret;
   }
 
-  bool         getState(const char *key,HeF32 &state)
+  bool         getState(const char *key,NxF32 &state)
   {
     bool ret = false;
 
@@ -893,7 +893,7 @@ public:
     return ret;
   }
 
-  bool         getState(const char *key,HeI32 &value)
+  bool         getState(const char *key,NxI32 &value)
   {
     bool ret = false;
 
@@ -907,7 +907,7 @@ public:
     return ret;
   }
 
-  bool         getState(const char * key,HeVec3 &value)
+  bool         getState(const char * key,NxVec3 &value)
   {
     bool ret = false;
 
@@ -937,7 +937,7 @@ public:
     return ret;
   }
 
-  bool         setState(const char *key,HeF32 state)
+  bool         setState(const char *key,NxF32 state)
   {
     bool ret = false;
 
@@ -967,7 +967,7 @@ public:
     return ret;
   }
 
-  bool         setState(const char *key,HeI32 value)
+  bool         setState(const char *key,NxI32 value)
   {
     bool ret = false;
 
@@ -983,7 +983,7 @@ public:
     return ret;
   }
 
-  bool         setState(const char * key,const HeVec3 &v)
+  bool         setState(const char * key,const NxVec3 &v)
   {
     bool ret = false;
 
@@ -1006,16 +1006,16 @@ public:
     return mSpec->getSpecName();
   }
 
-  HeU32        getDataCount(void) // return the number of data items in the specification.
+  NxU32        getDataCount(void) // return the number of data items in the specification.
   {
     return mCount;
   }
 
-  bool         getDataItem(HeU32 index,KeyValueDataItem &d)
+  bool         getDataItem(NxU32 index,KeyValueDataItem &d)
   {
     bool ret = false;
 
-    HE_ASSERT( index < mCount );
+    assert( index < mCount );
 
     if ( index < mCount )
     {
@@ -1051,17 +1051,17 @@ public:
           break;
         }
       }
-      HE_ASSERT(ret);
+      assert(ret);
     }
     return ret;
   }
 
-  void         setUserId(HeU32 id)
+  void         setUserId(NxU32 id)
   {
     mUserId = id;
   }
 
-  HeU32        getUserId(void)
+  NxU32        getUserId(void)
   {
     return mUserId;
   }
@@ -1076,16 +1076,16 @@ public:
     return mUserData;
   }
 
-  HeU32                mUserId;
+  NxU32                mUserId;
   void                *mUserData;
-  HeU32                mCount;
+  NxU32                mCount;
   KeyData             *mData;
   MyKeyValueSpec      *mSpec;
-  HeU32                mVersionNumber;
+  NxU32                mVersionNumber;
   std::string          mStringData; // the data as a key/value pair CSV string.
 };
 
-typedef USER_STL::map< HeU32, MyKeyValueData * > MyKeyValueDataMap;
+typedef USER_STL::map< NxU32, MyKeyValueData * > MyKeyValueDataMap;
 typedef USER_STL::vector< StringRef > StringRefVector;
 typedef USER_STL::vector< KeyValueData * > KeyValueDataVector;
 
@@ -1159,14 +1159,14 @@ public:
       {
 #if _DEBUG
         MyKeyValueSpec *_spec = (*found).second;
-        HE_ASSERT( mspec == _spec );
+        assert( mspec == _spec );
 #endif
         delete mspec;
         mSpecs.erase(found);
       }
       else
       {
-        HE_ASSERT(0);
+        assert(0);
       }
     }
   }
@@ -1200,9 +1200,9 @@ public:
     return ret;
   }
 
-  HeU32          createKeyValueData(const char *specName,const char *data)
+  NxU32          createKeyValueData(const char *specName,const char *data)
   {
-    HeU32 ret = 0;
+    NxU32 ret = 0;
 
     KeyValueSpec *spec = locateKeyValueSpec(specName);
     if ( spec )
@@ -1217,7 +1217,7 @@ public:
     return ret;
   }
 
-  bool           releaseKeyValueData(HeU32 data)
+  bool           releaseKeyValueData(NxU32 data)
   {
     bool ret = false;
 
@@ -1234,7 +1234,7 @@ public:
     return ret;
   }
 
-  KeyValueData * locateKeyValueData(HeU32 id)
+  KeyValueData * locateKeyValueData(NxU32 id)
   {
     KeyValueData *ret = 0;
 
@@ -1248,7 +1248,7 @@ public:
     return ret;
   }
 
-  const char **  getKeyValueSpecList(HeU32 &count) // returns a list of all of the currently defined specifications.
+  const char **  getKeyValueSpecList(NxU32 &count) // returns a list of all of the currently defined specifications.
   {
     const char **ret = 0;
     count = 0;
@@ -1269,7 +1269,7 @@ public:
     return ret;
   }
 
-  KeyValueData ** getKeyValueDataList(HeU32 &count)
+  KeyValueData ** getKeyValueDataList(NxU32 &count)
   {
     KeyValueData **ret = 0;
     count =  0;
@@ -1285,14 +1285,14 @@ public:
     if ( !mDataList.empty() )
     {
       ret = &mDataList[0];
-      count = (HeU32)mDataList.size();
+      count = (NxU32)mDataList.size();
     }
 
     return ret;
   }
 
 private:
-  HeU32             mGuid;
+  NxU32             mGuid;
   StringTableInt    mKeyValueTypes;
   StringDict        mDictionary;
   MyKeyValueDataMap mData;

@@ -4,6 +4,8 @@
 #include <assert.h>
 
 #include "FastXml.h"
+#pragma warning(disable:4996)
+
 
 /*!
 **
@@ -183,16 +185,54 @@ public:
     return scan;
   }
 
+  virtual bool processXmlFile(const char* filename, FastXmlInterface* iface)
+  {
+	  bool ret = true;
+
+	  release();
+
+	  FILE *infile = fopen(filename, "rb");
+
+	  if(infile == NULL)
+		  return NULL;
+
+	  fseek(infile, 0L, SEEK_END);
+	  int numbytes = ftell(infile);
+	  fseek(infile, 0L, SEEK_SET);	
+
+	  mInputData = (char*)malloc((numbytes + 1) * sizeof(char));	
+
+	  if(mInputData == NULL)
+		  return NULL;
+
+	  memset(mInputData, 0, (numbytes + 1) * sizeof(char));
+
+	  /* copy all the text into the buffer */
+	  fread(mInputData, sizeof(char), numbytes, infile);
+
+	  fclose(infile);
+
+	  ret =  processXml(iface);
+
+	  return ret;
+  }
+
   virtual bool processXml(const char *inputData,unsigned int dataLen,FastXmlInterface *iface)
+  {
+	  release();
+
+	  mInputData = (char *)malloc(dataLen+1);
+	  memcpy(mInputData,inputData,dataLen);
+	  mInputData[dataLen] = 0;
+
+	  return processXml(iface);
+  }
+
+  bool processXml(FastXmlInterface *iface)
   {
     bool ret = true;
 
     #define MAX_ATTRIBUTE 2048 // can't imagine having more than 2,048 attributes in a single element right?
-
-    release();
-    mInputData = (char *)malloc(dataLen+1);
-    memcpy(mInputData,inputData,dataLen);
-    mInputData[dataLen] = 0;
 
     mLineNo = 1;
 
@@ -297,8 +337,12 @@ public:
                     }
                     else
                     {
-                      mError = "Expected quote to begin attribute";
-                      return false;
+                      //mError = "Expected quote to begin attribute";
+					  //return false;
+					  // PH: let's try to have a more graceful fallback
+				      argc--;
+					  while (*scan != '/' && *scan != '>' && *scan != 0)
+						  scan++;
                     }
                   }
                 }
@@ -345,4 +389,3 @@ void      releaseFastXml(FastXml *f)
   MyFastXml *m = static_cast< MyFastXml *>(f);
   delete m;
 }
-

@@ -58,10 +58,8 @@
 #include <windows.h>
 #endif
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 #include "log.h"
-
-IMPLEMENT_MEMORYPOOL_IN_CLASS(Log);
 
 #define USE_LOG 1
 
@@ -122,11 +120,11 @@ void Log::Display(const char *fmt, ... )
 
 	char *dest = buff;
 	char p = 0;
-	HeU32 len = (HeU32)strlen(source);
+	NxU32 len = (NxU32)strlen(source);
 
   bool lineFeed = false;
 
-	for (HeU32 i=0; i<len; i++)
+	for (NxU32 i=0; i<len; i++)
 	{
 		char c = *source++;
 
@@ -164,7 +162,7 @@ void Log::Display(const char *fmt, ... )
     printf("%s", buff );
   }
 
-  HE_ASSERT( mFph );
+  assert( mFph );
 	if ( mFph )
 	{
 		fprintf(mFph,"%s",buff);
@@ -172,7 +170,7 @@ void Log::Display(const char *fmt, ... )
 	}
 
 #if defined(_XBOX)
-	HeI32 dprintf(const char* format,...);
+	NxI32 dprintf(const char* format,...);
 	dprintf(buff);
 #endif
 
@@ -200,7 +198,7 @@ void Log::LogFile(const char *fmt, ... )
   wbuff[8191] = 0;
 	_vsnprintf(wbuff,8191, fmt, (char *)(&fmt+1));
 
-  HE_ASSERT( mFph );
+  assert( mFph );
 	if ( mFph )
 	{
 		fprintf(mFph,"%s",wbuff);
@@ -210,7 +208,7 @@ void Log::LogFile(const char *fmt, ... )
 }
 
 
-const char * Log::FormatNumber(HeI32 number) // JWR  format this integer into a fancy comma delimited string
+const char * Log::FormatNumber(NxI32 number) // JWR  format this integer into a fancy comma delimited string
 {
 	char * dest = &mFormat[mIndex*MAXNUMERIC];
 	mIndex++;
@@ -225,10 +223,10 @@ const char * Log::FormatNumber(HeI32 number) // JWR  format this integer into a 
 #endif
 
 	char *str = dest;
-	HeU32 len = (HeU32)strlen(scratch);
-	for (HeU32 i=0; i<len; i++)
+	NxU32 len = (NxU32)strlen(scratch);
+	for (NxU32 i=0; i<len; i++)
 	{
-		HeI32 place = (len-1)-i;
+		NxI32 place = (len-1)-i;
 		*str++ = scratch[i];
 		if ( place && (place%3) == 0 ) *str++ = ',';
 	}

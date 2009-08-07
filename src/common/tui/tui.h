@@ -4,8 +4,8 @@
 
 #include <stdio.h>
 
-#include "common/snippets/stringdict.h"
-#include "common/snippets/cparser.h"
+#include "stringdict.h"
+#include "cparser.h"
 
 enum  TuiType;
 class TuiElement;
@@ -120,23 +120,23 @@ public:
   	mLayoutWidth       = DFLT_LAYOUT_WIDTH;
   }
 
-  void Modify( HeU32 newScreenWidth, HeU32 newScreenHeight );
+  void Modify( NxU32 newScreenWidth, NxU32 newScreenHeight );
 
-  HeI32	mButtonWidth;
-  HeI32	mButtonHeight;
-  HeI32	mButtonSpacing;
-  HeI32	mLayoutLeftMargin;
-  HeI32	mLayoutWidth;
-  HeI32	mSliderSpacing;
-  HeI32	mSliderTextWidth;
-  HeI32	mSliderHeight;
-  HeI32	mSliderWidth;
-  HeI32	mComboWidth;
-  HeI32	mComboSpacing;
-  HeI32	mComboHeight;
-  HeI32	mComboDropdown;
-  HeI32	mListWidth;
-  HeI32	mTextSpacing;
+  NxI32	mButtonWidth;
+  NxI32	mButtonHeight;
+  NxI32	mButtonSpacing;
+  NxI32	mLayoutLeftMargin;
+  NxI32	mLayoutWidth;
+  NxI32	mSliderSpacing;
+  NxI32	mSliderTextWidth;
+  NxI32	mSliderHeight;
+  NxI32	mSliderWidth;
+  NxI32	mComboWidth;
+  NxI32	mComboSpacing;
+  NxI32	mComboHeight;
+  NxI32	mComboDropdown;
+  NxI32	mListWidth;
+  NxI32	mTextSpacing;
 };
 
 //==================================================================================
@@ -144,35 +144,35 @@ public:
 class TuiElement
 {
 public:
-	TuiElement(const StringRef &key,TuiType type,HeI32 count,const char **commands);
+	TuiElement(const StringRef &key,TuiType type,NxI32 count,const char **commands);
 	~TuiElement(void);
 
 	TuiType           GetType(void) const;
 	void              SetType(TuiType type);
-	void              SetTokens(HeI32 count,const char **args);
-	void              SetDescription(HeI32 count,const char **args);
+	void              SetTokens(NxI32 count,const char **args);
+	void              SetDescription(NxI32 count,const char **args);
 	void              SetText(const char *text);
-	void              SetTextColor(HeU32 color );
+	void              SetTextColor(NxU32 color );
 	void              Add(TuiElement *tui);
 	void              SetName(const StringRef &name);
 	void              SetKey(const StringRef &key);
 	void              Reset(void);
 	void              End(void);
-	void              Indent(HeI32 indent);
-	void              ShowHelp(HeI32 indent,bool detailed,HeI32 index,bool showcount);
+	void              Indent(NxI32 indent);
+	void              ShowHelp(NxI32 indent,bool detailed,NxI32 index,bool showcount);
 	bool              ShowHelp(const char *str);
 
-	TuiElement *      Command(const StringRef &c,HeI32 count,const char **arglist,TextUserInterface *tui);
+	TuiElement *      Command(const StringRef &c,NxI32 count,const char **arglist,TextUserInterface *tui);
 
 	bool              NeedSpace(const char *foo);
 
-	const char *      GetCommand(const StringRef &c,HeI32 count,const char **arglist,TuiElement *parent,TextUserInterface *tui,bool toggleOk);
+	const char *      GetCommand(const StringRef &c,NxI32 count,const char **arglist,TuiElement *parent,TextUserInterface *tui,bool toggleOk);
 
-	void              Execute(HeI32 count,const char **arglist,TuiElement *parent,TextUserInterface *tui,bool toggleOk);
-	void              SetArg(HeI32 count,const char *c);
+	void              Execute(NxI32 count,const char **arglist,TuiElement *parent,TextUserInterface *tui,bool toggleOk);
+	void              SetArg(NxI32 count,const char *c);
 
 	const char *      GetText( void ) const;
-	HeU32          GetTextColor( void ) const;
+	NxU32          GetTextColor( void ) const;
 	TuiElementVector& GetElements(void);
 	void *            GetUserPtr(void);
 	void *            GetUserPtr2(void);
@@ -180,28 +180,28 @@ public:
 	void              SetUserPtr2(void *ptr);
 	const StringRef&  GetKey(void) const;
 	const StringRef&  GetName(void) const;
-	TuiElement *      ExecuteElement(HeI32 index,HeI32 count,const char **arglist,TextUserInterface *tui,bool toggleOk=true);
-	TuiElement *      GetElement(HeI32 index);
+	TuiElement *      ExecuteElement(NxI32 index,NxI32 count,const char **arglist,TextUserInterface *tui,bool toggleOk=true);
+	TuiElement *      GetElement(NxI32 index);
 
-	void              AddArg(HeI32 count,const char **arglist);
-	void              AddChoice(HeI32 count,const char **arglist);
-	void              AddChoices(HeI32 count,const char **arglist);
-	void              AddFiles(HeI32 count,const char **arglist);
+	void              AddArg(NxI32 count,const char **arglist);
+	void              AddChoice(NxI32 count,const char **arglist);
+	void              AddChoices(NxI32 count,const char **arglist);
+	void              AddFiles(NxI32 count,const char **arglist);
 	void              AddTechniques(const char *fxfile); // add all of the 'tehcniques' in a FX file
-	void              SetMinMax(HeF32 fmin,HeF32 fmax) { mMin = fmin; mMax = fmax; };
+	void              SetMinMax(NxF32 fmin,NxF32 fmax) { mMin = fmin; mMax = fmax; };
 	void              AddActors(void);
 
 	TuiChoiceVector& GetChoices(void) { return mChoices; };
 
 	const char *      ArgumentLookup(const char *name);
-	const char *      GetToggleArg(HeI32 count,bool toggleOk); // locate this argument, toggle the result and return.
-	bool		      GetArg(HeI32 count, char *arg) const;
-	bool		      GetArg_Actual(HeI32 count, char *arg) const;
+	const char *      GetToggleArg(NxI32 count,bool toggleOk); // locate this argument, toggle the result and return.
+	bool		      GetArg(NxI32 count, char *arg) const;
+	bool		      GetArg_Actual(NxI32 count, char *arg) const;
 
  	bool              GetState(void);
  
- 	HeI32			      GetSliderTick(HeF32 v) const; // convert into a normalized tick value 0-1000
- 	HeF32             GetSliderValue(HeI32 tick) const; // convert integer tick (0-1000) into floating point value.
+ 	NxI32			      GetSliderTick(NxF32 v) const; // convert into a normalized tick value 0-1000
+ 	NxF32             GetSliderValue(NxI32 tick) const; // convert integer tick (0-1000) into floating point value.
  
  	void              Save(FILE *fph);
 
@@ -214,25 +214,25 @@ public:
  	void              SetNeedsUpdating( bool yesNo );
  	bool              GetNeedsUpdating( void ) const;
 
- 	void              AddOnCheckShow( HeI32 count, const char **name );
- 	void              AddOnCheckRescript( HeI32 count, const char **script );
+ 	void              AddOnCheckShow( NxI32 count, const char **name );
+ 	void              AddOnCheckRescript( NxI32 count, const char **script );
  	const StringRefVectorVct& GetOnCheckShow( void ) const;
  	const StringRefVectorVct& GetOnCheckRescript( void ) const;
  	void              SetVisible( bool visible );
  	bool              IsVisible( void ) const;
 
- 	void              OnCheckboxChange( bool state, HeI32 id );
- 	void              OnComboBoxChange( const char *selectedItem, HeI32 id );
+ 	void              OnCheckboxChange( bool state, NxI32 id );
+ 	void              OnComboBoxChange( const char *selectedItem, NxI32 id );
 
- 	void              DetermineVisibleElements( const char *, HeI32 );
- 	void              DetermineRescriptedItems( const char *, HeI32 );
+ 	void              DetermineVisibleElements( const char *, NxI32 );
+ 	void              DetermineRescriptedItems( const char *, NxI32 );
 
-	void			  AddExecuteOnLoad( const char **, HeI32 );
-	void			  AddExecuteOnExit( const char **, HeI32 );
+	void			  AddExecuteOnLoad( const char **, NxI32 );
+	void			  AddExecuteOnExit( const char **, NxI32 );
 	void			  OnLoad( TuiElement *loadingPage );
 	void			  OnExit( TuiElement *exitingPage );
 
-	HeI32				  GetElementIndexOfTypeWithName( TuiType type, const char *name );
+	NxI32				  GetElementIndexOfTypeWithName( TuiType type, const char *name );
 	TuiElement *	  GetElementOfTypeWithName( TuiType type, const char *name );
 
 	bool			  NotifyHardwareStatus( bool hwOn );
@@ -289,7 +289,7 @@ public:
 
 private:
 
-	void			  GetOnLoadOnExitCommand( char *buff, HeI32 buffLen, const StringRef &command );
+	void			  GetOnLoadOnExitCommand( char *buff, NxI32 buffLen, const StringRef &command );
 
 	TuiType          mType;     // type of text user interface element
 
@@ -305,14 +305,14 @@ private:
 	void             *mUserPtr2; //-- temporary until Ag gui is working
 	TuiChoiceVector   mChoices; // choices for combo boxes or list boxes
 	TuiChoiceVector   mOriginalChoices; // original choices prior to reading file spec!
-	HeF32             mMin;
-	HeF32             mMax;
+	NxF32             mMin;
+	NxF32             mMax;
 	bool              mSaveOk;
 	bool              mExecuteOk;
-	HeI32               mSaveFrame;
+	NxI32               mSaveFrame;
 	bool              mRecip;
 	StringRefVector   mFileSpecs;
-	HeU32          mTextColor;
+	NxU32          mTextColor;
 	bool              mInt;
 	bool              mHasActors;
 
@@ -375,7 +375,7 @@ inline const char *TuiElement::GetText( void ) const
 }
 
 //==================================================================================
-inline HeU32 TuiElement::GetTextColor( void ) const
+inline NxU32 TuiElement::GetTextColor( void ) const
 {
 	return mTextColor;
 }
@@ -390,11 +390,11 @@ public:
 	TextUserInterface(const char *startup);
 	~TextUserInterface(void);
 
-	virtual HeI32 CommandCallback(HeI32 token,HeI32 count,const char **arglist);
-	virtual HeI32 CommandFallback(HeI32 count,const char **arglist);
+	virtual NxI32 CommandCallback(NxI32 token,NxI32 count,const char **arglist);
+	virtual NxI32 CommandFallback(NxI32 count,const char **arglist);
 
 	TuiElement * Locate(const StringRef &name) const; // locate a text user interface element by name.
-	HeI32 SlashCommand(const char *key,HeI32 count,const char **arglist);
+	NxI32 SlashCommand(const char *key,NxI32 count,const char **arglist);
 
 	TuiElement * GetPage(void) { return mPage; }
 	void SetPage(TuiElement *page) { mPage = page; };
@@ -420,7 +420,7 @@ public:
 
 	bool IsTuiLoad(void) const { return mTuiLoad; };
 
-	void setLook(const HeF32 *eye,const HeF32 *look)
+	void setLook(const NxF32 *eye,const NxF32 *look)
 	{
 	  mEyePos[0] = eye[0];
 	  mEyePos[1] = eye[1];
@@ -431,7 +431,7 @@ public:
 	  mLookAt[2] = look[2];
 	}
 
-	void NotifyAllPagesOfNewDimensions( HeU32 width, HeU32 height );
+	void NotifyAllPagesOfNewDimensions( NxU32 width, NxU32 height );
 	TuiElement *GetElementOfTypeWithName( TuiType type, const char *name );
 
 	void NotifyHardwareStatus( bool hwOn );
@@ -440,7 +440,7 @@ public:
 
 private:
 
-	void Begin(TuiType type,HeI32 count,const char **arglist);
+	void Begin(TuiType type,NxI32 count,const char **arglist);
 	void End(void);
 
 	bool          mShowGraphics;
@@ -448,15 +448,15 @@ private:
 	TuiElement   *mCurrent;
 	TuiElementMap mTui; // complete text user interface specification.
 
-	HeF32         mEyePos[3]; //
-	HeF32         mLookAt[3];
+	NxF32         mEyePos[3]; //
+	NxF32         mLookAt[3];
 
 	FILE          *mFph;
 	FILE          *mFileOpen;
 
 	bool          mTuiLoad;
 	StringRef     mSaveName;
-	HeI32           mSlashDepth;
+	NxI32           mSlashDepth;
 
   TuiSaveCallback *mCallback;
 

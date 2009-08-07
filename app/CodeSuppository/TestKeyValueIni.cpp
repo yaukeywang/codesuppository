@@ -5,7 +5,7 @@
 
 #include "TestKeyValueIni.h"
 
-#include "common/snippets/SendTextMessage.h"
+#include "SendTextMessage.h"
 
 void testKeyValueIni(void)
 {

@@ -65,7 +65,7 @@
 #include <setjmp.h>
 
 #include "cd_hull.h"
-#include "../snippets/He.h"
+#include "NxSimpleTypes.h"
 
 #define STANDALONE 1  // This #define is used when tranferring this source code to other projects
 
@@ -109,9 +109,9 @@ template <class Type> class Array
 	Type *		element;
 	int			count;
 	int			array_size;
-	const Type	&operator[](int i) const { HE_ASSERT(i>=0 && i<count);  return element[i]; }
-	Type		&operator[](int i)  { HE_ASSERT(i>=0 && i<count);  return element[i]; }
-	Type		&Pop() { HE_ASSERT(count); count--;  return element[count]; }
+	const Type	&operator[](int i) const { assert(i>=0 && i<count);  return element[i]; }
+	Type		&operator[](int i)  { assert(i>=0 && i<count);  return element[i]; }
+	Type		&Pop() { assert(count); count--;  return element[count]; }
 	Array<Type> &operator=(Array<Type> &array);
 	Array<Type> &operator=(ArrayRet<Type> &array);
 	// operator ArrayRet<Type> &() { return *(ArrayRet<Type> *)this;} // this worked but i suspect could be dangerous
@@ -182,12 +182,12 @@ template <class Type> Array<Type>::~Array()
 
 template <class Type> void Array<Type>::allocate(int s)
 {
-	HE_ASSERT(s>0);
-	HE_ASSERT(s>=count);
+	assert(s>0);
+	assert(s>=count);
 	Type *old = element;
 	array_size =s;
 	element = (Type *) NX_ALLOC( sizeof(Type)*array_size, CONVEX_TEMP );
-	HE_ASSERT(element);
+	assert(element);
 	for(int i=0;i<count;i++)
 	{
 		element[i]=old[i];
@@ -223,7 +223,7 @@ template <class Type> void Array<Type>::Pack()
 
 template <class Type> Type& Array<Type>::Add(Type t)
 {
-	HE_ASSERT(count<=array_size);
+	assert(count<=array_size);
 	if(count==array_size)
 	{
 		allocate((array_size)?array_size *2:16);
@@ -251,7 +251,7 @@ template <class Type> void Array<Type>::AddUnique(Type t)
 
 template <class Type> void Array<Type>::DelIndex(int i)
 {
-	HE_ASSERT(i<count);
+	assert(i<count);
 	count--;
 	while(i<count)
 	{
@@ -270,11 +270,11 @@ template <class Type> void Array<Type>::Remove(Type t)
 			break;
 		}
 	}
-	HE_ASSERT(i<count); // assert object t is in the array.
+	assert(i<count); // assert object t is in the array.
 	DelIndex(i);
 	for(i=0;i<count;i++)
 	{
-		HE_ASSERT(element[i] != t);
+		assert(element[i] != t);
 	}
 }
 
@@ -287,7 +287,7 @@ template <class Type> void Array<Type>::Insert(Type t,int k)
 		element[i]=element[i-1];
 		i--;
 	}
-	HE_ASSERT(i==k);
+	assert(i==k);
 	element[k]=t;
 }
 
@@ -302,7 +302,7 @@ template <class Type> int Array<Type>::IndexOf(Type t)
 			return i;
 		}
 	}
-	HE_ASSERT(0);
+	assert(0);
 	return -1;
 }
 
@@ -369,8 +369,8 @@ public:
 	double x,y;
 	double2(){x=0;y=0;};
 	double2(double _x,double _y){x=_x;y=_y;}
-	double& operator[](int i) {HE_ASSERT(i>=0&&i<2);return ((double*)this)[i];}
-	const double& operator[](int i) const {HE_ASSERT(i>=0&&i<2);return ((double*)this)[i];}
+	double& operator[](int i) {assert(i>=0&&i<2);return ((double*)this)[i];}
+	const double& operator[](int i) const {assert(i>=0&&i<2);return ((double*)this)[i];}
 };
 inline double2 operator-( const double2& a, const double2& b ){return double2(a.x-b.x,a.y-b.y);}
 inline double2 operator+( const double2& a, const double2& b ){return double2(a.x+b.x,a.y+b.y);}
@@ -384,8 +384,8 @@ class double3 // 3D
 	double3(){x=0;y=0;z=0;};
 	double3(double _x,double _y,double _z){x=_x;y=_y;z=_z;};
 	//operator double *() { return &x;};
-	double& operator[](int i) {HE_ASSERT(i>=0&&i<3);return ((double*)this)[i];}
-	const double& operator[](int i) const {HE_ASSERT(i>=0&&i<3);return ((double*)this)[i];}
+	double& operator[](int i) {assert(i>=0&&i<3);return ((double*)this)[i];}
+	const double& operator[](int i) const {assert(i>=0&&i<3);return ((double*)this)[i];}
 };
 
 
@@ -424,10 +424,10 @@ class double3x3
 	double3x3(){}
 	double3x3(double xx,double xy,double xz,double yx,double yy,double yz,double zx,double zy,double zz):x(xx,xy,xz),y(yx,yy,yz),z(zx,zy,zz){}
 	double3x3(double3 _x,double3 _y,double3 _z):x(_x),y(_y),z(_z){}
-	double3&       operator[](int i)       {HE_ASSERT(i>=0&&i<3);return (&x)[i];}
-	const double3& operator[](int i) const {HE_ASSERT(i>=0&&i<3);return (&x)[i];}
-	double&        operator()(int r, int c)       {HE_ASSERT(r>=0&&r<3&&c>=0&&c<3);return ((&x)[r])[c];}
-	const double&  operator()(int r, int c) const {HE_ASSERT(r>=0&&r<3&&c>=0&&c<3);return ((&x)[r])[c];}
+	double3&       operator[](int i)       {assert(i>=0&&i<3);return (&x)[i];}
+	const double3& operator[](int i) const {assert(i>=0&&i<3);return (&x)[i];}
+	double&        operator()(int r, int c)       {assert(r>=0&&r<3&&c>=0&&c<3);return ((&x)[r])[c];}
+	const double&  operator()(int r, int c) const {assert(r>=0&&r<3&&c>=0&&c<3);return ((&x)[r])[c];}
 }; 
 double3x3 Transpose( const double3x3& m );
 double3   operator*( const double3& v  , const double3x3& m  );
@@ -454,8 +454,8 @@ public:
 	double4(double _x,double _y,double _z,double _w){x=_x;y=_y;z=_z;w=_w;}
 	double4(const double3 &v,double _w){x=v.x;y=v.y;z=v.z;w=_w;}
 	//operator double *() { return &x;};
-	double& operator[](int i) {HE_ASSERT(i>=0&&i<4);return ((double*)this)[i];}
-	const double& operator[](int i) const {HE_ASSERT(i>=0&&i<4);return ((double*)this)[i];}
+	double& operator[](int i) {assert(i>=0&&i<4);return ((double*)this)[i];}
+	const double& operator[](int i) const {assert(i>=0&&i<4);return ((double*)this)[i];}
 	const double3& xyz() const { return *((double3*)this);}
 	double3&       xyz()       { return *((double3*)this);}
 };
@@ -474,8 +474,8 @@ class double4x4
 				double m20, double m21, double m22, double m23, 
 				double m30, double m31, double m32, double m33 )
 			:x(m00,m01,m02,m03),y(m10,m11,m12,m13),z(m20,m21,m22,m23),w(m30,m31,m32,m33){}
-	double&       operator()(int r, int c)       {HE_ASSERT(r>=0&&r<4&&c>=0&&c<4);return ((&x)[r])[c];}
-	const double& operator()(int r, int c) const {HE_ASSERT(r>=0&&r<4&&c>=0&&c<4);return ((&x)[r])[c];}
+	double&       operator()(int r, int c)       {assert(r>=0&&r<4&&c>=0&&c<4);return ((&x)[r])[c];}
+	const double& operator()(int r, int c) const {assert(r>=0&&r<4&&c>=0&&c<4);return ((&x)[r])[c];}
 		operator       double* ()       {return &x.x;}
 		operator const double* () const {return &x.x;}
 	operator       struct D3DXMATRIX* ()       { return (struct D3DXMATRIX*) this;}
@@ -732,7 +732,7 @@ double3 normalize( const double3 &v )
 		if (d==0) 
 		{
 		printf("Cant normalize ZERO vector\n");
-		HE_ASSERT(0);// yes this could go here
+		assert(0);// yes this could go here
 		d=0.1f;
 	}
 	d = 1/d;
@@ -790,7 +790,7 @@ double3x3 Inverse(const double3x3 &a)
 {
 	double3x3 b;
 	double d=Determinant(a);
-	HE_ASSERT(d!=0);
+	assert(d!=0);
 	for(int i=0;i<3;i++) 
 		{
 		for(int j=0;j<3;j++) 
@@ -1738,15 +1738,15 @@ int AssertIntact(ConvexH &convex) {
 		if(inext>= convex.edges.count || convex.edges[inext].p != convex.edges[i].p) {
 			inext = estart;
 		}
-		HE_ASSERT(convex.edges[inext].p == convex.edges[i].p);
+		assert(convex.edges[inext].p == convex.edges[i].p);
 		int nb = convex.edges[i].ea;
-		HE_ASSERT(nb!=255);
+		assert(nb!=255);
 		if(nb==255 || nb==-1) return 0;
-		HE_ASSERT(nb!=-1);
-		HE_ASSERT(i== convex.edges[nb].ea);
+		assert(nb!=-1);
+		assert(i== convex.edges[nb].ea);
 	}
 	for(i=0;i<convex.edges.count;i++) {
-		HE_ASSERT(COPLANAR==PlaneTest(convex.facets[convex.edges[i].p],convex.vertices[convex.edges[i].v]));
+		assert(COPLANAR==PlaneTest(convex.facets[convex.edges[i].p],convex.vertices[convex.edges[i].v]));
 		if(COPLANAR!=PlaneTest(convex.facets[convex.edges[i].p],convex.vertices[convex.edges[i].v])) return 0;
 		if(convex.edges[estart].p!= convex.edges[i].p) {
 			estart=i;
@@ -1763,7 +1763,7 @@ int AssertIntact(ConvexH &convex) {
 		REAL3 localnormal = TriNormal(convex.vertices[convex.edges[i ].v],
 			                           convex.vertices[convex.edges[i1].v],
 			                           convex.vertices[convex.edges[i2].v]);
-		//HE_ASSERT(dot(localnormal,convex.facets[convex.edges[i].p].normal)>0);//Commented out on Stan Melax' advice
+		//assert(dot(localnormal,convex.facets[convex.edges[i].p].normal)>0);//Commented out on Stan Melax' advice
 		if(dot(localnormal,convex.facets[convex.edges[i].p].normal)<=0)return 0;
 	}
 	return 1;
@@ -1875,7 +1875,7 @@ ConvexH *ConvexHCrop(ConvexH &convex,const Plane &slice)
 	static Array<int> edgesplit;  // existing edges that members of convex that cross the splitplane
 	edgesplit.count=0;
 
-	HE_ASSERT(convex.edges.count<480);
+	assert(convex.edges.count<480);
 
 	EdgeFlag  edgeflag[512];
 	VertFlag  vertflag[256];
@@ -1898,7 +1898,7 @@ ConvexH *ConvexHCrop(ConvexH &convex,const Plane &slice)
 			vertflag[i].undermap = (unsigned char)vertcountunder++;
 		}
 		else {
-			HE_ASSERT(vertflag[i].planetest == OVER);
+			assert(vertflag[i].planetest == OVER);
 			vertflag[i].overmap  = (unsigned char)vertcountover++;
 			vertflag[i].undermap = (unsigned char)-1; // for debugging purposes
 		}
@@ -1929,7 +1929,7 @@ ConvexH *ConvexHCrop(ConvexH &convex,const Plane &slice)
 
 			planeside |= vertflag[edge0.v].planetest;
 			//if((vertflag[edge0.v].planetest & vertflag[edge1.v].planetest)  == COPLANAR) {
-			//	HE_ASSERT(ecop==-1);
+			//	assert(ecop==-1);
 			//	ecop=e;
 			//}
 
@@ -1946,7 +1946,7 @@ ConvexH *ConvexHCrop(ConvexH &convex,const Plane &slice)
 				tmpunderedges[under_edge_count].p = (unsigned char)underplanescount;
 				if(edge0.ea < e0) {
 					// connect the neighbors
-					HE_ASSERT(edgeflag[edge0.ea].undermap !=-1);
+					assert(edgeflag[edge0.ea].undermap !=-1);
 					tmpunderedges[under_edge_count].ea = edgeflag[edge0.ea].undermap;
 					tmpunderedges[edgeflag[edge0.ea].undermap].ea = (short) under_edge_count;
 				}
@@ -1959,7 +1959,7 @@ ConvexH *ConvexHCrop(ConvexH &convex,const Plane &slice)
 				if(e2>=convex.edges.count || convex.edges[e2].p!=currentplane) {
 					e2 = estart;
 				}
-				HE_ASSERT(convex.edges[e2].p==currentplane);
+				assert(convex.edges[e2].p==currentplane);
 				HalfEdge &edge2 = convex.edges[e2];
 				if(vertflag[edge2.v].planetest==UNDER) {
 					
@@ -1984,7 +1984,7 @@ ConvexH *ConvexHCrop(ConvexH &convex,const Plane &slice)
 				tmpunderedges[under_edge_count].v = (unsigned char)vertflag[edge0.v].undermap;
 				tmpunderedges[under_edge_count].p = (unsigned char)underplanescount;
 				if(edge0.ea < e0) {
-					HE_ASSERT(edgeflag[edge0.ea].undermap !=-1);
+					assert(edgeflag[edge0.ea].undermap !=-1);
 					// connect the neighbors
 					tmpunderedges[under_edge_count].ea = edgeflag[edge0.ea].undermap;
 					tmpunderedges[edgeflag[edge0.ea].undermap].ea = (short)under_edge_count;
@@ -2022,7 +2022,7 @@ ConvexH *ConvexHCrop(ConvexH &convex,const Plane &slice)
 				vout = vertflag[edge0.v].undermap;
 				// I hate this but i have to make sure part of this face is UNDER before ouputting this vert
 				int k=estart;
-				HE_ASSERT(edge0.p == currentplane);
+				assert(edge0.p == currentplane);
 				while(!(planeside&UNDER) && k<convex.edges.count && convex.edges[k].p==edge0.p) {
 					planeside |= vertflag[convex.edges[k].v].planetest;
 					k++;
@@ -2051,9 +2051,9 @@ ConvexH *ConvexHCrop(ConvexH &convex,const Plane &slice)
 				else {
 					// find the new vertex that was created by edge[edge0.ea]
 					int nea = edgeflag[edge0.ea].undermap;
-					HE_ASSERT(tmpunderedges[nea].p==tmpunderedges[nea+1].p);
+					assert(tmpunderedges[nea].p==tmpunderedges[nea+1].p);
 					vin = tmpunderedges[nea+1].v;
-					HE_ASSERT(vin < vertcountunder);
+					assert(vin < vertcountunder);
 				}
 				if(vout!=-1) {
 					// we previously processed an edge  where we went over
@@ -2065,12 +2065,12 @@ ConvexH *ConvexHCrop(ConvexH &convex,const Plane &slice)
 				tmpunderedges[under_edge_count].p = (unsigned char)underplanescount;
 				edgeflag[e0].undermap = (short)under_edge_count;
 				if(e0>edge0.ea) {
-					HE_ASSERT(edgeflag[edge0.ea].undermap !=-1);
+					assert(edgeflag[edge0.ea].undermap !=-1);
 					// connect the neighbors
 					tmpunderedges[under_edge_count].ea = edgeflag[edge0.ea].undermap;
 					tmpunderedges[edgeflag[edge0.ea].undermap].ea = (short)under_edge_count;
 				}
-				HE_ASSERT(edgeflag[e0].undermap == under_edge_count);
+				assert(edgeflag[e0].undermap == under_edge_count);
 				under_edge_count++;
 			}
 			else if(vertflag[edge0.v].planetest == OVER && vertflag[edge1.v].planetest == COPLANAR) {
@@ -2087,7 +2087,7 @@ ConvexH *ConvexHCrop(ConvexH &convex,const Plane &slice)
 
 			}
 			else {
-				HE_ASSERT(0);
+				assert(0);
 			}
 			
 
@@ -2105,9 +2105,9 @@ ConvexH *ConvexHCrop(ConvexH &convex,const Plane &slice)
 			planeflag[currentplane].undermap = 0;
 		}
 		if(vout>=0 && (planeside&UNDER)) {
-			HE_ASSERT(vin>=0);
-			HE_ASSERT(coplanaredge>=0);
-			HE_ASSERT(coplanaredge!=511);
+			assert(vin>=0);
+			assert(coplanaredge>=0);
+			assert(coplanaredge!=511);
 			coplanaredges[coplanaredges_num].ea = (short)coplanaredge;
 			coplanaredges[coplanaredges_num].v0 = (unsigned char)vin;
 			coplanaredges[coplanaredges_num].v1 = (unsigned char)vout;
@@ -2132,7 +2132,7 @@ ConvexH *ConvexHCrop(ConvexH &convex,const Plane &slice)
 			}
 			if(j>=coplanaredges_num)
 			{
-				// HE_ASSERT(j<coplanaredges_num);
+				// assert(j<coplanaredges_num);
 				return NULL;
 			}
 		}
@@ -2150,7 +2150,7 @@ ConvexH *ConvexHCrop(ConvexH &convex,const Plane &slice)
 	while(k<vertcountunder) {
 		under.vertices[k++] = createdverts[i++];
 	}
-	HE_ASSERT(i==createdverts.count);
+	assert(i==createdverts.count);
 
 	for(i=0;i<coplanaredges_num;i++) {
 		under.edges[under_edge_count+i].p  = (unsigned char)underplanescount-1;
@@ -2219,7 +2219,7 @@ static int candidateplane(Plane *planes,int planes_count,ConvexH *convex,double 
 template<class T>
 inline int maxdir(const T *p,int count,const T &dir)
 {
-	HE_ASSERT(count);
+	assert(count);
 	int m=0;
 	for(int i=1;i<count;i++)
 	{
@@ -2232,13 +2232,13 @@ inline int maxdir(const T *p,int count,const T &dir)
 template<class T>
 int maxdirfiltered(const T *p,int count,const T &dir,Array<int> &allow)
 {
-	HE_ASSERT(count);
+	assert(count);
 	int m=-1;
 	for(int i=0;i<count;i++) if(allow[i])
 	{
 		if(m==-1 || dot(p[i],dir)>dot(p[m],dir)) m=i;
 	}
-	HE_ASSERT(m!=-1);
+	assert(m!=-1);
 	return m;
 } 
 
@@ -2292,7 +2292,7 @@ int maxdirsterid(const T *p,int count,const T &dir,Array<int> &allow)
 		allow[m]=0;
 		m=-1;
 	}
-	HE_ASSERT(0);
+	assert(0);
 	return m;
 } 
 
@@ -2377,7 +2377,7 @@ public:
 	}
 	~Tri()
 	{
-		HE_ASSERT(tris[id]==this);
+		assert(tris[id]==this);
 		tris[id]=NULL;
 	}
 	int &neib(int a,int b);
@@ -2395,7 +2395,7 @@ int &Tri::neib(int a,int b)
 		if((*this)[i]==a && (*this)[i1]==b) return n[i2];
 		if((*this)[i]==b && (*this)[i1]==a) return n[i2];
 	}
-	HE_ASSERT(0);
+	assert(0);
 	return er;
 }
 void b2bfix(Tri* s,Tri*t)
@@ -2407,8 +2407,8 @@ void b2bfix(Tri* s,Tri*t)
 		int i2=(i+2)%3;
 		int a = (*s)[i1];
 		int b = (*s)[i2];
-		HE_ASSERT(tris[s->neib(a,b)]->neib(b,a) == s->id);
-		HE_ASSERT(tris[t->neib(a,b)]->neib(b,a) == t->id);
+		assert(tris[s->neib(a,b)]->neib(b,a) == s->id);
+		assert(tris[t->neib(a,b)]->neib(b,a) == t->id);
 		tris[s->neib(a,b)]->neib(b,a) = t->neib(b,a);
 		tris[t->neib(b,a)]->neib(a,b) = s->neib(a,b);
 	}
@@ -2501,7 +2501,7 @@ int4 FindSimplex(double3 *verts,int verts_count,Array<int> &allow)
 	if(p3==p0||p3==p1||p3==p2||!hasVolume(verts, p0, p1, p2, p3)) p3 = maxdirsterid(verts,verts_count,-basis[2],allow);
 	if(p3==p0||p3==p1||p3==p2) 
 		return int4(-1,-1,-1,-1);
-	HE_ASSERT(!(p0==p1||p0==p2||p0==p3||p1==p2||p1==p3||p2==p3));
+	assert(!(p0==p1||p0==p2||p0==p3||p1==p2||p1==p3||p2==p3));
 	if(dot(verts[p3]-verts[p0],cross(verts[p1]-verts[p0],verts[p2]-verts[p0])) <0) {Swap(p2,p3);}
 	return int4(p0,p1,p2,p3);
 }
@@ -2541,8 +2541,8 @@ int calchullgen(double3 *verts,int verts_count, int vlimit)
 	for(j=0;j<tris.count;j++)
 	{
 		Tri *t=tris[j];
-		HE_ASSERT(t);
-		HE_ASSERT(t->vmax<0);
+		assert(t);
+		assert(t->vmax<0);
 		double3 n=TriNormal(verts[(*t)[0]],verts[(*t)[1]],verts[(*t)[2]]);
 		t->vmax = maxdirsterid(verts,verts_count,n,allow);
 		t->rise = dot(n,verts[t->vmax]-verts[(*t)[0]]);
@@ -2553,7 +2553,7 @@ int calchullgen(double3 *verts,int verts_count, int vlimit)
 	{
 		int3 ti=*te;
 		int v=te->vmax;
-		HE_ASSERT(!isextreme[v]);  // wtf we've already done this vertex
+		assert(!isextreme[v]);  // wtf we've already done this vertex
 		isextreme[v]=1;
 		//if(v==p0 || v==p1 || v==p2 || v==p3) continue; // done these already
 		j=tris.count;
@@ -2575,7 +2575,7 @@ int calchullgen(double3 *verts,int verts_count, int vlimit)
 			if(above(verts,nt,center,0.01f*epsilon)  || magnitude(cross(verts[nt[1]]-verts[nt[0]],verts[nt[2]]-verts[nt[1]]))< epsilon*epsilon*0.1f )
 			{
 				Tri *nb = tris[tris[j]->n[0]];
-				HE_ASSERT(nb);HE_ASSERT(!hasvert(*nb,v));HE_ASSERT(nb->id<j);
+				assert(nb);assert(!hasvert(*nb,v));assert(nb->id<j);
 				extrude(nb,v);
 				j=tris.count;
 			}
@@ -2649,7 +2649,7 @@ int calchullpbev(double3 *verts,int verts_count,int vlimit, Array<Plane> &planes
 			if(dot(snormal,p.normal)>=cos(bevangle*DEG2RAD)) continue;
 			REAL3 e = verts[(*t)[(j+2)%3]] - verts[(*t)[(j+1)%3]];
 			REAL3 n = (e!=REAL3(0,0,0))? cross(snormal,e)+cross(e,p.normal) : snormal+p.normal;
-			HE_ASSERT(n!=REAL3(0,0,0));
+			assert(n!=REAL3(0,0,0));
 			if(n==REAL3(0,0,0)) return 0;  
 			n=normalize(n);
 			bplanes.Add(Plane(n,-dot(n,verts[maxdir(verts,verts_count,n)])));
@@ -2759,7 +2759,7 @@ static int overhull(Plane *planes,int planes_count,double3 *verts, int verts_cou
 		delete tmp;
 	}
 
-	HE_ASSERT(AssertIntact(*c));
+	assert(AssertIntact(*c));
 	//return c;
 	faces_out = (int*)NX_ALLOC(sizeof(int)*(1+c->facets.count+c->edges.count), CONVEX_TEMP);     // new int[1+c->facets.count+c->edges.count];
 	faces_count_out=0;
@@ -2779,8 +2779,8 @@ static int overhull(Plane *planes,int planes_count,double3 *verts, int verts_cou
 		k++;
 	}
 	faces_out[0]=k; // number of faces.
-	HE_ASSERT(k==c->facets.count);
-	HE_ASSERT(faces_count_out == 1+c->facets.count+c->edges.count);
+	assert(k==c->facets.count);
+	assert(faces_count_out == 1+c->facets.count+c->edges.count);
 	verts_out = c->vertices.element; // new double3[c->vertices.count];
 	verts_count_out = c->vertices.count;
 	for(i=0;i<c->vertices.count;i++)
@@ -2845,7 +2845,7 @@ bool ComputeHull(unsigned int vcount,const double *vertices,PHullResult &result,
 		for(int j=2;j<pn;j++) tris.Add(int3(faces[k],faces[k+j-1],faces[k+j]));
 		k+=pn;
 	}
-	HE_ASSERT(tris.count == index_count-1-(n*3));
+	assert(tris.count == index_count-1-(n*3));
 	NX_FREE(faces);	// PT: I added that. Is it ok ?
 
 	result.mIndexCount = (unsigned int) (tris.count*3);
@@ -3376,7 +3376,7 @@ void HullLibrary::BringOutYourDead(const double *verts,unsigned int vcount, doub
 	{
 		unsigned int v = indices[i]; // original array index
 
-		HE_ASSERT( v >= 0 && v < vcount );
+		assert( v >= 0 && v < vcount );
 
 		if ( used[v] ) // if already remapped
 		{
@@ -3393,7 +3393,7 @@ void HullLibrary::BringOutYourDead(const double *verts,unsigned int vcount, doub
 
 			ocount++; // increment output vert count
 
-			HE_ASSERT( ocount >=0 && ocount <= vcount );
+			assert( ocount >=0 && ocount <= vcount );
 
 			used[v] = ocount; // assign new index remapping
 		}

@@ -8,11 +8,12 @@
 #include <stdarg.h>
 #include <assert.h>
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 #include "pd3d/pd3d.h"
 #include "zvidcap.h"
 #include "AgScreenPipe.h"
-#include "common/snippets/stringdict.h"
+#include "stringdict.h"
+#include "SystemServices.h"
 
 #include <map>
 
@@ -80,7 +81,7 @@
 #include "water.h"
 #include "terrain.h"
 #include "shader.h"
-#include "common/ResourceInterface/ResourceInterface.h"
+#include "ResourceInterface.h"
 
 RESOURCE_INTERFACE::ResourceInterface *gResourceInterface=0;
 PD3D::Pd3d *gPd3d=0;
@@ -126,7 +127,7 @@ void DejaDescriptor(const MyPd3d &obj);
 class Pd3dTexture : public AgScreenPipe
 {
 public:
-  Pd3dTexture(const StringRef &name,HeU32 width,HeU32 height,HeI32 depth,bool systemRam)
+  Pd3dTexture(const StringRef &name,NxU32 width,NxU32 height,NxI32 depth,bool systemRam)
   {
     mHandle = 0;
     mName = name;
@@ -169,7 +170,7 @@ public:
     else
     {
       RESOURCE_INTERFACE::RESOURCE_HANDLE rhandle = 0;
-      HeU32 len = 0;
+      NxU32 len = 0;
       void *mem        = 0;
 
       if ( gResourceInterface && strlen(mName.Get()) )
@@ -182,7 +183,7 @@ public:
           if ( info.mData )
           {
             mem = info.mData;
-            len = (HeU32)info.mLen;
+            len = (NxU32)info.mLen;
             mIsOk = true;
           }
         }
@@ -294,7 +295,7 @@ public:
 
   bool isOk(void) const { return mIsOk; };
 
-  bool createTexture(HeU32 width,HeU32 height,HeU32 depth,bool systemRam)
+  bool createTexture(NxU32 width,NxU32 height,NxU32 depth,bool systemRam)
   {
     bool ret = false;
 
@@ -328,7 +329,7 @@ public:
     return ret;
   }
 
-  void * lock(HeU32 &width,HeU32 &height,HeU32 &pitch)
+  void * lock(NxU32 &width,NxU32 &height,NxU32 &pitch)
   {
 
     void *ret = 0;
@@ -441,9 +442,9 @@ private:
 	void  *mHandle;     // the actual texture handle
   bool   mIsOk;
   bool   mWasOk;   // means it was ok at one time.
-  HeU32    mWidth;
-  HeU32    mHeight;
-  HeU32    mDepth;
+  NxU32    mWidth;
+  NxU32    mHeight;
+  NxU32    mDepth;
 
 static void *mWoodHandle;
 static void *mWaterHandle;
@@ -469,7 +470,7 @@ static void __cdecl MyMessageBox(const char *fmt, ...)
 	MessageBox(0,buff,"Error",MB_OK | MB_ICONEXCLAMATION);
 	#endif
 	#elif defined(_XBOX)
-	HeI32 dprintf(const char* format,...);
+	NxI32 dprintf(const char* format,...);
 	dprintf("Error : [%s]\n",buff);
 	assert(false);
 	#else
@@ -552,14 +553,14 @@ public:
   {
     bool ret = false;
 
-    HeU32 swidth,sheight,spitch;
-    HeU32 dwidth,dheight,dpitch;
+    NxU32 swidth,sheight,spitch;
+    NxU32 dwidth,dheight,dpitch;
 
     const char *source = (const char *)lockTexture(tsource,swidth,sheight,spitch);
     char *dest         = (char *) lockTexture(tdest,dwidth,dheight,dpitch);
     if ( source && dest && swidth == dwidth && sheight == dheight )
     {
-      for (HeU32 y=0; y<sheight; y++)
+      for (NxU32 y=0; y<sheight; y++)
       {
         memcpy(dest,source,swidth*4);
         source+=spitch;
@@ -687,7 +688,7 @@ public:
 	}
 
 
-  void * createVertexBuffer(HeU32 vcount,const Pd3dGraphicsVertex *vertices)
+  void * createVertexBuffer(NxU32 vcount,const Pd3dGraphicsVertex *vertices)
   {
   	void * ret = 0;
 
@@ -752,14 +753,14 @@ public:
   }
 
 
-  void * createIndexBuffer(HeU32 icount,const HeU32 *indices)
+  void * createIndexBuffer(NxU32 icount,const NxU32 *indices)
   {
   	void *ret = 0;
 
 	  if ( mDevice )
 	  {
   		LPDIRECT3DINDEXBUFFER9  idx=0;
-  		HeI32 stride       = sizeof(HeU32);
+  		NxI32 stride       = sizeof(NxU32);
   		D3DFORMAT	format = D3DFMT_INDEX32;
 			mDevice->CreateIndexBuffer( icount*stride, D3DUSAGE_WRITEONLY, format, D3DPOOL_MANAGED, &idx, 0 );
 			if ( idx )
@@ -780,14 +781,14 @@ public:
   	return ret;
   }
 
-  void * createIndexBuffer(HeU32 icount,const HeU16 *indices)
+  void * createIndexBuffer(NxU32 icount,const NxU16 *indices)
   {
     void *ret = 0;
 
     if ( mDevice )
     {
       LPDIRECT3DINDEXBUFFER9  idx=0;
-      HeI32 stride       = sizeof(HeU16);
+      NxI32 stride       = sizeof(NxU16);
       D3DFORMAT	format = D3DFMT_INDEX16;
       mDevice->CreateIndexBuffer( icount*stride, D3DUSAGE_WRITEONLY, format, D3DPOOL_MANAGED, &idx, 0 );
       if ( idx )
@@ -923,7 +924,7 @@ public:
     return ret;
   }
 
-  bool   renderSection(Pd3dMaterial *material,void *vbuffer,void *ibuffer,HeU32 vcount,HeU32 tcount)
+  bool   renderSection(Pd3dMaterial *material,void *vbuffer,void *ibuffer,NxU32 vcount,NxU32 tcount)
   {
     bool ret = false;
 
@@ -959,7 +960,7 @@ public:
   	return ret;
   }
 
-  bool   renderSection(Pd3dMaterial *material,void *vbuffer,HeU32 vcount)
+  bool   renderSection(Pd3dMaterial *material,void *vbuffer,NxU32 vcount)
   {
     bool ret = false;
 
@@ -986,7 +987,7 @@ public:
   	return ret;
   }
 
-  ID3DXEffect * loadFX(const void *mem,HeU32 len)
+  ID3DXEffect * loadFX(const void *mem,NxU32 len)
   {
     ID3DXEffect *ret = 0;
 
@@ -1014,7 +1015,7 @@ public:
    	return ret;
   }
 
-  bool   renderSection(Pd3dMaterial *material,Pd3dGraphicsVertex *vbuffer,HeU32 *ibuffer,HeU32 vcount,HeU32 tcount)
+  bool   renderSection(Pd3dMaterial *material,Pd3dGraphicsVertex *vbuffer,NxU32 *ibuffer,NxU32 vcount,NxU32 tcount)
   {
     bool ret = false;
 
@@ -1042,7 +1043,7 @@ public:
   	return ret;
   }
 
-  bool   renderSection(Pd3dMaterial *material,Pd3dGraphicsVertex *vbuffer,HeU32 vcount)
+  bool   renderSection(Pd3dMaterial *material,Pd3dGraphicsVertex *vbuffer,NxU32 vcount)
   {
     bool ret = false;
 
@@ -1075,14 +1076,14 @@ public:
     return mWireFrame;
   }
 
-  void   renderSolid(HeU32 tcount,const Pd3dSolidVertex *vtx)
+  void   renderSolid(NxU32 tcount,const Pd3dSolidVertex *vtx)
   {
     setWorldMatrix(0);
     if ( tcount && mSolidTechnique )
     {
       if ( mDiffuseColorHandle )
       {
-        HeF32 dcolor[4] = { 1, 1, 1, 1 };
+        NxF32 dcolor[4] = { 1, 1, 1, 1 };
         mEffect->SetFloatArray(mDiffuseColorHandle,dcolor,4);
       }
       mDevice->SetFVF(D3DFVF_SOLIDVERTEX);
@@ -1103,7 +1104,7 @@ public:
 
   }
 
-  void   renderLines(HeU32 lcount,const Pd3dLineVertex *vtx,bool /* zpass */)
+  void   renderLines(NxU32 lcount,const Pd3dLineVertex *vtx,bool /* zpass */)
   {
     setWorldMatrix(0);
 
@@ -1111,7 +1112,7 @@ public:
     {
       if ( mDiffuseColorHandle )
       {
-        HeF32 dcolor[4] = { 1, 1, 1, 1 };
+        NxF32 dcolor[4] = { 1, 1, 1, 1 };
         mEffect->SetFloatArray(mDiffuseColorHandle,dcolor,4);
       }
       mDevice->SetRenderState(D3DRS_DEPTHBIAS,16);
@@ -1133,7 +1134,7 @@ public:
     }
   }
 
-  bool GetWindowSize(HeI32 &wid,HeI32 &hit) // get size of current render windowl
+  bool GetWindowSize(NxI32 &wid,NxI32 &hit) // get size of current render windowl
   {
   	bool ok = false;
   	if ( mDevice )
@@ -1147,14 +1148,14 @@ public:
   	return ok;
   }
 
-  bool   screenToWorld(HeI32 sx,      // screen x position
-                       HeI32 sy,      // screen y position
-                       HeF32 *world, // world position of the eye
-                       HeF32 *direction) // direction vector into the world
+  bool   screenToWorld(NxI32 sx,      // screen x position
+                       NxI32 sy,      // screen y position
+                       NxF32 *world, // world position of the eye
+                       NxF32 *direction) // direction vector into the world
   {
     bool ret = false;
 
-  	HeI32 wid,hit;
+  	NxI32 wid,hit;
 
     if ( 	GetWindowSize(wid,hit) )
     {
@@ -1204,7 +1205,7 @@ public:
     return ret;
   }
 
-  void set(D3DXVECTOR3 &v,HeF32 x,HeF32 y,HeF32 z)
+  void set(D3DXVECTOR3 &v,NxF32 x,NxF32 y,NxF32 z)
   {
     v.x = x;
     v.y = y;
@@ -1213,7 +1214,7 @@ public:
 
 
 
-  void   getEyePos(HeF32 *eye)
+  void   getEyePos(NxF32 *eye)
   {
     eye[0] = mEyePos.x;
     eye[1] = mEyePos.y;
@@ -1237,9 +1238,9 @@ public:
 		}
   }
 
-  const HeF32 *getViewProjection(void) const // return the current view projection matrix.
+  const NxF32 *getViewProjection(void) const // return the current view projection matrix.
   {
-    const HeF32 *ret = (const HeF32 *)&mViewProjection;
+    const NxF32 *ret = (const NxF32 *)&mViewProjection;
     return ret;
   }
 
@@ -1270,7 +1271,7 @@ public:
     }
   }
 
-  const char ** getVideoDevices(HeI32 &count)
+  const char ** getVideoDevices(NxI32 &count)
   {
     const char **ret = 0;
     count = 0;
@@ -1280,7 +1281,7 @@ public:
     return ret;
   }
 
-  bool           startVideoDevice(const char *deviceName,HeI32 maxWidth,HeI32 maxHeight)
+  bool           startVideoDevice(const char *deviceName,NxI32 maxWidth,NxI32 maxHeight)
   {
     bool ret = false;
     char scratch[512];
@@ -1307,7 +1308,7 @@ public:
     return ret;
   }
 
-  void *        lockVideoDevice(const char *deviceName,HeI32 &frameNumber)
+  void *        lockVideoDevice(const char *deviceName,NxI32 &frameNumber)
   {
     void * ret = 0;
 
@@ -1327,16 +1328,16 @@ public:
     return ret;
   }
 
-  HeI32           getVideoDeviceAverageFrameTime(const char *deviceName)
+  NxI32           getVideoDeviceAverageFrameTime(const char *deviceName)
   {
-    HeI32 ret = 0;
+    NxI32 ret = 0;
 
     ret = zVidcapGetAvgFrameTimeInMils((char *)deviceName);
 
     return ret;
   }
 
-  bool          getVideoDeviceDesc(const char *deviceName,HeI32 &width,HeI32 &height,HeI32 &depth)
+  bool          getVideoDeviceDesc(const char *deviceName,NxI32 &width,NxI32 &height,NxI32 &depth)
   {
     bool ret = true;
 
@@ -1374,12 +1375,12 @@ public:
     return ret;
   }
 
-	void renderScreenQuad(Pd3dTexture *texture,HeF32 x,HeF32 y,HeF32 z,HeF32 wid,HeF32 hit,HeU32 color)
+	void renderScreenQuad(Pd3dTexture *texture,NxF32 x,NxF32 y,NxF32 z,NxF32 wid,NxF32 hit,NxU32 color)
   {
   	renderScreenQuad(texture,x,y,z,wid,hit,0,0,1,1,color);
   }
 
-	void renderScreenQuad(Pd3dTexture *texture,HeF32 ix,HeF32 iy,HeF32 iz,HeF32 iwid,HeF32 ihit,HeF32 s0,HeF32 t0,HeF32 s1,HeF32 t1,HeU32 color)
+	void renderScreenQuad(Pd3dTexture *texture,NxF32 ix,NxF32 iy,NxF32 iz,NxF32 iwid,NxF32 ihit,NxF32 s0,NxF32 t0,NxF32 s1,NxF32 t1,NxU32 color)
   {
   	if ( texture )
   	{
@@ -1418,7 +1419,7 @@ public:
     AgScreenPipe::FlushCurrent();
   }
 
-	bool   renderSection(Pd3dTexture *texture,Pd3dScreenVertex *vbuffer,HeU16 *ibuffer,HeU32 vcount,HeU32 tcount)
+	bool   renderSection(Pd3dTexture *texture,Pd3dScreenVertex *vbuffer,NxU16 *ibuffer,NxU32 vcount,NxU32 tcount)
   {
     bool ret = false;
 
@@ -1447,12 +1448,12 @@ public:
     return ret;
   }
 
-	void renderScreenQuad(Pd3dTexture *texture,HeI32 x,HeI32 y,HeF32 z,HeI32 wid,HeI32 hit,HeU32 color)
+	void renderScreenQuad(Pd3dTexture *texture,NxI32 x,NxI32 y,NxF32 z,NxI32 wid,NxI32 hit,NxU32 color)
   {
-    renderScreenQuad(texture,(HeF32)x-0.5f,(HeF32)y-0.5f,z,(HeF32)wid,(HeF32)hit,color);
+    renderScreenQuad(texture,(NxF32)x-0.5f,(NxF32)y-0.5f,z,(NxF32)wid,(NxF32)hit,color);
   }
 
-  Pd3dTexture * createTexture(const char *fname,HeU32 width,HeU32 height,HeU32 depth,bool systemRam)
+  Pd3dTexture * createTexture(const char *fname,NxU32 width,NxU32 height,NxU32 depth,bool systemRam)
   {
     Pd3dTexture *ret = 0;
 
@@ -1473,7 +1474,7 @@ public:
     return ret;
   }
 
-  void        * lockTexture(Pd3dTexture *texture,HeU32 &width,HeU32 &height,HeU32 &pitch)
+  void        * lockTexture(Pd3dTexture *texture,NxU32 &width,NxU32 &height,NxU32 &pitch)
   {
     void *ret = 0;
     width = 0;
@@ -1518,7 +1519,7 @@ public:
     return ret;
   }
 
-  void          setClampConstants(HeF32 clampLow,HeF32 clampHigh,HeF32 clampScale)
+  void          setClampConstants(NxF32 clampLow,NxF32 clampHigh,NxF32 clampScale)
   {
     if ( mClampLowHandle )   mEffect->SetFloat(mClampLowHandle,   clampLow );
     if ( mClampHighHandle )  mEffect->SetFloat(mClampHighHandle,  clampHigh );
@@ -1609,7 +1610,7 @@ using namespace PD3D;
 
 extern "C"
 {
-  PD3D_API Pd3d * getInterface(HeI32 version_number,SYSTEM_SERVICES::SystemServices *services)
+  PD3D_API Pd3d * getInterface(NxI32 version_number,SYSTEM_SERVICES::SystemServices *services)
 {
   Pd3d *ret = 0;
 
@@ -1652,7 +1653,7 @@ BOOL APIENTRY DllMain( HANDLE /* hModule */,
                        DWORD  ul_reason_for_call,
                        LPVOID /* lpReserved */)
 {
-  HeI32 ret = 0;
+  NxI32 ret = 0;
 
   switch (ul_reason_for_call)
 	{

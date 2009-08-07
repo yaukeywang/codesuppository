@@ -2,16 +2,16 @@
 
 #define CONSOLIDATE_MESH_H
 
-#include "He.h"
+#include "NxSimpleTypes.h"
 
 class ConsolidateMeshOutput
 {
 public:
-  HeU32        mVcount;
-  HeU32        mTcount;
+  NxU32        mVcount;
+  NxU32        mTcount;
   const float  *mVerticesFloat;
   const double *mVerticesDouble;
-  const HeU32 *mIndices;
+  const NxU32 *mIndices;
 };
 
 class ConsolidateMesh

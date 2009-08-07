@@ -32,7 +32,7 @@ Gauss::Gauss(const char *value)
 }
 
 
-Gauss::Gauss(HeF32 f) // has no random deviation
+Gauss::Gauss(NxF32 f) // has no random deviation
 {
   mFlags             = 0;
   mMean              = f;
@@ -49,16 +49,16 @@ void Gauss::Reset(void)
   Rand::setSeed(0); // init random number generator
 };
 
-HeF32 Gauss::Get(void)
+NxF32 Gauss::Get(void)
 {
   return Get(*this);
 };
 
-HeF32 Gauss::Get(Rand &r)
+NxF32 Gauss::Get(Rand &r)
 {
   if ( !HasGaussFlag(GF_STDEV) ) return mMean;
 
-  HeF32 v;
+  NxF32 v;
 
   if ( HasGaussFlag(GF_LINEAR) )
   {
@@ -84,7 +84,7 @@ HeF32 Gauss::Get(Rand &r)
   return v;
 };
 
-HeF32 Gauss::GetCurrent(void) const
+NxF32 Gauss::GetCurrent(void) const
 {
   return mCurrent;
 };
@@ -138,7 +138,7 @@ void Gauss::GetString(String &str) const
 };
 
 // generate fresh gaussian pair or return last valid one.
-HeF32 Gauss::RandGauss(Rand *r)
+NxF32 Gauss::RandGauss(Rand *r)
 {
   if( HasGaussFlag(GF_SECOND) )
   {
@@ -146,9 +146,9 @@ HeF32 Gauss::RandGauss(Rand *r)
     return mGauss2;
   }
 
-  HeF32 x1;
-  HeF32 x2;
-  HeF32 w;
+  NxF32 x1;
+  NxF32 x2;
+  NxF32 w;
 
   do
   {
@@ -170,12 +170,12 @@ HeF32 Gauss::RandGauss(Rand *r)
 
 // convert string to gaussian number.  Return code
 // indicates number of arguments found.
-HeI32 Gauss::strtogmd(const char* spec,
+NxI32 Gauss::strtogmd(const char* spec,
                     char** end,
-                    HeF32& mean,
-                    HeF32& deviation,
-                    HeF32& min,
-                    HeF32& max,
+                    NxF32& mean,
+                    NxF32& deviation,
+                    NxF32& min,
+                    NxF32& max,
                     bool &linear ) const
 {
   char* pos;
@@ -189,7 +189,7 @@ HeI32 Gauss::strtogmd(const char* spec,
     spec++;
   }
 
-  mean = (HeF32) strtod( (char*) spec, &pos );
+  mean = (NxF32) strtod( (char*) spec, &pos );
 
   deviation = 0;
 
@@ -211,7 +211,7 @@ HeI32 Gauss::strtogmd(const char* spec,
     return 1;
   }
   char* devp = pos + 1;
-  deviation = (HeF32) strtod( devp, &pos );
+  deviation = (NxF32) strtod( devp, &pos );
   if( pos == devp )
   {
     if( end != 0 )
@@ -232,7 +232,7 @@ HeI32 Gauss::strtogmd(const char* spec,
 
   char* minp = pos + 1;
   char* maxp;
-  min = (HeF32) strtod( minp, &maxp );
+  min = (NxF32) strtod( minp, &maxp );
   if( *maxp != ',' && *maxp != ':' )
   {
     if( end != 0 )
@@ -243,7 +243,7 @@ HeI32 Gauss::strtogmd(const char* spec,
   }
   ++maxp;
   char* endp;
-  max = (HeF32) strtod( maxp, &endp );
+  max = (NxF32) strtod( maxp, &endp );
   if( *endp != ']' && *endp != '>' )
   {
     if( end != 0 )
@@ -269,7 +269,7 @@ HeI32 Gauss::strtogmd(const char* spec,
 
 static Rand frand;
 
-HeF32 ranfloat(void)
+NxF32 ranfloat(void)
 {
   return frand.ranf();
 }

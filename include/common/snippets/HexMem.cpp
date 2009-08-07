@@ -63,15 +63,15 @@ static void init(void)
   if ( first )
   {
     memset(hextable,0,sizeof(hextable));
-    for (HeU32 i='0'; i<='9'; i++)
+    for (NxU32 i='0'; i<='9'; i++)
     {
       hextable[i] = (char)(i-'0');
     }
-    for (HeU32 i='a'; i<='f'; i++)
+    for (NxU32 i='a'; i<='f'; i++)
     {
       hextable[i] = (char)((i-'a')+10);
     }
-    for (HeU32 i='A'; i<='F'; i++)
+    for (NxU32 i='A'; i<='F'; i++)
     {
       hextable[i] = (char)((i-'A')+10);
     }
@@ -80,16 +80,16 @@ static void init(void)
 }
 
 
-HeU8 * getHexMem(const char *str,size_t len,size_t &count)
+NxU8 * getHexMem(const char *str,size_t len,size_t &count)
 {
-  HeU8 *ret = 0;
+  NxU8 *ret = 0;
 
   init();
   count = len/2;
   if ( count > 0 )
   {
 
-    HeU8 *dest = MEMALLOC_NEW_ARRAY(unsigned char,count)[count];
+    NxU8 *dest = MEMALLOC_NEW_ARRAY(unsigned char,count)[count];
     ret = dest;
 
     for (size_t i=0; i<count; i++)
@@ -102,9 +102,9 @@ HeU8 * getHexMem(const char *str,size_t len,size_t &count)
   return ret;
 }
 
-HeU8 * getHexMem(const char *str,size_t &count)
+NxU8 * getHexMem(const char *str,size_t &count)
 {
-  HeU8 * ret = 0;
+  NxU8 * ret = 0;
 
   size_t len = strlen(str);
   ret = getHexMem(str,len,count);
@@ -113,10 +113,10 @@ HeU8 * getHexMem(const char *str,size_t &count)
 }
 
 
-HeU8 * getHexMem(const wchar_t *str,size_t size_in,size_t &count)
+NxU8 * getHexMem(const wchar_t *str,size_t size_in,size_t &count)
 {
 
-  HeU8 *ret = 0;
+  NxU8 *ret = 0;
 
   init();
   count = size_in/2;
@@ -124,13 +124,13 @@ HeU8 * getHexMem(const wchar_t *str,size_t size_in,size_t &count)
   if ( count > 0 )
   {
 
-    HeU8 *dest = MEMALLOC_NEW_ARRAY(unsigned char,count)[count];
+    NxU8 *dest = MEMALLOC_NEW_ARRAY(unsigned char,count)[count];
     ret = dest;
 
     for (size_t i=0; i<count; i++)
     {
-      HeU8 c1 = (HeU8)(str[0]&0xFF);           // only give a crap about the low byte of the wide char
-      HeU8 c2 = (HeU8)(str[1]&0xFF);
+      NxU8 c1 = (NxU8)(str[0]&0xFF);           // only give a crap about the low byte of the wide char
+      NxU8 c2 = (NxU8)(str[1]&0xFF);
       *dest++ = (hextable[c1]<<4)| hextable[c2];
       str+=2;
     }
@@ -139,7 +139,7 @@ HeU8 * getHexMem(const wchar_t *str,size_t size_in,size_t &count)
   return ret;
 }
 
-void            deleteHexMem(const HeU8 *mem)
+void            deleteHexMem(const NxU8 *mem)
 {
   delete []mem;
 }

@@ -20,7 +20,7 @@
 extern char *zVidcapLastDevice;
 	// The name of the last device started
 
-char **zVidcapGetDevices( HeI32 *count=0 );
+char **zVidcapGetDevices( NxI32 *count=0 );
 	// Retrives a list of video capture devices.
 	// The list is terminated by a NULL pointer
 	// Or you may fetch the list size from optional count pointer
@@ -28,9 +28,9 @@ char **zVidcapGetDevices( HeI32 *count=0 );
 	// A special device called the "Simulacrum" is always added to the list
 	// so that the simulator may be explicitly statred if desired.
 
-HeI32 zVidcapStartDevice( char *deviceName=(char*)0, HeI32 maxWidth=320, HeI32 maxHeight=240 );
+NxI32 zVidcapStartDevice( char *deviceName=(char*)0, NxI32 maxWidth=320, NxI32 maxHeight=240 );
 	// Starts the specified device, the first one if none specified
-HeI32 zVidcapStartAVI( char *filename, HeI32 maxWidth, HeI32 maxHeight );
+NxI32 zVidcapStartAVI( char *filename, NxI32 maxWidth, NxI32 maxHeight );
 	// Start an AVI file as if it were a live video source
 
 void zVidcapShutdownDevice( char *deviceName=(char*)0 );
@@ -41,7 +41,7 @@ void zVidcapShutdownDevice( char *deviceName=(char*)0 );
 void zVidcapShutdownAll();
 	// Clears all
 
-char *zVidcapLockNewest( char *deviceName=(char*)0, HeI32 *frameNumber=(HeI32*)0 );
+char *zVidcapLockNewest( char *deviceName=(char*)0, NxI32 *frameNumber=(NxI32*)0 );
 	// Locks the newest frame available.
 	// If deviceName is null it uses the last device you started
 	// If you specify an (optional) frame number, it will
@@ -52,23 +52,23 @@ void zVidcapUnlock( char *deviceName=(char*)0 );
 	// Unlocks the buffer.  Be sure to call this as soon as you are
 	// done processing the frame.
 
-HeI32 zVidcapGetAvgFrameTimeInMils( char *deviceName=(char*)0 );
+NxI32 zVidcapGetAvgFrameTimeInMils( char *deviceName=(char*)0 );
 	// Get the avg speed at which frames are arriving from this device
 
-void zVidcapGetBitmapDesc( char *deviceName, HeI32 &w, HeI32 &h, HeI32 &d );
+void zVidcapGetBitmapDesc( char *deviceName, NxI32 &w, NxI32 &h, NxI32 &d );
 	// Fetches the bitmap description.
 	// Pass NULL to deviceName for last device
 	// w = width in pixels, h = height in pixels, d = depth in bytes
 	// Note that the image will be converted from 
 	// bottom to top ordering and also from BGR to RGB automatically
 
-HeI32 zVidcapShowFilterPropertyPageModalDialog( char *deviceName=(char*)0 );
+NxI32 zVidcapShowFilterPropertyPageModalDialog( char *deviceName=(char*)0 );
 	// Shows a modal dialog box for the device's filter properties
 	// Returns 1 if the vidcap system has changed its size
 	// in which case, if you do any high-level buffering of the dimensions,
 	// you should update it.
 
-HeI32 zVidcapShowPinPropertyPageModalDialog( char *deviceName=(char*)0 );
+NxI32 zVidcapShowPinPropertyPageModalDialog( char *deviceName=(char*)0 );
 	// Shows a modal dialog box for the device's output pin properties
 	// Returns 1 if the vidcap system has changed its size
 	// in which case, if you do any high-level buffering of the dimensions,

@@ -51,7 +51,7 @@
 
 */
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 
 namespace RENDER_DEBUG
 {
@@ -81,22 +81,22 @@ public:
     doubleSidedCount = 0;
   }
 
-  HeU32  inputTcount;
-  HeU32  inputTstride;
-  const HeU32 *inputIndices;
+  NxU32  inputTcount;
+  NxU32  inputTstride;
+  const NxU32 *inputIndices;
 
-  HeU32  inputVcount;
-  const HeF32   *inputVertices;
-  HeU32  inputVstride;
+  NxU32  inputVcount;
+  const NxF32   *inputVertices;
+  NxU32  inputVstride;
 
-  HeU32  outputTcount;
-  HeU32  outputVcount;
-  HeU32 *outputIndices;
-  HeF32         *outputVertices;
+  NxU32  outputTcount;
+  NxU32  outputVcount;
+  NxU32 *outputIndices;
+  NxF32         *outputVertices;
 
-  HeU32   degenerateCount;
-  HeU32   duplicateCount;
-  HeU32   doubleSidedCount;
+  NxU32   degenerateCount;
+  NxU32   duplicateCount;
+  NxU32   doubleSidedCount;
 
 
 };
@@ -104,7 +104,7 @@ public:
 // searches for double-sided triangles, and either removes them or
 // extrudes them.
 
-bool meshCleanup(MeshCleanupDesc &desc,HeF32 weldDistance=0.001f,HeF32 projectDistance=0.01f,RENDER_DEBUG::RenderDebug *debug=0);
+bool meshCleanup(MeshCleanupDesc &desc,NxF32 weldDistance=0.001f,NxF32 projectDistance=0.01f,RENDER_DEBUG::RenderDebug *debug=0);
 void releaseMeshCleanup(MeshCleanupDesc &desc);
 
 };

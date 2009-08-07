@@ -30,7 +30,7 @@
 #include <string.h>
 #include <assert.h>
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 #include "timedevent.h"
 
 
@@ -48,35 +48,35 @@ class TimedEvent
 {
 public:
 	TimedEvent( TimedEventInterface *callback,
-				HeI32 id, HeF32 duetime,
-				HeI32 repeat_count,const Gauss &repeat_time,
-				void *user_data, HeI32 user_id );
+				NxI32 id, NxF32 duetime,
+				NxI32 repeat_count,const Gauss &repeat_time,
+				void *user_data, NxI32 user_id );
 
-	HeF32 GetDueTime(void) const;
-	HeI32   GetId(void) const;
+	NxF32 GetDueTime(void) const;
+	NxI32   GetId(void) const;
 
 	void * GetUserData(void);
-	HeI32    GetUserId(void);
+	NxI32    GetUserId(void);
 
-	bool Process(HeF32 curtime);
+	bool Process(NxF32 curtime);
 
 	TimedEventInterface *mCallback;
-	HeF32                mDueTime;
-	HeI32                  mRepeatCount;
+	NxF32                mDueTime;
+	NxI32                  mRepeatCount;
 	Gauss                mRepeatTime; // use a gaussian number so that the repeat time can be randomized
-	HeI32                  mId;
+	NxI32                  mId;
 	void                *mUserData;
-	HeI32                  mUserId;
+	NxI32                  mUserId;
 };
 
 //==================================================================================
-inline HeF32 TimedEvent::GetDueTime(void) const
+inline NxF32 TimedEvent::GetDueTime(void) const
 {
 	return mDueTime;
 }
 
 //==================================================================================
-inline HeI32 TimedEvent::GetId(void) const
+inline NxI32 TimedEvent::GetId(void) const
 {
 	return mId;
 }
@@ -88,7 +88,7 @@ inline void * TimedEvent::GetUserData(void)
 }
 
 //==================================================================================
-inline HeI32 TimedEvent::GetUserId(void)
+inline NxI32 TimedEvent::GetUserId(void)
 {
 	return mUserId;
 }
@@ -117,19 +117,19 @@ public:
 	TimedEventFactory(void);
 	~TimedEventFactory(void);
 
-	HeI32 PostTimedEvent(TimedEventInterface *callback,
-										 HeF32 duetime,
-										 HeI32 repeatcount,
+	NxI32 PostTimedEvent(TimedEventInterface *callback,
+										 NxF32 duetime,
+										 NxI32 repeatcount,
 										 const Gauss &repeat_time,
 										 void *user_data,
-										 HeI32   user_id);
+										 NxI32   user_id);
 
 
-	HeI32 Process(HeF32 dtime); // process timed events.
+	NxI32 Process(NxF32 dtime); // process timed events.
 
-	HeI32 cancelAll(void) // cancel all timed events
+	NxI32 cancelAll(void) // cancel all timed events
   {
-    HeI32 ret = mEvents.size();
+    NxI32 ret = mEvents.size();
     TimedEventSet::iterator i;
     for (i=mEvents.begin(); i!=mEvents.end(); i++)
     {
@@ -142,9 +142,9 @@ public:
     return ret;
   }
 
-  HeI32 cancelAll(TimedEventInterface *callback) // cancel all timed events with this callback.
+  NxI32 cancelAll(TimedEventInterface *callback) // cancel all timed events with this callback.
   {
-    HeI32 ret = 0;
+    NxI32 ret = 0;
 
     TimedEventSet::iterator i = mEvents.begin();
     TimedEventSet::iterator kill;
@@ -165,7 +165,7 @@ public:
     return ret;
   }
 
-  bool cancelTimedEvent(HeI32 id)
+  bool cancelTimedEvent(NxI32 id)
   {
     bool ret = false;
     TimedEventSet::iterator i;
@@ -184,8 +184,8 @@ public:
   }
 
 private:
-	HeI32           mId;
-	HeF32         mCurrentTime;
+	NxI32           mId;
+	NxF32         mCurrentTime;
 	TimedEventSet mEvents;
 };
 
@@ -204,16 +204,16 @@ TimedEventFactory::~TimedEventFactory(void)
 }
 
 //==================================================================================
-HeI32 TimedEventFactory::PostTimedEvent(TimedEventInterface *callback,
-										 HeF32 duetime,
-										 HeI32 repeatcount,
+NxI32 TimedEventFactory::PostTimedEvent(TimedEventInterface *callback,
+										 NxF32 duetime,
+										 NxI32 repeatcount,
 										 const Gauss &repeat_time,
 										 void *user_data,
-										 HeI32   user_id)
+										 NxI32   user_id)
 {
 	mId++;
 
-	HeI32 ret = mId;
+	NxI32 ret = mId;
 
 	TimedEvent *te = MEMALLOC_NEW(TimedEvent)(callback,ret,mCurrentTime+duetime,repeatcount,repeat_time,user_data,user_id);
 	mEvents.insert(te);
@@ -222,9 +222,9 @@ HeI32 TimedEventFactory::PostTimedEvent(TimedEventInterface *callback,
 }
 
 //==================================================================================
-HeI32 TimedEventFactory::Process(HeF32 dtime) // process timed events.
+NxI32 TimedEventFactory::Process(NxF32 dtime) // process timed events.
 {
-  HeI32 ret = 0;
+  NxI32 ret = 0;
 
 	mCurrentTime += dtime;
 
@@ -256,10 +256,10 @@ HeI32 TimedEventFactory::Process(HeF32 dtime) // process timed events.
 }
 
 TimedEvent::TimedEvent(TimedEventInterface *callback,
-					   HeI32 id, HeF32 duetime,
-					   HeI32 repeat_count,const Gauss &repeat_time,
+					   NxI32 id, NxF32 duetime,
+					   NxI32 repeat_count,const Gauss &repeat_time,
 					   void *user_data,
-             HeI32 user_id) :
+             NxI32 user_id) :
 	mCallback( callback ),
 	mDueTime( duetime ),
 	mRepeatCount( repeat_count ),
@@ -271,7 +271,7 @@ TimedEvent::TimedEvent(TimedEventInterface *callback,
 }
 
 //==================================================================================
-bool TimedEvent::Process(HeF32 curtime)
+bool TimedEvent::Process(NxF32 curtime)
 {
 	bool alive = false;
 
@@ -326,18 +326,18 @@ bool releaseTimedEventFactory(TimedEventFactory *factory)
   return ret;
 }
 
-HeI32 postTimedEvent(TimedEventFactory *factory,
+NxI32 postTimedEvent(TimedEventFactory *factory,
                    TimedEventInterface *callback,
-									 HeF32 duetime,                 // by default, trigger it in one second.
-									 HeI32 repeat_count,
-									 HeF32 repeat_time,
+									 NxF32 duetime,                 // by default, trigger it in one second.
+									 NxI32 repeat_count,
+									 NxF32 repeat_time,
 									 void *user_data,
-									 HeI32   user_id)
+									 NxI32   user_id)
 {
-  HeI32 ret = 0;
+  NxI32 ret = 0;
 
   Gauss g1(duetime);
-  Gauss g2((HeF32)repeat_count);
+  Gauss g2((NxF32)repeat_count);
   Gauss g3(repeat_time);
 
   ret = postTimedEvent(factory,callback,g1,g2,g3,user_data,user_id);
@@ -346,9 +346,9 @@ HeI32 postTimedEvent(TimedEventFactory *factory,
 }
 
 
-HeI32 process(TimedEventFactory *factory,HeF32 dtime) // process timed events based on this delta time since the last time we were called.
+NxI32 process(TimedEventFactory *factory,NxF32 dtime) // process timed events based on this delta time since the last time we were called.
 {
-  HeI32 ret  = 0;
+  NxI32 ret  = 0;
 
   if ( factory )
   {
@@ -358,9 +358,9 @@ HeI32 process(TimedEventFactory *factory,HeF32 dtime) // process timed events ba
   return ret;
 }
 
-HeI32 cancelAll(TimedEventFactory *factory,TimedEventInterface *callback) // cancel all events that are pending with this callback.
+NxI32 cancelAll(TimedEventFactory *factory,TimedEventInterface *callback) // cancel all events that are pending with this callback.
 {
-  HeI32 ret = 0;
+  NxI32 ret = 0;
 
   if ( factory )
   {
@@ -370,7 +370,7 @@ HeI32 cancelAll(TimedEventFactory *factory,TimedEventInterface *callback) // can
   return ret;
 }
 
-bool cancelTimedEvent(TimedEventFactory *factory,HeI32 id) // cancel a specific timed event based on its id number.
+bool cancelTimedEvent(TimedEventFactory *factory,NxI32 id) // cancel a specific timed event based on its id number.
 {
   bool ret = false;
 
@@ -382,9 +382,9 @@ bool cancelTimedEvent(TimedEventFactory *factory,HeI32 id) // cancel a specific 
   return ret;
 }
 
-HeI32 cancelAll(TimedEventFactory *factory)        // cancel all timed events including global events.
+NxI32 cancelAll(TimedEventFactory *factory)        // cancel all timed events including global events.
 {
-  HeI32 ret = 0;
+  NxI32 ret = 0;
 
   if ( factory )
   {
@@ -394,19 +394,19 @@ HeI32 cancelAll(TimedEventFactory *factory)        // cancel all timed events in
   return ret;
 }
 
-HeI32 postTimedEvent(TimedEventFactory *factory,
+NxI32 postTimedEvent(TimedEventFactory *factory,
                    TimedEventInterface *callback,
 									 const Gauss &duetime,                 // by default, trigger it in one second.
 									 const Gauss &repeatcount,
 									 const Gauss &repeat_time,
 									 void *user_data,
-									 HeI32   user_id)
+									 NxI32   user_id)
 {
 
-  HeI32 ret = 0;
+  NxI32 ret = 0;
 
-  HE_ASSERT(callback); // you *must* have a callback to use the timed event system.
-  HE_ASSERT(factory);
+  assert(callback); // you *must* have a callback to use the timed event system.
+  assert(factory);
   if ( callback && factory )
   {
     Gauss g1 = duetime;
@@ -414,7 +414,7 @@ HeI32 postTimedEvent(TimedEventFactory *factory,
     
     ret = factory->PostTimedEvent(callback,
                                   g1.Get(),
-                                  (HeI32)g2.Get(),
+                                  (NxI32)g2.Get(),
                                   repeat_time,user_data,user_id);
   }
 

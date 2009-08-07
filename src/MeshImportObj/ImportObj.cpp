@@ -6,11 +6,11 @@
 #include <vector>
 
 #include "ImportObj.h"
-#include "common/snippets/UserMemAlloc.h"
-#include "common/snippets/inparser.h"
-#include "MeshImport/MeshImport.h"
-#include "common/snippets/stringdict.h"
-#include "common/snippets/sutil.h"
+#include "UserMemAlloc.h"
+#include "inparser.h"
+#include "MeshImport.h"
+#include "stringdict.h"
+#include "sutil.h"
 
 #pragma warning(disable:4100 4505)
 
@@ -37,11 +37,11 @@ public:
     z = _z;
   }
 
-  HeF32 ComputeNormal(const Vec3 &A,
+  NxF32 ComputeNormal(const Vec3 &A,
     const Vec3 &B,
     const Vec3 &C)
   {
-    HeF32 vx,vy,vz,wx,wy,wz,vw_x,vw_y,vw_z,mag;
+    NxF32 vx,vy,vz,wx,wy,wz,vw_x,vw_y,vw_z,mag;
 
     vx = (B.x - C.x);
     vy = (B.y - C.y);

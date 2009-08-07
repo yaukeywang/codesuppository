@@ -11,10 +11,10 @@
  *  @author John W. Ratcliff
 */
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 
 // a gross approximation of 1 millisecond of clock cycles.
-const HeU64 CYCLES_MS=(2000000000/100);
+const NxU64 CYCLES_MS=(2000000000/100);
 
 class Cycle
 {
@@ -24,10 +24,10 @@ public:
     mTime = 0;
   }
 
-  static HeU64 getRTDSC(void)
+  static NxU64 getRTDSC(void)
   {
 #if WIN32
-    HeU64 tm = 0;
+    NxU64 tm = 0;
   	__asm
 	  {
 		  push	edx
@@ -45,7 +45,7 @@ public:
      asm("cpuid");
      asm volatile("rdtsc" : "=a" (a), "=d" (d));
 
-     return (((HeU64)a) | (((HeU64)d) << 32));
+     return (((NxU64)a) | (((NxU64)d) << 32));
 
 #endif
   }
@@ -55,14 +55,14 @@ public:
     mTime = getRTDSC();
   };
 
-  HeU64 End(void)
+  NxU64 End(void)
   {
-    HeU64 etime = getRTDSC();
+    NxU64 etime = getRTDSC();
     return etime-mTime;
   }
 
 private:
-  HeU64   mTime;
+  NxU64   mTime;
 };
 
 

@@ -39,7 +39,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/WX /W4 /fp:fast /WX /MDd /ZI "
 				Optimization="4"
-				AdditionalIncludeDirectories="&quot;../../ext/DirectX_October2006&quot;;&quot;../../include&quot;;&quot;../../src&quot;;&quot;C:/Program Files/Microsoft DirectX SDK (October 2006)/Include&quot;;"
+				AdditionalIncludeDirectories="&quot;../../ext/DirectX_October2006&quot;;&quot;../../include&quot;;&quot;../../src&quot;;&quot;../../include/common/Foundation&quot;;&quot;../../include/common/snippets&quot;;&quot;C:/Program Files/Microsoft DirectX SDK (October 2006)/Include&quot;;"
 				PreprocessorDefinitions="WIN32;_WINDOWS;UNICODE=1;PD3D_EXPORTS;USE_MEMORY_TRAPPING=1;_DEBUG;"
 				ExceptionHandling="1"
 				WarningLevel="3"
@@ -116,7 +116,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/WX /W4 /fp:fast /WX /O2 /MD "
 				Optimization="4"
-				AdditionalIncludeDirectories="&quot;../../ext/DirectX_October2006&quot;;&quot;../../include&quot;;&quot;../../src&quot;;&quot;C:/Program Files/Microsoft DirectX SDK (October 2006)/Include&quot;;"
+				AdditionalIncludeDirectories="&quot;../../ext/DirectX_October2006&quot;;&quot;../../include&quot;;&quot;../../src&quot;;&quot;../../include/common/Foundation&quot;;&quot;../../include/common/snippets&quot;;&quot;C:/Program Files/Microsoft DirectX SDK (October 2006)/Include&quot;;"
 				PreprocessorDefinitions="WIN32;_WINDOWS;UNICODE=1;PD3D_EXPORTS;USE_MEMORY_TRAPPING=1;NDEBUG;"
 				ExceptionHandling="1"
 				WarningLevel="3"
@@ -914,54 +914,6 @@
 		<Filter
 			Name="Common Include-Binding Files"
 			>
-			<Filter
-				Name="ResourceInterface"
-				>
-				<File
-					RelativePath="..\..\include\common\ResourceInterface\ResourceInterface.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\ResourceInterface\ResourceInterface.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\ResourceInterface\ResourceUpdate.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\ResourceInterface\ResourceUpdate.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="FileInterface"
-				>
-				<File
-					RelativePath="..\..\include\common\FileInterface\FileInterface.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\FileInterface\FileInterface.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="MemoryServices"
-				>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\GlobalNewDelete.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\MemoryContainer.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\MemoryContainer.h"
-					>
-				</File>
-			</Filter>
 			<Filter
 				Name="snippets"
 				>

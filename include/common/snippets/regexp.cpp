@@ -72,7 +72,7 @@ RegularExpression::~RegularExpression(void)
 
 bool RegularExpression::Match(const char *str)
 {
-  HeI32 m = regexec(mExpression, (char *) str );
+  NxI32 m = regexec(mExpression, (char *) str );
   if ( m ) return true;
   return false;
 }

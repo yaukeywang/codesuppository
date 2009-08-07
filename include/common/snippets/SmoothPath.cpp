@@ -5,20 +5,20 @@
 #include <assert.h>
 
 #include "SmoothPath.h"
-#include "../HeMath/HeFoundation.h"
+#include "NxFoundation.h"
 #include <vector>
 
 class BsplineNode
 {
 public:
-  HeF32 x;              // 4 time/distance x-axis component.
-  HeF32 y;              // 8 y component.
-  HeF32 u;              // 12
-  HeF32 p;              // 16
-  HeF32 d;              // 20
-  HeF32 w;              // 24
-  HeF32 inverseU;       // 28
-  HeF32 inverseD;       // 32
+  NxF32 x;              // 4 time/distance x-axis component.
+  NxF32 y;              // 8 y component.
+  NxF32 u;              // 12
+  NxF32 p;              // 16
+  NxF32 d;              // 20
+  NxF32 w;              // 24
+  NxF32 inverseU;       // 28
+  NxF32 inverseD;       // 32
 };
 
 typedef USER_STL::vector< BsplineNode > BsplineNodeVector;
@@ -39,7 +39,7 @@ public:
     delete []mNodes;
   }
 
-  void Reserve(HeU32 size)
+  void Reserve(NxU32 size)
   {
     mCurrent = 0;
     mSize = size;
@@ -47,12 +47,12 @@ public:
     mNodes = MEMALLOC_NEW_ARRAY(BsplineNode,size)[size];
   };
 
-  HeU32 GetSize(void)
+  NxU32 GetSize(void)
   {
     return mIndex;
   };
 
-  HeF32 GetEntry(HeU32 i)
+  NxF32 GetEntry(NxU32 i)
   {
     return mNodes[i].y;
   }
@@ -66,7 +66,7 @@ public:
     mNodes = 0;
   };
 
-  HeF32 f(HeF32 x)
+  NxF32 f(NxF32 x)
   {
 	  return( x*x*x - x);
   }
@@ -78,21 +78,21 @@ public:
 
     {
 
-    HeU32 n = mIndex;
+    NxU32 n = mIndex;
 
-  	for (HeU32 i=1; i<(n-1); i++)
+  	for (NxU32 i=1; i<(n-1); i++)
   	{
   		mNodes[i].d = 2.0f * (mNodes[i+1].x - mNodes[i-1].x);
       mNodes[i].inverseD = 1.0f / mNodes[i].d;
   	}
 
-  	for (HeU32 i=0; i<(n-1); i++)
+  	for (NxU32 i=0; i<(n-1); i++)
     {
   	  mNodes[i].u = mNodes[i+1].x-mNodes[i].x;
       mNodes[i].inverseU = 1.0f / mNodes[i].u;
     }
 
-  	for (HeU32 i=1; i<(n-1); i++)
+  	for (NxU32 i=1; i<(n-1); i++)
     {
   		mNodes[i].w = 6.0f*((mNodes[i+1].y - mNodes[i].y)   / mNodes[i].u - (mNodes[i].y   - mNodes[i-1].y) / mNodes[i-1].u);
     }
@@ -100,25 +100,25 @@ public:
   	mNodes[0].p   = 0.0f;
   	mNodes[n-1].p = 0.0f;
 
-  	for (HeU32 i=1; i<(n-2); i++)
+  	for (NxU32 i=1; i<(n-2); i++)
   	{
   		mNodes[i+1].w = mNodes[i+1].w - mNodes[i].w*mNodes[i].u /mNodes[i].d;
   		mNodes[i+1].d = mNodes[i+1].d - mNodes[i].u * mNodes[i].u / mNodes[i].d;
   	}
 
-  	for (HeU32 i=n-2; i>0; i--)
+  	for (NxU32 i=n-2; i>0; i--)
     {
   		mNodes[i].p = (mNodes[i].w - mNodes[i].u * mNodes[i+1].p ) / mNodes[i].d;
     }
     }
   }
 
-  HeF32 setup(HeF32 v,HeU32 &segment)
+  NxF32 setup(NxF32 v,NxU32 &segment)
   {
 
-  	HeF32 t=0;
+  	NxF32 t=0;
 
-    HeU32 n = mIndex;
+    NxU32 n = mIndex;
 
     bool found = false;
 
@@ -144,7 +144,7 @@ public:
 
     if ( !found )
     {
-    	HeU32 i=0;
+    	NxU32 i=0;
   	  while ( v > mNodes[i+1].x && i < (n-1) ) i++;
   	  t = (v - mNodes[i].x ) * mNodes[i].inverseU;
       segment = i;
@@ -154,12 +154,12 @@ public:
     return t;
   }
 
-  HeF32 Evaluate(HeF32 t,HeU32 i)
+  NxF32 Evaluate(NxF32 t,NxU32 i)
   {
   	return( t*mNodes[i+1].y + (1-t)*mNodes[i].y +	mNodes[i].u * mNodes[i].u * (f(t)*mNodes[i+1].p +	f(1-t)*mNodes[i].p )* (1.0f/6.0f) );
   }
 
-  HeF32 EvaluateLinear(HeF32 t,HeU32 i)
+  NxF32 EvaluateLinear(NxF32 t,NxU32 i)
   {
     float y1 = mNodes[i].y;
     float y2 = mNodes[i+1].y;
@@ -169,7 +169,7 @@ public:
   }
 
 
-  void AddNode(HeF32 x,HeF32 y)
+  void AddNode(NxF32 x,NxF32 y)
   {
     assert( mIndex < mSize );
     if ( mIndex < mSize )
@@ -181,9 +181,9 @@ public:
   }
 
 private:
-  HeU32        mIndex;
-  HeU32        mSize;
-  HeU32        mCurrent;
+  NxU32        mIndex;
+  NxU32        mSize;
+  NxU32        mCurrent;
   BsplineNode *mNodes;
 };
 
@@ -195,7 +195,7 @@ class SmoothPath
 {
 public:
 
-  SmoothPath(const HeF32 *input_points,HeU32 pstride,HeU32 count,HeF32 &length)
+  SmoothPath(const NxF32 *input_points,NxU32 pstride,NxU32 count,NxF32 &length)
   {
     mCount = count;
 
@@ -205,16 +205,16 @@ public:
 
     mTime = 0;
 
-    HeVec3 previous;
+    NxVec3 previous;
 
     const char *scan = (const char *) input_points;
-    for (HeU32 i=0; i<count; i++)
+    for (NxU32 i=0; i<count; i++)
     {
-      HeVec3 p( (const HeF32 *) scan );
+      NxVec3 p( (const NxF32 *) scan );
 
       if ( i )
       {
-        HeF32 dist = previous.distance(p);
+        NxF32 dist = previous.distance(p);
         mTime+=dist;
       }
 
@@ -238,11 +238,11 @@ public:
   }
 
 
-  HeF32 GetLength(void) { return mTime; }; //total length of spline
+  NxF32 GetLength(void) { return mTime; }; //total length of spline
 
-  HeF32 Evaluate(HeF32 dist,HeF32 *pos,HeU32 &segment,bool linear)
+  NxF32 Evaluate(NxF32 dist,NxF32 *pos,NxU32 &segment,bool linear)
   {
-    HeF32 t;
+    NxF32 t;
 
     if ( mCount == 2 || linear )
     {
@@ -268,27 +268,27 @@ public:
   }
 
 private:
-  HeF32  mTime; // time/distance travelled.
-  HeU32     mCount;
+  NxF32  mTime; // time/distance travelled.
+  NxU32     mCount;
   Bspline mXaxis;
   Bspline mYaxis;
   Bspline mZaxis;
 };
 
 
-SmoothPath  * sp_createSmoothPath(const HeF32 *points,HeU32 pstride,HeU32 count,HeF32 &length)
+SmoothPath  * sp_createSmoothPath(const NxF32 *points,NxU32 pstride,NxU32 count,NxF32 &length)
 {
   assert( count >= 2 );
   SmoothPath *sp = MEMALLOC_NEW(SmoothPath)(points,pstride,count,length);
   return sp;
 }
 
-HeF32 sp_getPoint(SmoothPath *sp,HeF32 *dest,HeF32 ftime,HeU32 &index)
+NxF32 sp_getPoint(SmoothPath *sp,NxF32 *dest,NxF32 ftime,NxU32 &index)
 {
   return sp->Evaluate(ftime,dest,index,false);
 }
 
-HeF32         sp_getPointLinear(SmoothPath *sp,HeF32 *dest,HeF32 ftime,HeU32 &index)
+NxF32         sp_getPointLinear(SmoothPath *sp,NxF32 *dest,NxF32 ftime,NxU32 &index)
 {
   return sp->Evaluate(ftime,dest,index,true);
 }

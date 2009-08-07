@@ -5,7 +5,7 @@
 
 #include "TestMapPal.h"
 
-#include "common/snippets/SendTextMessage.h"
+#include "SendTextMessage.h"
 
 void testMapPal(void)
 {

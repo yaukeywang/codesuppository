@@ -177,6 +177,9 @@ void  fm_getTranslation(const double matrix[16],double t[3]);
 void  fm_setTranslation(const float *translation,float matrix[16]);
 void  fm_setTranslation(const double *translation,double matrix[16]);
 
+void  fm_multiplyQuat(const float *qa,const float *qb,float *quat);
+void  fm_multiplyQuat(const double *qa,const double *qb,double *quat);
+
 void  fm_matrixToQuat(const float matrix[16],float quat[4]); // convert the 3x3 portion of a 4x4 matrix into a quaterion as x,y,z,w
 void  fm_matrixToQuat(const double matrix[16],double quat[4]); // convert the 3x3 portion of a 4x4 matrix into a quaterion as x,y,z,w
 

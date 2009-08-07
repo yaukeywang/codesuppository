@@ -61,7 +61,8 @@
 
 #include "UserMemAlloc.h"
 #include "MeshCleanup.h"
-#include "common/snippets/FloatMath.h"
+#include "FloatMath.h"
+#include <hash_map>
 
 #if SHOW_DEBUG
 #include "RenderDebug/RenderDebug.h"
@@ -75,21 +76,21 @@
 namespace MESH_CLEANUP
 {
 
-typedef USER_STL::hash_map< HeU64, HeU32 >IntInt;
+typedef USER_STL_EXT::hash_map< NxU64, NxU32 >IntInt;
 
 #define POW21 (1<<21)
 
-HeU64 computeHash(HeU32 i1,HeU32 i2,HeU32 i3)
+NxU64 computeHash(NxU32 i1,NxU32 i2,NxU32 i3)
 {
-  HeU64 ret = 0;
+  NxU64 ret = 0;
 
-  HE_ASSERT( i1 < POW21 );
-  HE_ASSERT( i2 < POW21 );
-  HE_ASSERT( i3 < POW21 );
+  assert( i1 < POW21 );
+  assert( i2 < POW21 );
+  assert( i3 < POW21 );
 
-  HeU64 ui1 = (HeU64)i1;
-  HeU64 ui2 = (HeU64)i2;
-  HeU64 ui3 = (HeU64)i3;
+  NxU64 ui1 = (NxU64)i1;
+  NxU64 ui2 = (NxU64)i2;
+  NxU64 ui3 = (NxU64)i3;
 
   ret = (ui1<<42)|(ui2<<21)|ui3;
 
@@ -107,14 +108,14 @@ public:
     mMatch[0] = mMatch[1] = mMatch[2] = 0;
   }
 
-  HeU64 getHash(void) const
+  NxU64 getHash(void) const
   {
     return computeHash(mI[0],mI[1],mI[2]);
   }
 
-  HeU32 get(const IntInt &edgeList,HeU64 key) const
+  NxU32 get(const IntInt &edgeList,NxU64 key) const
   {
-    HeU32 ret = 0;
+    NxU32 ret = 0;
 
     IntInt::const_iterator found = edgeList.find(key);
     if ( found != edgeList.end() )
@@ -128,7 +129,7 @@ public:
   {
     bool ret = false;
 
-    HeU32 v = get(edgeList, computeHash(mI[0],mI[1],mI[2]) );
+    NxU32 v = get(edgeList, computeHash(mI[0],mI[1],mI[2]) );
     if ( v == 0 )
     {
       v = get(edgeList, computeHash(mI[1],mI[2],mI[0]) );
@@ -143,9 +144,9 @@ public:
     return ret;
   }
 
-  HeU32 isDoubleSided(const IntInt &edgeList)
+  NxU32 isDoubleSided(const IntInt &edgeList)
   {
-    HeU32 ret = 0;
+    NxU32 ret = 0;
 
     ret = get(edgeList, computeHash(mI[2],mI[1],mI[0]) );
     if ( ret == 0 )
@@ -179,15 +180,15 @@ public:
 
   }
 
-  void computePlane(const HeF32 *vertices)
+  void computePlane(const NxF32 *vertices)
   {
-    const HeF32 *p1 = &vertices[mI[0]*3];
-    const HeF32 *p2 = &vertices[mI[1]*3];
-    const HeF32 *p3 = &vertices[mI[2]*3];
+    const NxF32 *p1 = &vertices[mI[0]*3];
+    const NxF32 *p2 = &vertices[mI[1]*3];
+    const NxF32 *p3 = &vertices[mI[2]*3];
     mPlane[3] = fm_computePlane(p3,p2,p1,mPlane);
   }
 
-  void project(const HeF32 *p,HeF32 *t,const HeF32 *plane,HeF32 scale)
+  void project(const NxF32 *p,NxF32 *t,const NxF32 *plane,NxF32 scale)
   {
     t[0] = p[0]+(plane[0]*scale);
     t[1] = p[1]+(plane[1]*scale);
@@ -195,39 +196,39 @@ public:
   }
 
 #if SHOW_DEBUG
-  void debugMe(RENDER_DEBUG::RenderDebug *debug,const HeF32 *vertices,HeU32 i1,HeU32 i2,HeU32 i3)
+  void debugMe(RENDER_DEBUG::RenderDebug *debug,const NxF32 *vertices,NxU32 i1,NxU32 i2,NxU32 i3)
   {
     if ( debug )
     {
-      const HeF32 *p1 = &vertices[i1*3];
-      const HeF32 *p2 = &vertices[i2*3];
-      const HeF32 *p3 = &vertices[i3*3];
+      const NxF32 *p1 = &vertices[i1*3];
+      const NxF32 *p2 = &vertices[i2*3];
+      const NxF32 *p3 = &vertices[i3*3];
       debug->DebugTri(p1,p2,p3,0xFF4000,6000.0f);
     }
   }
 
-  void debugSphere(RENDER_DEBUG::RenderDebug *debug,const HeF32 *vertices,HeU32 i,HeU32 color)
+  void debugSphere(RENDER_DEBUG::RenderDebug *debug,const NxF32 *vertices,NxU32 i,NxU32 color)
   {
     if ( debug )
     {
-      const HeF32 *p = &vertices[i*3];
+      const NxF32 *p = &vertices[i*3];
       debug->DebugSphere(p,0.1f,color,6000.0f);
     }
   }
 #endif
 
-  void performProject(fm_VertexIndex *vlook,const HeF32 *vertices,QuickTri *join,USER_STL::vector< HeU32 > &indices,HeF32 projectDistance,RENDER_DEBUG::RenderDebug * /* debug */)
+  void performProject(fm_VertexIndex *vlook,const NxF32 *vertices,QuickTri *join,USER_STL::vector< NxU32 > &indices,NxF32 projectDistance,RENDER_DEBUG::RenderDebug * /* debug */)
   {
 
-    const HeF32 *p1 = &vertices[mI[0]*3];
-    const HeF32 *p2 = &vertices[mI[1]*3];
-    const HeF32 *p3 = &vertices[mI[2]*3];
+    const NxF32 *p1 = &vertices[mI[0]*3];
+    const NxF32 *p2 = &vertices[mI[1]*3];
+    const NxF32 *p3 = &vertices[mI[2]*3];
 
     if ( mDoubleSided )
     {
-      HeF32 tp1[3];
-      HeF32 tp2[3];
-      HeF32 tp3[3];
+      NxF32 tp1[3];
+      NxF32 tp2[3];
+      NxF32 tp3[3];
 
       project(p1,tp1,mPlane,projectDistance);
       project(p2,tp2,mPlane,projectDistance);
@@ -258,17 +259,17 @@ public:
     if ( join )
     {
 
-      HeU32 j1 = join->mT[mMatch[0]];
-      HeU32 j2 = join->mT[mMatch[1]];
-      HeU32 j3 = join->mT[mMatch[2]];
+      NxU32 j1 = join->mT[mMatch[0]];
+      NxU32 j2 = join->mT[mMatch[1]];
+      NxU32 j3 = join->mT[mMatch[2]];
 
-      HeU32 i1 = mT[0];
-      HeU32 i2 = mT[1];
-      HeU32 i3 = mT[2];
+      NxU32 i1 = mT[0];
+      NxU32 i2 = mT[1];
+      NxU32 i3 = mT[2];
 
 #if SHOW_DEBUG
 
-      const HeF32 *vertices = vlook->getVerticesFloat();
+      const NxF32 *vertices = vlook->getVerticesFloat();
 
       debugSphere(debug,vertices,j1,0xFF0000);
       debugSphere(debug,vertices,j2,0x00FF00);
@@ -318,14 +319,14 @@ public:
 
   bool         mProjected;
 
-  HeU32 mI[3];          // original indices
-  HeU32 mT[3];         // projected final indices
+  NxU32 mI[3];          // original indices
+  NxU32 mT[3];         // projected final indices
 
-  HeU32 mMatch[3];
+  NxU32 mMatch[3];
 
   bool         mDoubleSided;
-  HeF32        mPlane[4];
-  HeI32          mJoined;        // the triangle we are 'joined' to.
+  NxF32        mPlane[4];
+  NxI32          mJoined;        // the triangle we are 'joined' to.
 };
 
 
@@ -341,7 +342,7 @@ public:
 #endif
 
 #if 0 // not currently used..
-static bool skipPoint(const HeF32 *p)
+static bool skipPoint(const NxF32 *p)
 {
   bool skip = true;
 
@@ -354,7 +355,7 @@ static bool skipPoint(const HeF32 *p)
   return skip;
 }
 #endif
-static bool skipTriangle(const HeF32 * /* p1 */,const HeF32 * /* p2 */,const HeF32 * /* p3 */)
+static bool skipTriangle(const NxF32 * /* p1 */,const NxF32 * /* p2 */,const NxF32 * /* p3 */)
 {
   bool skip = false;
 
@@ -366,18 +367,18 @@ static bool skipTriangle(const HeF32 * /* p1 */,const HeF32 * /* p2 */,const HeF
 
 
 
-bool meshCleanup(MeshCleanupDesc &desc,HeF32 weldDistance,HeF32 projectDistance,RENDER_DEBUG::RenderDebug *debug)
+bool meshCleanup(MeshCleanupDesc &desc,NxF32 weldDistance,NxF32 projectDistance,RENDER_DEBUG::RenderDebug *debug)
 {
   bool ret = false;
 
-  HeF32 *vertices = MEMALLOC_NEW_ARRAY(float,desc.inputVcount*3)[desc.inputVcount*3];
+  NxF32 *vertices = MEMALLOC_NEW_ARRAY(float,desc.inputVcount*3)[desc.inputVcount*3];
   const char *scan = (const char *) desc.inputVertices;
-  HeF32 *dest = vertices;
+  NxF32 *dest = vertices;
 
 
-  for (HeU32 i=0; i<desc.inputVcount; i++)
+  for (NxU32 i=0; i<desc.inputVcount; i++)
   {
-    const HeF32 *source = (const HeF32 *) scan;
+    const NxF32 *source = (const NxF32 *) scan;
     dest[0] = source[0];
     dest[1] = source[1];
     dest[2] = source[2];
@@ -391,18 +392,18 @@ bool meshCleanup(MeshCleanupDesc &desc,HeF32 weldDistance,HeF32 projectDistance,
 
   IntInt edgeList;
 
-  for (HeU32 i=0; i<desc.inputTcount; i++)
+  for (NxU32 i=0; i<desc.inputTcount; i++)
   {
     const char *base = indices+i*desc.inputTstride;
-    const HeU32 *idx = (const HeU32 *)base;
+    const NxU32 *idx = (const NxU32 *)base;
 
-    HeU32 i1 = idx[0];
-    HeU32 i2 = idx[1];
-    HeU32 i3 = idx[2];
+    NxU32 i1 = idx[0];
+    NxU32 i2 = idx[1];
+    NxU32 i3 = idx[2];
 
-    const HeF32 *p1 = &vertices[i1*3];
-    const HeF32 *p2 = &vertices[i2*3];
-    const HeF32 *p3 = &vertices[i3*3];
+    const NxF32 *p1 = &vertices[i1*3];
+    const NxF32 *p2 = &vertices[i2*3];
+    const NxF32 *p3 = &vertices[i3*3];
 
     if ( skipTriangle(p1,p2,p3) || i1 == i2 || i1 == i3 || i2 == i3 ) // skip degenerate triangles
     {
@@ -433,7 +434,7 @@ bool meshCleanup(MeshCleanupDesc &desc,HeF32 weldDistance,HeF32 projectDistance,
       }
       else
       {
-        HeU32 dindex = t.isDoubleSided(edgeList);
+        NxU32 dindex = t.isDoubleSided(edgeList);
         if ( dindex )
         {
           QuickTri &qt = triangles[dindex-1];
@@ -441,8 +442,8 @@ bool meshCleanup(MeshCleanupDesc &desc,HeF32 weldDistance,HeF32 projectDistance,
           qt.mDoubleSided = true;
           t.mDoubleSided  = true;
         }
-        HeU64 hash = t.getHash();
-        HeU32 index = triangles.size()+1;
+        NxU64 hash = t.getHash();
+        NxU32 index = triangles.size()+1;
         edgeList[hash] = index;
         triangles.push_back(t);
       }
@@ -457,7 +458,7 @@ bool meshCleanup(MeshCleanupDesc &desc,HeF32 weldDistance,HeF32 projectDistance,
 
     fm_VertexIndex *vlook = fm_createVertexIndex(weldDistance,false);
 
-    USER_STL::vector< HeU32 > indices;
+    USER_STL::vector< NxU32 > indices;
 
     USER_STL::vector< QuickTri >::iterator i;
     for (i=triangles.begin(); i!=triangles.end(); ++i)
@@ -479,15 +480,15 @@ bool meshCleanup(MeshCleanupDesc &desc,HeF32 weldDistance,HeF32 projectDistance,
       t.performProject(vlook,vertices,join,indices,projectDistance,debug);
     }
 
-    HeU32 icount = indices.size();
+    NxU32 icount = indices.size();
     desc.outputIndices = MEMALLOC_NEW_ARRAY(unsigned int,icount)[icount];
-    memcpy(desc.outputIndices,&indices[0],sizeof(HeU32)*icount);
+    memcpy(desc.outputIndices,&indices[0],sizeof(NxU32)*icount);
     desc.outputTcount = indices.size()/3;
 
 
     desc.outputVcount   = vlook->getVcount();
     desc.outputVertices = MEMALLOC_NEW_ARRAY(float,desc.outputVcount*3)[desc.outputVcount*3];
-    memcpy(desc.outputVertices,vlook->getVerticesFloat(),sizeof(HeF32)*desc.outputVcount*3);
+    memcpy(desc.outputVertices,vlook->getVerticesFloat(),sizeof(NxF32)*desc.outputVcount*3);
 
     fm_releaseVertexIndex(vlook);
 

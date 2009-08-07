@@ -51,7 +51,7 @@
 
 */
 
-#include "../../common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 
 #define MAXKEYVALUE 256 // maximum number of key/value pairs that can be returned
 #define MAXKEYVALUEBUFFER   2048 // the maximum size of the user properties buffer.
@@ -63,7 +63,7 @@
 class KeyValue
 {
 public:
-  const char ** getKeyValues(const char *userProperties,HeU32 &count);
+  const char ** getKeyValues(const char *userProperties,NxU32 &count);
   const char *  getKeyValue(const char *userProperties,const char *key,bool caseSensitive=false);  //
 private:
   char *keyValue[MAXKEYVALUE*2];

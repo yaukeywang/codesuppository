@@ -1,7 +1,8 @@
 #include <assert.h>
-#include "common/snippets/UserMemAlloc.h"
-#include "MeshImport/MeshImport.h"
+#include "UserMemAlloc.h"
+#include "MeshImport.h"
 #include "ImportObj.h"
+#include "SystemServices.h"
 
 #ifdef WIN32
 #ifdef MESHIMPORTOBJ_EXPORTS

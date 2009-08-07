@@ -590,7 +590,7 @@ public:
     }
   }
 
-  void notifyTerrain(HeU32 vcount,const HeF32 *vertices,HeU32 tcount,const HeU32 *indices)
+  void notifyTerrain(NxU32 vcount,const NxF32 *vertices,NxU32 tcount,const NxU32 *indices)
   {
     // create the triangle mesh, and a static actor for it...
     if ( mScene )
@@ -608,8 +608,8 @@ public:
       NxTriangleMeshDesc desc;
       desc.numVertices         = vcount;
       desc.numTriangles        = tcount;
-      desc.pointStrideBytes    = sizeof(HeVec3);
-      desc.triangleStrideBytes = sizeof(HeU32)*3;
+      desc.pointStrideBytes    = sizeof(NxVec3);
+      desc.triangleStrideBytes = sizeof(NxU32)*3;
       desc.points              = vertices;
       desc.triangles           = indices;
       desc.flags               = 0;
@@ -719,8 +719,8 @@ public:
     //
     if ( mEmitter )
     {
-      HeF32 edx = EMITTER_DX;
-      HeF32 edy = EMITTER_DY;
+      NxF32 edx = EMITTER_DX;
+      NxF32 edy = EMITTER_DY;
       switch ( mEmitterDirection )
       {
         case ED_LEFT:
@@ -729,7 +729,7 @@ public:
           {
             mLastDirection = ED_LEFT;
             mEmitterDirection = ED_DOWN;
-            mEmitterSteps     = (HeU32)(EMITTER_DY / STEP_SIZE)*2;
+            mEmitterSteps     = (NxU32)(EMITTER_DY / STEP_SIZE)*2;
           }
           break;
         case ED_RIGHT:
@@ -738,7 +738,7 @@ public:
           {
             mLastDirection    = ED_RIGHT;
             mEmitterDirection = ED_DOWN;
-            mEmitterSteps     = (HeU32)(EMITTER_DY / STEP_SIZE)*2;
+            mEmitterSteps     = (NxU32)(EMITTER_DY / STEP_SIZE)*2;
           }
           break;
         case ED_DOWN:
@@ -762,16 +762,16 @@ public:
           break;
       }
 
-      HeF32 x1 = mEmitterPos.x-(EMITTER_DX);
-      HeF32 x2 = mEmitterPos.x+(EMITTER_DX);
-      HeF32 z1 = mEmitterPos.z-(EMITTER_DY);
-      HeF32 z2 = mEmitterPos.z+(EMITTER_DY);
+      NxF32 x1 = mEmitterPos.x-(EMITTER_DX);
+      NxF32 x2 = mEmitterPos.x+(EMITTER_DX);
+      NxF32 z1 = mEmitterPos.z-(EMITTER_DY);
+      NxF32 z2 = mEmitterPos.z+(EMITTER_DY);
 
-      HeF32 maxV = 0;
+      NxF32 maxV = 0;
 
-      for (HeF32 z=z1; z<=z2; z+=1.0f)
+      for (NxF32 z=z1; z<=z2; z+=1.0f)
       {
-        for (HeF32 x=x1; x<=x2; x+=1.0f)
+        for (NxF32 x=x1; x<=x2; x+=1.0f)
         {
           NxRay ray;
           ray.orig.set(x,1000,z);
@@ -800,32 +800,32 @@ public:
     {
 
       {
-        HeU32 c_count    = mFluid->getCreatedIdsNum();
-        const HeU32 *ids = mFluid->getCreatedIds();
+        NxU32 c_count    = mFluid->getCreatedIdsNum();
+        const NxU32 *ids = mFluid->getCreatedIds();
         const ParticleSDK *p = mFluid->getParticles();
         MyParticle *mp = mFluid->getMyParticles();
-        for (HeU32 i=0; i<c_count; i++)
+        for (NxU32 i=0; i<c_count; i++)
         {
-          HeU32 index = ids[i];
+          NxU32 index = ids[i];
           mp[index].mSoil = 0.0f;
         }
       }
 
-      HeI32 width  = (HeI32) mTerrain->getWidth();
-      HeI32 height = (HeI32) mTerrain->getHeight();
-      HeF32 *data  = mTerrain->getData();
+      NxI32 width  = (NxI32) mTerrain->getWidth();
+      NxI32 height = (NxI32) mTerrain->getHeight();
+      NxF32 *data  = mTerrain->getData();
 
       const ParticleSDK *p = mFluid->getParticles();
-      HeU32 pcount = mFluid->getParticlesNum();
+      NxU32 pcount = mFluid->getParticlesNum();
       MyParticle *mp = mFluid->getMyParticles();
-      for (HeU32 i=0; i<pcount; i++)
+      for (NxU32 i=0; i<pcount; i++)
       {
         NxVec3 pp = p->position;
         // ok..first see if it is touching the ground..
         if ( p->collisionNormal.y != 0 )
         {
-          HeI32 x = (HeI32) p->position.x;
-          HeI32 z = (HeI32) p->position.z;
+          NxI32 x = (NxI32) p->position.x;
+          NxI32 z = (NxI32) p->position.z;
 
           if ( x >= 0 && x < width && z >= 0 && z < height )
           {
@@ -834,8 +834,8 @@ public:
             #define SOIL_PICKUP (SOIL_DEPOSIT)
             #define VELOCITY_SCALE 0.1f
 
-            HeU32 tindex = z*width+x;
-            HeF32 soil = p->collisionNormal.y * SOIL_PICKUP; // * (p->velocity.magnitude()*VELOCITY_SCALE);
+            NxU32 tindex = z*width+x;
+            NxF32 soil = p->collisionNormal.y * SOIL_PICKUP; // * (p->velocity.magnitude()*VELOCITY_SCALE);
             data[tindex]-=soil;
             mp[i].mSoil+=soil;
             if ( mp[i].mSoil> SOIL_DEPOSIT )
@@ -862,13 +862,13 @@ public:
 
 /**
       {
-        HeU32 d_count    = mFluid->getDeletedIdsNum();
-        const HeU32 *ids = mFluid->getDeletedIds();
+        NxU32 d_count    = mFluid->getDeletedIdsNum();
+        const NxU32 *ids = mFluid->getDeletedIds();
         MyParticle *mp = mFluid->getMyParticles();
         const ParticleSDK *p = mFluid->getParticles();
-        for (HeU32 i=0; i<d_count; i++)
+        for (NxU32 i=0; i<d_count; i++)
         {
-          HeU32 index = ids[i];
+          NxU32 index = ids[i];
           mp[index].mSoil = 0;
           gRenderDebug->DebugPoint(&p[index].position.x,0.01f,0xFF0000,3.0f);
         }
@@ -878,7 +878,7 @@ public:
   }
 
 private:
-  HeU32           mErodeCount;
+  NxU32           mErodeCount;
   MyFluid        *mFluid;
   Terrain        *mTerrain;
   NxPhysicsSDK   *mSDK;
@@ -887,14 +887,14 @@ private:
   NxActor        *mActor;
   NxFluidEmitter *mEmitter;
   NxBounds3       mWorldBounds;
-  HeU32            mEmitterSteps;
-  HeU32            EmitterCount;
+  NxU32            mEmitterSteps;
+  NxU32            EmitterCount;
   EmitterDirection mLastDirection;
   EmitterDirection mEmitterDirection;
   NxVec3          mEmitterPos;
 
 //
-  HeU32             mParticleCount;
+  NxU32             mParticleCount;
   ParticleSDK      *mParticles;
 //
 

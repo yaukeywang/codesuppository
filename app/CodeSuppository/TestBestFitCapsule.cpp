@@ -5,12 +5,11 @@
 
 #include "TestBestFitCapsule.h"
 
-#include "common/snippets/SendTextMessage.h"
+#include "SendTextMessage.h"
 #include "RenderDebug/RenderDebug.h"
-#include "common/snippets/FloatMath.h"
-#include "common/snippets/rand.h"
+#include "FloatMath.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
-#include "common/snippets/rand.h"
+#include "rand.h"
 
 void testBestFitCapsule(MeshSystemHelper *ms)
 {

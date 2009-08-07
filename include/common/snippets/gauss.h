@@ -25,7 +25,7 @@
 
 #include <string>
 
-#include "common/snippets/UserMemAlloc.h"
+#include "UserMemAlloc.h"
 #include "rand.h"
 
 typedef std::string String;
@@ -46,7 +46,7 @@ class Gauss : public Rand
 public:
   Gauss(void);
   Gauss(const char *value);
-  Gauss(HeF32 f); // has no random deviation
+  Gauss(NxF32 f); // has no random deviation
 
   void SetGaussFlag(GaussFlag f)
   {
@@ -65,48 +65,48 @@ public:
   }
 
 
-  HeF32 Get(Rand &r); // generate *deterministic* gaussian number using a specific random number seed.
-  HeF32 Get(void);    // generate a random number
-  HeF32 GetCurrent(void) const; // last generated value.
+  NxF32 Get(Rand &r); // generate *deterministic* gaussian number using a specific random number seed.
+  NxF32 Get(void);    // generate a random number
+  NxF32 GetCurrent(void) const; // last generated value.
 
   void GetString(String &str) const; // get string representation
 
   const char * Set(const char *arg); // set from asciiz string.
 
-  HeF32 RandGauss(Rand *r); // construct and return gaussian number.
+  NxF32 RandGauss(Rand *r); // construct and return gaussian number.
 
   // convert string to gaussian number.  Return code
   // indicates number of arguments found.
-  HeI32 strtogmd(const char* spec,
+  NxI32 strtogmd(const char* spec,
                char** end,
-               HeF32& mean,
-               HeF32& deviation,
-               HeF32& min,
-               HeF32& max,
+               NxF32& mean,
+               NxF32& deviation,
+               NxF32& min,
+               NxF32& max,
                bool &linear ) const;
 
-  HeF32 GetMean(void)              const { return mMean; };
-  HeF32 GetStandardDeviation(void) const { return mStandardDeviation; };
-  HeF32 GetMin(void)               const { return mMin; };
-  HeF32 GetMax(void)               const { return mMax; };
+  NxF32 GetMean(void)              const { return mMean; };
+  NxF32 GetStandardDeviation(void) const { return mStandardDeviation; };
+  NxF32 GetMin(void)               const { return mMin; };
+  NxF32 GetMax(void)               const { return mMax; };
 
   void srand(void);
 
   void Reset(void);
 
-  void SetMin(HeF32 m)
+  void SetMin(NxF32 m)
   {
     mMin = m;
     SetGaussFlag(GF_MIN);
   }
 
-  void SetMax(HeF32 m)
+  void SetMax(NxF32 m)
   {
     mMax = m;
     SetGaussFlag(GF_MAX);
   }
 
-  void SetMean(HeF32 m)
+  void SetMean(NxF32 m)
   {
     mMean = m;
     if ( mMean == 0.0f )
@@ -119,7 +119,7 @@ public:
     }
   }
 
-  void SetStandardDeviation(HeF32 sd)
+  void SetStandardDeviation(NxF32 sd)
   {
     mStandardDeviation = sd;
     if ( sd == 0.0 )
@@ -129,17 +129,17 @@ public:
   }
 
 private:
-  HeI32   mFlags;
-  HeF32 mMean;               // gaussian number has mean and
-  HeF32 mStandardDeviation;  // standard deviation, also
-  HeF32 mMin;                // min/max clamping values
-  HeF32 mMax;
+  NxI32   mFlags;
+  NxF32 mMean;               // gaussian number has mean and
+  NxF32 mStandardDeviation;  // standard deviation, also
+  NxF32 mMin;                // min/max clamping values
+  NxF32 mMax;
 
-  HeF32 mCurrent;           // last got value.
-  HeF32 mGauss1;            // 1st gaussian
-  HeF32 mGauss2;            // 2nd gaussian
+  NxF32 mCurrent;           // last got value.
+  NxF32 mGauss1;            // 1st gaussian
+  NxF32 mGauss2;            // 2nd gaussian
 };
 
-HeF32 ranfloat(void);
+NxF32 ranfloat(void);
 
 #endif

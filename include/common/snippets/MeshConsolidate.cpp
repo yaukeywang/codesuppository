@@ -2,20 +2,19 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <hash_map>
 
 #pragma warning(disable:4702)
 
 #include "MeshConsolidate.h"
 #include "FloatMath.h"
-#include "NxVec3.h"
+#include <Nx.h>
+#include <NxVec3.h>
 
 #pragma warning(disable:4100)
 
 #include <vector>
+#include <hash_map>
 #include "UserMemAlloc.h"
-#include "SendTextMessage.h"
-#include "RenderDebug/RenderDebug.h"
 
 namespace MESH_CONSOLIDATE
 {
@@ -26,8 +25,6 @@ class MyMeshConsolidate;
 
 static void addPolyPoint(Edge *p,Edge **polyPoints,Polygon *parent);
 static void removePolyPoint(Edge *p,Edge **polyPoints);
-
-#define EPSILON 0.0000001f
 
 class TempTri
 {
@@ -323,17 +320,18 @@ static void removePolyPoint(Edge *p,Edge **polyPoints)
 }
 
 typedef USER_STL::vector< TempTri > TempTriVector;
-typedef USER_STL_EXT::hash_map< NxU32, Edge * > EdgeHashMap;
-typedef USER_STL::vector< NxU32 > HeU32Vector;
+typedef stdext::hash_map< NxU32, Edge * > EdgeHashMap;
+typedef USER_STL::vector< NxU32 > NxU32Vector;
 
 class MyMeshConsolidate : public MeshConsolidate
 {
 public:
 
-  MyMeshConsolidate(void)
+  MyMeshConsolidate(float epsilon)
   {
-    mVertices = fm_createVertexIndex(EPSILON,false);
-	mVertexOutput = fm_createVertexIndex(EPSILON,false);
+    mWeldEpsilon = epsilon;
+    mVertices = fm_createVertexIndex(mWeldEpsilon,false);
+	mVertexOutput = fm_createVertexIndex(mWeldEpsilon,false);
     mPolygons = 0;
     mEdges = 0;
     mPolyCount = 0;
@@ -376,41 +374,22 @@ public:
   {
     bool ret = false;
 
-	NxF32 area = fm_computeArea(p1,p2,p3);
-	area;
-	assert( area > 0 );
-
-	NxVec3 _vertices[3],vertices[64];
-	_vertices[0].set(p1);
-	_vertices[1].set(p2);
-	_vertices[2].set(p3);
-	NxU32 pcount = fm_consolidatePolygon(3,&_vertices[0].x,sizeof(NxF32)*3,&vertices[0].x,1-EPSILON);
-	if ( pcount == 3 )
+	bool np;
+	TempTri t;
+	t.mI1 = (NxU32)mVertices->getIndex(p1,np);
+	t.mI2 = (NxU32)mVertices->getIndex(p2,np);
+	t.mI3 = (NxU32)mVertices->getIndex(p3,np);
+	t.mId = id;
+	t.mSubMesh = subMesh;
+	if ( t.mI1 == t.mI2 || t.mI1 == t.mI3 || t.mI2 == t.mI3 )
 	{
-		bool np;
-		TempTri t;
-		t.mI1 = mVertices->getIndex(p1,np);
-		t.mI2 = mVertices->getIndex(p2,np);
-		t.mI3 = mVertices->getIndex(p3,np);
-		t.mId = id;
-		t.mSubMesh = subMesh;
-
-		if ( t.mI1 == t.mI2 || t.mI1 == t.mI3 || t.mI2 == t.mI3 )
-		{
-			assert(0); // added a degenerate triangle!
-		}
-		else
-		{
-			fm_computePlane(p1,p2,p3,&t.mNormal.x);
-			ret = true;
-			mInputTriangles.push_back(t);
-		}
 	}
 	else
 	{
-		SEND_TEXT_MESSAGE(0,"Rejecting degenerate triangle!\r\n");
+		fm_computePlane(p1,p2,p3,&t.mNormal.x);
+		ret = true;
+		mInputTriangles.push_back(t);
 	}
-
     return ret;
   }
 
@@ -419,15 +398,17 @@ public:
   {
     bool ret = false;
 
+    mEpsilon = results.mEpsilon;
+
     if ( !mInputTriangles.empty() )
     {
-        mPolyCount = mInputTriangles.size();
+        mPolyCount = (NxU32)mInputTriangles.size();
         mPolygons  = MEMALLOC_NEW_ARRAY(Polygon,mPolyCount)[mPolyCount];
         mEdges     = MEMALLOC_NEW_ARRAY(Edge,mPolyCount*3)[mPolyCount*3];
         TempTri *tri = &mInputTriangles[0];
         Edge *e = mEdges;
         Polygon *p = mPolygons;
-        mVcount = mVertices->getVcount();
+        mVcount = (NxU32)mVertices->getVcount();
         mPolyPoints = MEMALLOC_NEW_ARRAY(Edge *,mVcount)[mVcount];
 		memset(mPolyPoints,0,sizeof(Edge *)*mVcount);
         for (NxU32 i=0; i<mPolyCount; i++)
@@ -482,7 +463,7 @@ public:
               e = e->mNext;
 			}
 
-            pcount = fm_consolidatePolygon(pcount,_vertices,sizeof(NxF32)*3,vertices,1-EPSILON);
+            pcount = (NxU32)fm_consolidatePolygon(pcount,_vertices,sizeof(NxF32)*3,vertices,1-mEpsilon);
 
             switch ( pcount )
             {
@@ -507,7 +488,7 @@ public:
               default:
                 {
                   NxU32 tcount;
-                  const NxF32 *triangles = t->triangulate3d(pcount,vertices,sizeof(NxF32)*3,tcount,false,EPSILON);
+                  const NxF32 *triangles = t->triangulate3d(pcount,vertices,sizeof(NxF32)*3,tcount,false,mEpsilon);
                   if ( triangles )
                   {
                     for (NxU32 i=0; i<tcount; i++)
@@ -521,17 +502,8 @@ public:
                   }
 				  else
 				  {
-					  SEND_TEXT_MESSAGE(0,"FAILED TO TRIANGULATE POLYGON WITH %d points!\r\n", pcount );
-					  const NxF32 *prev = &vertices[(pcount-1)*3];
-					  for (NxU32 i=0; i<pcount; i++)
-					  {
-						  const NxF32 *point = &vertices[i*3];
-						  gRenderDebug->DebugPoint(point,0.1f,0xFFFF00,600.0f);
-						  gRenderDebug->DebugRay(prev,point,0.1f,0xFF0000,0xFFFF00,600.0f);
-						  prev = point;
-					  }
-                      pcount = fm_consolidatePolygon(pcount,_vertices,sizeof(NxF32)*3,vertices,0.999f);
-					  t->triangulate3d(pcount,vertices,sizeof(NxF32)*3,tcount,false,EPSILON);
+					  printf("debug me");
+				      t->triangulate3d(pcount,vertices,sizeof(NxF32)*3,tcount,false,mEpsilon);
 				  }
                 }
                 break;
@@ -547,8 +519,8 @@ public:
     if ( !mOutputIndices.empty() )
     {
       ret = true;
-      results.mVcount    = mVertexOutput->getVcount();
-      results.mTcount    = mOutputIndices.size()/3;
+      results.mVcount    = (NxU32)mVertexOutput->getVcount();
+      results.mTcount    = (NxU32)mOutputIndices.size()/3;
       results.mIndices   = &mOutputIndices[0];
       results.mIds       = &mOutputIds[0];
       results.mSubMeshes = &mOutputSubMeshes[0];
@@ -586,9 +558,9 @@ public:
   void addTriangleOutput(const Polygon *p,const NxF32 *p1,const NxF32 *p2,const NxF32 *p3)
   {
     bool np;
-    NxU32 i1 = mVertexOutput->getIndex(p1,np);
-    NxU32 i2 = mVertexOutput->getIndex(p2,np);
-    NxU32 i3 = mVertexOutput->getIndex(p3,np);
+    NxU32 i1 = (NxU32)mVertexOutput->getIndex(p1,np);
+    NxU32 i2 = (NxU32)mVertexOutput->getIndex(p2,np);
+    NxU32 i3 = (NxU32)mVertexOutput->getIndex(p3,np);
     mOutputIndices.push_back(i1);
     mOutputIndices.push_back(i2);
     mOutputIndices.push_back(i3);
@@ -731,6 +703,8 @@ public:
     removePolyPoint(e3,mPolyPoints);
   }
 
+  float           mEpsilon;
+  float           mWeldEpsilon;
   NxU32           mPolyCount;
   NxU32           mEdgeCount;
   NxU32           mVcount; // number of vertices
@@ -738,9 +712,9 @@ public:
   Edge           *mEdges;
   Edge          **mPolyPoints;
   EdgeHashMap     mEdgeHash;
-  HeU32Vector     mOutputIndices;
-  HeU32Vector     mOutputIds;
-  HeU32Vector     mOutputSubMeshes;
+  NxU32Vector     mOutputIndices;
+  NxU32Vector     mOutputIds;
+  NxU32Vector     mOutputSubMeshes;
 
   fm_VertexIndex *mVertices;
   fm_VertexIndex *mVertexOutput;
@@ -912,9 +886,9 @@ Edge * Polygon::mergePolygon(Polygon *merge,Edge *e,Edge **polyPoints,MyMeshCons
 
 using namespace MESH_CONSOLIDATE;
 
-MeshConsolidate * createMeshConsolidate(void)
+MeshConsolidate * createMeshConsolidate(float epsilon)
 {
-  MyMeshConsolidate *mcm = new MyMeshConsolidate;
+  MyMeshConsolidate *mcm = new MyMeshConsolidate(epsilon);
   return static_cast< MeshConsolidate *>(mcm);
 }
 

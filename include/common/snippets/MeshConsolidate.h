@@ -14,6 +14,7 @@ public:
     mVertices = 0;
     mIndices = 0;
     mSubMeshes = 0;
+    mEpsilon = 0.00000001f;
   }
   NxU32        mVcount;
   NxU32        mTcount;
@@ -21,6 +22,7 @@ public:
   const NxU32 *mIndices;
   const NxU32 *mIds;
   const NxU32 *mSubMeshes;
+  NxF32        mEpsilon;
 };
 
 class MeshConsolidate
@@ -38,7 +40,7 @@ public:
 
 };
 
-MeshConsolidate * createMeshConsolidate(void);
+MeshConsolidate * createMeshConsolidate(float epsilon);
 void              releaseMeshConsolidate(MeshConsolidate *cm);
 
 #endif

@@ -34,7 +34,7 @@ void testMeshConsolidation(MeshSystemHelper * ms)
           size_t tcount = rt->removeTjunctions(desc);
 		  SEND_TEXT_MESSAGE(0,"Input triangle count %d output triangle count %d.\r\n", mr->mTcount, tcount );
 #if MESH_CONSOLIDATE
- 		  MeshConsolidate *cm = createMeshConsolidate();
+ 		  MeshConsolidate *cm = createMeshConsolidate(0.0001f);
 #else
 		  ConsolidateMesh *cm = createConsolidateMesh();
 #endif

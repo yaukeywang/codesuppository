@@ -141,8 +141,8 @@ void  fm_rotate(const double matri[16],const double pos[3],double t[3]); // only
 void  fm_eulerToMatrix(float ax,float ay,float az,float matrix[16]); // convert euler (in radians) to a dest 4x4 matrix (translation set to zero)
 void  fm_eulerToMatrix(double ax,double ay,double az,double matrix[16]); // convert euler (in radians) to a dest 4x4 matrix (translation set to zero)
 
-void  fm_getAABB(size_t vcount,const float *points,size_t pstride,float bmin[3],float bmax[3]);
-void  fm_getAABB(size_t vcount,const double *points,size_t pstride,double bmin[3],double bmax[3]);
+void  fm_getAABB(unsigned int vcount,const float *points,unsigned int pstride,float bmin[3],float bmax[3]);
+void  fm_getAABB(unsigned int vcount,const double *points,unsigned int pstride,double bmin[3],double bmax[3]);
 
 void  fm_getAABBCenter(const float bmin[3],const float bmax[3],float center[3]);
 void  fm_getAABBCenter(const double bmin[3],const double bmax[3],double center[3]);
@@ -243,15 +243,15 @@ bool  fm_insideAABB(const double pos[3],const double bmin[3],const double bmax[3
 bool  fm_insideAABB(const float obmin[3],const float obmax[3],const float tbmin[3],const float tbmax[3]); // test if bounding box tbmin/tmbax is fully inside obmin/obmax
 bool  fm_insideAABB(const double obmin[3],const double obmax[3],const double tbmin[3],const double tbmax[3]); // test if bounding box tbmin/tmbax is fully inside obmin/obmax
 
-size_t fm_clipTestPoint(const float bmin[3],const float bmax[3],const float pos[3]);
-size_t fm_clipTestPoint(const double bmin[3],const double bmax[3],const double pos[3]);
+unsigned int fm_clipTestPoint(const float bmin[3],const float bmax[3],const float pos[3]);
+unsigned int fm_clipTestPoint(const double bmin[3],const double bmax[3],const double pos[3]);
 
-size_t fm_clipTestPointXZ(const float bmin[3],const float bmax[3],const float pos[3]); // only tests X and Z, not Y
-size_t fm_clipTestPointXZ(const double bmin[3],const double bmax[3],const double pos[3]); // only tests X and Z, not Y
+unsigned int fm_clipTestPointXZ(const float bmin[3],const float bmax[3],const float pos[3]); // only tests X and Z, not Y
+unsigned int fm_clipTestPointXZ(const double bmin[3],const double bmax[3],const double pos[3]); // only tests X and Z, not Y
 
 
-size_t fm_clipTestAABB(const float bmin[3],const float bmax[3],const float p1[3],const float p2[3],const float p3[3],size_t &andCode);
-size_t fm_clipTestAABB(const double bmin[3],const double bmax[3],const double p1[3],const double p2[3],const double p3[3],size_t &andCode);
+unsigned int fm_clipTestAABB(const float bmin[3],const float bmax[3],const float p1[3],const float p2[3],const float p3[3],unsigned int &andCode);
+unsigned int fm_clipTestAABB(const double bmin[3],const double bmax[3],const double p1[3],const double p2[3],const double p3[3],unsigned int &andCode);
 
 
 bool     fm_lineTestAABBXZ(const float p1[3],const float p2[3],const float bmin[3],const float bmax[3],float &time);
@@ -280,26 +280,26 @@ double fm_solveY(const double plane[4],double x,double z); // solve for Y given 
 float fm_solveZ(const float plane[4],float x,float y); // solve for Z given this plane equation and the other two components.
 double fm_solveZ(const double plane[4],double x,double y); // solve for Z given this plane equation and the other two components.
 
-bool  fm_computeBestFitPlane(size_t vcount,     // number of input data points
+bool  fm_computeBestFitPlane(unsigned int vcount,     // number of input data points
                      const float *points,     // starting address of points array.
-                     size_t vstride,    // stride between input points.
+                     unsigned int vstride,    // stride between input points.
                      const float *weights,    // *optional point weighting values.
-                     size_t wstride,    // weight stride for each vertex.
+                     unsigned int wstride,    // weight stride for each vertex.
                      float plane[4]);
 
-bool  fm_computeBestFitPlane(size_t vcount,     // number of input data points
+bool  fm_computeBestFitPlane(unsigned int vcount,     // number of input data points
                      const double *points,     // starting address of points array.
-                     size_t vstride,    // stride between input points.
+                     unsigned int vstride,    // stride between input points.
                      const double *weights,    // *optional point weighting values.
-                     size_t wstride,    // weight stride for each vertex.
+                     unsigned int wstride,    // weight stride for each vertex.
                      double plane[4]);
 
 
-float  fm_computeBestFitAABB(size_t vcount,const float *points,size_t pstride,float bmin[3],float bmax[3]); // returns the diagonal distance
-double fm_computeBestFitAABB(size_t vcount,const double *points,size_t pstride,double bmin[3],double bmax[3]); // returns the diagonal distance
+float  fm_computeBestFitAABB(unsigned int vcount,const float *points,unsigned int pstride,float bmin[3],float bmax[3]); // returns the diagonal distance
+double fm_computeBestFitAABB(unsigned int vcount,const double *points,unsigned int pstride,double bmin[3],double bmax[3]); // returns the diagonal distance
 
-float  fm_computeBestFitSphere(size_t vcount,const float *points,size_t pstride,float center[3]);
-double  fm_computeBestFitSphere(size_t vcount,const double *points,size_t pstride,double center[3]);
+float  fm_computeBestFitSphere(unsigned int vcount,const float *points,unsigned int pstride,float center[3]);
+double  fm_computeBestFitSphere(unsigned int vcount,const double *points,unsigned int pstride,double center[3]);
 
 bool fm_lineSphereIntersect(const float center[3],float radius,const float p1[3],const float p2[3],float intersect[3]);
 bool fm_lineSphereIntersect(const double center[3],double radius,const double p1[3],const double p2[3],double intersect[3]);
@@ -363,22 +363,22 @@ enum PlaneTriResult
 
 PlaneTriResult fm_planeTriIntersection(const float plane[4],    // the plane equation in Ax+By+Cz+D format
                                     const float *triangle, // the source triangle.
-                                    size_t tstride,  // stride in bytes of the input and output *vertices*
+                                    unsigned int tstride,  // stride in bytes of the input and output *vertices*
                                     float        epsilon,  // the co-planer epsilon value.
                                     float       *front,    // the triangle in front of the
-                                    size_t &fcount,  // number of vertices in the 'front' triangle
+                                    unsigned int &fcount,  // number of vertices in the 'front' triangle
                                     float       *back,     // the triangle in back of the plane
-                                    size_t &bcount); // the number of vertices in the 'back' triangle.
+                                    unsigned int &bcount); // the number of vertices in the 'back' triangle.
 
 
 PlaneTriResult fm_planeTriIntersection(const double plane[4],    // the plane equation in Ax+By+Cz+D format
                                     const double *triangle, // the source triangle.
-                                    size_t tstride,  // stride in bytes of the input and output *vertices*
+                                    unsigned int tstride,  // stride in bytes of the input and output *vertices*
                                     double        epsilon,  // the co-planer epsilon value.
                                     double       *front,    // the triangle in front of the
-                                    size_t &fcount,  // number of vertices in the 'front' triangle
+                                    unsigned int &fcount,  // number of vertices in the 'front' triangle
                                     double       *back,     // the triangle in back of the plane
-                                    size_t &bcount); // the number of vertices in the 'back' triangle.
+                                    unsigned int &bcount); // the number of vertices in the 'back' triangle.
 
 
 void fm_intersectPointPlane(const float p1[3],const float p2[3],float *split,const float plane[4]);
@@ -388,19 +388,19 @@ PlaneTriResult fm_getSidePlane(const float p[3],const float plane[4],float epsil
 PlaneTriResult fm_getSidePlane(const double p[3],const double plane[4],double epsilon);
 
 
-void fm_computeBestFitOBB(size_t vcount,const float *points,size_t pstride,float *sides,float matrix[16],bool bruteForce=true);
-void fm_computeBestFitOBB(size_t vcount,const double *points,size_t pstride,double *sides,double matrix[16],bool bruteForce=true);
+void fm_computeBestFitOBB(unsigned int vcount,const float *points,unsigned int pstride,float *sides,float matrix[16],bool bruteForce=true);
+void fm_computeBestFitOBB(unsigned int vcount,const double *points,unsigned int pstride,double *sides,double matrix[16],bool bruteForce=true);
 
-void fm_computeBestFitOBB(size_t vcount,const float *points,size_t pstride,float *sides,float pos[3],float quat[4],bool bruteForce=true);
-void fm_computeBestFitOBB(size_t vcount,const double *points,size_t pstride,double *sides,double pos[3],double quat[4],bool bruteForce=true);
+void fm_computeBestFitOBB(unsigned int vcount,const float *points,unsigned int pstride,float *sides,float pos[3],float quat[4],bool bruteForce=true);
+void fm_computeBestFitOBB(unsigned int vcount,const double *points,unsigned int pstride,double *sides,double pos[3],double quat[4],bool bruteForce=true);
 
-void fm_computeBestFitABB(size_t vcount,const float *points,size_t pstride,float *sides,float pos[3]);
-void fm_computeBestFitABB(size_t vcount,const double *points,size_t pstride,double *sides,double pos[3]);
+void fm_computeBestFitABB(unsigned int vcount,const float *points,unsigned int pstride,float *sides,float pos[3]);
+void fm_computeBestFitABB(unsigned int vcount,const double *points,unsigned int pstride,double *sides,double pos[3]);
 
 
 //** Note, if the returned capsule height is less than zero, then you must represent it is a sphere of size radius.
-void fm_computeBestFitCapsule(size_t vcount,const float *points,size_t pstride,float &radius,float &height,float matrix[16],bool bruteForce=true);
-void fm_computeBestFitCapsule(size_t vcount,const double *points,size_t pstride,float &radius,float &height,double matrix[16],bool bruteForce=true);
+void fm_computeBestFitCapsule(unsigned int vcount,const float *points,unsigned int pstride,float &radius,float &height,float matrix[16],bool bruteForce=true);
+void fm_computeBestFitCapsule(unsigned int vcount,const double *points,unsigned int pstride,float &radius,float &height,double matrix[16],bool bruteForce=true);
 
 
 void fm_planeToMatrix(const float plane[4],float matrix[16]); // convert a plane equation to a 4x4 rotation matrix.  Reference vector is 0,1,0
@@ -417,8 +417,8 @@ void  fm_eulerMatrix(float ax,float ay,float az,float matrix[16]); // convert eu
 void  fm_eulerMatrix(double ax,double ay,double az,double matrix[16]); // convert euler (in radians) to a dest 4x4 matrix (translation set to zero)
 
 
-float  fm_computeMeshVolume(const float *vertices,size_t tcount,const unsigned int *indices);
-double fm_computeMeshVolume(const double *vertices,size_t tcount,const unsigned int *indices);
+float  fm_computeMeshVolume(const float *vertices,unsigned int tcount,const unsigned int *indices);
+double fm_computeMeshVolume(const double *vertices,unsigned int tcount,const unsigned int *indices);
 
 
 #define FM_DEFAULT_GRANULARITY 0.001f  // 1 millimeter is the default granularity
@@ -426,13 +426,13 @@ double fm_computeMeshVolume(const double *vertices,size_t tcount,const unsigned 
 class fm_VertexIndex
 {
 public:
-  virtual size_t          getIndex(const float pos[3],bool &newPos) = 0;  // get welded index for this float vector[3]
-  virtual size_t          getIndex(const double pos[3],bool &newPos) = 0;  // get welded index for this double vector[3]
+  virtual unsigned int          getIndex(const float pos[3],bool &newPos) = 0;  // get welded index for this float vector[3]
+  virtual unsigned int          getIndex(const double pos[3],bool &newPos) = 0;  // get welded index for this double vector[3]
   virtual const float *   getVerticesFloat(void) const = 0;
   virtual const double *  getVerticesDouble(void) const = 0;
-  virtual const float *   getVertexFloat(size_t index) const = 0;
-  virtual const double *  getVertexDouble(size_t index) const = 0;
-  virtual size_t          getVcount(void) const = 0;
+  virtual const float *   getVertexFloat(unsigned int index) const = 0;
+  virtual const double *  getVertexDouble(unsigned int index) const = 0;
+  virtual unsigned int          getVcount(void) const = 0;
   virtual bool            isDouble(void) const = 0;
   virtual bool            saveAsObj(const char *fname,unsigned int tcount,unsigned int *indices) = 0;
 };
@@ -452,14 +452,14 @@ public:
     mE1 = mE2 = 0;
   }
 
-  fm_LineSegment(size_t e1,size_t e2)
+  fm_LineSegment(unsigned int e1,unsigned int e2)
   {
     mE1 = e1;
     mE2 = e2;
   }
 
-  size_t mE1;
-  size_t mE2;
+  unsigned int mE1;
+  unsigned int mE2;
 };
 
 // LineSweep *only* supports doublees.  As a geometric operation it needs as much precision as possible.
@@ -468,10 +468,10 @@ class fm_LineSweep
 public:
 
  virtual fm_LineSegment * performLineSweep(const fm_LineSegment *segments,
-                                   size_t icount,
+                                   unsigned int icount,
                                    const double *planeEquation,
                                    fm_VertexIndex *pool,
-                                   size_t &scount) = 0;
+                                   unsigned int &scount) = 0;
 
 
 };
@@ -483,17 +483,17 @@ void           fm_releaseLineSweep(fm_LineSweep *sweep);
 class fm_Triangulate
 {
 public:
-  virtual const double *       triangulate3d(size_t pcount,
+  virtual const double *       triangulate3d(unsigned int pcount,
                                              const double *points,
-                                             size_t vstride,
-                                             size_t &tcount,
+                                             unsigned int vstride,
+                                             unsigned int &tcount,
                                              bool consolidate,
                                              double epsilon) = 0;
 
-  virtual const float  *       triangulate3d(size_t pcount,
+  virtual const float  *       triangulate3d(unsigned int pcount,
                                              const float  *points,
-                                             size_t vstride,
-                                             size_t &tcount,
+                                             unsigned int vstride,
+                                             unsigned int &tcount,
                                              bool consolidate,
                                              float epsilon) = 0;
 };
@@ -502,19 +502,19 @@ fm_Triangulate * fm_createTriangulate(void);
 void             fm_releaseTriangulate(fm_Triangulate *t);
 
 
-const float * fm_getPoint(const float *points,size_t pstride,size_t index);
-const double * fm_getPoint(const double *points,size_t pstride,size_t index);
+const float * fm_getPoint(const float *points,unsigned int pstride,unsigned int index);
+const double * fm_getPoint(const double *points,unsigned int pstride,unsigned int index);
 
 bool   fm_insideTriangle(float Ax, float Ay,float Bx, float By,float Cx, float Cy,float Px, float Py);
 bool   fm_insideTriangle(double Ax, double Ay,double Bx, double By,double Cx, double Cy,double Px, double Py);
-float  fm_areaPolygon2d(size_t pcount,const float *points,size_t pstride);
-double fm_areaPolygon2d(size_t pcount,const double *points,size_t pstride);
+float  fm_areaPolygon2d(unsigned int pcount,const float *points,unsigned int pstride);
+double fm_areaPolygon2d(unsigned int pcount,const double *points,unsigned int pstride);
 
-bool  fm_pointInsidePolygon2d(size_t pcount,const float *points,size_t pstride,const float *point,size_t xindex=0,size_t yindex=1);
-bool  fm_pointInsidePolygon2d(size_t pcount,const double *points,size_t pstride,const double *point,size_t xindex=0,size_t yindex=1);
+bool  fm_pointInsidePolygon2d(unsigned int pcount,const float *points,unsigned int pstride,const float *point,unsigned int xindex=0,unsigned int yindex=1);
+bool  fm_pointInsidePolygon2d(unsigned int pcount,const double *points,unsigned int pstride,const double *point,unsigned int xindex=0,unsigned int yindex=1);
 
-size_t fm_consolidatePolygon(size_t pcount,const float *points,size_t pstride,float *dest,float epsilon=0.999999f); // collapses co-linear edges.
-size_t fm_consolidatePolygon(size_t pcount,const double *points,size_t pstride,double *dest,double epsilon=0.999999); // collapses co-linear edges.
+unsigned int fm_consolidatePolygon(unsigned int pcount,const float *points,unsigned int pstride,float *dest,float epsilon=0.999999f); // collapses co-linear edges.
+unsigned int fm_consolidatePolygon(unsigned int pcount,const double *points,unsigned int pstride,double *dest,double epsilon=0.999999); // collapses co-linear edges.
 
 
 bool fm_computeSplitPlane(unsigned int vcount,const double *vertices,unsigned int tcount,const unsigned int *indices,double *plane);
@@ -541,11 +541,11 @@ void fm_copy3(const double *source,double *dest);
 // re-indexes an indexed triangle mesh but drops unused vertices.  The output_indices can be the same pointer as the input indices.
 // the output_vertices can point to the input vertices if you desire.  The output_vertices buffer should be at least the same size
 // is the input buffer.  The routine returns the new vertex count after re-indexing.
-size_t  fm_copyUniqueVertices(size_t vcount,const float *input_vertices,float *output_vertices,size_t tcount,const size_t *input_indices,size_t *output_indices);
-size_t  fm_copyUniqueVertices(size_t vcount,const double *input_vertices,double *output_vertices,size_t tcount,const size_t *input_indices,size_t *output_indices);
+unsigned int  fm_copyUniqueVertices(unsigned int vcount,const float *input_vertices,float *output_vertices,unsigned int tcount,const unsigned int *input_indices,unsigned int *output_indices);
+unsigned int  fm_copyUniqueVertices(unsigned int vcount,const double *input_vertices,double *output_vertices,unsigned int tcount,const unsigned int *input_indices,unsigned int *output_indices);
 
-bool    fm_isMeshCoplanar(size_t tcount,const size_t *indices,const float *vertices,bool doubleSided); // returns true if this collection of indexed triangles are co-planar!
-bool    fm_isMeshCoplanar(size_t tcount,const size_t *indices,const double *vertices,bool doubleSided); // returns true if this collection of indexed triangles are co-planar!
+bool    fm_isMeshCoplanar(unsigned int tcount,const unsigned int *indices,const float *vertices,bool doubleSided); // returns true if this collection of indexed triangles are co-planar!
+bool    fm_isMeshCoplanar(unsigned int tcount,const unsigned int *indices,const double *vertices,bool doubleSided); // returns true if this collection of indexed triangles are co-planar!
 
 bool    fm_samePlane(const float p1[4],const float p2[4],float normalEpsilon=0.01f,float dEpsilon=0.001f,bool doubleSided=false); // returns true if these two plane equations are identical within an epsilon
 bool    fm_samePlane(const double p1[4],const double p2[4],double normalEpsilon=0.01,double dEpsilon=0.001,bool doubleSided=false);
@@ -556,7 +556,7 @@ void    fm_OBBtoAABB(const float obmin[3],const float obmax[3],const float matri
 class fm_Tesselate
 {
 public:
-  virtual const size_t * tesselate(fm_VertexIndex *vindex,size_t tcount,const size_t *indices,float longEdge,size_t maxDepth,size_t &outcount) = 0;
+  virtual const unsigned int * tesselate(fm_VertexIndex *vindex,unsigned int tcount,const unsigned int *indices,float longEdge,unsigned int maxDepth,unsigned int &outcount) = 0;
 };
 
 fm_Tesselate * fm_createTesselate(void);

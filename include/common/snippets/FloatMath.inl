@@ -258,7 +258,7 @@ void fm_eulerToMatrix(REAL ax,REAL ay,REAL az,REAL *matrix) // convert euler (in
   fm_quatToMatrix(quat,matrix);
 }
 
-void fm_getAABB(size_t vcount,const REAL *points,size_t pstride,REAL *bmin,REAL *bmax)
+void fm_getAABB(unsigned int vcount,const REAL *points,unsigned int pstride,REAL *bmin,REAL *bmax)
 {
 
   const unsigned char *source = (const unsigned char *) points;
@@ -272,7 +272,7 @@ void fm_getAABB(size_t vcount,const REAL *points,size_t pstride,REAL *bmin,REAL 
 	bmax[2] = points[2];
 
 
-  for (size_t i=1; i<vcount; i++)
+  for (unsigned int i=1; i<vcount; i++)
   {
   	source+=pstride;
   	const REAL *p = (const REAL *) source;
@@ -899,9 +899,9 @@ bool  fm_insideAABB(const REAL *pos,const REAL *bmin,const REAL *bmax)
 }
 
 
-size_t fm_clipTestPoint(const REAL *bmin,const REAL *bmax,const REAL *pos)
+unsigned int fm_clipTestPoint(const REAL *bmin,const REAL *bmax,const REAL *pos)
 {
-  size_t ret = 0;
+  unsigned int ret = 0;
 
   if ( pos[0] < bmin[0] )
     ret|=FMCS_XMIN;
@@ -921,9 +921,9 @@ size_t fm_clipTestPoint(const REAL *bmin,const REAL *bmax,const REAL *pos)
   return ret;
 }
 
-size_t fm_clipTestPointXZ(const REAL *bmin,const REAL *bmax,const REAL *pos) // only tests X and Z, not Y
+unsigned int fm_clipTestPointXZ(const REAL *bmin,const REAL *bmax,const REAL *pos) // only tests X and Z, not Y
 {
-  size_t ret = 0;
+  unsigned int ret = 0;
 
   if ( pos[0] < bmin[0] )
     ret|=FMCS_XMIN;
@@ -938,13 +938,13 @@ size_t fm_clipTestPointXZ(const REAL *bmin,const REAL *bmax,const REAL *pos) // 
   return ret;
 }
 
-size_t fm_clipTestAABB(const REAL *bmin,const REAL *bmax,const REAL *p1,const REAL *p2,const REAL *p3,size_t &andCode)
+unsigned int fm_clipTestAABB(const REAL *bmin,const REAL *bmax,const REAL *p1,const REAL *p2,const REAL *p3,unsigned int &andCode)
 {
-  size_t orCode = 0;
+  unsigned int orCode = 0;
 
   andCode = FMCS_XMIN | FMCS_XMAX | FMCS_YMIN | FMCS_YMAX | FMCS_ZMIN | FMCS_ZMAX;
 
-  size_t c = fm_clipTestPoint(bmin,bmax,p1);
+  unsigned int c = fm_clipTestPoint(bmin,bmax,p1);
   orCode|=c;
   andCode&=c;
 
@@ -1512,11 +1512,11 @@ public:
 
 #endif
 
-bool fm_computeBestFitPlane(size_t vcount,
+bool fm_computeBestFitPlane(unsigned int vcount,
                      const REAL *points,
-                     size_t vstride,
+                     unsigned int vstride,
                      const REAL *weights,
-                     size_t wstride,
+                     unsigned int wstride,
                      REAL *plane)
 {
   bool ret = false;
@@ -1529,7 +1529,7 @@ bool fm_computeBestFitPlane(size_t vcount,
     const char *source  = (const char *) points;
     const char *wsource = (const char *) weights;
 
-    for (size_t i=0; i<vcount; i++)
+    for (unsigned int i=0; i<vcount; i++)
     {
 
       const REAL *p = (const REAL *) source;
@@ -1573,7 +1573,7 @@ bool fm_computeBestFitPlane(size_t vcount,
     const char *source  = (const char *) points;
     const char *wsource = (const char *) weights;
 
-    for (size_t i=0; i<vcount; i++)
+    for (unsigned int i=0; i<vcount; i++)
     {
 
       const REAL *p = (const REAL *) source;
@@ -1942,7 +1942,7 @@ public:
 
 #endif
 
-static inline void add(const REAL *p,REAL *dest,size_t tstride,size_t &pcount)
+static inline void add(const REAL *p,REAL *dest,unsigned int tstride,unsigned int &pcount)
 {
   char *d = (char *) dest;
   d = d + pcount*tstride;
@@ -1957,12 +1957,12 @@ static inline void add(const REAL *p,REAL *dest,size_t tstride,size_t &pcount)
 
 PlaneTriResult fm_planeTriIntersection(const REAL *_plane,    // the plane equation in Ax+By+Cz+D format
                                     const REAL *triangle, // the source triangle.
-                                    size_t tstride,  // stride in bytes of the input and output *vertices*
+                                    unsigned int tstride,  // stride in bytes of the input and output *vertices*
                                     REAL        epsilon,  // the co-planar epsilon value.
                                     REAL       *front,    // the triangle in front of the
-                                    size_t &fcount,  // number of vertices in the 'front' triangle
+                                    unsigned int &fcount,  // number of vertices in the 'front' triangle
                                     REAL       *back,     // the triangle in back of the plane
-                                    size_t &bcount) // the number of vertices in the 'back' triangle.
+                                    unsigned int &bcount) // the number of vertices in the 'back' triangle.
 {
 
   fcount = 0;
@@ -2057,14 +2057,14 @@ PlaneTriResult fm_planeTriIntersection(const REAL *_plane,    // the plane equat
 }
 
 // computes the OBB for this set of points relative to this transform matrix.
-void computeOBB(size_t vcount,const REAL *points,size_t pstride,REAL *sides,REAL *matrix)
+void computeOBB(unsigned int vcount,const REAL *points,unsigned int pstride,REAL *sides,REAL *matrix)
 {
   const char *src = (const char *) points;
 
   REAL bmin[3] = { 1e9, 1e9, 1e9 };
   REAL bmax[3] = { -1e9, -1e9, -1e9 };
 
-  for (size_t i=0; i<vcount; i++)
+  for (unsigned int i=0; i<vcount; i++)
   {
     const REAL *p = (const REAL *) src;
     REAL t[3];
@@ -2102,7 +2102,7 @@ void computeOBB(size_t vcount,const REAL *points,size_t pstride,REAL *sides,REAL
 
 }
 
-void fm_computeBestFitOBB(size_t vcount,const REAL *points,size_t pstride,REAL *sides,REAL *matrix,bool bruteForce)
+void fm_computeBestFitOBB(unsigned int vcount,const REAL *points,unsigned int pstride,REAL *sides,REAL *matrix,bool bruteForce)
 {
   REAL plane[4];
   fm_computeBestFitPlane(vcount,points,pstride,0,0,plane);
@@ -2138,7 +2138,7 @@ void fm_computeBestFitOBB(size_t vcount,const REAL *points,size_t pstride,REAL *
   }
 }
 
-void fm_computeBestFitOBB(size_t vcount,const REAL *points,size_t pstride,REAL *sides,REAL *pos,REAL *quat,bool bruteForce)
+void fm_computeBestFitOBB(unsigned int vcount,const REAL *points,unsigned int pstride,REAL *sides,REAL *pos,REAL *quat,bool bruteForce)
 {
   REAL matrix[16];
   fm_computeBestFitOBB(vcount,points,pstride,sides,matrix,bruteForce);
@@ -2146,7 +2146,7 @@ void fm_computeBestFitOBB(size_t vcount,const REAL *points,size_t pstride,REAL *
   fm_matrixToQuat(matrix,quat);
 }
 
-void fm_computeBestFitABB(size_t vcount,const REAL *points,size_t pstride,REAL *sides,REAL *pos)
+void fm_computeBestFitABB(unsigned int vcount,const REAL *points,unsigned int pstride,REAL *sides,REAL *pos)
 {
 	REAL bmin[3];
 	REAL bmax[3];
@@ -2160,7 +2160,7 @@ void fm_computeBestFitABB(size_t vcount,const REAL *points,size_t pstride,REAL *
   bmax[2] = points[2];
 
 	const char *cp = (const char *) points;
-	for (size_t i=0; i<vcount; i++)
+	for (unsigned int i=0; i<vcount; i++)
 	{
 		const REAL *p = (const REAL *) cp;
 
@@ -2260,8 +2260,8 @@ public:
 class KdTreeInterface
 {
 public:
-  virtual const double * getPositionDouble(size_t index) const = 0;
-  virtual const float  * getPositionFloat(size_t index) const = 0;
+  virtual const double * getPositionDouble(unsigned int index) const = 0;
+  virtual const float  * getPositionFloat(unsigned int index) const = 0;
 };
 
 class KdTreeNode
@@ -2274,7 +2274,7 @@ public:
     mRight = 0;
   }
 
-  KdTreeNode(size_t index)
+  KdTreeNode(unsigned int index)
   {
     mIndex = index;
     mLeft = 0;
@@ -2404,9 +2404,9 @@ public:
   }
 
 
-  size_t getIndex(void) const { return mIndex; };
+  unsigned int getIndex(void) const { return mIndex; };
 
-  void search(Axes axis,const double *pos,double radius,size_t &count,size_t maxObjects,KdTreeFindNode *found,const KdTreeInterface *iface)
+  void search(Axes axis,const double *pos,double radius,unsigned int &count,unsigned int maxObjects,KdTreeFindNode *found,const KdTreeInterface *iface)
   {
 
     const double *position = iface->getPositionDouble(mIndex);
@@ -2503,14 +2503,14 @@ public:
           {
             bool inserted = false;
 
-            for (size_t i=0; i<count; i++)
+            for (unsigned int i=0; i<count; i++)
             {
               if ( m < found[i].mDistance ) // if this one is closer than a pre-existing one...
               {
                 // insertion sort...
-                size_t scan = count;
+                unsigned int scan = count;
                 if ( scan >= maxObjects ) scan=maxObjects-1;
-                for (size_t j=scan; j>i; j--)
+                for (unsigned int j=scan; j>i; j--)
                 {
                   found[j] = found[j-1];
                 }
@@ -2545,7 +2545,7 @@ public:
 
   }
 
-  void search(Axes axis,const float *pos,float radius,size_t &count,size_t maxObjects,KdTreeFindNode *found,const KdTreeInterface *iface)
+  void search(Axes axis,const float *pos,float radius,unsigned int &count,unsigned int maxObjects,KdTreeFindNode *found,const KdTreeInterface *iface)
   {
 
     const float *position = iface->getPositionFloat(mIndex);
@@ -2642,14 +2642,14 @@ public:
           {
             bool inserted = false;
 
-            for (size_t i=0; i<count; i++)
+            for (unsigned int i=0; i<count; i++)
             {
               if ( m < found[i].mDistance ) // if this one is closer than a pre-existing one...
               {
                 // insertion sort...
-                size_t scan = count;
+                unsigned int scan = count;
                 if ( scan >= maxObjects ) scan=maxObjects-1;
-                for (size_t j=scan; j>i; j--)
+                for (unsigned int j=scan; j>i; j--)
                 {
                   found[j] = found[j-1];
                 }
@@ -2692,7 +2692,7 @@ private:
 	KdTreeNode *getLeft(void)         { return mLeft; }
 	KdTreeNode *getRight(void)        { return mRight; }
 
-  size_t          mIndex;
+  unsigned int          mIndex;
   KdTreeNode     *mLeft;
   KdTreeNode     *mRight;
 };
@@ -2724,7 +2724,7 @@ public:
   }
 
   KdTreeNodeBundle  *mNext;
-  size_t             mIndex;
+  unsigned int             mIndex;
   KdTreeNode         mNodes[MAX_BUNDLE_SIZE];
 };
 
@@ -2748,34 +2748,34 @@ public:
     reset();
   }
 
-  const double * getPositionDouble(size_t index) const
+  const double * getPositionDouble(unsigned int index) const
   {
     assert( mUseDouble );
     assert ( index < mVcount );
     return  &mVerticesDouble[index*3];
   }
 
-  const float * getPositionFloat(size_t index) const
+  const float * getPositionFloat(unsigned int index) const
   {
     assert( !mUseDouble );
     assert ( index < mVcount );
     return  &mVerticesFloat[index*3];
   }
 
-  size_t search(const double *pos,double radius,size_t maxObjects,KdTreeFindNode *found) const
+  unsigned int search(const double *pos,double radius,unsigned int maxObjects,KdTreeFindNode *found) const
   {
     assert( mUseDouble );
     if ( !mRoot )	return 0;
-    size_t count = 0;
+    unsigned int count = 0;
     mRoot->search(X_AXIS,pos,radius,count,maxObjects,found,this);
     return count;
   }
 
-  size_t search(const float *pos,float radius,size_t maxObjects,KdTreeFindNode *found) const
+  unsigned int search(const float *pos,float radius,unsigned int maxObjects,KdTreeFindNode *found) const
   {
     assert( !mUseDouble );
     if ( !mRoot )	return 0;
-    size_t count = 0;
+    unsigned int count = 0;
     mRoot->search(X_AXIS,pos,radius,count,maxObjects,found,this);
     return count;
   }
@@ -2796,10 +2796,10 @@ public:
     mVcount = 0;
   }
 
-  size_t add(double x,double y,double z)
+  unsigned int add(double x,double y,double z)
   {
     assert(mUseDouble);
-    size_t ret = mVcount;
+    unsigned int ret = mVcount;
     mVerticesDouble.push_back(x);
     mVerticesDouble.push_back(y);
     mVerticesDouble.push_back(z);
@@ -2816,10 +2816,10 @@ public:
     return ret;
   }
 
-  size_t add(float x,float y,float z)
+  unsigned int add(float x,float y,float z)
   {
     assert(!mUseDouble);
-    size_t ret = mVcount;
+    unsigned int ret = mVcount;
     mVerticesFloat.push_back(x);
     mVerticesFloat.push_back(y);
     mVerticesFloat.push_back(z);
@@ -2836,7 +2836,7 @@ public:
     return ret;
   }
 
-  KdTreeNode * getNewNode(size_t index)
+  KdTreeNode * getNewNode(unsigned int index)
   {
     if ( mBundle == 0 )
     {
@@ -2853,14 +2853,14 @@ public:
     return node;
   }
 
-  size_t getNearest(const double *pos,double radius,bool &_found) const // returns the nearest possible neighbor's index.
+  unsigned int getNearest(const double *pos,double radius,bool &_found) const // returns the nearest possible neighbor's index.
   {
     assert( mUseDouble );
-    size_t ret = 0;
+    unsigned int ret = 0;
 
     _found = false;
     KdTreeFindNode found[1];
-    size_t count = search(pos,radius,1,found);
+    unsigned int count = search(pos,radius,1,found);
     if ( count )
     {
       KdTreeNode *node = found[0].mNode;
@@ -2870,14 +2870,14 @@ public:
     return ret;
   }
 
-  size_t getNearest(const float *pos,float radius,bool &_found) const // returns the nearest possible neighbor's index.
+  unsigned int getNearest(const float *pos,float radius,bool &_found) const // returns the nearest possible neighbor's index.
   {
     assert( !mUseDouble );
-    size_t ret = 0;
+    unsigned int ret = 0;
 
     _found = false;
     KdTreeFindNode found[1];
-    size_t count = search(pos,radius,1,found);
+    unsigned int count = search(pos,radius,1,found);
     if ( count )
     {
       KdTreeNode *node = found[0].mNode;
@@ -2909,7 +2909,7 @@ public:
     return ret;
   }
 
-  size_t getVcount(void) const { return mVcount; };
+  unsigned int getVcount(void) const { return mVcount; };
 
   void setUseDouble(bool useDouble)
   {
@@ -2920,7 +2920,7 @@ private:
   bool                    mUseDouble;
   KdTreeNode             *mRoot;
   KdTreeNodeBundle       *mBundle;
-  size_t                  mVcount;
+  unsigned int                  mVcount;
   DoubleVector            mVerticesDouble;
   FloatVector             mVerticesFloat;
 };
@@ -2962,9 +2962,9 @@ public:
     return p;
   }
 
-  size_t    getIndex(const float *_p,bool &newPos)  // get index for a vector float
+  unsigned int    getIndex(const float *_p,bool &newPos)  // get index for a vector float
   {
-    size_t ret;
+    unsigned int ret;
 
     if ( mUseDouble )
     {
@@ -3004,9 +3004,9 @@ public:
     return ret;
   }
 
-  size_t    getIndex(const double *_p,bool &newPos)  // get index for a vector double
+  unsigned int    getIndex(const double *_p,bool &newPos)  // get index for a vector double
   {
-    size_t ret;
+    unsigned int ret;
 
     if ( !mUseDouble )
     {
@@ -3068,12 +3068,12 @@ public:
     return ret;
   }
 
-  const float *   getVertexFloat(size_t index) const
+  const float *   getVertexFloat(unsigned int index) const
   {
     const float * ret  = 0;
     assert( !mUseDouble );
 #ifdef _DEBUG
-    size_t vcount = mKdTree.getVcount();
+    unsigned int vcount = mKdTree.getVcount();
     assert( index < vcount );
 #endif
     ret =  mKdTree.getVerticesFloat();
@@ -3081,12 +3081,12 @@ public:
     return ret;
   }
 
-  const double *   getVertexDouble(size_t index) const
+  const double *   getVertexDouble(unsigned int index) const
   {
     const double * ret = 0;
     assert( mUseDouble );
 #ifdef _DEBUG
-    size_t vcount = mKdTree.getVcount();
+    unsigned int vcount = mKdTree.getVcount();
     assert( index < vcount );
 #endif
     ret =  mKdTree.getVerticesDouble();
@@ -3095,7 +3095,7 @@ public:
     return ret;
   }
 
-  size_t    getVcount(void) const
+  unsigned int    getVcount(void) const
   {
     return mKdTree.getVcount();
   }
@@ -3116,7 +3116,7 @@ public:
     {
       ret = true;
 
-      size_t vcount    = getVcount();
+      unsigned int vcount    = getVcount();
       if ( mUseDouble )
       {
         const double *v  = getVerticesDouble();
@@ -3339,7 +3339,7 @@ public:
     mIndex = vpool->getIndex(pos,newPos);
   }
 
-  size_t    mIndex;
+  unsigned int    mIndex;
   double    mTime;
 };
 
@@ -3350,7 +3350,7 @@ class MyLineSegment : public fm_LineSegment
 {
 public:
 
-  void init(const fm_LineSegment &s,fm_VertexIndex *vpool,size_t x)
+  void init(const fm_LineSegment &s,fm_VertexIndex *vpool,unsigned int x)
   {
     fm_LineSegment *dest = static_cast< fm_LineSegment *>(this);
     *dest = s;
@@ -3392,9 +3392,9 @@ public:
   }
 
   // we already know that the x-extent overlaps or we wouldn't be in this routine..
-  void intersect(MyLineSegment *segment,size_t x,size_t y,size_t /* z */,fm_VertexIndex *vpool)
+  void intersect(MyLineSegment *segment,unsigned int x,unsigned int y,unsigned int /* z */,fm_VertexIndex *vpool)
   {
-    size_t count = 0;
+    unsigned int count = 0;
 
     // if the two segments share any start/end points then they cannot intersect at all!
 
@@ -3501,7 +3501,7 @@ public:
     }
     else
     {
-      size_t prev = mE1;
+      unsigned int prev = mE1;
       IntersectionList::iterator i;
       for (i=mIntersections.begin(); i!=mIntersections.end(); ++i)
       {
@@ -3523,9 +3523,9 @@ public:
     }
   }
 
-  void swap(size_t &a,size_t &b)
+  void swap(unsigned int &a,unsigned int &b)
   {
-    size_t temp = a;
+    unsigned int temp = a;
     a = b;
     b = temp;
   }
@@ -3543,7 +3543,7 @@ typedef USER_STL::vector< MyLineSegment > MyLineSegmentVector;
 class MyLineSweep : public fm_LineSweep, public fm_quickSort
 {
 public:
-  fm_LineSegment * performLineSweep(const fm_LineSegment *segments,size_t icount,const double *planeEquation,fm_VertexIndex *pool,size_t &scount)
+  fm_LineSegment * performLineSweep(const fm_LineSegment *segments,unsigned int icount,const double *planeEquation,fm_VertexIndex *pool,unsigned int &scount)
   {
     fm_LineSegment *ret = 0;
 
@@ -3574,7 +3574,7 @@ public:
     MyLineSegment *mls   = MEMALLOC_NEW_ARRAY(MyLineSegment,icount)[icount];
     MyLineSegment **mptr = MEMALLOC_NEW_ARRAY(MyLineSegment *,icount)[icount];
 
-    for (size_t i=0; i<icount; i++)
+    for (unsigned int i=0; i<icount; i++)
     {
       mls[i].init(segments[i],pool,mX);
       mptr[i] = &mls[i];
@@ -3582,11 +3582,11 @@ public:
 
     qsort((void **)mptr,(int)icount);
 
-    for (size_t i=0; i<icount; i++)
+    for (unsigned int i=0; i<icount; i++)
     {
       MyLineSegment *segment = mptr[i];
       double esegment = segment->mTo[mX];
-      for (size_t j=i+1; j<icount; j++)
+      for (unsigned int j=i+1; j<icount; j++)
       {
         MyLineSegment *test = mptr[j];
         if ( test->mFrom[mX] >= esegment )
@@ -3600,7 +3600,7 @@ public:
       }
     }
 
-    for (size_t i=0; i<icount; i++)
+    for (unsigned int i=0; i<icount; i++)
     {
       MyLineSegment *segment = mptr[i];
       segment->getResults(mResults);
@@ -3612,7 +3612,7 @@ public:
 
     if ( !mResults.empty() )
     {
-      scount = mResults.size();
+      scount = (unsigned int)mResults.size();
       ret = &mResults[0];
     }
 
@@ -3641,9 +3641,9 @@ public:
     return ret;
   }
 
-  size_t              mX;  // index for the x-axis
-  size_t              mY;  // index for the y-axis
-  size_t              mZ;
+  unsigned int              mX;  // index for the x-axis
+  unsigned int              mY;  // index for the y-axis
+  unsigned int              mZ;
   fm_VertexIndex        *mfm_VertexIndex;
   LineSegmentVector  mResults;
 };
@@ -3668,7 +3668,7 @@ void        fm_releaseLineSweep(fm_LineSweep *sweep)
 
 
 
-REAL fm_computeBestFitAABB(size_t vcount,const REAL *points,size_t pstride,REAL *bmin,REAL *bmax) // returns the diagonal distance
+REAL fm_computeBestFitAABB(unsigned int vcount,const REAL *points,unsigned int pstride,REAL *bmin,REAL *bmax) // returns the diagonal distance
 {
 
   const unsigned char *source = (const unsigned char *) points;
@@ -3682,7 +3682,7 @@ REAL fm_computeBestFitAABB(size_t vcount,const REAL *points,size_t pstride,REAL 
 	bmax[2] = points[2];
 
 
-  for (size_t i=1; i<vcount; i++)
+  for (unsigned int i=1; i<vcount; i++)
   {
   	source+=pstride;
   	const REAL *p = (const REAL *) source;
@@ -3806,7 +3806,7 @@ inline REAL det(const REAL *p1,const REAL *p2,const REAL *p3)
 }
 
 
-REAL  fm_computeMeshVolume(const REAL *vertices,size_t tcount,const unsigned int *indices)
+REAL  fm_computeMeshVolume(const REAL *vertices,unsigned int tcount,const unsigned int *indices)
 {
 	REAL volume = 0;
 
@@ -3825,7 +3825,7 @@ REAL  fm_computeMeshVolume(const REAL *vertices,size_t tcount,const unsigned int
 }
 
 
-const REAL * fm_getPoint(const REAL *points,size_t pstride,size_t index)
+const REAL * fm_getPoint(const REAL *points,unsigned int pstride,unsigned int index)
 {
   const unsigned char *scan = (const unsigned char *)points;
   scan+=(index*pstride);
@@ -3857,7 +3857,7 @@ bool fm_insideTriangle(REAL Ax, REAL Ay,
 }
 
 
-REAL fm_areaPolygon2d(size_t pcount,const REAL *points,size_t pstride)
+REAL fm_areaPolygon2d(unsigned int pcount,const REAL *points,unsigned int pstride)
 {
   int n = (int)pcount;
 
@@ -3872,15 +3872,15 @@ REAL fm_areaPolygon2d(size_t pcount,const REAL *points,size_t pstride)
 }
 
 
-bool  fm_pointInsidePolygon2d(size_t pcount,const REAL *points,size_t pstride,const REAL *point,size_t xindex,size_t yindex)
+bool  fm_pointInsidePolygon2d(unsigned int pcount,const REAL *points,unsigned int pstride,const REAL *point,unsigned int xindex,unsigned int yindex)
 {
-  size_t j = pcount-1;
+  unsigned int j = pcount-1;
   int oddNodes = 0;
 
   REAL x = point[xindex];
   REAL y = point[yindex];
 
-  for (size_t i=0; i<pcount; i++)
+  for (unsigned int i=0; i<pcount; i++)
   {
     const REAL *p1 = fm_getPoint(points,pstride,i);
     const REAL *p2 = fm_getPoint(points,pstride,j);
@@ -3905,9 +3905,9 @@ bool  fm_pointInsidePolygon2d(size_t pcount,const REAL *points,size_t pstride,co
 }
 
 
-size_t fm_consolidatePolygon(size_t pcount,const REAL *points,size_t pstride,REAL *_dest,REAL epsilon) // collapses co-linear edges.
+unsigned int fm_consolidatePolygon(unsigned int pcount,const REAL *points,unsigned int pstride,REAL *_dest,REAL epsilon) // collapses co-linear edges.
 {
-  size_t ret = 0;
+  unsigned int ret = 0;
 
 
   if ( pcount >= 3 )
@@ -3917,7 +3917,7 @@ size_t fm_consolidatePolygon(size_t pcount,const REAL *points,size_t pstride,REA
     const REAL *next    = fm_getPoint(points,pstride,1);
     REAL *dest = _dest;
 
-    for (size_t i=0; i<pcount; i++)
+    for (unsigned int i=0; i<pcount; i++)
     {
 
       next = (i+1)==pcount ? points : next;
@@ -4242,22 +4242,22 @@ void fm_copy3(const REAL *source,REAL *dest)
 }
 
 
-size_t  fm_copyUniqueVertices(size_t vcount,const REAL *input_vertices,REAL *output_vertices,size_t tcount,const size_t *input_indices,size_t *output_indices)
+unsigned int  fm_copyUniqueVertices(unsigned int vcount,const REAL *input_vertices,REAL *output_vertices,unsigned int tcount,const unsigned int *input_indices,unsigned int *output_indices)
 {
-  size_t ret = 0;
+  unsigned int ret = 0;
 
   REAL *vertices = MEMALLOC_NEW_ARRAY(REAL,vcount*3)[vcount*3];
   memcpy(vertices,input_vertices,sizeof(REAL)*vcount*3);
   REAL *dest = output_vertices;
 
-  size_t *reindex = MEMALLOC_NEW_ARRAY(size_t,vcount)[vcount];
-  memset(reindex,0xFF,sizeof(size_t)*vcount);
+  unsigned int *reindex = MEMALLOC_NEW_ARRAY(unsigned int,vcount)[vcount];
+  memset(reindex,0xFF,sizeof(unsigned int)*vcount);
 
-  size_t icount = tcount*3;
+  unsigned int icount = tcount*3;
 
-  for (size_t i=0; i<icount; i++)
+  for (unsigned int i=0; i<icount; i++)
   {
-    size_t index = *input_indices++;
+    unsigned int index = *input_indices++;
 
     assert( index < vcount );
 
@@ -4282,22 +4282,22 @@ size_t  fm_copyUniqueVertices(size_t vcount,const REAL *input_vertices,REAL *out
   return ret;
 }
 
-bool    fm_isMeshCoplanar(size_t tcount,const size_t *indices,const REAL *vertices,bool doubleSided) // returns true if this collection of indexed triangles are co-planar!
+bool    fm_isMeshCoplanar(unsigned int tcount,const unsigned int *indices,const REAL *vertices,bool doubleSided) // returns true if this collection of indexed triangles are co-planar!
 {
   bool ret = true;
 
   if ( tcount > 0 )
   {
-    size_t i1 = indices[0];
-    size_t i2 = indices[1];
-    size_t i3 = indices[2];
+    unsigned int i1 = indices[0];
+    unsigned int i2 = indices[1];
+    unsigned int i3 = indices[2];
     const REAL *p1 = &vertices[i1*3];
     const REAL *p2 = &vertices[i2*3];
     const REAL *p3 = &vertices[i3*3];
     REAL plane[4];
     plane[3] = fm_computePlane(p1,p2,p3,plane);
-    const size_t *scan = &indices[3];
-    for (size_t i=1; i<tcount; i++)
+    const unsigned int *scan = &indices[3];
+    for (unsigned int i=1; i<tcount; i++)
     {
       i1 = *scan++;
       i2 = *scan++;
@@ -4354,15 +4354,15 @@ void  fm_initMinMax(REAL bmin[3],REAL bmax[3])
 
 #define TESSELATE_H
 
-typedef USER_STL::vector< size_t > size_tVector;
+typedef USER_STL::vector< unsigned int > UintVector;
 
 class Myfm_Tesselate : public fm_Tesselate
 {
 public:
 
-  const size_t * tesselate(fm_VertexIndex *vindex,size_t tcount,const size_t *indices,float longEdge,size_t maxDepth,size_t &outcount)
+  const unsigned int * tesselate(fm_VertexIndex *vindex,unsigned int tcount,const unsigned int *indices,float longEdge,unsigned int maxDepth,unsigned int &outcount)
   {
-    const size_t *ret = 0;
+    const unsigned int *ret = 0;
 
     mMaxDepth = maxDepth;
     mLongEdge  = longEdge*longEdge;
@@ -4371,15 +4371,15 @@ public:
 
     if ( mVertices->isDouble() )
     {
-      size_t vcount = mVertices->getVcount();
+      unsigned int vcount = mVertices->getVcount();
       double *vertices = MEMALLOC_NEW_ARRAY(double,vcount*3)[vcount*3];
       memcpy(vertices,mVertices->getVerticesDouble(),sizeof(double)*vcount*3);
 
-      for (size_t i=0; i<tcount; i++)
+      for (unsigned int i=0; i<tcount; i++)
       {
-        size_t i1 = *indices++;
-        size_t i2 = *indices++;
-        size_t i3 = *indices++;
+        unsigned int i1 = *indices++;
+        unsigned int i2 = *indices++;
+        unsigned int i3 = *indices++;
 
         const double *p1 = &vertices[i1*3];
         const double *p2 = &vertices[i2*3];
@@ -4392,16 +4392,16 @@ public:
     }
     else
     {
-      size_t vcount = mVertices->getVcount();
+      unsigned int vcount = mVertices->getVcount();
       float *vertices = MEMALLOC_NEW_ARRAY(float,vcount*3)[vcount*3];
       memcpy(vertices,mVertices->getVerticesFloat(),sizeof(float)*vcount*3);
 
 
-      for (size_t i=0; i<tcount; i++)
+      for (unsigned int i=0; i<tcount; i++)
       {
-        size_t i1 = *indices++;
-        size_t i2 = *indices++;
-        size_t i3 = *indices++;
+        unsigned int i1 = *indices++;
+        unsigned int i2 = *indices++;
+        unsigned int i3 = *indices++;
 
         const float *p1 = &vertices[i1*3];
         const float *p2 = &vertices[i2*3];
@@ -4413,14 +4413,14 @@ public:
       delete []vertices;
     }
 
-    outcount = mIndices.size()/3;
+    outcount = (unsigned int)(mIndices.size()/3);
     ret = &mIndices[0];
 
 
     return ret;
   }
 
-  void tesselate(const float *p1,const float *p2,const float *p3,size_t recurse)
+  void tesselate(const float *p1,const float *p2,const float *p3,unsigned int recurse)
   {
   	bool split = false;
   	float l1,l2,l3;
@@ -4440,7 +4440,7 @@ public:
 
     if ( split )
   	{
-  		size_t edge;
+  		unsigned int edge;
 
   		if ( l1 >= l2 && l1 >= l3 )
   			edge = 0;
@@ -4480,9 +4480,9 @@ public:
   	{
       bool newp;
 
-      size_t i1 = mVertices->getIndex(p1,newp);
-      size_t i2 = mVertices->getIndex(p2,newp);
-      size_t i3 = mVertices->getIndex(p3,newp);
+      unsigned int i1 = mVertices->getIndex(p1,newp);
+      unsigned int i2 = mVertices->getIndex(p2,newp);
+      unsigned int i3 = mVertices->getIndex(p3,newp);
 
       mIndices.push_back(i1);
       mIndices.push_back(i2);
@@ -4491,7 +4491,7 @@ public:
 
   }
 
-  void tesselate(const double *p1,const double *p2,const double *p3,size_t recurse)
+  void tesselate(const double *p1,const double *p2,const double *p3,unsigned int recurse)
   {
   	bool split = false;
   	double l1,l2,l3;
@@ -4511,7 +4511,7 @@ public:
 
     if ( split )
   	{
-  		size_t edge;
+  		unsigned int edge;
 
   		if ( l1 >= l2 && l1 >= l3 )
   			edge = 0;
@@ -4551,9 +4551,9 @@ public:
   	{
       bool newp;
 
-      size_t i1 = mVertices->getIndex(p1,newp);
-      size_t i2 = mVertices->getIndex(p2,newp);
-      size_t i3 = mVertices->getIndex(p3,newp);
+      unsigned int i1 = mVertices->getIndex(p1,newp);
+      unsigned int i2 = mVertices->getIndex(p2,newp);
+      unsigned int i3 = mVertices->getIndex(p3,newp);
 
       mIndices.push_back(i1);
       mIndices.push_back(i2);
@@ -4566,8 +4566,8 @@ private:
   float           mLongEdge;
   double          mLongEdgeD;
   fm_VertexIndex *mVertices;
-  size_tVector    mIndices;
-  size_t          mMaxDepth;
+  UintVector    mIndices;
+  unsigned int          mMaxDepth;
 };
 
 fm_Tesselate * fm_createTesselate(void)
@@ -4801,7 +4801,7 @@ static inline void Copy(REAL *dest,const REAL *source)
 }
 
 
-REAL  fm_computeBestFitSphere(size_t vcount,const REAL *points,size_t pstride,REAL *center)
+REAL  fm_computeBestFitSphere(unsigned int vcount,const REAL *points,unsigned int pstride,REAL *center)
 {
   REAL radius;
   REAL radius2;
@@ -4826,7 +4826,7 @@ REAL  fm_computeBestFitSphere(size_t vcount,const REAL *points,size_t pstride,RE
   const char *scan = (const char *)points;
 
 
-  for (size_t i=0; i<vcount; i++)
+  for (unsigned int i=0; i<vcount; i++)
 	{
 		const REAL *caller_p = (const REAL *)scan;
 
@@ -4900,7 +4900,7 @@ REAL  fm_computeBestFitSphere(size_t vcount,const REAL *points,size_t pstride,RE
   /* SECOND PASS: increment current sphere */
   {
     const char *scan = (const char *)points;
-	  for (size_t i=0; i<vcount; i++)
+	  for (unsigned int i=0; i<vcount; i++)
 		{
 			const REAL *caller_p = (const REAL *)scan;
 
@@ -4937,7 +4937,7 @@ REAL  fm_computeBestFitSphere(size_t vcount,const REAL *points,size_t pstride,RE
 }
 
 
-void fm_computeBestFitCapsule(size_t vcount,const REAL *points,size_t pstride,REAL &radius,REAL &height,REAL matrix[16],bool bruteForce)
+void fm_computeBestFitCapsule(unsigned int vcount,const REAL *points,unsigned int pstride,REAL &radius,REAL &height,REAL matrix[16],bool bruteForce)
 {
   REAL sides[3];
   REAL omatrix[16];
@@ -4964,7 +4964,7 @@ void fm_computeBestFitCapsule(size_t vcount,const REAL *points,size_t pstride,RE
         fm_matrixMultiply(localTransform,omatrix,matrix);
 
         const unsigned char *scan = (const unsigned char *)points;
-        for (size_t i=0; i<vcount; i++)
+        for (unsigned int i=0; i<vcount; i++)
         {
           const REAL *p = (const REAL *)scan;
           REAL t[3];
@@ -4990,7 +4990,7 @@ void fm_computeBestFitCapsule(size_t vcount,const REAL *points,size_t pstride,RE
         fm_matrixMultiply(localTransform,omatrix,matrix);
 
         const unsigned char *scan = (const unsigned char *)points;
-        for (size_t i=0; i<vcount; i++)
+        for (unsigned int i=0; i<vcount; i++)
         {
           const REAL *p = (const REAL *)scan;
           REAL t[3];
@@ -5016,7 +5016,7 @@ void fm_computeBestFitCapsule(size_t vcount,const REAL *points,size_t pstride,RE
         fm_matrixMultiply(localTransform,omatrix,matrix);
 
         const unsigned char *scan = (const unsigned char *)points;
-        for (size_t i=0; i<vcount; i++)
+        for (unsigned int i=0; i<vcount; i++)
         {
           const REAL *p = (const REAL *)scan;
           REAL t[3];
@@ -5169,7 +5169,7 @@ public:
               }
           }
 
-          unsigned int pcount = mInputPoints.size();
+          unsigned int pcount = (unsigned int)mInputPoints.size();
           const double *points = &mInputPoints[0].x;
           for (unsigned int i=0; i<pcount; i++)
           {
@@ -5180,7 +5180,7 @@ public:
 
           mIndices.clear();
           triangulate(mIndices);
-          tcount = mIndices.size()/3;
+          tcount = (unsigned int)mIndices.size()/3;
           if ( tcount )
           {
               ret = &mIndices[0];
@@ -5235,7 +5235,7 @@ void CTriangulator::triangulate(TU32Vector &indices)
 ///     Processes the triangulation
 void CTriangulator::_process(TU32Vector &indices)
 {
-    const int n = mPoints.size();
+    const int n = (const int)mPoints.size();
     if (n < 3)
         return;
     int *V = new int[n];
@@ -5303,7 +5303,7 @@ void CTriangulator::_process(TU32Vector &indices)
 ///     Returns the area of the contour
 double CTriangulator::_area()
 {
-    int n = mPoints.size();
+    int n = (unsigned int)mPoints.size();
     double A = 0.0f;
     for (int p = n - 1, q = 0; q < n; p = q++)
     {
@@ -5378,10 +5378,10 @@ public:
     mPointsDouble = 0;
   }
 
-  virtual const double *       triangulate3d(size_t pcount,
+  virtual const double *       triangulate3d(unsigned int pcount,
                                              const double *_points,
-                                             size_t vstride,
-                                             size_t &tcount,
+                                             unsigned int vstride,
+                                             unsigned int &tcount,
                                              bool consolidate,
                                              double epsilon)
   {
@@ -5395,7 +5395,7 @@ public:
     else
     {
       double *dest = points;
-      for (size_t i=0; i<pcount; i++)
+      for (unsigned int i=0; i<pcount; i++)
       {
         const double *src = fm_getPoint(_points,vstride,i);
         dest[0] = src[0];
@@ -5409,7 +5409,7 @@ public:
     if ( pcount >= 3 )
     {
       CTriangulator ct;
-      for (size_t i=0; i<pcount; i++)
+      for (unsigned int i=0; i<pcount; i++)
       {
         const double *src = fm_getPoint(points,vstride,i);
         ct.addPoint( src[0], src[1], src[2] );
@@ -5421,7 +5421,7 @@ public:
         tcount = _tcount;
         mPointsDouble = new double[tcount*3*3];
         double *dest = mPointsDouble;
-        for (size_t i=0; i<tcount; i++)
+        for (unsigned int i=0; i<tcount; i++)
         {
           unsigned int i1 = indices[i*3+0];
           unsigned int i2 = indices[i*3+1];
@@ -5450,10 +5450,10 @@ public:
     return mPointsDouble;
   }
 
-  virtual const float  *       triangulate3d(size_t pcount,
+  virtual const float  *       triangulate3d(unsigned int pcount,
                                              const float  *points,
-                                             size_t vstride,
-                                             size_t &tcount,
+                                             unsigned int vstride,
+                                             unsigned int &tcount,
                                              bool consolidate,
                                              float epsilon)
   {
@@ -5461,7 +5461,7 @@ public:
 
     double *temp = new double[pcount*3];
     double *dest = temp;
-    for (size_t i=0; i<pcount; i++)
+    for (unsigned int i=0; i<pcount; i++)
     {
       const float *p = fm_getPoint(points,vstride,i);
       dest[0] = p[0];
@@ -5472,10 +5472,10 @@ public:
     const double *results = triangulate3d(pcount,temp,sizeof(double)*3,tcount,consolidate,epsilon);
     if ( results )
     {
-      size_t fcount = tcount*3*3;
+      unsigned int fcount = tcount*3*3;
       mPointsFloat = new float[tcount*3*3];
       float *dest = mPointsFloat;
-      for (size_t i=0; i<fcount; i++)
+      for (unsigned int i=0; i<fcount; i++)
       {
         dest[i] = (float) results[i];
       }

@@ -788,8 +788,8 @@ public:
              COPYDATASTRUCT copydata;
 
              copydata.dwData = 0;
-             copydata.lpData = (PVOID)mem;
-             copydata.cbData = len;
+             copydata.lpData = (PVOID)omem;
+             copydata.cbData = olen;
 
              ::SendMessage(targetwindow, WM_COPYDATA, (WPARAM)0, (LPARAM)&copydata);
 
@@ -865,7 +865,7 @@ static INT_PTR CALLBACK _MsgWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARA
             const char *msg = (const char *)data->lpData;
             if ( strncmp(msg,"WinMsg",6) == 0 )
             {
-                msg+=7;
+                msg+=6;
                 if ( strncmp(msg,"Blob",4) == 0 )
                 {
                     msg+=5;
@@ -881,6 +881,7 @@ static INT_PTR CALLBACK _MsgWindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARA
                 }
                 else
                 {
+					msg++;
                     while ( *msg )
                     {
                         msg++;

@@ -1,6 +1,7 @@
 #include "TestVectorFont.h"
 #include "VectorFont.h"
-#include "RenderDebug/RenderDebug.h"
+#include "RenderDebug.h"
+#include "NxVec3.h"
 
 class TestVectorFont : public VectorFontInterface
 {
@@ -9,7 +10,11 @@ public:
 	{
 		NxVec3 v1(x1,y1,0);
 		NxVec3 v2(x2,y2,0);
-		gRenderDebug->DebugLine(&v1.x,&v2.x,0xFFFF00,60.0f);
+		gRenderDebug->pushRenderState();
+		gRenderDebug->setCurrentDisplayTime(60.0f);
+		gRenderDebug->setCurrentColor(0xFFFF00,0xFFFFFF);
+		gRenderDebug->DebugLine(&v1.x,&v2.x);
+		gRenderDebug->popRenderState();
 	}
 };
 

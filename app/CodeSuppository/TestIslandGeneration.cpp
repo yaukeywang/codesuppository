@@ -8,7 +8,7 @@
 #include "SendTextMessage.h"
 #include "MeshIslandGeneration.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
-#include "RenderDebug/RenderDebug.h"
+#include "RenderDebug.h"
 
 void testIslandGeneration(MeshSystemHelper * ms)
 {
@@ -19,7 +19,8 @@ void testIslandGeneration(MeshSystemHelper * ms)
         MeshSystemRaw *mr = ms->getMeshSystemRaw();
         if ( mr && mr->mVcount )
         {
-			gRenderDebug->Reset();
+			gRenderDebug->reset();
+			gRenderDebug->pushRenderState();
 			MeshIslandGeneration *mig = createMeshIslandGeneration();
 			size_t icount = mig->islandGenerate(mr->mTcount,mr->mIndices,mr->mVertices);
 			SEND_TEXT_MESSAGE(0,"Found %d unique islands.\r\n", icount);
@@ -29,6 +30,8 @@ void testIslandGeneration(MeshSystemHelper * ms)
 				size_t *indices = mig->getIsland(i,tcount);
 				SEND_TEXT_MESSAGE(0,"Island%d has %d triangles.\r\n", i+1, tcount );
 				unsigned int color = gRenderDebug->getDebugColor();
+				gRenderDebug->setCurrentColor(color);
+				gRenderDebug->setCurrentDisplayTime(6000);
 				for (size_t i=0; i<tcount; i++)
 				{
 					size_t i1 = indices[i*3+0];
@@ -38,10 +41,11 @@ void testIslandGeneration(MeshSystemHelper * ms)
 					const float *p1 = &mr->mVertices[i1*3];
 					const float *p2 = &mr->mVertices[i2*3];
 					const float *p3 = &mr->mVertices[i3*3];
-					gRenderDebug->DebugTri(p1,p2,p3,color,6000);
+					gRenderDebug->DebugTri(p1,p2,p3);
 				}
 			}
 			releaseMeshIslandGeneration(mig);
+			gRenderDebug->popRenderState();
         }
    }
 }

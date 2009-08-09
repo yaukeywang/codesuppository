@@ -9,7 +9,7 @@
 #include "ConsolidateMesh.h"
 #include "MeshConsolidate.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
-#include "RenderDebug/RenderDebug.h"
+#include "RenderDebug.h"
 #include "RemoveTjunctions.h"
 
 #define MESH_CONSOLIDATE 1
@@ -20,7 +20,7 @@ void testMeshConsolidation(MeshSystemHelper * ms)
 
    if ( ms )
    {
- 	    gRenderDebug->Reset();
+ 	    gRenderDebug->reset();
         MeshSystemRaw *mr = ms->getMeshSystemRaw();
         if ( mr && mr->mVcount )
         {
@@ -62,6 +62,11 @@ void testMeshConsolidation(MeshSystemHelper * ms)
 #if MESH_CONSOLIDATE
   		  MeshConsolidateOutput results;
   		  cm->meshConsolidate(results);
+		  gRenderDebug->pushRenderState();
+		  gRenderDebug->addToCurrentState(DebugRenderState::DoubleSidedWire);
+		  gRenderDebug->setCurrentColor(0x0000FF,0xFF00FF);
+		  gRenderDebug->setCurrentDisplayTime(6000);
+
   		  for (NxU32 i=0; i<results.mTcount; i++)
   		  {
   			NxU32 i1 = results.mIndices[i*3+0];
@@ -70,10 +75,9 @@ void testMeshConsolidation(MeshSystemHelper * ms)
   			const NxF32 *p1 = &results.mVertices[i1*3];
   			const NxF32 *p2 = &results.mVertices[i2*3];
   			const NxF32 *p3 = &results.mVertices[i3*3];
-			gRenderDebug->DebugSolidTri(p1,p2,p3,0x0000FF,6000);
-			gRenderDebug->DebugSolidTri(p3,p2,p1,0xFF00FF,6000);
-  			gRenderDebug->DebugTri(p1,p2,p3,0xFFFF00,6000);
+			gRenderDebug->DebugTri(p1,p2,p3);
   		  }
+		  gRenderDebug->popRenderState();
   		  SEND_TEXT_MESSAGE(0,"Input TriCount: %d Output TriCount: %d\r\n", tcount, results.mTcount );
   		  releaseMeshConsolidate(cm);
           releaseRemoveTjunctions(rt);

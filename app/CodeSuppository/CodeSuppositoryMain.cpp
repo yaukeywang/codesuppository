@@ -21,17 +21,17 @@
 #include "Shlwapi.h"
 #include "log.h"
 #include "sutil.h"
-#include "shared/debugmsg/debugmsg.h"
 #include "MeshImport.h"
 #include <direct.h>
 #include "common/tui/tui.h"
 #include "common/binding/binding.h"
 #include "pd3d/pd3d.h"
-#include "RenderDebug/RenderDebug.h"
+#include "RenderDebug.h"
 #include "SplitMeshApp.h"
 #include "SplitMeshMain.h"
 #include "CodeSuppository.h"
 #include "SendTextMessage.h"
+#include "FloatMath.h"
 
 #ifndef OPEN_SOURCE
 #include "HeGrDriver/HeGrDriver.h"
@@ -171,6 +171,54 @@ void myOnDeviceReset(void *device)
 #endif
 }
 
+class MyRenderDebugInterface : public RenderDebugInterface
+{
+public:
+  virtual void debugRenderLines(NxU32 lcount,const RenderDebugVertex *vertices,bool useZ,bool isScreenSpace)
+  {
+    float vm[16];
+    float pm[16];
+    if ( isScreenSpace )
+    {
+        memcpy(vm, gPd3d->getViewMatrix(), sizeof(float)*16);
+        memcpy(pm, gPd3d->getProjectionMatrix(), sizeof(float)*16);
+        float identity[16];
+        fm_identity(identity);
+        gPd3d->setViewProjectionMatrix(identity,identity);
+    }
+
+	gPd3d->renderLines( lcount, (const PD3D::Pd3dLineVertex *)vertices, useZ );
+
+    if ( isScreenSpace )
+    {
+        gPd3d->setViewProjectionMatrix(vm,pm);
+    }
+  }
+
+  virtual void debugRenderTriangles(NxU32 tcount,const RenderDebugSolidVertex *vertices,bool useZ,bool isScreenSpace)
+  {
+    float vm[16];
+    float pm[16];
+
+    if ( isScreenSpace )
+    {
+        memcpy(vm, gPd3d->getViewMatrix(), sizeof(float)*16);
+        memcpy(pm, gPd3d->getProjectionMatrix(), sizeof(float)*16);
+        float identity[16];
+        fm_identity(identity);
+		gPd3d->setViewProjectionMatrix(identity,identity);
+    }
+
+    gPd3d->renderSolid( tcount, (const PD3D::Pd3dSolidVertex *)vertices );
+
+    if ( isScreenSpace )
+    {
+        gPd3d->setViewProjectionMatrix(vm,pm);
+    }
+  }
+
+};
+
 //--------------------------------------------------------------------------------------
 // Entry point to the program. Initializes everything and goes into a message processing
 // loop. Idle time is used to render the scene.
@@ -227,11 +275,6 @@ INT WINAPI WinMain( HINSTANCE instance, HINSTANCE, LPSTR, NxI32 )
     if ( ok )
     {
 
-      openDebug();
-
-
-      gRenderDebug->setPd3d(gPd3d); // set the graphics interface.
-
       InitApp();
 
       // Initialize DXUT and create the desired Win32 window and Direct3D
@@ -269,8 +312,6 @@ INT WINAPI WinMain( HINSTANCE instance, HINSTANCE, LPSTR, NxI32 )
 
 
       saveMenuState();
-
-      closeDebug();
 
   		delete gGuiTui;
   		gGuiTui = 0;
@@ -692,7 +733,6 @@ void CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, NxF64 fTime, NxF32 fE
   mView = *g_Camera.GetViewMatrix();
   mWorldViewProjection = mWorld * mView * mProj;
 
-#ifdef OPEN_SOURCE
   HRESULT hr;
 
   GlobalD3DDevice = pd3dDevice;
@@ -723,19 +763,14 @@ void CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, NxF64 fTime, NxF32 fE
 
     gRenderDebug->drawGrid(false);
 
-
-
-
-    processDebug();
-
 		PD3D::Pd3dTexture *texture = 	gPd3d->locateTexture("white.dds");
 
 
     //ok..now let's render the debug visualization data.
     float dtime = fElapsedTime < 0.02f ? fElapsedTime : 0.02f;
-    gRenderDebug->Render(dtime,true,true);   // do the z-buffered pass
-    gRenderDebug->Render(dtime,true,false);   // do the non-zbuffered pass
-		gPd3d->restoreRenderState();
+	MyRenderDebugInterface mr;
+	gRenderDebug->render(fElapsedTime,&mr);
+	gPd3d->restoreRenderState();
 
     if ( gScreenCapture == 0 )
     {
@@ -755,75 +790,6 @@ void CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, NxF64 fTime, NxF32 fE
       gLog->Display("Saved screenshot as 'DFRAC%03d.JPG'.\r\n", gMovieFrame);
     }
   }
-#else
-
-  gHeGrDriver->clear( HEGRDRIVER::WM_RGBA | HEGRDRIVER::WM_DEPTH, HEGRDRIVER::HeGrColor( r, g, b ), 1.0f, 0 );
-
-
-  // Render the scene
-  if( gHeGrDriver->beginFrame() )
-  {
-    // configure our shader.
-
-    // draw the object.
-
-    // Get the projection & view matrix from the camera class
-    mWorld = g_mCenterWorld * *g_Camera.GetWorldMatrix();
-    mProj = *g_Camera.GetProjMatrix();
-    mView = *g_Camera.GetViewMatrix();
-    mWorldViewProjection = mWorld * mView * mProj;
-
-    gRenderDebug->setViewProjectionMatrix((const NxF32 *)g_Camera.GetViewMatrix(),(const NxF32 *)g_Camera.GetProjMatrix());
-
-    const char *page = gGuiTui->getCurrentPage();
-    if ( strcmp(page,"CodeSuppository") == 0 )
-    {
-      gCodeSuppository->render(fElapsedTime);
-    }
-    else
-    {
-      gRenderDebug->Reset();
-      appRender();
-    }
-
-
-    gHeGrDriver->pushRenderState();
-    gHeGrDriver->initStates();
-
-    gRenderDebug->drawGrid(false);
-
-    processDebug();
-
-
-    //ok..now let's render the debug visualization data.
-    gRenderDebug->Render(fElapsedTime, true, true);   // do the z-buffered pass
-    gRenderDebug->Render(fElapsedTime, true, false);   // do the non-zbuffered pass
-
-    if ( gScreenCapture == 0 )
-    {
-      #if USE_HUD
-      g_HUD.OnRender( fElapsedTime );
-      #endif
-  		gGuiTui->Render();
-    }
-
-    gHeGrDriver->popRenderState();
-
-    gHeGrDriver->endFrame();
-
-		if ( gScreenCapture )
-		{
-			gMovieFrame++;
- 			ScreenGrab(pd3dDevice,"DFRAC",gMovieFrame,true);
-      gScreenCapture = 0;
-      gLog->Display("Saved screenshot as 'DFRAC%03d.JPG'.\r\n", gMovieFrame);
-    }
-  }
-
-#endif
-
-
-
 }
 
 
@@ -978,7 +944,7 @@ void CALLBACK KeyboardProc( UINT nChar, bool bKeyDown, bool bAltDown, void* pUse
       case 'M':
         break;
       case 'R':
-        gRenderDebug->Reset();
+        gRenderDebug->reset();
         break;
       case 'I':
       	if ( 1 )

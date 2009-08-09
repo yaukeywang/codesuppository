@@ -5,7 +5,7 @@
 
 #include "TestStanHull.h"
 
-#include "RenderDebug/RenderDebug.h"
+#include "RenderDebug.h"
 #include "wavefront.h"
 #include "stanhull.h"
 #include "SendTextMessage.h"
@@ -15,7 +15,7 @@ void testStanHull(MeshSystemHelper *ms)
 {
   SEND_TEXT_MESSAGE(0,"Demonstrating StanHull code snippet, originally published on March 4, 2006\r\n");
 
-  gRenderDebug->Reset();
+  gRenderDebug->reset();
 
   if ( ms )
   {
@@ -35,6 +35,10 @@ void testStanHull(MeshSystemHelper *ms)
       {
         SEND_TEXT_MESSAGE(0,"Output Hull contains %d triangle faces.\r\n", result.mNumFaces );
         SEND_TEXT_MESSAGE(0,"Fly the camera inside the hull to see the mesh details.\r\n");
+		gRenderDebug->pushRenderState();
+		gRenderDebug->setCurrentColor(0xFFFF00,0xFFFFFF);
+		gRenderDebug->addToCurrentState(DebugRenderState::SolidWireShaded);
+		gRenderDebug->setCurrentDisplayTime(600.0f);
         for (NxU32 i=0; i<result.mNumFaces; i++)
         {
           NxU32 i1 = result.mIndices[i*3+0];
@@ -43,10 +47,9 @@ void testStanHull(MeshSystemHelper *ms)
           const NxF32 *p1 = &result.mOutputVertices[i1*3];
           const NxF32 *p2 = &result.mOutputVertices[i2*3];
           const NxF32 *p3 = &result.mOutputVertices[i3*3];
-          gRenderDebug->DebugSolidTri(p1,p2,p3,0xFFFF00,600.0f);
-          gRenderDebug->DebugSolidTri(p3,p2,p1,0xFFFF00,600.0f);
-          gRenderDebug->DebugTri(p1,p2,p3,0xFFFFFF,600.0f);
+          gRenderDebug->DebugTri(p1,p2,p3);
         }
+		gRenderDebug->popRenderState();
         h.ReleaseResult(result);
       }
       else

@@ -1043,18 +1043,6 @@
 			Name="Shared Application Source"
 			>
 			<Filter
-				Name="debugmsg"
-				>
-				<File
-					RelativePath="..\..\app\shared\debugmsg\debugmsg.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\app\shared\debugmsg\debugmsg.h"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="MeshSystem"
 				>
 				<File
@@ -1947,6 +1935,14 @@
 				</File>
 				<File
 					RelativePath="..\..\include\common\snippets\RemoveTjunctions.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\RenderDebug.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\RenderDebug.h"
 					>
 				</File>
 				<File

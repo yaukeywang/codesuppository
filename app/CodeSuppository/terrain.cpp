@@ -6,7 +6,7 @@
 #include "terrain.h"
 #include "ImportHeightMap.h"
 #include "NxFoundation.h"
-#include "RenderDebug/RenderDebug.h"
+#include "RenderDebug.h"
 #include "simplevector.h"
 #include "pd3d/pd3d.h"
 #include "FloatMath.h"

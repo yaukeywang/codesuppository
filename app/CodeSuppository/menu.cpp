@@ -22,7 +22,7 @@
 #include "SplitMeshApp.h"
 #include "ImportHeightMap.h"
 #include "NxVec3.h"
-#include "RenderDebug/RenderDebug.h"
+#include "RenderDebug.h"
 #include "Pd3d/Pd3d.h"
 #include "CodeSuppository.h"
 #include "SendTextMessage.h"

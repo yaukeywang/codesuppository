@@ -8,7 +8,7 @@
 #include "SendTextMessage.h"
 
 
-#include "RenderDebug/RenderDebug.h"
+#include "RenderDebug.h"
 #include "wavefront.h"
 #include "ConvexDecomposition.h"
 #include "SendTextMessage.h"
@@ -32,6 +32,8 @@ public:
   {
     unsigned int color = gRenderDebug->getDebugColor();
 
+	gRenderDebug->pushRenderState();
+	gRenderDebug->setCurrentDisplayTime(15.0f);
     mCount++;
 
     if ( mFitObb )
@@ -56,16 +58,17 @@ public:
       bmax[0] = sides[0]*0.5f;
       bmax[1] = sides[1]*0.5f;
       bmax[2] = sides[2]*0.5f;
-
-      gRenderDebug->DebugOrientedBound(bmin,bmax,matrix,color,SHOW_TIME,true,true);
-      gRenderDebug->DebugOrientedBound(bmin,bmax,matrix,0xFFFFFF,SHOW_TIME,true,false);
+	  gRenderDebug->setCurrentState(DebugRenderState::SolidShaded);
+	  gRenderDebug->setCurrentColor(color,0xFFFFFF);
+      gRenderDebug->DebugOrientedBound(bmin,bmax,matrix);
 
 
       MEMALLOC_FREE(vertices);
     }
     else
     {
-
+	  gRenderDebug->setCurrentState(DebugRenderState::SolidShaded);
+	  gRenderDebug->setCurrentColor(color,0xFFFFFF);
       for (unsigned int i=0; i<result.mHullTcount; i++)
       {
         unsigned int i1 = result.mHullIndices[i*3+0];
@@ -74,12 +77,11 @@ public:
         const double *p1 = &result.mHullVertices[i1*3];
         const double *p2 = &result.mHullVertices[i2*3];
         const double *p3 = &result.mHullVertices[i3*3];
-        gRenderDebug->DebugSolidTri(p1,p2,p3,color,SHOW_TIME);
-        gRenderDebug->DebugTri(p1,p2,p3,0xFFFFFF,SHOW_TIME);
+        gRenderDebug->DebugTri(p1,p2,p3);
       }
     }
+	gRenderDebug->popRenderState();
   }
-
   bool mFitObb;
   int mCount;
 };
@@ -101,7 +103,8 @@ void testConvexDecomposition(MeshSystemHelper *ms,
   if ( ms )
   {
 
-    gRenderDebug->Reset();
+    gRenderDebug->reset();
+	gRenderDebug->pushRenderState();
 
     MeshSystemRaw *mr = ms->getMeshSystemRaw();
 
@@ -145,6 +148,7 @@ void testConvexDecomposition(MeshSystemHelper *ms,
     }
 
     ms->releaseMeshSystemRaw(mr);
+	gRenderDebug->popRenderState();
   }
   else
   {

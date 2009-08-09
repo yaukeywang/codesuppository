@@ -4,7 +4,7 @@
 #include <assert.h>
 
 #include "TestBestFitPlane.h"
-#include "RenderDebug/RenderDebug.h"
+#include "RenderDebug.h"
 #include "FloatMath.h"
 #include "rand.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
@@ -13,7 +13,9 @@
 
 void testBestFitPlane(MeshSystemHelper *ms)
 {
-  gRenderDebug->Reset();
+  gRenderDebug->reset();
+  gRenderDebug->pushRenderState();
+  gRenderDebug->setCurrentDisplayTime(15);
   SEND_TEXT_MESSAGE(0,"Demonstration of Best Fit Plane to a set of points, originally published on March 23, 2006\r\n");
 
   float plane[4];
@@ -51,7 +53,7 @@ void testBestFitPlane(MeshSystemHelper *ms)
       pos[1] = (float) ((rand()&63)-32)*0.0015f;
       pos[2] = (float) ((rand()%63)-32)*0.05f;
       fm_transform(matrix,pos,t);
-      gRenderDebug->DebugPoint(t,0.1f,0xFFFFFF,15.0f);
+      gRenderDebug->DebugPoint(t,0.1f);
 
       pos[0] = t[0];
       pos[1] = t[1];
@@ -62,6 +64,8 @@ void testBestFitPlane(MeshSystemHelper *ms)
     SEND_TEXT_MESSAGE(0,"Generating best fit plane for 60 random points.\r\n");
     fm_computeBestFitPlane(PCOUNT,points,sizeof(float)*3,0,0,plane);
   }
-  gRenderDebug->DebugPlane(plane,4,4,0xFFFF00,15.0f);
+  gRenderDebug->setCurrentColor(0xFFFF00,0xFFFFFF);
+  gRenderDebug->DebugPlane(plane,4,4);
+  gRenderDebug->popRenderState();
 }
 

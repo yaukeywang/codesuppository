@@ -9,7 +9,7 @@
 #include "SplitMeshApp.h"
 #include "SplitMesh.h"
 #include "wavefront.h"
-#include "RenderDebug/RenderDebug.h"
+#include "RenderDebug.h"
 #include "log.h"
 #include "FloatMath.h"
 #include "ArrowHead.h"
@@ -25,6 +25,8 @@
 #include "common/compression/compression.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
 #include "MeshImport.h"
+
+#pragma warning(disable:4100)
 
 static const NxF64 EPSILON=0.0001;
 
@@ -122,6 +124,7 @@ public:
 
   void iterateTriangle(const double *p1,const double *p2,const double *p3,size_t /*id*/)
   {
+#if 0// 
     float fp1[3];
     float fp2[3];
     float fp3[3];
@@ -132,8 +135,11 @@ public:
 
     if ( mSolid )
     {
-      gRenderDebug->DebugSolidTri(fp1,fp2,fp3,0x00FFFF);
-//      gRenderDebug->DebugSolidTri(fp3,fp2,fp1,0x0000FF);
+		gRenderDebug->pushRenderState();
+		gRenderDebug->addToCurrentState(DebugRenderState::SolidShaded);
+		gRenderDebug->setCurrentColor(0x00FFFF);
+      gRenderDebug->DebugTri(fp1,fp2,fp3);
+	  gRenderDebug->popRenderState();
     }
 
     if ( mWireframe )
@@ -176,7 +182,7 @@ public:
           gRenderDebug->DebugTri(fp1,fp2,fp3,0xFFFFFF);
       }
     }
-
+#endif
   }
 
   void setMeshSystemHelper(MeshSystemHelper *ms)
@@ -211,6 +217,7 @@ public:
 
   void debugRingSegment(const NxF64 *from,const NxF64 *to,const NxF64 *project,NxU32 color)
   {
+#if 0 
     NxF32 p1[3];
     NxF32 p2[3];
 
@@ -225,11 +232,12 @@ public:
 
     gRenderDebug->DebugSphere(p1,0.002f,0xFFFF00);
     gRenderDebug->DebugRay(p1,p2,0.002f,color,0xFF0000);
-
+#endif
   }
 
   void debugRing(SPLIT_MESH::RingSystem *ring,NxF64 pscale)
   {
+#if 0
     mProject[0] = (NxF32)(mPlane[0]*pscale);
     mProject[1] = (NxF32)(mPlane[1]*pscale);
     mProject[2] = (NxF32)(mPlane[2]*pscale);
@@ -277,11 +285,12 @@ public:
 
 			}
 		}
+#endif
   }
 
   void debugTriangles(SPLIT_MESH::RingSystem *ring,NxF64 pscale)
   {
-
+#if 0
     mProject[0] = (NxF32)(mPlane[0]*pscale);
     mProject[1] = (NxF32)(mPlane[1]*pscale);
     mProject[2] = (NxF32)(mPlane[2]*pscale);
@@ -318,12 +327,13 @@ public:
         triangles+=9;
       }
     }
-
+#endif
   }
 
 
   void debugPolys(SPLIT_MESH::RingSystem *ring,NxF64 pscale,bool flip)
   {
+#if 0
     mProject[0] = (NxF32)(mPlane[0]*pscale);
     mProject[1] = (NxF32)(mPlane[1]*pscale);
     mProject[2] = (NxF32)(mPlane[2]*pscale);
@@ -406,10 +416,12 @@ public:
         }
       }
     }
+#endif
   }
 
   void renderCone(const NxF32 *p1,const NxF32 *p2)
   {
+#if 0
     gRenderDebug->DebugLine(p1,p2);
 
     NxU32 tcount;
@@ -420,12 +432,12 @@ public:
       gRenderDebug->DebugTri(triangles,triangles+3,triangles+6,0xFFFFFF);
       triangles+=9;
     }
+#endif
   }
 
   void render(void)
   {
-
-
+#if 0
     if ( mShowSplitPlane )
     {
       NxF32 plane[4];
@@ -505,10 +517,12 @@ public:
 
 
     }
+#endif
   }
 
   void render(const SPLIT_MESH::SimpleMesh &s)
   {
+#if 0
     const size_t *ids = s.mIds;
 
     for (size_t i=0; i<s.mTcount; i++)
@@ -545,6 +559,7 @@ public:
       gRenderDebug->DebugSolidTri(_p1,_p2,_p3,color);
       gRenderDebug->DebugTri(_p1,_p2,_p3,0xFFFFFF);
     }
+#endif
   }
 
   void command(SplitMeshCommand _command,bool state,const float *data)
@@ -729,6 +744,7 @@ public:
 
   void testPerlin4(void)
   {
+#if 0
     Perlin4 *p = createPerlin4();
 
     for (float z=0; z<256; z++)
@@ -741,6 +757,7 @@ public:
       }
     }
     releasePerlin4(p);
+#endif
   }
 
   void testMeshIsland(void)
@@ -1067,7 +1084,7 @@ public:
 
   void testOBB(void)
   {
-
+#if 0
     float plane[4];
     plane[0] = (float)mPlane[0];
     plane[1] = (float)mPlane[1];
@@ -1120,8 +1137,6 @@ public:
 
       gRenderDebug->DebugOrientedBound(bmin,bmax,matrix,0xFFFF00,15.0f);
     }
-
-#if 0
     {
       float sides[3];
 
@@ -2698,7 +2713,7 @@ public:
       float p2[3];
       fm_doubleToFloat3(prev,p1);
       fm_doubleToFloat3(scan,p2);
-      gRenderDebug->DebugRay(p1,p2,0.01f,0xFFFFFF,0xFF0000,30.0f);
+//      gRenderDebug->DebugRay(p1,p2,0.01f,0xFFFFFF,0xFF0000,30.0f);
       prev = scan;
       scan+=3;
     }
@@ -2710,7 +2725,7 @@ public:
     {
       for (size_t i=0; i<tcount; i++)
       {
-        gRenderDebug->DebugTri(tris,tris+3,tris+6,0xFFFF00,30.0f);
+//        gRenderDebug->DebugTri(tris,tris+3,tris+6,0xFFFF00,30.0f);
         tris+=9;
       }
     }
@@ -2720,14 +2735,14 @@ public:
 
   void testSphereIntersect(void)
   {
-    gRenderDebug->Reset();
+    gRenderDebug->reset();
     float radius = ranf(1,5);
     float center[3];
     center[0] = ranf(-1,1);
     center[1] = ranf(-1,1);
     center[2] = ranf(-1,1);
 
-    gRenderDebug->DebugDetailedSphere(center,radius,128,0xFFFFFF,30.0f,true,true);
+    //gRenderDebug->DebugDetailedSphere(center,radius,128,0xFFFFFF,30.0f,true,true);
 
     for (size_t i=0; i<100; i++)
     {
@@ -2746,12 +2761,12 @@ public:
       bool hit = fm_lineSphereIntersect(center,radius,p1,p2,intersect);
       if ( hit )
       {
-        gRenderDebug->DebugRay(p1,p2,0.1f,0xFFFF00,0xFF0000,30.0f);
-        gRenderDebug->DebugDetailedSphere(intersect,0.1f,16,0xFF0000,30.0f);
+//        gRenderDebug->DebugRay(p1,p2,0.1f,0xFFFF00,0xFF0000,30.0f);
+//        gRenderDebug->DebugDetailedSphere(intersect,0.1f,16,0xFF0000,30.0f);
       }
       else
       {
-        gRenderDebug->DebugRay(p1,p2,0.1f,0x404040,0xFF0000,30.0f);
+//        gRenderDebug->DebugRay(p1,p2,0.1f,0x404040,0xFF0000,30.0f);
       }
 
 
@@ -2764,8 +2779,8 @@ public:
     float bmin[3] = { -1, -2, -3 };
     float bmax[3] = {  2,  4,  6 };
 
-    gRenderDebug->DebugBound(bmin,bmax,0xFF00FF,60.0f,true,true);
-    gRenderDebug->DebugBound(bmin,bmax,0xFFFFFF,60.0f,true,false);
+    //gRenderDebug->DebugBound(bmin,bmax,0xFF00FF,60.0f,true,true);
+    //gRenderDebug->DebugBound(bmin,bmax,0xFFFFFF,60.0f,true,false);
 
     for (NxU32 i=0; i<10; i++)
     {
@@ -2785,12 +2800,12 @@ public:
       bool hit = fm_intersectLineSegmentAABB(bmin,bmax,p1,p2,intersect);
       if ( hit )
       {
-        gRenderDebug->DebugRay(p1,p2,0.1f,0xFFFF00,0xFF0000,60.0f);
-        gRenderDebug->DebugDetailedSphere(intersect,0.1f,16,0xFFFF00,60.0f);
+//        gRenderDebug->DebugRay(p1,p2,0.1f,0xFFFF00,0xFF0000,60.0f);
+//        gRenderDebug->DebugDetailedSphere(intersect,0.1f,16,0xFFFF00,60.0f);
       }
       else
       {
-        gRenderDebug->DebugLine(p1,p2,0x808080,60.0f);
+//        gRenderDebug->DebugLine(p1,p2,0x808080,60.0f);
       }
 
 
@@ -2828,7 +2843,7 @@ public:
     {
       bool ok = mErode->erode();
       mErode->getResults();
-      gRenderDebug->Reset();
+      gRenderDebug->reset();
       NxU32 wid = mImportHeightMap->getWidth();
       NxU32 depth = mImportHeightMap->getDepth();
       for (NxU32 z=0; z<(depth-1); z++)
@@ -2845,10 +2860,10 @@ public:
           getPoint(mImportHeightMap,p3,x+1,z+1);
           getPoint(mImportHeightMap,p4,x,z+1);
 
-          gRenderDebug->DebugSolidTri(&p3.x,&p2.x,&p1.x,0x808080,60000.0f);
+//          gRenderDebug->DebugSolidTri(&p3.x,&p2.x,&p1.x,0x808080,60000.0f);
 //          gRenderDebug->DebugTri(&p1.x,&p2.x,&p3.x,0xFFFFFF,60000.0f);
 
-          gRenderDebug->DebugSolidTri(&p4.x,&p3.x,&p1.x,0x808080,60000.0f);
+//          gRenderDebug->DebugSolidTri(&p4.x,&p3.x,&p1.x,0x808080,60000.0f);
 //          gRenderDebug->DebugTri(&p1.x,&p3.x,&p4.x,0xFFFFFF,60000.0f);
 
         }

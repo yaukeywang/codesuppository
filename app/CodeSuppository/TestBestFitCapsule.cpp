@@ -6,14 +6,18 @@
 #include "TestBestFitCapsule.h"
 
 #include "SendTextMessage.h"
-#include "RenderDebug/RenderDebug.h"
+#include "RenderDebug.h"
 #include "FloatMath.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
 #include "rand.h"
 
 void testBestFitCapsule(MeshSystemHelper *ms)
 {
-  gRenderDebug->Reset();
+  gRenderDebug->reset();
+  gRenderDebug->pushRenderState();
+  gRenderDebug->setCurrentColor(0xFFFFFF);
+  gRenderDebug->setCurrentDisplayTime(15);
+
 
   SEND_TEXT_MESSAGE(0,"Demonstrating the best fit capsule algorithm, originally published on June 16, 2006\r\n");
 
@@ -51,6 +55,7 @@ void testBestFitCapsule(MeshSystemHelper *ms)
 
     float *pos = points;
 
+
     for (int i=0; i<PCOUNT; i++)
     {
       float t[3] = { pos[0], pos[1], pos[2] };
@@ -61,7 +66,7 @@ void testBestFitCapsule(MeshSystemHelper *ms)
 
       fm_transform(matrix,pos,t);
 
-      gRenderDebug->DebugPoint(t,0.1f,0xFFFFFF,15.0f);
+      gRenderDebug->DebugPoint(t,0.1f);
 
       pos[0] = t[0];
       pos[1] = t[1];
@@ -74,6 +79,7 @@ void testBestFitCapsule(MeshSystemHelper *ms)
     fm_computeBestFitCapsule(PCOUNT,points,sizeof(float)*3,radius,height,matrix,true);
   }
 
-  gRenderDebug->DebugOrientedCapsule(radius,height,matrix,0xFFFF00,600.0f);
+  gRenderDebug->DebugOrientedCapsule(radius,height,matrix);
+  gRenderDebug->popRenderState();
 }
 

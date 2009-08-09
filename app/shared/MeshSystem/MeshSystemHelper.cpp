@@ -9,13 +9,14 @@
 #include "fmem.h"
 #include "sutil.h"
 #include "SendTextMessage.h"
-#include "RenderDebug/RenderDebug.h"
+#include "RenderDebug.h"
 #include "stringdict.h"
 #include "FloatMath.h"
 #include "NxFoundation.h"
 #include "Pd3d/pd3d.h"
+#include "NxMat44.h"
 
-#pragma warning(disable:4100)
+#pragma warning(disable:4100 4189)
 
 class MyMeshSystemHelper : public MeshSystemHelper
 {
@@ -83,12 +84,12 @@ public:
           MESHIMPORT::MeshBoneInstance &b = mSkeleton->mBones[i];
           if ( b.mParentIndex != -1 )
           {
-            MESHIMPORT::MeshBoneInstance &p = mSkeleton->mBones[b.mParentIndex];
-            gRenderDebug->DebugThickRay(&p.mAnimTransform[12],&b.mAnimTransform[12],0.02f,0.05f, 0xFFFF00, 0xFF0000, 0.001f, true );
+//            MESHIMPORT::MeshBoneInstance &p = mSkeleton->mBones[b.mParentIndex];
+//            gRenderDebug->DebugThickRay(&p.mAnimTransform[12],&b.mAnimTransform[12],0.02f,0.05f, 0xFFFF00, 0xFF0000, 0.001f, true );
           }
           else
           {
-            gRenderDebug->DebugDetailedSphere(&b.mAnimTransform[12], 0.1f, 16, 0xFFFFFF, 0.001f, true, true );
+//            gRenderDebug->DebugDetailedSphere(&b.mAnimTransform[12], 0.1f, 16, 0xFFFFFF, 0.001f, true, true );
           }
         }
       }
@@ -107,11 +108,11 @@ public:
     {
       if ( mMeshSystem && showMesh )
       {
-        if ( mShowBounds )
-          gRenderDebug->DebugBound(mMeshSystem->mAABB.mMin, mMeshSystem->mAABB.mMax, 0xFFFFFF );
+//        if ( mShowBounds )
+//          gRenderDebug->DebugBound(mMeshSystem->mAABB.mMin, mMeshSystem->mAABB.mMax, 0xFFFFFF );
         for (NxU32 i=0; i<mMeshSystem->mMeshCount; i++)
         {
-          debugRender( mMeshSystem->mMeshes[i] );
+//          debugRender( mMeshSystem->mMeshes[i] );
         }
       }
       if ( mSkeleton && showSkeleton )
@@ -121,12 +122,12 @@ public:
           MESHIMPORT::MeshBoneInstance &b = mSkeleton->mBones[i];
           if ( b.mParentIndex != -1 )
           {
-            MESHIMPORT::MeshBoneInstance &p = mSkeleton->mBones[b.mParentIndex];
-            gRenderDebug->DebugThickRay(&p.mTransform[12],&b.mTransform[12],0.02f,0.05f, 0xFFFF00, 0xFF0000, 0.001f, true );
+//            MESHIMPORT::MeshBoneInstance &p = mSkeleton->mBones[b.mParentIndex];
+//            gRenderDebug->DebugThickRay(&p.mTransform[12],&b.mTransform[12],0.02f,0.05f, 0xFFFF00, 0xFF0000, 0.001f, true );
           }
           else
           {
-            gRenderDebug->DebugDetailedSphere(&b.mTransform[12], 0.1f, 16, 0xFFFFFF, 0.001f, true, true );
+//            gRenderDebug->DebugDetailedSphere(&b.mTransform[12], 0.1f, 16, 0xFFFFFF, 0.001f, true, true );
           }
         }
       }
@@ -208,20 +209,20 @@ public:
     {
       case MESHIMPORT::MCT_CAPSULE:
         {
-          MESHIMPORT::MeshCollisionCapsule *c = static_cast< MESHIMPORT::MeshCollisionCapsule *>(m);
-          gRenderDebug->DebugOrientedCapsule(c->mRadius, c->mHeight, transform, color );
+//          MESHIMPORT::MeshCollisionCapsule *c = static_cast< MESHIMPORT::MeshCollisionCapsule *>(m);
+//          gRenderDebug->DebugOrientedCapsule(c->mRadius, c->mHeight, transform, color );
         }
         break;
       case MESHIMPORT::MCT_SPHERE:
         {
-          MESHIMPORT::MeshCollisionSphere *c = static_cast< MESHIMPORT::MeshCollisionSphere *>(m);
-          gRenderDebug->DebugSphere(&transform[12],c->mRadius, color );
+//          MESHIMPORT::MeshCollisionSphere *c = static_cast< MESHIMPORT::MeshCollisionSphere *>(m);
+//          gRenderDebug->DebugSphere(&transform[12],c->mRadius, color );
         }
         break;
       case MESHIMPORT::MCT_BOX:
         {
-          MESHIMPORT::MeshCollisionBox *c = static_cast< MESHIMPORT::MeshCollisionBox *>(m);
-          gRenderDebug->DebugOrientedBound(c->mSides,transform,color);
+//          MESHIMPORT::MeshCollisionBox *c = static_cast< MESHIMPORT::MeshCollisionBox *>(m);
+//          gRenderDebug->DebugOrientedBound(c->mSides,transform,color);
         }
         break;
 
@@ -242,8 +243,8 @@ public:
             fm_transform( transform, p1, t1 );
             fm_transform( transform, p2, t2 );
             fm_transform( transform, p3, t3 );
-            gRenderDebug->DebugSolidTri(t1,t2,t3,color);
-            gRenderDebug->DebugTri(t1,t2,t3,0xFFFFFF);
+//            gRenderDebug->DebugSolidTri(t1,t2,t3,color);
+//            gRenderDebug->DebugTri(t1,t2,t3,0xFFFFFF);
           }
         }
         break;
@@ -254,8 +255,8 @@ public:
   void debugRender(MESHIMPORT::Mesh *m)
   {
     NxU32 color = gRenderDebug->getDebugColor();
-    if ( mShowBounds )
-      gRenderDebug->DebugBound(m->mAABB.mMin, m->mAABB.mMax, 0xFFFF00 );
+//    if ( mShowBounds )
+//      gRenderDebug->DebugBound(m->mAABB.mMin, m->mAABB.mMax, 0xFFFF00 );
     for (NxU32 i=0; i<m->mSubMeshCount; i++)
     {
       debugRender(m->mSubMeshes[i],color,m);
@@ -281,8 +282,8 @@ public:
 
   void debugRender(MESHIMPORT::SubMesh *m,NxU32 color,MESHIMPORT::Mesh *pm)
   {
-    if ( mShowBounds )
-      gRenderDebug->DebugBound(m->mAABB.mMin, m->mAABB.mMax, color);
+//    if ( mShowBounds )
+//      gRenderDebug->DebugBound(m->mAABB.mMin, m->mAABB.mMax, color);
 
     PD3D::Pd3dGraphicsVertex *vertices = MEMALLOC_NEW_ARRAY(PD3D::Pd3dGraphicsVertex,pm->mVertexCount)[pm->mVertexCount];
     PD3D::Pd3dGraphicsVertex *dest = vertices;
@@ -348,15 +349,15 @@ public:
       const MESHIMPORT::MeshVertex &v2 = vertices[i2];
       const MESHIMPORT::MeshVertex &v3 = vertices[i3];
 
-      if ( mShowWireframe )
-        gRenderDebug->DebugTri(v1.mPos,v2.mPos,v3.mPos, color );
-      else
-      {
-        if ( mFlipWinding )
-          gRenderDebug->DebugSolidTri(v3.mPos,v2.mPos,v1.mPos, color );
-        else
-          gRenderDebug->DebugSolidTri(v1.mPos,v2.mPos,v3.mPos, color );
-      }
+//      if ( mShowWireframe )
+//        gRenderDebug->DebugTri(v1.mPos,v2.mPos,v3.mPos, color );
+//      else
+//      {
+//        if ( mFlipWinding )
+//          gRenderDebug->DebugSolidTri(v3.mPos,v2.mPos,v1.mPos, color );
+//        else
+//          gRenderDebug->DebugSolidTri(v1.mPos,v2.mPos,v3.mPos, color );
+//      }
 
     }
   }

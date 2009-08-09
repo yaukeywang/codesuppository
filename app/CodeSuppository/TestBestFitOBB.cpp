@@ -6,14 +6,15 @@
 #include "TestBestFitOBB.h"
 
 #include "SendTextMessage.h"
-#include "RenderDebug/RenderDebug.h"
+#include "RenderDebug.h"
 #include "FloatMath.h"
 #include "rand.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
 
 void testBestFitOBB(MeshSystemHelper *ms)
 {
-  gRenderDebug->Reset();
+  gRenderDebug->reset();
+  gRenderDebug->setCurrentDisplayTime(600.0f);
 
   SEND_TEXT_MESSAGE(0,"Demonstrating the best fit OBB algorithm, originally published on June 16, 2006\r\n");
 
@@ -55,7 +56,7 @@ void testBestFitOBB(MeshSystemHelper *ms)
       pos[2] = (float) ((rand()%63)-32)*0.05f;
       fm_transform(matrix,pos,t);
 
-      gRenderDebug->DebugPoint(t,0.1f,0xFFFFFF,15.0f);
+      gRenderDebug->DebugPoint(t,0.1f);
 
       pos[0] = t[0];
       pos[1] = t[1];
@@ -77,7 +78,8 @@ void testBestFitOBB(MeshSystemHelper *ms)
   bmax[0] = sides[0]*0.5f;
   bmax[1] = sides[1]*0.5f;
   bmax[2] = sides[2]*0.5f;
-
-  gRenderDebug->DebugOrientedBound(bmin,bmax,matrix,0xFFFF00,600.0f);
+  gRenderDebug->setCurrentColor(0xFFFF00,0xFFFFFF);
+  gRenderDebug->DebugOrientedBound(bmin,bmax,matrix);
+  gRenderDebug->popRenderState();
 }
 

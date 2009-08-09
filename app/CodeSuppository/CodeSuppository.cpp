@@ -46,7 +46,7 @@
 #include "TestMeshConsolidation.h"
 #include "TestIslandGeneration.h"
 #include "TestVectorFont.h"
-#include "RenderDebug/RenderDebug.h"
+#include "RenderDebug.h"
 #include "SplitMeshApp.h"
 #include "JobSwarm.h"
 

@@ -8,7 +8,7 @@
 #include "SendTextMessage.h"
 #include "RemoveTjunctions.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
-#include "RenderDebug/RenderDebug.h"
+#include "RenderDebug.h"
 
 void testTjunctions(MeshSystemHelper * ms)
 {
@@ -27,10 +27,13 @@ void testTjunctions(MeshSystemHelper * ms)
             desc.mIndices   = mr->mIndices;
             desc.mIds       = 0;
             size_t tcount = rt->removeTjunctions(desc);
-            gRenderDebug->Reset();
+            gRenderDebug->reset(-1);
             if ( tcount )
             {
 				SEND_TEXT_MESSAGE(0,"Input triangle count %d output triangle count %d.\r\n", mr->mTcount, tcount );
+				gRenderDebug->pushRenderState();
+				gRenderDebug->setCurrentColor(0xFFFF00,0xFFFFFF);
+				gRenderDebug->setCurrentDisplayTime(6000);
                 for (size_t i=0; i<tcount; i++)
                 {
                     size_t i1 = desc.mIndicesOut[i*3+0];
@@ -39,8 +42,9 @@ void testTjunctions(MeshSystemHelper * ms)
                     const float *p1 = &desc.mVerticesF[i1*3];
                     const float *p2 = &desc.mVerticesF[i2*3];
                     const float *p3 = &desc.mVerticesF[i3*3];
-                    gRenderDebug->DebugTri(p1,p2,p3,0xFFFF00,6000);
+                    gRenderDebug->DebugTri(p1,p2,p3);
                 }
+				gRenderDebug->popRenderState();
             }
             releaseRemoveTjunctions(rt);
         }

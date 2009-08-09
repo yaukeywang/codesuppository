@@ -14,7 +14,7 @@
 #include "UserMemAlloc.h"
 #include "sutil.h"
 #include "FloatMath.h"
-#include "RenderDebug/RenderDebug.h"
+#include "RenderDebug.h"
 #include "JobSwarm.h"
 
 #pragma warning(disable:4100)

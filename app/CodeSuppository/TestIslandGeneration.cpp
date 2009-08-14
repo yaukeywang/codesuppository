@@ -29,7 +29,7 @@ void testIslandGeneration(MeshSystemHelper * ms)
 				size_t tcount;
 				size_t *indices = mig->getIsland(i,tcount);
 				SEND_TEXT_MESSAGE(0,"Island%d has %d triangles.\r\n", i+1, tcount );
-				unsigned int color = gRenderDebug->getDebugColor();
+				NxU32 color = gRenderDebug->getDebugColor();
 				gRenderDebug->setCurrentColor(color);
 				gRenderDebug->setCurrentDisplayTime(6000);
 				for (size_t i=0; i<tcount; i++)
@@ -38,9 +38,9 @@ void testIslandGeneration(MeshSystemHelper * ms)
 					size_t i2 = indices[i*3+1];
 					size_t i3 = indices[i*3+2];
 
-					const float *p1 = &mr->mVertices[i1*3];
-					const float *p2 = &mr->mVertices[i2*3];
-					const float *p3 = &mr->mVertices[i3*3];
+					const NxF32 *p1 = &mr->mVertices[i1*3];
+					const NxF32 *p2 = &mr->mVertices[i2*3];
+					const NxF32 *p3 = &mr->mVertices[i3*3];
 					gRenderDebug->DebugTri(p1,p2,p3);
 				}
 			}

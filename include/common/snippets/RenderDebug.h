@@ -5,10 +5,7 @@
 #define USE_AS_SNIPPET 1 // This is true if we are building in 'snippet' form, meaning only *one* CPP and header file.
 
 #if USE_AS_SNIPPET
-typedef unsigned int NxU32;
-typedef float NxF32;
-typedef int NxI32;
-typedef double NxF64;
+#include "UserMemAlloc.h"
 #else
 #include "NxSimpleTypes.h"
 class NxVec3;
@@ -54,8 +51,8 @@ struct DebugRenderState
         CameraFacing     = (1<<5),  // True if text should be displayed camera facing
         InfiniteLifeSpan = (1<<6),  // True if the lifespan is infinite (overrides current display time value)
         CenterText       = (1<<7),  // True if the text should be centered.
-		DoubleSided      = (1<<8),  // Render the trinagle double sided
-		DoubleSidedWire  = (1<<9),  // Render the trinagle double sided with a wireframe outline.
+		DoubleSided      = (1<<8),  // Render the trinagle NxF64 sided
+		DoubleSidedWire  = (1<<9),  // Render the trinagle NxF64 sided with a wireframe outline.
 	};
 };
 
@@ -123,14 +120,14 @@ public:
 
 	virtual void debugRect2d(NxF32 x1,NxF32 y1,NxF32 x2,NxF32 y2) = 0;
 
-// Const float versions, supports floats and doubles.
+// Const NxF32 versions, supports floats and doubles.
 // All vectors are assumed X,Y,Z
 // All quaternions are assumed X,Y,Z,W
 // All matrices are assumed 4x4 D3DX style format.
 // Plane equations are assumed to be in the format of A,B,C,D
 // These methods are provided as convenience functiosn for applications which have their own internal math classes.
-// Where appropriate they can simply cast their existing vector, quaternion, and matrices to const float pointers.
-// The double precision version of the routines are provided when debugging geometry processing code which often uses these data types.
+// Where appropriate they can simply cast their existing vector, quaternion, and matrices to const NxF32 pointers.
+// The NxF64 precision version of the routines are provided when debugging geometry processing code which often uses these data types.
 
 	virtual void DebugLine(const NxF32 *p1,const NxF32 *p2) = 0;
 	virtual void DebugLine(const NxF64 *p1,const NxF64 *p2) = 0;

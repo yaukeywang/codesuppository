@@ -18,15 +18,15 @@ void testBestFitOBB(MeshSystemHelper *ms)
 
   SEND_TEXT_MESSAGE(0,"Demonstrating the best fit OBB algorithm, originally published on June 16, 2006\r\n");
 
-  float matrix[16];
-  float sides[3];
+  NxF32 matrix[16];
+  NxF32 sides[3];
 
   if ( ms )
   {
     MeshSystemRaw *mr = ms->getMeshSystemRaw();
     if ( mr && mr->mVcount )
     {
-      fm_computeBestFitOBB(mr->mVcount,mr->mVertices,sizeof(float)*3,sides,matrix,true);
+      fm_computeBestFitOBB(mr->mVcount,mr->mVertices,sizeof(NxF32)*3,sides,matrix,true);
       SEND_TEXT_MESSAGE(0,"Generating best fit obb for input mesh with %d vertices.\r\n", mr->mVcount );
       ms->releaseMeshSystemRaw(mr);
     }
@@ -37,23 +37,23 @@ void testBestFitOBB(MeshSystemHelper *ms)
   }
   if ( !ms )
   {
-    float quat[4];
+    NxF32 quat[4];
     fm_eulerToQuat(ranf()*FM_PI,ranf()*FM_PI,ranf()*FM_PI,quat);
     fm_quatToMatrix(quat,matrix);
 
     #define PCOUNT 60
-    float points[PCOUNT*3] =
+    NxF32 points[PCOUNT*3] =
     {
     };
 
-    float *pos = points;
+    NxF32 *pos = points;
 
-    for (int i=0; i<PCOUNT; i++)
+    for (NxI32 i=0; i<PCOUNT; i++)
     {
-      float t[3] = { pos[0], pos[1], pos[2] };
-      pos[0] = (float) ((rand()&63)-32)*0.15f;
-      pos[1] = (float) ((rand()&63)-32)*0.0015f;
-      pos[2] = (float) ((rand()%63)-32)*0.05f;
+      NxF32 t[3] = { pos[0], pos[1], pos[2] };
+      pos[0] = (NxF32) ((rand()&63)-32)*0.15f;
+      pos[1] = (NxF32) ((rand()&63)-32)*0.0015f;
+      pos[2] = (NxF32) ((rand()%63)-32)*0.05f;
       fm_transform(matrix,pos,t);
 
       gRenderDebug->DebugPoint(t,0.1f);
@@ -66,11 +66,11 @@ void testBestFitOBB(MeshSystemHelper *ms)
     }
 
     SEND_TEXT_MESSAGE(0,"Generating best fit obb for random set of 60 data points.\r\n");
-    fm_computeBestFitOBB(PCOUNT,points,sizeof(float)*3,sides,matrix,true);
+    fm_computeBestFitOBB(PCOUNT,points,sizeof(NxF32)*3,sides,matrix,true);
   }
 
-  float bmin[3];
-  float bmax[3];
+  NxF32 bmin[3];
+  NxF32 bmax[3];
 
   bmin[0] = -sides[0]*0.5f;
   bmin[1] = -sides[1]*0.5f;

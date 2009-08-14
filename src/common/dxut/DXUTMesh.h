@@ -9,7 +9,7 @@
 #ifndef DXUTMESH_H
 #define DXUTMESH_H
 
-
+#include "UserMemAlloc.h"
 
 
 

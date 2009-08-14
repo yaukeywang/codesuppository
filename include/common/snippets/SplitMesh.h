@@ -3,7 +3,7 @@
 #define SPLIT_MESH_H
 
 #include <stdlib.h>
-#include "NxSimpleTypes.h"
+#include "UserMemAlloc.h"
 
 #if 0
 #include "log.h"
@@ -35,7 +35,7 @@ public:
     mIds = 0;
   }
 
-  SimpleMesh(size_t vcount,size_t tcount,const float *vertices,const size_t *indices,const size_t *ids)
+  SimpleMesh(size_t vcount,size_t tcount,const NxF32 *vertices,const size_t *indices,const size_t *ids)
   {
     mInitialVcount = 0;
     mVcount = 0;
@@ -66,14 +66,14 @@ public:
     mTcount = 0;
   }
 
-  void setSimpleMesh(size_t vcount,size_t tcount,const float *vertices,const size_t *indices,const size_t *ids)
+  void setSimpleMesh(size_t vcount,size_t tcount,const NxF32 *vertices,const size_t *indices,const size_t *ids)
   {
     release();
-    mVertices = new float[vcount*3];
+    mVertices = new NxF32[vcount*3];
     mIndices  = new size_t[tcount*3];
     mVcount = vcount;
     mTcount = tcount;
-    memcpy(mVertices,vertices,sizeof(float)*3*vcount);
+    memcpy(mVertices,vertices,sizeof(NxF32)*3*vcount);
     memcpy(mIndices,indices,sizeof(size_t)*3*tcount);
     if ( ids )
     {
@@ -82,21 +82,21 @@ public:
     }
   }
 
-  void setSimpleMesh(size_t vcount,size_t tcount,const double *vertices,const size_t *indices,const size_t *ids)
+  void setSimpleMesh(size_t vcount,size_t tcount,const NxF64 *vertices,const size_t *indices,const size_t *ids)
   {
     release();
-    mVertices = new float[vcount*3];
+    mVertices = new NxF32[vcount*3];
     mIndices  = new size_t[tcount*3];
     mVcount = vcount;
     mTcount = tcount;
 
-    float *dest = mVertices;
+    NxF32 *dest = mVertices;
 
     for (size_t i=0; i<vcount; i++)
     {
-      dest[0] = (float)vertices[0];
-      dest[1] = (float)vertices[1];
-      dest[2] = (float)vertices[2];
+      dest[0] = (NxF32)vertices[0];
+      dest[1] = (NxF32)vertices[1];
+      dest[2] = (NxF32)vertices[2];
       dest+=3;
       vertices+=3;
     }
@@ -140,7 +140,7 @@ public:
 
   size_t     mVcount;
   size_t     mTcount;
-  float     *mVertices;
+  NxF32     *mVertices;
   size_t    *mIndices;
   size_t    *mRemapIndex; // remaps an index to the original index passed in.  A remap value of 0xFFFFFFFF means it is a new vertex.
   size_t     mInitialVcount;
@@ -148,7 +148,7 @@ public:
 
 };
 
-bool splitMesh(const SimpleMesh &inputMesh,SimpleMesh &leftMesh,SimpleMesh &rightMesh,const float *planeEquation,bool tesselate,bool remove_tjunctions,bool build_closure,bool perlin_noise);
+bool splitMesh(const SimpleMesh &inputMesh,SimpleMesh &leftMesh,SimpleMesh &rightMesh,const NxF32 *planeEquation,bool tesselate,bool remove_tjunctions,bool build_closure,bool perlin_noise);
 
 class SimpleMeshDouble
 {
@@ -164,7 +164,7 @@ public:
     mInitialVcount = 0;
   }
 
-  SimpleMeshDouble(size_t vcount,size_t tcount,const double *vertices,const size_t *indices,const size_t *ids)
+  SimpleMeshDouble(size_t vcount,size_t tcount,const NxF64 *vertices,const size_t *indices,const size_t *ids)
   {
     mRemapIndex = 0;
     mVcount = 0;
@@ -195,14 +195,14 @@ public:
     mRemapIndex = 0;
   }
 
-  void setSimpleMesh(size_t vcount,size_t tcount,const double *vertices,const size_t *indices,const size_t *ids)
+  void setSimpleMesh(size_t vcount,size_t tcount,const NxF64 *vertices,const size_t *indices,const size_t *ids)
   {
     release();
-    mVertices = new double[vcount*3];
+    mVertices = new NxF64[vcount*3];
     mIndices  = new size_t[tcount*3];
     mVcount = vcount;
     mTcount = tcount;
-    memcpy(mVertices,vertices,sizeof(double)*3*vcount);
+    memcpy(mVertices,vertices,sizeof(NxF64)*3*vcount);
     memcpy(mIndices,indices,sizeof(size_t)*3*tcount);
     if ( ids )
     {
@@ -243,14 +243,14 @@ public:
 
   size_t         mVcount;
   size_t         mTcount;
-  double        *mVertices;
+  NxF64        *mVertices;
   size_t        *mIndices;
   size_t        *mIds;
   size_t        *mRemapIndex; // remaps an index to the original index passed in.  A remap value of 0xFFFFFFFF means it is a new vertex.
   size_t         mInitialVcount;
 };
 
-bool splitMesh(const SimpleMeshDouble &inputMesh,SimpleMeshDouble &leftMesh,SimpleMeshDouble &rightMesh,const double *planeEquation,bool tesselate,bool remove_tjunctions,bool build_closure,bool perlin_noise);
+bool splitMesh(const SimpleMeshDouble &inputMesh,SimpleMeshDouble &leftMesh,SimpleMeshDouble &rightMesh,const NxF64 *planeEquation,bool tesselate,bool remove_tjunctions,bool build_closure,bool perlin_noise);
 
 
 //************************************************************************************
@@ -261,15 +261,15 @@ bool splitMesh(const SimpleMeshDouble &inputMesh,SimpleMeshDouble &leftMesh,Simp
 class RobustMeshInterface
 {
 public:
-  virtual void iterateTriangle(const double *p1,const double *p2,const double *p3,size_t id) = 0;
+  virtual void iterateTriangle(const NxF64 *p1,const NxF64 *p2,const NxF64 *p3,size_t id) = 0;
 };
 
 class RobustMesh
 {
 public:
 
-  virtual void addTriangle(const float *p1,const float *p2,const float *p3,size_t id) = 0;
-  virtual void addTriangle(const double *p1,const double *p2,const double *p3,size_t id) = 0;
+  virtual void addTriangle(const NxF32 *p1,const NxF32 *p2,const NxF32 *p3,size_t id) = 0;
+  virtual void addTriangle(const NxF64 *p1,const NxF64 *p2,const NxF64 *p3,size_t id) = 0;
 
   virtual void iterateTriangles(RobustMeshInterface *iface) = 0;
 
@@ -291,18 +291,18 @@ class RingSystem
 {
 public:
 
-  virtual void addLineSegment(const double *p1,const double *p2) = 0;
+  virtual void addLineSegment(const NxF64 *p1,const NxF64 *p2) = 0;
 
   virtual size_t buildPolygons(bool collapseColinear,bool intersectEddges,bool saveResults) = 0;
 
-  virtual double *getEdges(size_t &edgeCount) = 0;
+  virtual NxF64 *getEdges(size_t &edgeCount) = 0;
 
   virtual size_t  getPolygonCount(void) = 0; // report the number of rings.
-  virtual double *getPolygon(size_t polygonIndex,size_t &polygonCount,bool &closed,bool &concave,double *center) = 0;
+  virtual NxF64 *getPolygon(size_t polygonIndex,size_t &polygonCount,bool &closed,bool &concave,NxF64 *center) = 0;
 
-  virtual const double * getTriangulation(size_t &tcount) = 0; // returns the delauney triangulation
+  virtual const NxF64 * getTriangulation(size_t &tcount) = 0; // returns the delauney triangulation
 
-  virtual void setPlaneEquation(const double *plane) = 0;
+  virtual void setPlaneEquation(const NxF64 *plane) = 0;
 
   virtual void edgeStitch(void) = 0;
 
@@ -317,7 +317,7 @@ class SplitMesh
 {
 public:
 
-  virtual bool splitMesh(RobustMesh *rm,const double *plane,bool collapseColinear,bool edgeIntersect,bool saveResults) = 0;
+  virtual bool splitMesh(RobustMesh *rm,const NxF64 *plane,bool collapseColinear,bool edgeIntersect,bool saveResults) = 0;
   virtual RobustMesh * getLeftMesh(void) = 0;
   virtual RobustMesh * getRightMesh(void) = 0;
   virtual RingSystem * getLeftRingSystem(void) = 0;
@@ -405,12 +405,12 @@ public:
     mVcount = vcount;
     mRoot   = 0;
     mJunkPile = 0;
-    mEdgeCheck  = new unsigned int[vcount];
+    mEdgeCheck  = new NxU32[vcount];
     mLeftEdges  = new EdgeWalk*[vcount];
     mRightEdges = new EdgeWalk*[vcount];
     memset(mLeftEdges,0,sizeof(EdgeWalk *)*vcount);
     memset(mRightEdges,0,sizeof(EdgeWalk *)*vcount);
-    memset(mEdgeCheck,0,sizeof(unsigned int)*vcount);
+    memset(mEdgeCheck,0,sizeof(NxU32)*vcount);
   }
 
   ~EdgeWalker(void)
@@ -431,19 +431,19 @@ public:
 #if 0
       if ( mVertexIndex )
       {
-        const double *vertices = mVertexIndex->getVerticesDouble();
-        const double *p1 = &vertices[i1*3];
-        const double *p2 = &vertices[i2*3];
-        float t1[3];
-        float t2[3];
+        const NxF64 *vertices = mVertexIndex->getVerticesDouble();
+        const NxF64 *p1 = &vertices[i1*3];
+        const NxF64 *p2 = &vertices[i2*3];
+        NxF32 t1[3];
+        NxF32 t2[3];
 
-        t1[0] = (float)p1[0];
-        t1[1] = (float)p1[1];
-        t1[2] = (float)p1[2];
+        t1[0] = (NxF32)p1[0];
+        t1[1] = (NxF32)p1[1];
+        t1[2] = (NxF32)p1[2];
 
-        t2[0] = (float)p2[0];
-        t2[1] = (float)p2[1];
-        t2[2] = (float)p2[2];
+        t2[0] = (NxF32)p2[0];
+        t2[1] = (NxF32)p2[1];
+        t2[2] = (NxF32)p2[2];
 
         gRenderDebug->DebugRay(t1,t2,0.005f,0xFFFFFF,0xFF0000,1500.0f);
       }
@@ -485,13 +485,13 @@ public:
     if ( fph )
     {
       fprintf(fph,"   const size_t vcount = %d;\r\n", mVcount );
-      fprintf(fph,"   float vertices[3*vcount] = {\r\n");
+      fprintf(fph,"   NxF32 vertices[3*vcount] = {\r\n");
 
-      const double *vertices = mVertexIndex->getVerticesDouble();
+      const NxF64 *vertices = mVertexIndex->getVerticesDouble();
       for (size_t i=0; i<mVcount; i++)
       {
-        const double *p = &vertices[i*3];
-        fprintf(fph,"   %0.9ff,%0.9ff,%0.9ff,\r\n", (float) p[0], (float)p[1],(float)p[2] );
+        const NxF64 *p = &vertices[i*3];
+        fprintf(fph,"   %0.9ff,%0.9ff,%0.9ff,\r\n", (NxF32) p[0], (NxF32)p[1],(NxF32)p[2] );
       }
       fprintf(fph,"  };\r\n");
 
@@ -515,19 +515,19 @@ public:
   {
     EdgeWalk *ret = 0;
 
-    const double SNAP_DIST=0.01;
-    double nearest = SNAP_DIST*SNAP_DIST;
+    const NxF64 SNAP_DIST=0.01;
+    NxF64 nearest = SNAP_DIST*SNAP_DIST;
 
     if ( mVertexIndex )
     {
-      const double *p1 = mVertexIndex->getVertexDouble(to);
+      const NxF64 *p1 = mVertexIndex->getVertexDouble(to);
       EdgeWalk *e = mRoot;
 
       while ( e )
       {
         size_t from = e->getI1();
-        const double *p2 = mVertexIndex->getVertexDouble(from);
-        double dist = fm_distanceSquared(p1,p2);
+        const NxF64 *p2 = mVertexIndex->getVertexDouble(from);
+        NxF64 dist = fm_distanceSquared(p1,p2);
         if ( dist < nearest && e != exclude )
         {
           nearest = dist;
@@ -550,20 +550,20 @@ public:
 
 
 
-  void debug(EdgeWalk * /*walk*/,double /*yoffset*/)
+  void debug(EdgeWalk * /*walk*/,NxF64 /*yoffset*/)
   {
 #if 0
-    double xoffset = 0;
-    double zoffset = 0;
+    NxF64 xoffset = 0;
+    NxF64 zoffset = 0;
 //    xoffset = yoffset;
 //    yoffset = 0;
 
     if ( mVertexIndex )
     {
-      const double *_p1 = mVertexIndex->getVertexDouble(walk->getI1());
-      const double *_p2 = mVertexIndex->getVertexDouble(walk->getI2());
-      double p1[3];
-      double p2[3];
+      const NxF64 *_p1 = mVertexIndex->getVertexDouble(walk->getI1());
+      const NxF64 *_p2 = mVertexIndex->getVertexDouble(walk->getI2());
+      NxF64 p1[3];
+      NxF64 p2[3];
       p1[0] = _p1[0]+xoffset;
       p1[1] = _p1[1]+yoffset;
       p1[2] = _p1[2]+zoffset;
@@ -571,7 +571,7 @@ public:
       p2[1] = _p2[1]+yoffset;
       p2[2] = _p2[2]+zoffset;
       gRenderDebug->DebugRay(p1,p2,0.003f,0xFFFFFF,0xFF0000,30.0f);
-      unsigned int color = 0x00FF00;
+      NxU32 color = 0x00FF00;
       if ( isDuplicateLeft(walk->getI1()) )
       {
         color = 0xFFFF00;
@@ -582,11 +582,11 @@ public:
 #if 0
     if ( yoffset == 0 )
     {
-      const double *p1 = mVertexIndex->getVertexDouble(walk->getI1());
-      const double *p2 = mVertexIndex->getVertexDouble(walk->getI2());
+      const NxF64 *p1 = mVertexIndex->getVertexDouble(walk->getI1());
+      const NxF64 *p2 = mVertexIndex->getVertexDouble(walk->getI2());
 
       gLog->Display("F: %d to %d (%0.9f,%0.9f,%0.9f) to (%0.9f,%0.9f,%0.9f)\r\n", walk->getI1(), walk->getI2(),
-        (float)p1[0],(float)p1[1],(float)p1[2],(float)p2[0],(float)p2[1],(float)p2[2]);
+        (NxF32)p1[0],(NxF32)p1[1],(NxF32)p1[2],(NxF32)p2[0],(NxF32)p2[1],(NxF32)p2[2]);
     }
 #endif
 
@@ -650,9 +650,9 @@ public:
         e++;
       }
 
-      unsigned int check_count = 0;
+      NxU32 check_count = 0;
 
-      float yoffset = 0;
+      NxF32 yoffset = 0;
 
 
 
@@ -689,7 +689,7 @@ public:
 
   //      gLog->Display("From: %d to %d\r\n", walk->getI1(), walk->getI2() );
 
-        float yoff = -0.01f;
+        NxF32 yoff = -0.01f;
 
         while ( walk )
         {
@@ -714,8 +714,8 @@ public:
   #if 0
           if ( walk && vertices)
           {
-            const float *p1 = &vertices[ walk->getI1()*3];
-            const float *p2 = &vertices[ walk->getI2()*3];
+            const NxF32 *p1 = &vertices[ walk->getI1()*3];
+            const NxF32 *p2 = &vertices[ walk->getI2()*3];
 
             gLog->Display("F: %d to %d (%0.9f,%0.9f,%0.9f) to (%0.9f,%0.9f,%0.9f)\r\n", walk->getI1(), walk->getI2(),
               p1[0],p1[1],p1[2],p2[0],p2[1],p2[2]);
@@ -1095,7 +1095,7 @@ private:
   EdgeWalkVector       mEdges;
   EdgeWalkVector       mRawEdges;
 
-  unsigned int        *mEdgeCheck;
+  NxU32        *mEdgeCheck;
   EdgeWalk            *mJunkPile; // fragment edges that don't build polygons
   size_tVector         mIndices;
   size_tVector         mPolygons;

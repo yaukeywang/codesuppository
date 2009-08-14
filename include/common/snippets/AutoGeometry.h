@@ -2,6 +2,8 @@
 
 #define AUTO_GEOMETRY_H
 
+#include "UserMemAlloc.h"
+
 namespace JOB_SWARM
 {
   class JobSwarmContext;
@@ -24,31 +26,31 @@ public:
     mParentIndex = -1;
     mBoneName = 0;
   }
-  int           mBoneIndex;
-  int           mParentIndex;
+  NxI32           mBoneIndex;
+  NxI32           mParentIndex;
   const char   *mBoneName;
-  float         mConvexTransform[16];
-  unsigned int  mVertexCount;
-  float        *mVertices;
-  unsigned int  mTriCount;
-  unsigned int *mIndices;
-  float         mMeshVolume;
+  NxF32         mConvexTransform[16];
+  NxU32  mVertexCount;
+  NxF32        *mVertices;
+  NxU32  mTriCount;
+  NxU32 *mIndices;
+  NxF32         mMeshVolume;
 
   // OBB
-  float         mOBBVolume;
-  float         mOBBTransform[16];
-  float         mOBBSides[3];
+  NxF32         mOBBVolume;
+  NxF32         mOBBTransform[16];
+  NxF32         mOBBSides[3];
 
   // sphere
-  float         mSphereVolume;
-  float         mSphereRadius;
-  float         mSphereCenter[3];
+  NxF32         mSphereVolume;
+  NxF32         mSphereRadius;
+  NxF32         mSphereCenter[3];
 
   // Capsule
-  float         mCapsuleVolume;
-  float         mCapsuleHeight;
-  float         mCapsuleRadius;
-  float         mCapsuleTransform[16];
+  NxF32         mCapsuleVolume;
+  NxF32         mCapsuleHeight;
+  NxF32         mCapsuleRadius;
+  NxF32         mCapsuleTransform[16];
 };
 
 enum BoneOption
@@ -69,23 +71,23 @@ public:
   }
   BoneOption   mOption;
   const char  *mBoneName;
-  int          mParentIndex;
-  float        mTransform[16];
-  float        mInverseTransform[16];
+  NxI32          mParentIndex;
+  NxF32        mTransform[16];
+  NxF32        mInverseTransform[16];
 };
 
 class SimpleSkinnedVertex
 {
 public:
-  float          mPos[3];
+  NxF32          mPos[3];
   unsigned short mBone[4];
-  float          mWeight[4];
+  NxF32          mWeight[4];
 };
 
 class SimpleSkinnedMesh
 {
 public:
-  unsigned int         mVertexCount;
+  NxU32         mVertexCount;
   SimpleSkinnedVertex *mVertices;
 
 };
@@ -95,10 +97,10 @@ class AutoGeometry
 public:
 
 
-  virtual bool createCollisionVolumes(float collapse_percentage,JOB_SWARM::JobSwarmContext *context) = 0;
-  virtual SimpleHull ** getResults(unsigned int &geom_count,bool &ready) = 0;
+  virtual bool createCollisionVolumes(NxF32 collapse_percentage,JOB_SWARM::JobSwarmContext *context) = 0;
+  virtual SimpleHull ** getResults(NxU32 &geom_count,bool &ready) = 0;
 
-  virtual SimpleHull ** createCollisionVolumes(float collapse_percentage,unsigned int &geom_count) = 0;
+  virtual SimpleHull ** createCollisionVolumes(NxF32 collapse_percentage,NxU32 &geom_count) = 0;
 
   virtual void addSimpleSkinnedTriangle(const SimpleSkinnedVertex &v1,
                                         const SimpleSkinnedVertex &v2,

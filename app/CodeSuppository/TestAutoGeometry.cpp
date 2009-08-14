@@ -41,7 +41,7 @@ public:
           mAutoGeometry = ag;
 
           MESHIMPORT::MeshBoneInstance *binst = msk->mBones;
-          for (int i=0; i<msk->mBoneCount; i++)
+          for (NxI32 i=0; i<msk->mBoneCount; i++)
           {
             AUTO_GEOMETRY::SimpleBone b;
 
@@ -50,23 +50,23 @@ public:
 
             b.mParentIndex = binst->mParentIndex;
             b.mBoneName = binst->mBoneName;
-            memcpy(b.mTransform,binst->mTransform,sizeof(float)*16 );
-            memcpy(b.mInverseTransform, binst->mInverseTransform,sizeof(float)*16 );
+            memcpy(b.mTransform,binst->mTransform,sizeof(NxF32)*16 );
+            memcpy(b.mInverseTransform, binst->mInverseTransform,sizeof(NxF32)*16 );
             ag->addSimpleBone(b);
             binst++;
           }
 
-          typedef USER_STL::vector< unsigned int > UintVector;
+          typedef USER_STL::vector< NxU32 > UintVector;
           typedef USER_STL::vector< AUTO_GEOMETRY::SimpleSkinnedVertex > SimpleSkinnedVertexVector;
 
           UintVector indices;
           SimpleSkinnedVertexVector vertices;
 
-          for (unsigned int k=0; k<ms->mMeshCount; k++)
+          for (NxU32 k=0; k<ms->mMeshCount; k++)
           {
             MESHIMPORT::Mesh *m = ms->mMeshes[k];
-            unsigned int base_index = vertices.size();
-            for (unsigned int i=0; i<m->mVertexCount; i++)
+            NxU32 base_index = vertices.size();
+            for (NxU32 i=0; i<m->mVertexCount; i++)
             {
               MESHIMPORT::MeshVertex &v = m->mVertices[i];
               AUTO_GEOMETRY::SimpleSkinnedVertex s;
@@ -84,13 +84,13 @@ public:
               vertices.push_back(s);
             }
 
-            for (unsigned int i=0; i<m->mSubMeshCount; i++)
+            for (NxU32 i=0; i<m->mSubMeshCount; i++)
             {
               MESHIMPORT::SubMesh *sm = m->mSubMeshes[i];
 
               if ( stristr(sm->mMaterialName,"__cloth") == 0 ) // if not cloth
               {
-                for (unsigned int j=0; j<sm->mTriCount; j++)
+                for (NxU32 j=0; j<sm->mTriCount; j++)
                 {
                   NxU32 i1 = sm->mIndices[j*3+0]+base_index;
                   NxU32 i2 = sm->mIndices[j*3+1]+base_index;
@@ -137,7 +137,7 @@ public:
     bool ret  = false;
     if ( mAutoGeometry )
     {
-      unsigned int geom_count;
+      NxU32 geom_count;
       bool ready;
       AUTO_GEOMETRY::SimpleHull **hulls = mAutoGeometry->getResults(geom_count,ready);
       if ( ready )
@@ -147,7 +147,7 @@ public:
           MESHIMPORT::MeshSystemContainer *msc = mHelper->getMeshSystemContainer();
           MESHIMPORT::MeshImportInterface *iface = gMeshImport->getMeshImportInterface(msc);
           iface->importCollisionRepresentation("ClothCollision",0);
-          for (unsigned int i=0; i<geom_count; i++)
+          for (NxU32 i=0; i<geom_count; i++)
           {
             AUTO_GEOMETRY::SimpleHull *h = hulls[i];
 
@@ -168,7 +168,7 @@ public:
             {
               case MESHIMPORT::MCT_SPHERE:
                 {
-                  float matrix[16];
+                  NxF32 matrix[16];
                   fm_identity(matrix);
                   fm_setTranslation(matrix,h->mSphereCenter);
                   iface->importSphere("ClothCollision", h->mBoneName, matrix, h->mSphereRadius ); 
@@ -181,7 +181,7 @@ public:
                 break;
               case MESHIMPORT::MCT_CAPSULE:
                 {
-                  const float capsuleScale = 1.0f;
+                  const NxF32 capsuleScale = 1.0f;
                   if ( h->mCapsuleHeight <= 0 )
                   {
                     iface->importSphere("ClothCollision", h->mBoneName, h->mCapsuleTransform, h->mCapsuleRadius*capsuleScale );

@@ -79,7 +79,7 @@ public:
       }
       if ( mSkeleton && showSkeleton )
       {
-        for (int i=0; i<mSkeleton->mBoneCount; i++)
+        for (NxI32 i=0; i<mSkeleton->mBoneCount; i++)
         {
           MESHIMPORT::MeshBoneInstance &b = mSkeleton->mBones[i];
           if ( b.mParentIndex != -1 )
@@ -117,7 +117,7 @@ public:
       }
       if ( mSkeleton && showSkeleton )
       {
-        for (int i=0; i<mSkeleton->mBoneCount; i++)
+        for (NxI32 i=0; i<mSkeleton->mBoneCount; i++)
         {
           MESHIMPORT::MeshBoneInstance &b = mSkeleton->mBones[i];
           if ( b.mParentIndex != -1 )
@@ -144,7 +144,7 @@ public:
     }
   }
 
-  virtual void setSelectCollision(int sc)
+  virtual void setSelectCollision(NxI32 sc)
   {
     if ( sc != mSelectCollision )
     {
@@ -164,7 +164,7 @@ public:
     }
   }
 
-  void debugRender(MESHIMPORT::MeshCollisionRepresentation *m,MESHIMPORT::MeshSkeletonInstance *skeleton,int selectCollision)
+  void debugRender(MESHIMPORT::MeshCollisionRepresentation *m,MESHIMPORT::MeshSkeletonInstance *skeleton,NxI32 selectCollision)
   {
     if ( selectCollision >= 0 )
     {
@@ -188,12 +188,12 @@ public:
   {
     NxU32 color = gRenderDebug->getDebugColor();
 
-    float combined[16];
+    NxF32 combined[16];
 
-    const float *transform = m->mTransform;
+    const NxF32 *transform = m->mTransform;
     if ( skeleton )
     {
-      for (int i=0; i<skeleton->mBoneCount; i++)
+      for (NxI32 i=0; i<skeleton->mBoneCount; i++)
       {
         MESHIMPORT::MeshBoneInstance &b = mSkeleton->mBones[i];
         if ( strcmp(b.mBoneName,m->mName) == 0 )
@@ -235,11 +235,11 @@ public:
             NxU32 i2 = c->mIndices[i*3+1];
             NxU32 i3 = c->mIndices[i*3+2];
 
-            const float *p1 = &c->mVertices[i1*3];
-            const float *p2 = &c->mVertices[i2*3];
-            const float *p3 = &c->mVertices[i3*3];
+            const NxF32 *p1 = &c->mVertices[i1*3];
+            const NxF32 *p2 = &c->mVertices[i2*3];
+            const NxF32 *p3 = &c->mVertices[i3*3];
 
-            float t1[3],t2[3],t3[3];
+            NxF32 t1[3],t2[3],t3[3];
             fm_transform( transform, p1, t1 );
             fm_transform( transform, p2, t2 );
             fm_transform( transform, p3, t3 );
@@ -266,7 +266,7 @@ public:
 
   void debugRender(MESHIMPORT::Mesh *m,MESHIMPORT::MeshSkeletonInstance *skeleton)
   {
-    int vcount = m->mVertexCount;
+    NxI32 vcount = m->mVertexCount;
     MESHIMPORT::MeshVertex *vertices = MEMALLOC_NEW_ARRAY(MESHIMPORT::MeshVertex,vcount);
     gMeshImport->transformVertices(vcount,m->mVertices,vertices,skeleton);
 
@@ -369,7 +369,7 @@ public:
     release();
 
     NxU32 len;
-    unsigned char *data = getLocalFile(fname,len);
+    NxU8 *data = getLocalFile(fname,len);
     if ( data )
     {
       mMeshSystemContainer = gMeshImport->createMeshSystemContainer(fname,data,len,0);
@@ -395,31 +395,31 @@ public:
     return ret;
   }
 
-  virtual void advanceAnimation(float dtime,float rate)
+  virtual void advanceAnimation(NxF32 dtime,NxF32 rate)
   {
     mTime+=(dtime*rate);
-    int track = (int)mTime;
+    NxI32 track = (NxI32)mTime;
     if ( mSkeleton )
     {
       gMeshImport->sampleAnimationTrack(track,mMeshSystem,mSkeleton);
     }
   }
 
-  virtual const float * getCompositeTransforms(NxU32 &bone_count) 
+  virtual const NxF32 * getCompositeTransforms(NxU32 &bone_count) 
   {
-    const float *ret = 0;
+    const NxF32 *ret = 0;
     bone_count = 0;
     if ( mSkeleton )
     {
       mTransforms.clear();
-      for (int i=0; i<mSkeleton->mBoneCount; i++)
+      for (NxI32 i=0; i<mSkeleton->mBoneCount; i++)
       {
         MESHIMPORT::MeshBoneInstance &bi = mSkeleton->mBones[i];
         NxMat44 m;
         m.set(bi.mCompositeAnimTransform);
         mTransforms.push_back(m);
       }
-      ret = (const float *)&mTransforms[0];
+      ret = (const NxF32 *)&mTransforms[0];
       bone_count = mSkeleton->mBoneCount;
     }
     return ret;
@@ -694,7 +694,7 @@ public:
   }
 
 private:
-  float mTime;
+  NxF32 mTime;
   bool mShowWireframe;
   bool mFlipWinding;
   bool mShowBounds;

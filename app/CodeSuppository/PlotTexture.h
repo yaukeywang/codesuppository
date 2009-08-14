@@ -2,7 +2,7 @@
 
 #define PLOT_TEXTURE_H
 
-#include "NxSimpleTypes.h"
+#include "UserMemAlloc.h"
 
 namespace PD3D
 {

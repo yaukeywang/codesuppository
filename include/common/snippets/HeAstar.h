@@ -12,7 +12,7 @@ public:
   virtual NxU32 getEdgeCount(void *userData) const = 0;
   virtual AI_Node *    getEdge(NxI32 index,void *userData) const = 0;
 
-  virtual void debugRender(unsigned int color,float duration) = 0;
+  virtual void debugRender(NxU32 color,NxF32 duration) = 0;
 
 };
 

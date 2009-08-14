@@ -131,7 +131,7 @@
 	\param u U parameter.
 	\param v V parameter.
 	*/
-	NX_INLINE void NxComputeBarycentricPoint(NxVec3& pt, const NxVec3& p0, const NxVec3& p1, const NxVec3& p2, float u, float v)
+	NX_INLINE void NxComputeBarycentricPoint(NxVec3& pt, const NxVec3& p0, const NxVec3& p1, const NxVec3& p2, NxF32 u, NxF32 v)
 		{
 		// This seems to confuse the compiler...
 //		pt = (1.0f - u - v)*p0 + u*p1 + v*p2;

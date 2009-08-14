@@ -2,6 +2,8 @@
 
 #define ARROW_HEAD_H
 
+#include "UserMemAlloc.h"
+
 /*!
 **
 ** Copyright (c) 2008 by John W. Ratcliff mailto:jratcliff@infiniplex.net
@@ -61,22 +63,22 @@
 //
 // Usage:
 //
-//           p1    - is a const float pointer to the starting position of the ray (x,y,z)
-//           p2    - is a const float pointer to the ending position of the ray, this is where the arrow head will go.
+//           p1    - is a const NxF32 pointer to the starting position of the ray (x,y,z)
+//           p2    - is a const NxF32 pointer to the ending position of the ray, this is where the arrow head will go.
 //arrowHeadSize    - this is the size of the arrow head.  If this is greater than 1/3 the length of the p1 to p2, it the arrow head will be shrunk to fit the line segment.
-//       tcount    - a reference to an unsigned int that will contain the number of triangles produced by the routine.
+//       tcount    - a reference to an NxU32 that will contain the number of triangles produced by the routine.
 //
 // returns an array of const floats in the form of x1,y1,x1, x2,y2,z2, x3,y3,z3 9 floats per triangle.
 
-const float * createArrowHead(const float *p1,const float *p2,float arrowHeadSize,unsigned int &tcount);
+const NxF32 * createArrowHead(const NxF32 *p1,const NxF32 *p2,NxF32 arrowHeadSize,NxU32 &tcount);
 
 
 // Here is an example demonstration of how to use the function:
 //
 //
-//    unsigned int tcount;
-//    const float *triangles = createArrowHead(p1,p2,1,tcount);
-//    for (unsigned int i=0; i<tcount; i++)
+//    NxU32 tcount;
+//    const NxF32 *triangles = createArrowHead(p1,p2,1,tcount);
+//    for (NxU32 i=0; i<tcount; i++)
 //    {
 //      debugSolidTri(triangles,triangles+3,triangles+6,0xFF0000);  // debug this triangle solid shaded in red
 //      debugWireTri(triangles,triangles+3,triangles+6,0xFFFFFF);   // overlay a white wireframe outline on top of it.

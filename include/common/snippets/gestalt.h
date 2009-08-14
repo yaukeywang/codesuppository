@@ -2,6 +2,8 @@
 
 #define GESTALT_H
 
+#include "UserMemAlloc.h"
+
 /*!
 **
 ** Copyright (c) 2007 by John W. Ratcliff mailto:jratcliff@infiniplex.net
@@ -51,10 +53,6 @@
 
 */
 
-#ifdef  __cplusplus
-extern "C" {
-#endif
-
 // Performs a 'fuzzy' comparison between two strings.  Returns how
 // 'alike' they are expressed as a percentage match.
 //
@@ -70,11 +68,8 @@ extern "C" {
 // please donate a few bucks to my kids youth group fundraising
 // website located at http://www.amillionpixels.us/
 
-int FuzzyCompare(const char *s1,const char *s2);
+NxI32 FuzzyCompare(const char *s1,const char *s2);
 
 
-#ifdef  __cplusplus
-}
-#endif
 
 #endif

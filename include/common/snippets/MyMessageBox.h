@@ -2,6 +2,7 @@
 
 #define MY_MESSAGE_BOX_H
 
+#include "UserMemAlloc.h"
 
 void myMessageBox(const char *fmt, ...);
 bool myMessageBoxYesNo(const char *fmt, ...);

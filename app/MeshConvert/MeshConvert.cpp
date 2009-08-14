@@ -33,7 +33,7 @@ char *stristr(const char *str,const char *key)       // case insensitive str str
 	char *foo = strstr(istr,ikey);
 	if ( foo )
 	{
-		unsigned int loc = (unsigned int)(foo - istr);
+		NxU32 loc = (NxU32)(foo - istr);
 		foo = (char *)str+loc;
 	}
 
@@ -43,7 +43,7 @@ char *stristr(const char *str,const char *key)       // case insensitive str str
 class MyMeshImportApplicationResource : public MESHIMPORT::MeshImportApplicationResource
 {
 public:
-	virtual void * getApplicationResource(const char *base_name,const char *resource_name,unsigned int &len) 
+	virtual void * getApplicationResource(const char *base_name,const char *resource_name,NxU32 &len) 
 	{
 		void *ret = 0;
 		len = 0;
@@ -71,7 +71,7 @@ public:
 };
 
 
-void main(int argc,const char **argv)
+void main(NxI32 argc,const char **argv)
 {
     if ( argc < 2 )
     {
@@ -85,13 +85,13 @@ void main(int argc,const char **argv)
     {
         bool rotate = false;
         bool scale  = false;
-        float meshScale = 1;
-        float rot[3];
+        NxF32 meshScale = 1;
+        NxF32 rot[3];
 
         MESHIMPORT::MeshSerializeFormat inputFormat = MESHIMPORT::MSF_EZMESH;
         MESHIMPORT::MeshSerializeFormat outputFormat = MESHIMPORT::MSF_EZMESH;
 
-        for (int i=2; i<argc; i++)
+        for (NxI32 i=2; i<argc; i++)
         {
             const char *key = argv[i];
             if ( strcmp(key,"-r") == 0 )
@@ -101,9 +101,9 @@ void main(int argc,const char **argv)
                     const char *x = argv[i+1];
                     const char *y = argv[i+2];
                     const char *z = argv[i+3];
-                    rot[0] = (float) atof( x );
-                    rot[1] = (float) atof( y );
-                    rot[2] = (float) atof( z );
+                    rot[0] = (NxF32) atof( x );
+                    rot[1] = (NxF32) atof( y );
+                    rot[2] = (NxF32) atof( z );
                     printf("Rotating input mesh by euler(%0.2f,%0.2f,%0.2f)\r\n", rot[0], rot[1], rot[2] );
                     rotate = true;
                     i+=3;
@@ -119,7 +119,7 @@ void main(int argc,const char **argv)
                 {
                     i++;
                     const char *value = argv[i];
-                    meshScale = (float)atof(value);
+                    meshScale = (NxF32)atof(value);
                     if ( meshScale > 0.0001f )
                     {
                         printf("Mesh scale set to %0.4f\r\n", meshScale );
@@ -176,7 +176,7 @@ void main(int argc,const char **argv)
 
 		char dirname[256];
 		strcpy(dirname,argv[0]);
-		int len = strlen(dirname);
+		NxI32 len = strlen(dirname);
 		char *scan = &dirname[len-1];
 		while ( len )
 		{
@@ -226,7 +226,7 @@ void main(int argc,const char **argv)
 			if ( fph )
 			{
 				fseek(fph,0L,SEEK_END);
-				unsigned int len = ftell(fph);
+				NxU32 len = ftell(fph);
 				fseek(fph,0L,SEEK_SET);
 				if ( len )
 				{

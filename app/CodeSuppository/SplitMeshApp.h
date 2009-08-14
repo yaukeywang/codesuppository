@@ -2,6 +2,8 @@
 
 #define SPLIT_MESH_APP_H
 
+#include "UserMemAlloc.h"
+
 enum SplitMeshCommand
 {
   SMC_WIREFRAME,
@@ -51,7 +53,7 @@ class MeshSystemHelper;
 
 void appSetMeshSystemHelper(MeshSystemHelper *msh);
 void appRender(void);
-void appCommand(SplitMeshCommand command,bool state=true,const float *data=0);
+void appCommand(SplitMeshCommand command,bool state=true,const NxF32 *data=0);
 void appImportTer(const char *fname);
 
 

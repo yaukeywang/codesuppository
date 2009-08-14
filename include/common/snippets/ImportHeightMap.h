@@ -2,7 +2,7 @@
 
 #define IMPORT_HEIGHTMAP_H
 
-#include "NxSimpleTypes.h"
+#include "UserMemAlloc.h"
 
 class ImportHeightMap
 {

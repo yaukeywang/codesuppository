@@ -96,7 +96,7 @@ MyFluid::~MyFluid()
 void MyFluid::draw()
 {
 #if 0
-  static unsigned int maxp = 0;
+  static NxU32 maxp = 0;
 
 
   if ( mParticleBufferNum > maxp )

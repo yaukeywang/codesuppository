@@ -34,15 +34,15 @@ enum EquationType
 class Equation
 {
 public:
-  Equation(EquationType type,float constant,float scaler,float minv=-256,float maxv=256);
+  Equation(EquationType type,NxF32 constant,NxF32 scaler,NxF32 minv=-256,NxF32 maxv=256);
   ~Equation(void) { };
-  float Get(float v) const; // compute it using function.
+  NxF32 Get(NxF32 v) const; // compute it using function.
 private:
   EquationType mFunction;
-  float mMin;
-  float mMax;
-  float mConstant;
-  float mScaler;
+  NxF32 mMin;
+  NxF32 mMax;
+  NxF32 mConstant;
+  NxF32 mScaler;
 };
 
 enum EnvelopeType
@@ -79,7 +79,7 @@ public:
   Envelopes(void);
   ~Envelopes(void);
 
-  float Get(float v,EnvelopeType t) const;
+  NxF32 Get(NxF32 v,EnvelopeType t) const;
 
   // convert string into an equation type.
   static EnvelopeType Get(const char *str);
@@ -93,7 +93,7 @@ private:
 
 Envelopes::Envelopes(void)
 {
-  for (int i=ET_NULL; i<ET_LAST; i++)
+  for (NxI32 i=ET_NULL; i<ET_LAST; i++)
   {
     mEnvelopes[i] = Get((EnvelopeType)i);
   }
@@ -101,10 +101,10 @@ Envelopes::Envelopes(void)
 
 Envelopes::~Envelopes(void)
 {
-  for (int i=ET_NULL; i<ET_LAST; i++) delete mEnvelopes[i];
+  for (NxI32 i=ET_NULL; i<ET_LAST; i++) delete mEnvelopes[i];
 }
 
-float Envelopes::Get(float v,EnvelopeType t) const
+NxF32 Envelopes::Get(NxF32 v,EnvelopeType t) const
 {
   if ( mEnvelopes[t] ) return mEnvelopes[t]->Get(v);
   return v;
@@ -120,8 +120,8 @@ Equation * Envelopes::Get(EnvelopeType choice)
     case ET_SQUARED2:
     case ET_SQUARED3:
       {
-      float ratio = float(choice-ET_NULL)/3;
-      float scaler1 = ratio*0.02f;
+      NxF32 ratio = NxF32(choice-ET_NULL)/3;
+      NxF32 scaler1 = ratio*0.02f;
       e = MEMALLOC_NEW(Equation)(MF_SQUARED,scaler1,1);
       }
       break;
@@ -129,9 +129,9 @@ Equation * Envelopes::Get(EnvelopeType choice)
   	case ET_ATAN2:
 	  case ET_ATAN3:
       {
-	    float ratio = float(choice-ET_SQUARED3)/3;
-      float scaler1 = 90*ratio;
-      float amp1 = 0.03f;
+	    NxF32 ratio = NxF32(choice-ET_SQUARED3)/3;
+      NxF32 scaler1 = 90*ratio;
+      NxF32 amp1 = 0.03f;
       e = MEMALLOC_NEW(Equation)(MF_ATAN,amp1,scaler1);
       }
       break;
@@ -142,9 +142,9 @@ Equation * Envelopes::Get(EnvelopeType choice)
       {
       #define T_SCALE3 180
       #define T_AMP3 0.011f
-      float ratio = float(choice-ET_ATAN3)/4;
-      float scaler1 = T_SCALE3*ratio;
-      float amp1 = T_AMP3;
+      NxF32 ratio = NxF32(choice-ET_ATAN3)/4;
+      NxF32 scaler1 = T_SCALE3*ratio;
+      NxF32 amp1 = T_AMP3;
       e = MEMALLOC_NEW(Equation)(MF_ACOS,amp1,scaler1);
       }
       break;
@@ -152,8 +152,8 @@ Equation * Envelopes::Get(EnvelopeType choice)
       {
       #define T_SCALE7 128
       #define T_AMP7 0.015f
-      float scaler1 = T_SCALE7;
-      float amp1 = T_AMP7;
+      NxF32 scaler1 = T_SCALE7;
+      NxF32 amp1 = T_AMP7;
       e = MEMALLOC_NEW(Equation)(MF_COS,amp1,scaler1);
       }
       break;
@@ -161,8 +161,8 @@ Equation * Envelopes::Get(EnvelopeType choice)
       {
       #define T_SCALE8 128
       #define T_AMP8 0.02f
-      float scaler1 = T_SCALE8;
-      float amp1 = T_AMP8;
+      NxF32 scaler1 = T_SCALE8;
+      NxF32 amp1 = T_AMP8;
       e = MEMALLOC_NEW(Equation)(MF_COS,amp1,scaler1);
       }
       break;
@@ -170,8 +170,8 @@ Equation * Envelopes::Get(EnvelopeType choice)
       {
       #define T_SCALE9 128
       #define T_AMP9 0.025f
-      float scaler1 = T_SCALE9;
-      float amp1 = T_AMP9;
+      NxF32 scaler1 = T_SCALE9;
+      NxF32 amp1 = T_AMP9;
       e = MEMALLOC_NEW(Equation)(MF_COS,amp1,scaler1);
       }
       break;
@@ -179,8 +179,8 @@ Equation * Envelopes::Get(EnvelopeType choice)
       {
       #define T_SCALE11 80
       #define T_AMP11 0.010f
-      float scaler1 = T_SCALE11;
-      float amp1 = T_AMP11;
+      NxF32 scaler1 = T_SCALE11;
+      NxF32 amp1 = T_AMP11;
       e = MEMALLOC_NEW(Equation)(MF_EXP,amp1,scaler1);
       }
       break;
@@ -188,8 +188,8 @@ Equation * Envelopes::Get(EnvelopeType choice)
       {
       #define T_SCALE12 120
       #define T_AMP12 0.013f
-      float scaler1 = T_SCALE12;
-      float amp1 = T_AMP12;
+      NxF32 scaler1 = T_SCALE12;
+      NxF32 amp1 = T_AMP12;
       e = MEMALLOC_NEW(Equation)(MF_EXP,amp1,scaler1);
       }
       break;
@@ -197,8 +197,8 @@ Equation * Envelopes::Get(EnvelopeType choice)
       {
       #define T_SCALE13 160
       #define T_AMP13 0.018f
-      float scaler1 = T_SCALE13;
-      float amp1 = T_AMP13;
+      NxF32 scaler1 = T_SCALE13;
+      NxF32 amp1 = T_AMP13;
       e = MEMALLOC_NEW(Equation)(MF_EXP,amp1,scaler1);
       }
       break;
@@ -206,8 +206,8 @@ Equation * Envelopes::Get(EnvelopeType choice)
       {
       #define T_SCALE14 600
       #define T_AMP14 0.055f
-      float scaler1 = T_SCALE14;
-      float amp1 = T_AMP14;
+      NxF32 scaler1 = T_SCALE14;
+      NxF32 amp1 = T_AMP14;
       e = MEMALLOC_NEW(Equation)(MF_EXP,amp1,scaler1);
       }
       break;
@@ -215,8 +215,8 @@ Equation * Envelopes::Get(EnvelopeType choice)
       {
       #define T_SCALE15 30
       #define T_AMP15 0.12f
-      float scaler1 = T_SCALE15;
-      float amp1 = T_AMP15;
+      NxF32 scaler1 = T_SCALE15;
+      NxF32 amp1 = T_AMP15;
       e = MEMALLOC_NEW(Equation)(MF_LOG,amp1,scaler1,-4,256);
       }
       break;
@@ -224,8 +224,8 @@ Equation * Envelopes::Get(EnvelopeType choice)
       {
       #define T_SCALE16 70
       #define T_AMP16 0.03f
-      float scaler1 = T_SCALE16;
-      float amp1 = T_AMP16;
+      NxF32 scaler1 = T_SCALE16;
+      NxF32 amp1 = T_AMP16;
       e = MEMALLOC_NEW(Equation)(MF_LOG,amp1,scaler1,-15,256);
       }
       break;
@@ -233,8 +233,8 @@ Equation * Envelopes::Get(EnvelopeType choice)
       {
       #define T_SCALE17 60
       #define T_AMP17 0.10f
-      float scaler1 = T_SCALE17;
-      float amp1 = T_AMP17;
+      NxF32 scaler1 = T_SCALE17;
+      NxF32 amp1 = T_AMP17;
       e = MEMALLOC_NEW(Equation)(MF_LOG,amp1,scaler1,-1,70);
       }
       break;
@@ -242,8 +242,8 @@ Equation * Envelopes::Get(EnvelopeType choice)
       {
       #define T_SCALE18 64
       #define T_AMP18 0.027f
-      float scaler1 = T_SCALE18;
-      float amp1 = T_AMP18;
+      NxF32 scaler1 = T_SCALE18;
+      NxF32 amp1 = T_AMP18;
       e = MEMALLOC_NEW(Equation)(MF_TANH,amp1,scaler1,-256,256);
       }
       break;
@@ -251,8 +251,8 @@ Equation * Envelopes::Get(EnvelopeType choice)
       {
       #define T_SCALE19 256
       #define T_AMP19 0.009f
-      float scaler1 = T_SCALE19;
-      float amp1 = T_AMP19;
+      NxF32 scaler1 = T_SCALE19;
+      NxF32 amp1 = T_AMP19;
       e = MEMALLOC_NEW(Equation)(MF_SQRT,amp1,scaler1,30,256);
       }
       break;
@@ -262,7 +262,7 @@ Equation * Envelopes::Get(EnvelopeType choice)
 }
 
 
-Equation::Equation(EquationType type,float constant,float scaler,float minv,float maxv)
+Equation::Equation(EquationType type,NxF32 constant,NxF32 scaler,NxF32 minv,NxF32 maxv)
 {
   mFunction = type;
   mConstant = constant;
@@ -271,7 +271,7 @@ Equation::Equation(EquationType type,float constant,float scaler,float minv,floa
   mMax      = maxv;
 };
 
-float Equation::Get(float v) const
+NxF32 Equation::Get(NxF32 v) const
 {
   switch ( mFunction )
   {
@@ -279,50 +279,50 @@ float Equation::Get(float v) const
       v = v*v*mConstant*mScaler;
       break;
     case MF_SIN:
-      v = (float)sin(v*mConstant)*mScaler;
+      v = (NxF32)sin(v*mConstant)*mScaler;
       break;
     case MF_COS:
-      v = (float)cos(v*mConstant)*mScaler;
+      v = (NxF32)cos(v*mConstant)*mScaler;
       break;
     case MF_TAN:
-      v = (float)tan(v*mConstant)*mScaler;
+      v = (NxF32)tan(v*mConstant)*mScaler;
       break;
     case MF_SINH:
-      v = (float)sinh(v*mConstant)*mScaler;
+      v = (NxF32)sinh(v*mConstant)*mScaler;
       break;
     case MF_COSH:
-      v = (float)cosh(v*mConstant)*mScaler;
+      v = (NxF32)cosh(v*mConstant)*mScaler;
       break;
     case MF_TANH:
-      v =(float)tanh(v*mConstant)*mScaler;
+      v =(NxF32)tanh(v*mConstant)*mScaler;
       break;
     case MF_ASIN:
       {
-      float i = v*mConstant;
+      NxF32 i = v*mConstant;
       if ( i < -1 ) i = -1;
       if ( i >  1 ) i = 1;
-      v = (float)asin(i)*mScaler;
+      v = (NxF32)asin(i)*mScaler;
       }
       break;
     case MF_ACOS:
       {
-      float i = v*mConstant;
+      NxF32 i = v*mConstant;
       if ( i < -1 ) i = -1;
       if ( i >  1 ) i = 1;
-      v = (float)acos(i)*mScaler;
+      v = (NxF32)acos(i)*mScaler;
       }
       break;
     case MF_ATAN:
-      v = (float)atan(v*mConstant)*mScaler;
+      v = (NxF32)atan(v*mConstant)*mScaler;
       break;
     case MF_EXP:
-      v = (float)exp(v*mConstant)*mScaler;
+      v = (NxF32)exp(v*mConstant)*mScaler;
       break;
     case MF_LOG:
-      v = (float)log( fabs(v*mConstant) )*mScaler;
+      v = (NxF32)log( fabs(v*mConstant) )*mScaler;
       break;
     case MF_SQRT:
-      v = (float)sqrt( fabs(v*mConstant) )*mScaler;
+      v = (NxF32)sqrt( fabs(v*mConstant) )*mScaler;
       break;
   }
 
@@ -375,38 +375,38 @@ class Perlin
 {
 public:
 
-  Perlin(int octaves,float freq,float amp,int seed);
+  Perlin(NxI32 octaves,NxF32 freq,NxF32 amp,NxI32 seed);
 
-  void init_perlin(int n,float p);
+  void init_perlin(NxI32 n,NxF32 p);
 
-  float Get(float x,float y)
+  NxF32 Get(NxF32 x,NxF32 y)
   {
-    float vec[2];
+    NxF32 vec[2];
     vec[0] = x;
     vec[1] = y;
     return perlin_noise_2D(vec);
   };
 
-  float perlin_noise_2D(float vec[2]);
+  NxF32 perlin_noise_2D(NxF32 vec[2]);
 
-  float noise1(float arg);
-  float noise2(float vec[2]);
-  float noise3(float vec[3]);
-  void normalize2(float v[2]);
-  void normalize3(float v[3]);
+  NxF32 noise1(NxF32 arg);
+  NxF32 noise2(NxF32 vec[2]);
+  NxF32 noise3(NxF32 vec[3]);
+  void normalize2(NxF32 v[2]);
+  void normalize3(NxF32 v[3]);
   void init(void);
 private:
-  int   mOctaves;
-  float mFrequency;
-  float mAmplitude;
-  int   mSeed;
+  NxI32   mOctaves;
+  NxF32 mFrequency;
+  NxF32 mAmplitude;
+  NxI32   mSeed;
 
-  int p[B + B + 2];
-  float g3[B + B + 2][3];
-  float g2[B + B + 2][2];
-  float g1[B + B + 2];
+  NxI32 p[B + B + 2];
+  NxF32 g3[B + B + 2][3];
+  NxF32 g2[B + B + 2][2];
+  NxF32 g1[B + B + 2];
   bool  mStart;
-  float	scale[MAXTERMS];	// scaling factor for renormalization
+  NxF32	scale[MAXTERMS];	// scaling factor for renormalization
 };
 
 #define s_curve(t) ( t * t * (3.0f - 2.0f * t) )
@@ -414,15 +414,15 @@ private:
 
 #define setup(i,b0,b1,r0,r1)\
 	t = vec[i] + N;\
-	b0 = ((int)t) & BM;\
+	b0 = ((NxI32)t) & BM;\
 	b1 = (b0+1) & BM;\
-	r0 = t - (int)t;\
+	r0 = t - (NxI32)t;\
 	r1 = r0 - 1.0f;
 
-float Perlin::noise1(float arg)
+NxF32 Perlin::noise1(NxF32 arg)
 {
-	int bx0, bx1;
-	float rx0, rx1, sx, t, u, v, vec[1];
+	NxI32 bx0, bx1;
+	NxF32 rx0, rx1, sx, t, u, v, vec[1];
 
 	vec[0] = arg;
 
@@ -443,11 +443,11 @@ float Perlin::noise1(float arg)
 	return lerp(sx, u, v);
 }
 
-float Perlin::noise2(float vec[2])
+NxF32 Perlin::noise2(NxF32 vec[2])
 {
-	int bx0, bx1, by0, by1, b00, b10, b01, b11;
-	float rx0, rx1, ry0, ry1, *q, sx, sy, a, b, t, u, v;
-	int i, j;
+	NxI32 bx0, bx1, by0, by1, b00, b10, b01, b11;
+	NxF32 rx0, rx1, ry0, ry1, *q, sx, sy, a, b, t, u, v;
+	NxI32 i, j;
 
 	if (mStart)
   {
@@ -487,11 +487,11 @@ float Perlin::noise2(float vec[2])
 	return lerp(sy, a, b);
 }
 
-float Perlin::noise3(float vec[3])
+NxF32 Perlin::noise3(NxF32 vec[3])
 {
-	int bx0, bx1, by0, by1, bz0, bz1, b00, b10, b01, b11;
-	float rx0, rx1, ry0, ry1, rz0, rz1, *q, sy, sz, a, b, c, d, t, u, v;
-	int i, j;
+	NxI32 bx0, bx1, by0, by1, bz0, bz1, b00, b10, b01, b11;
+	NxF32 rx0, rx1, ry0, ry1, rz0, rz1, *q, sy, sz, a, b, c, d, t, u, v;
+	NxI32 i, j;
 
 	if (mStart)
   {
@@ -541,21 +541,21 @@ float Perlin::noise3(float vec[3])
 	return lerp(sz, c, d);
 }
 
-void Perlin::normalize2(float v[2])
+void Perlin::normalize2(NxF32 v[2])
 {
-	float s;
+	NxF32 s;
 
-	s = (float)sqrt(v[0] * v[0] + v[1] * v[1]);
+	s = (NxF32)sqrt(v[0] * v[0] + v[1] * v[1]);
   s = 1.0f/s;
 	v[0] = v[0] * s;
 	v[1] = v[1] * s;
 }
 
-void Perlin::normalize3(float v[3])
+void Perlin::normalize3(NxF32 v[3])
 {
-	float s;
+	NxF32 s;
 
-	s = (float)sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+	s = (NxF32)sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
   s = 1.0f/s;
 
 	v[0] = v[0] * s;
@@ -565,17 +565,17 @@ void Perlin::normalize3(float v[3])
 
 void Perlin::init(void)
 {
-	int i, j, k;
+	NxI32 i, j, k;
 
 	for (i = 0 ; i < B ; i++)
   {
 		p[i] = i;
-		g1[i] = (float)((rand() % (B + B)) - B) / B;
+		g1[i] = (NxF32)((rand() % (B + B)) - B) / B;
 		for (j = 0 ; j < 2 ; j++)
-			g2[i][j] = (float)((rand() % (B + B)) - B) / B;
+			g2[i][j] = (NxF32)((rand() % (B + B)) - B) / B;
 		normalize2(g2[i]);
 		for (j = 0 ; j < 3 ; j++)
-			g3[i][j] = (float)((rand() % (B + B)) - B) / B;
+			g3[i][j] = (NxF32)((rand() % (B + B)) - B) / B;
 		normalize3(g3[i]);
 	}
 
@@ -600,22 +600,22 @@ void Perlin::init(void)
 
 	for( i=0; i<MAXTERMS; i++ )
 	{
-		scale[i] = (float)(pow(2.0f, (float)i) / (pow(2.0f, (float)(i+1))-1.0f));
+		scale[i] = (NxF32)(pow(2.0f, (NxF32)i) / (pow(2.0f, (NxF32)(i+1))-1.0f));
 	}
 
 }
 
 
-float Perlin::perlin_noise_2D(float vec[2])
+NxF32 Perlin::perlin_noise_2D(NxF32 vec[2])
 {
-  int terms    = mOctaves;
-	float result = 0.0f;
-  float amp = mAmplitude;
+  NxI32 terms    = mOctaves;
+	NxF32 result = 0.0f;
+  NxF32 amp = mAmplitude;
 
   vec[0]*=mFrequency;
   vec[1]*=mFrequency;
 
-	for( int i=0; i<terms; i++ )
+	for( NxI32 i=0; i<terms; i++ )
 	{
 		result += noise2(vec)*amp;
 		vec[0] *= 2.0f;
@@ -630,7 +630,7 @@ float Perlin::perlin_noise_2D(float vec[2])
 
 
 
-Perlin::Perlin(int octaves,float freq,float amp,int seed)
+Perlin::Perlin(NxI32 octaves,NxF32 freq,NxF32 amp,NxI32 seed)
 {
   mOctaves = octaves;
   mFrequency = freq;
@@ -646,38 +646,38 @@ public:
   MyPerlin4(const char *options);
   ~MyPerlin4(void);
 
-  float Clamp(float v) const;
+  NxF32 Clamp(NxF32 v) const;
 
-  void  SetClampLow(float low)
+  void  SetClampLow(NxF32 low)
   {
     mClampLow = low;
     mClampRecip = 1.0f / (mClampHigh-mClampLow);
   };
 
-  void  SetClampHigh(float high)
+  void  SetClampHigh(NxF32 high)
   {
     mClampHigh = high;
     mClampRecip = 1.0f / (mClampHigh-mClampLow);
   };
 
-  float GetClampLow(void) const { return mClampLow; };
-  float GetClampHigh(void) const { return mClampHigh; };
+  NxF32 GetClampLow(void) const { return mClampLow; };
+  NxF32 GetClampHigh(void) const { return mClampHigh; };
 
   void SetEquation1(EnvelopeType et) { mEq1 = et; };
   void SetEquation2(EnvelopeType et) { mEq2 = et; };
   void SetEquation3(EnvelopeType et) { mEq3 = et; };
   void SetEquation4(EnvelopeType et) { mEq4 = et; };
 
-  void CreatePerlin(int pno,int octaves,float freq,float amp,int seed);
+  void CreatePerlin(NxI32 pno,NxI32 octaves,NxF32 freq,NxF32 amp,NxI32 seed);
 
-  void DelPerlin(int pno);
+  void DelPerlin(NxI32 pno);
 
-  float get(float x,float y);
+  NxF32 get(NxF32 x,NxF32 y);
 
 private:
-  float   mClampLow;
-  float   mClampHigh;
-  float   mClampRecip;
+  NxF32   mClampLow;
+  NxF32   mClampHigh;
+  NxF32   mClampRecip;
   Perlin *mP1;
   Perlin *mP2;
   Perlin *mP3;
@@ -835,12 +835,12 @@ MyPerlin4::~MyPerlin4(void)
   delete mEnvelopes;
 }
 
-float MyPerlin4::get(float x,float y)
+NxF32 MyPerlin4::get(NxF32 x,NxF32 y)
 {
-  float h1=0;
-  float h2=0;
-  float h3=0;
-  float h4=0;
+  NxF32 h1=0;
+  NxF32 h2=0;
+  NxF32 h3=0;
+  NxF32 h4=0;
 
   if ( mP1 )
   {
@@ -869,7 +869,7 @@ float MyPerlin4::get(float x,float y)
   return (h1+h2+h3+h4);
 }
 
-void MyPerlin4::CreatePerlin(int pno,int octaves,float freq,float amp,int seed)
+void MyPerlin4::CreatePerlin(NxI32 pno,NxI32 octaves,NxF32 freq,NxF32 amp,NxI32 seed)
 {
   switch ( pno )
   {
@@ -893,7 +893,7 @@ void MyPerlin4::CreatePerlin(int pno,int octaves,float freq,float amp,int seed)
 }
 
 
-float MyPerlin4::Clamp(float v) const
+NxF32 MyPerlin4::Clamp(NxF32 v) const
 {
   if ( v < mClampLow )
   {
@@ -913,7 +913,7 @@ float MyPerlin4::Clamp(float v) const
   return v;
 }
 
-void MyPerlin4::DelPerlin(int pno)
+void MyPerlin4::DelPerlin(NxI32 pno)
 {
   switch (pno)
   {

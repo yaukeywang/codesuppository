@@ -41,7 +41,7 @@ public:
   	}
     return tm;
 #else
-     unsigned int a, d;
+     NxU32 a, d;
      asm("cpuid");
      asm volatile("rdtsc" : "=a" (a), "=d" (d));
 

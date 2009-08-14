@@ -79,7 +79,7 @@ class NxMat33
 
 	// Access elements
 
-	//low level data access, single or double precision, with eventual translation:
+	//low level data access, single or NxF64 precision, with eventual translation:
 	//for dense 9 element data
 	NX_INLINE void setRowMajor(const NxF32 *);
 	NX_INLINE void setRowMajor(const NxF32 d[][3]);
@@ -120,18 +120,18 @@ class NxMat33
 	NX_INLINE void getColumnMajorStride4(NxF64 d[][4]) const;
 
 
-	NX_INLINE void setRow(int row, const NxVec3 &);
-	NX_INLINE void setColumn(int col, const NxVec3 &);
-	NX_INLINE void getRow(int row, NxVec3 &) const;
-	NX_INLINE void getColumn(int col, NxVec3 &) const;
+	NX_INLINE void setRow(NxI32 row, const NxVec3 &);
+	NX_INLINE void setColumn(NxI32 col, const NxVec3 &);
+	NX_INLINE void getRow(NxI32 row, NxVec3 &) const;
+	NX_INLINE void getColumn(NxI32 col, NxVec3 &) const;
 
-	NX_INLINE NxVec3 getRow(int row) const;
-	NX_INLINE NxVec3 getColumn(int col) const;
+	NX_INLINE NxVec3 getRow(NxI32 row) const;
+	NX_INLINE NxVec3 getColumn(NxI32 col) const;
 
 
 	//element access:
-    NX_INLINE NxReal & operator()(int row, int col);
-    NX_INLINE const NxReal & operator() (int row, int col) const;
+    NX_INLINE NxReal & operator()(NxI32 row, NxI32 col);
+    NX_INLINE const NxReal & operator() (NxI32 row, NxI32 col) const;
 
 	/**
 	\brief returns true for identity matrix
@@ -333,7 +333,7 @@ class NxMat33
 	/**
 	\brief matrix scalar product
 	*/
-	NX_INLINE NxMat33	operator*  (float s)				const;
+	NX_INLINE NxMat33	operator*  (NxF32 s)				const;
 
 	private:
 	Mat33DataType data;
@@ -940,7 +940,7 @@ NX_INLINE void NxMat33::getColumnMajorStride4(NxF64 d[][4]) const
 	}
 
 
-NX_INLINE void NxMat33::setRow(int row, const NxVec3 & v)
+NX_INLINE void NxMat33::setRow(NxI32 row, const NxVec3 & v)
 	{
 #ifndef TRANSPOSED_MAT33
 	data.m[row][0] = v.x;
@@ -954,7 +954,7 @@ NX_INLINE void NxMat33::setRow(int row, const NxVec3 & v)
 	}
 
 
-NX_INLINE void NxMat33::setColumn(int col, const NxVec3 & v)
+NX_INLINE void NxMat33::setColumn(NxI32 col, const NxVec3 & v)
 	{
 #ifndef TRANSPOSED_MAT33
 	data.m[0][col] = v.x;
@@ -968,7 +968,7 @@ NX_INLINE void NxMat33::setColumn(int col, const NxVec3 & v)
 	}
 
 
-NX_INLINE void NxMat33::getRow(int row, NxVec3 & v) const
+NX_INLINE void NxMat33::getRow(NxI32 row, NxVec3 & v) const
 	{
 #ifndef TRANSPOSED_MAT33
 	v.x = data.m[row][0];
@@ -982,7 +982,7 @@ NX_INLINE void NxMat33::getRow(int row, NxVec3 & v) const
 	}
 
 
-NX_INLINE void NxMat33::getColumn(int col, NxVec3 & v) const
+NX_INLINE void NxMat33::getColumn(NxI32 col, NxVec3 & v) const
 	{
 #ifndef TRANSPOSED_MAT33
 	v.x = data.m[0][col];
@@ -996,7 +996,7 @@ NX_INLINE void NxMat33::getColumn(int col, NxVec3 & v) const
 	}
 
 
-NX_INLINE NxVec3 NxMat33::getRow(int row) const
+NX_INLINE NxVec3 NxMat33::getRow(NxI32 row) const
 {
 #ifndef TRANSPOSED_MAT33
 	return NxVec3(data.m[row][0],data.m[row][1],data.m[row][2]);
@@ -1005,7 +1005,7 @@ NX_INLINE NxVec3 NxMat33::getRow(int row) const
 #endif
 }
 
-NX_INLINE NxVec3 NxMat33::getColumn(int col) const
+NX_INLINE NxVec3 NxMat33::getColumn(NxI32 col) const
 {
 #ifndef TRANSPOSED_MAT33
 	return NxVec3(data.m[0][col],data.m[1][col],data.m[2][col]);
@@ -1014,7 +1014,7 @@ NX_INLINE NxVec3 NxMat33::getColumn(int col) const
 #endif
 }
 
-NX_INLINE NxReal & NxMat33::operator()(int row, int col)
+NX_INLINE NxReal & NxMat33::operator()(NxI32 row, NxI32 col)
 	{
 #ifndef TRANSPOSED_MAT33
 	return data.m[row][col];
@@ -1024,7 +1024,7 @@ NX_INLINE NxReal & NxMat33::operator()(int row, int col)
 	}
 
 
-NX_INLINE const NxReal & NxMat33::operator() (int row, int col) const
+NX_INLINE const NxReal & NxMat33::operator() (NxI32 row, NxI32 col) const
 	{
 #ifndef TRANSPOSED_MAT33
 	return data.m[row][col];
@@ -1197,7 +1197,7 @@ NX_INLINE void NxMat33::toQuat(NxQuat & q) const					// set the NxQuat from a ro
 		}
     else
 		{
-		int i = 0; 
+		NxI32 i = 0; 
 		if (data.s._22 > data.s._11)
 			i = 1; 
 		if(data.s._33 > (*this)(i,i))
@@ -1240,7 +1240,7 @@ NX_INLINE void NxMat33::orthonormalize()	//Gram-Schmidt orthogonalization to cor
 
     const NxReal m=3;			//m := linalg[rowdim](A);
     const NxReal n=3;			//n := linalg[coldim](A);
-	int i, j, k = 0;				//k := 0;
+	NxI32 i, j, k = 0;				//k := 0;
 
 
     Mat33d v = *this;				//v := linalg[col](A, 1 .. n); -- 3 column vectors indexable
@@ -1764,7 +1764,7 @@ NX_INLINE NxMat33	NxMat33::operator*  (const NxMat33& mat)	const
 	}
 
 
-NX_INLINE NxMat33	NxMat33::operator*  (float s)			const
+NX_INLINE NxMat33	NxMat33::operator*  (NxF32 s)			const
 	{
 	NxMat33 temp;
 	temp.multiply(s, *this);

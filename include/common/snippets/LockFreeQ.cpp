@@ -64,7 +64,7 @@ namespace LOCK_FREE_Q
 
   struct TCount {
     node_t                                 *pNode;
-    unsigned int                           count;
+    NxU32                           count;
   };
 
   class MyLockFreeQ : public LockFreeQ
@@ -112,16 +112,16 @@ namespace LOCK_FREE_Q
          THREAD_CONFIG::tc_interlockedExchange( &otail , *(int64_t*)&Tail );
 
         // if tail next if 0 replace it with new item
-        if( THREAD_CONFIG::tc_interlockedCompareExchange( &otail.pNode->pNext , *(int*)&item , 0 ) ) break;
+        if( THREAD_CONFIG::tc_interlockedCompareExchange( &otail.pNode->pNext , *(NxI32*)&item , 0 ) ) break;
 
         // else push tail back until it reaches end
-        THREAD_CONFIG::tc_interlockedCompareExchange( &Tail , *(int*)&otail.pNode->pNext , otail.count+1 , *(int*)&otail.pNode , otail.count );
+        THREAD_CONFIG::tc_interlockedCompareExchange( &Tail , *(NxI32*)&otail.pNode->pNext , otail.count+1 , *(NxI32*)&otail.pNode , otail.count );
         //
         THREAD_CONFIG::tc_spinloop();
       }
 
       // try and change tail pointer (it is also fixed in Pop)
-      THREAD_CONFIG::tc_interlockedCompareExchange( &Tail , *(int*)&item , otail.count+1 , *(int*)&otail.pNode , otail.count );
+      THREAD_CONFIG::tc_interlockedCompareExchange( &Tail , *(NxI32*)&item , otail.count+1 , *(NxI32*)&otail.pNode , otail.count );
     }
 
     ///////////////////////////////////////////////////////////////
@@ -147,11 +147,11 @@ namespace LOCK_FREE_Q
           if( !next ) return 0;
 
           // or is just tail falling behind...
-          THREAD_CONFIG::tc_interlockedCompareExchange( &Tail , *(int*)&next , otail.count+1 , *(int*)&otail.pNode , otail.count );
+          THREAD_CONFIG::tc_interlockedCompareExchange( &Tail , *(NxI32*)&next , otail.count+1 , *(NxI32*)&otail.pNode , otail.count );
         }
         else
         {
-          if( THREAD_CONFIG::tc_interlockedCompareExchange( &Head , *(int*)&next , ohead.count+1 , *(int*)&ohead.pNode , ohead.count ) ) return next;
+          if( THREAD_CONFIG::tc_interlockedCompareExchange( &Head , *(NxI32*)&next , ohead.count+1 , *(NxI32*)&ohead.pNode , ohead.count ) ) return next;
         }
         //
         THREAD_CONFIG::tc_spinloop();

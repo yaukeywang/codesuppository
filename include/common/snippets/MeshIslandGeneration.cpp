@@ -32,8 +32,8 @@ class Island;
 class AABB
 {
 public:
-  float mMin[3];
-  float mMax[3];
+  NxF32 mMin[3];
+  NxF32 mMax[3];
 };
 
 class Triangle
@@ -47,7 +47,7 @@ public:
     mId       = 0;
   }
 
-  void minmax(const float *p,AABB &box)
+  void minmax(const NxF32 *p,AABB &box)
   {
     if ( p[0] < box.mMin[0] ) box.mMin[0] = p[0];
     if ( p[1] < box.mMin[1] ) box.mMin[1] = p[1];
@@ -58,24 +58,24 @@ public:
     if ( p[2] > box.mMax[2] ) box.mMax[2] = p[2];
   }
 
-  void minmax(const double *p,AABB &box)
+  void minmax(const NxF64 *p,AABB &box)
   {
-    if ( (float)p[0] < box.mMin[0] ) box.mMin[0] = (float)p[0];
-    if ( (float)p[1] < box.mMin[1] ) box.mMin[1] = (float)p[1];
-    if ( (float)p[2] < box.mMin[2] ) box.mMin[2] = (float)p[2];
-    if ( (float)p[0] > box.mMax[0] ) box.mMax[0] = (float)p[0];
-    if ( (float)p[1] > box.mMax[1] ) box.mMax[1] = (float)p[1];
-    if ( (float)p[2] > box.mMax[2] ) box.mMax[2] = (float)p[2];
+    if ( (NxF32)p[0] < box.mMin[0] ) box.mMin[0] = (NxF32)p[0];
+    if ( (NxF32)p[1] < box.mMin[1] ) box.mMin[1] = (NxF32)p[1];
+    if ( (NxF32)p[2] < box.mMin[2] ) box.mMin[2] = (NxF32)p[2];
+    if ( (NxF32)p[0] > box.mMax[0] ) box.mMax[0] = (NxF32)p[0];
+    if ( (NxF32)p[1] > box.mMax[1] ) box.mMax[1] = (NxF32)p[1];
+    if ( (NxF32)p[2] > box.mMax[2] ) box.mMax[2] = (NxF32)p[2];
   }
 
-  void buildBox(const float *vertices_f,const double *vertices_d,size_t id);
+  void buildBox(const NxF32 *vertices_f,const NxF64 *vertices_d,size_t id);
 
-  void render(unsigned int color)
+  void render(NxU32 color)
   {
 //    gRenderDebug->DebugBound(&mBox.mMin[0],&mBox.mMax[0],color,60.0f);
   }
 
-  void getTriangle(float *tri,const float *vertices_f,const double *vertices_d);
+  void getTriangle(NxF32 *tri,const NxF32 *vertices_f,const NxF64 *vertices_d);
 
   size_t    mHandle;
   bool      mConsumed;
@@ -173,7 +173,7 @@ public:
     isl.mTriangles.clear();
   }
 
-  bool isTouching(Island *isl,const float *vertices_f,const double *vertices_d)
+  bool isTouching(Island *isl,const NxF32 *vertices_f,const NxF64 *vertices_d)
   {
     bool ret = false;
 
@@ -191,7 +191,7 @@ public:
 
 
 #if SHOW_DEBUG
-  void debugTri(const float *t,unsigned int color)
+  void debugTri(const NxF32 *t,NxU32 color)
   {
     gRenderDebug->DebugSolidTri(t,t+3,t+6,color,60.0f);
     gRenderDebug->DebugTri(t,t+3,t+6,color,60.0f);
@@ -202,7 +202,7 @@ public:
   {
   }
 
-  void render(unsigned int color)
+  void render(NxU32 color)
   {
 //    gRenderDebug->DebugBound(mMin,mMax,color,60.0f);
     TriangleVector::iterator i;
@@ -214,42 +214,42 @@ public:
   }
 
 
-  const double   *mVerticesDouble;
-  const float    *mVerticesFloat;
+  const NxF64   *mVerticesDouble;
+  const NxF32    *mVerticesFloat;
 
-  float           mMin[3];
-  float           mMax[3];
+  NxF32           mMin[3];
+  NxF32           mMax[3];
   bool            mCoplanar; // marked as co-planar..
   TriangleVector  mTriangles;
 };
 
 
-void Triangle::getTriangle(float *tri,const float *vertices_f,const double *vertices_d)
+void Triangle::getTriangle(NxF32 *tri,const NxF32 *vertices_f,const NxF64 *vertices_d)
 {
   size_t i1 = mEdges[0]->mI1;
   size_t i2 = mEdges[1]->mI1;
   size_t i3 = mEdges[2]->mI1;
   if ( vertices_f )
   {
-    const float *p1 = &vertices_f[i1*3];
-    const float *p2 = &vertices_f[i2*3];
-    const float *p3 = &vertices_f[i3*3];
+    const NxF32 *p1 = &vertices_f[i1*3];
+    const NxF32 *p2 = &vertices_f[i2*3];
+    const NxF32 *p3 = &vertices_f[i3*3];
     fm_copy3(p1,tri);
     fm_copy3(p2,tri+3);
     fm_copy3(p3,tri+6);
   }
   else
   {
-    const double *p1 = &vertices_d[i1*3];
-    const double *p2 = &vertices_d[i2*3];
-    const double *p3 = &vertices_d[i3*3];
+    const NxF64 *p1 = &vertices_d[i1*3];
+    const NxF64 *p2 = &vertices_d[i2*3];
+    const NxF64 *p3 = &vertices_d[i3*3];
     fm_doubleToFloat3(p1,tri);
     fm_doubleToFloat3(p2,tri+3);
     fm_doubleToFloat3(p3,tri+6);
   }
 }
 
-void Triangle::buildBox(const float *vertices_f,const double *vertices_d,size_t id)
+void Triangle::buildBox(const NxF32 *vertices_f,const NxF64 *vertices_d,size_t id)
 {
   mId = (unsigned short)id;
   size_t i1 = mEdges[0]->mI1;
@@ -258,9 +258,9 @@ void Triangle::buildBox(const float *vertices_f,const double *vertices_d,size_t 
 
   if ( vertices_f )
   {
-    const float *p1 = &vertices_f[i1*3];
-    const float *p2 = &vertices_f[i2*3];
-    const float *p3 = &vertices_f[i3*3];
+    const NxF32 *p1 = &vertices_f[i1*3];
+    const NxF32 *p2 = &vertices_f[i2*3];
+    const NxF32 *p3 = &vertices_f[i3*3];
     mBox.mMin[0] = p1[0];
     mBox.mMin[1] = p1[1];
     mBox.mMin[2] = p1[2];
@@ -272,15 +272,15 @@ void Triangle::buildBox(const float *vertices_f,const double *vertices_d,size_t 
   }
   else
   {
-    const double *p1 = &vertices_d[i1*3];
-    const double *p2 = &vertices_d[i2*3];
-    const double *p3 = &vertices_d[i3*3];
-    mBox.mMin[0] = (float)p1[0];
-    mBox.mMin[1] = (float)p1[1];
-    mBox.mMin[2] = (float)p1[2];
-    mBox.mMax[0] = (float)p1[0];
-    mBox.mMax[1] = (float)p1[1];
-    mBox.mMax[2] = (float)p1[2];
+    const NxF64 *p1 = &vertices_d[i1*3];
+    const NxF64 *p2 = &vertices_d[i2*3];
+    const NxF64 *p3 = &vertices_d[i3*3];
+    mBox.mMin[0] = (NxF32)p1[0];
+    mBox.mMin[1] = (NxF32)p1[1];
+    mBox.mMin[2] = (NxF32)p1[2];
+    mBox.mMax[0] = (NxF32)p1[0];
+    mBox.mMax[1] = (NxF32)p1[1];
+    mBox.mMax[2] = (NxF32)p1[2];
     minmax(p2,mBox);
     minmax(p3,mBox);
   }
@@ -334,14 +334,14 @@ public:
     mIslands.clear();
   }
 
-  size_t islandGenerate(size_t tcount,const size_t *indices,const double *vertices)
+  size_t islandGenerate(size_t tcount,const size_t *indices,const NxF64 *vertices)
   {
     mVerticesDouble = vertices;
     mVerticesFloat  = 0;
     return islandGenerate(tcount,indices);
   }
 
-  size_t islandGenerate(size_t tcount,const size_t *indices,const float *vertices)
+  size_t islandGenerate(size_t tcount,const size_t *indices,const NxF32 *vertices)
   {
     mVerticesDouble = 0;
     mVerticesFloat  = vertices;
@@ -379,14 +379,14 @@ public:
 
     // while there are still edges to process...
 #if SHOW_DEBUG
-    float offset = 0;
+    NxF32 offset = 0;
 #endif
 
     while ( !mTriangleEdges.empty() )
     {
 
 #if SHOW_DEBUG
-      unsigned int color = gRenderDebug->getDebugColor();
+      NxU32 color = gRenderDebug->getDebugColor();
 //      offset+=2;
 #endif
 
@@ -482,23 +482,23 @@ public:
 private:
 
 #if SHOW_DEBUG
-  void debugEdge(Edge *e,const float *vertices,unsigned int color)
+  void debugEdge(Edge *e,const NxF32 *vertices,NxU32 color)
   {
-    const float *p1 = &vertices[e->mI1*3];
-    const float *p2 = &vertices[e->mI2*3];
+    const NxF32 *p1 = &vertices[e->mI1*3];
+    const NxF32 *p2 = &vertices[e->mI2*3];
     gRenderDebug->DebugRay(p1,p2,0.001f,0xFFFFFF,0xFF0000,10.0f);
   }
 
-  void debugEdge(Edge *e,const double *vertices,unsigned int color)
+  void debugEdge(Edge *e,const NxF64 *vertices,NxU32 color)
   {
-    const double *p1 = &vertices[e->mI1*3];
-    const double *p2 = &vertices[e->mI2*3];
+    const NxF64 *p1 = &vertices[e->mI1*3];
+    const NxF64 *p2 = &vertices[e->mI2*3];
     gRenderDebug->DebugRay(p1,p2,0.001f,0xFFFFFF,0xFF0000,10.0f);
   }
 
 
 
-  void debugTriangle(Triangle *t,unsigned int color,float offset)
+  void debugTriangle(Triangle *t,NxU32 color,NxF32 offset)
   {
     size_t i1 = t->mEdges[0]->mI2;
     size_t i2 = t->mEdges[1]->mI2;
@@ -506,12 +506,12 @@ private:
 
     if ( mVerticesFloat )
     {
-      const float *_p1 = &mVerticesFloat[i1*3];
-      const float *_p2 = &mVerticesFloat[i2*3];
-      const float *_p3 = &mVerticesFloat[i3*3];
-      float p1[3];
-      float p2[3];
-      float p3[3];
+      const NxF32 *_p1 = &mVerticesFloat[i1*3];
+      const NxF32 *_p2 = &mVerticesFloat[i2*3];
+      const NxF32 *_p3 = &mVerticesFloat[i3*3];
+      NxF32 p1[3];
+      NxF32 p2[3];
+      NxF32 p3[3];
 
       fm_copy3(_p1,p1);
       fm_copy3(_p2,p2);
@@ -529,9 +529,9 @@ private:
     }
     else if ( mVerticesDouble )
     {
-      const double *p1 = &mVerticesDouble[i1*3];
-      const double *p2 = &mVerticesDouble[i2*3];
-      const double *p3 = &mVerticesDouble[i3*3];
+      const NxF64 *p1 = &mVerticesDouble[i1*3];
+      const NxF64 *p2 = &mVerticesDouble[i2*3];
+      const NxF64 *p3 = &mVerticesDouble[i3*3];
 
       gRenderDebug->DebugSolidTri(p1,p2,p3,color,10.0f);
 
@@ -644,14 +644,14 @@ private:
     mEdgeCheckQueue.push(ec);
   }
 
-  size_t mergeCoplanarIslands(const float *vertices)
+  size_t mergeCoplanarIslands(const NxF32 *vertices)
   {
     mVerticesFloat = vertices;
     mVerticesDouble = 0;
     return mergeCoplanarIslands();
   }
 
-  size_t mergeCoplanarIslands(const double *vertices)
+  size_t mergeCoplanarIslands(const NxF64 *vertices)
   {
     mVerticesDouble = vertices;
     mVerticesFloat = 0;
@@ -754,7 +754,7 @@ private:
           {
             Island *isl = (*i);
 
-            unsigned int color = 0x00FF00;
+            NxU32 color = 0x00FF00;
 
             if ( isl->mCoplanar )
             {
@@ -792,14 +792,14 @@ private:
     return ret;
   }
 
-  size_t mergeTouchingIslands(const float *vertices)
+  size_t mergeTouchingIslands(const NxF32 *vertices)
   {
     size_t ret = 0;
 
     return ret;
   }
 
-  size_t mergeTouchingIslands(const double *vertices)
+  size_t mergeTouchingIslands(const NxF64 *vertices)
   {
     size_t ret = 0;
 
@@ -812,8 +812,8 @@ private:
   EdgeHashMap      mTriangleEdges;
   IslandVector     mIslands;
   EdgeCheckQueue   mEdgeCheckQueue;
-  const double    *mVerticesDouble;
-  const float     *mVerticesFloat;
+  const NxF64    *mVerticesDouble;
+  const NxF32     *mVerticesFloat;
   size_tVector     mIndices;
 };
 

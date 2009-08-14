@@ -2,6 +2,8 @@
 
 #define AG_SCREEN_PIPE_H
 
+#include "UserMemAlloc.h"
+
 #define PIPESIZE 4096 // no more than 4096 screen quad's at a time.
 
 class AgScreenPipeline;

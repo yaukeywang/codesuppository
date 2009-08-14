@@ -9,6 +9,8 @@
 
 #define DXSDK_STDAFX_H
 
+#include "UserMemAlloc.h"
+
 #pragma warning(disable:4995)
 #pragma warning(disable:4819)
 

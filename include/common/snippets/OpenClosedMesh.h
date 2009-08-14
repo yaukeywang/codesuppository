@@ -2,6 +2,7 @@
 
 #define OPEN_CLOSED_MESH_H
 
+#include "UserMemAlloc.h"
 // Determines whether a triangle mesh is open or closed.
 // If it is open, it can return the open edges via a callback interface.
 

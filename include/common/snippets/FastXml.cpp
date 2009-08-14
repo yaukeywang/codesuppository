@@ -104,7 +104,7 @@ public:
     return scan;
   }
 
-  char * processClose(char c,const char *element,char *scan,int argc,const char **argv,FastXmlInterface *iface)
+  char * processClose(char c,const char *element,char *scan,NxI32 argc,const char **argv,FastXmlInterface *iface)
   {
     if ( c == '/' || c == '?' )
     {
@@ -197,7 +197,7 @@ public:
 		  return NULL;
 
 	  fseek(infile, 0L, SEEK_END);
-	  int numbytes = ftell(infile);
+	  NxI32 numbytes = ftell(infile);
 	  fseek(infile, 0L, SEEK_SET);	
 
 	  mInputData = (char*)malloc((numbytes + 1) * sizeof(char));	
@@ -217,7 +217,7 @@ public:
 	  return ret;
   }
 
-  virtual bool processXml(const char *inputData,unsigned int dataLen,FastXmlInterface *iface)
+  virtual bool processXml(const char *inputData,NxU32 dataLen,FastXmlInterface *iface)
   {
 	  release();
 
@@ -258,7 +258,7 @@ public:
         else
         {
           element = scan;
-          int argc = 0;
+          NxI32 argc = 0;
           const char *argv[MAX_ATTRIBUTE];
           bool close;
           scan = nextSoftOrClose(scan,close);
@@ -361,7 +361,7 @@ public:
     return ret;
   }
 
-  const char * getError(int &lineno)
+  const char * getError(NxI32 &lineno)
   {
     const char *ret = mError;
     lineno = mLineNo;
@@ -372,7 +372,7 @@ public:
 private:
   char         mTypes[256];
   char        *mInputData;
-  int          mLineNo;
+  NxI32          mLineNo;
   const char  *mError;
 };
 

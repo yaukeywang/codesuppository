@@ -94,21 +94,21 @@ public:
     }
   }
 
-  void getDF(const double *p,float *d)
+  void getDF(const NxF64 *p,NxF32 *d)
   {
-    d[0] = (float)(p[0]+mProject[0]);
-    d[1] = (float)(p[1]+mProject[1]);
-    d[2] = (float)(p[2]+mProject[2]);
+    d[0] = (NxF32)(p[0]+mProject[0]);
+    d[1] = (NxF32)(p[1]+mProject[1]);
+    d[2] = (NxF32)(p[2]+mProject[2]);
   }
 
-  void getF(const float *p,float *d)
+  void getF(const NxF32 *p,NxF32 *d)
   {
-    d[0] = (float)(p[0]+(float)mProject[0]);
-    d[1] = (float)(p[1]+(float)mProject[1]);
-    d[2] = (float)(p[2]+(float)mProject[2]);
+    d[0] = (NxF32)(p[0]+(NxF32)mProject[0]);
+    d[1] = (NxF32)(p[1]+(NxF32)mProject[1]);
+    d[2] = (NxF32)(p[2]+(NxF32)mProject[2]);
   }
 
-  bool onPlane(const double *p) const
+  bool onPlane(const NxF64 *p) const
   {
     bool ret = false;
 
@@ -122,12 +122,12 @@ public:
   }
 
 
-  void iterateTriangle(const double *p1,const double *p2,const double *p3,size_t /*id*/)
+  void iterateTriangle(const NxF64 *p1,const NxF64 *p2,const NxF64 *p3,size_t /*id*/)
   {
 #if 0// 
-    float fp1[3];
-    float fp2[3];
-    float fp3[3];
+    NxF32 fp1[3];
+    NxF32 fp2[3];
+    NxF32 fp3[3];
 
     getDF(p1,fp1);
     getDF(p2,fp2);
@@ -194,14 +194,14 @@ public:
       if ( mr && mr->mVcount )
       {
         mRobustMesh = SPLIT_MESH::createRobustMesh(0);
-        for (unsigned int i=0; i<mr->mTcount; i++)
+        for (NxU32 i=0; i<mr->mTcount; i++)
         {
-          int i1 = mr->mIndices[i*3+0];
-          int i2 = mr->mIndices[i*3+1];
-          int i3 = mr->mIndices[i*3+2];
-          const float *p1 = &mr->mVertices[i1*3];
-          const float *p2 = &mr->mVertices[i2*3];
-          const float *p3 = &mr->mVertices[i3*3];
+          NxI32 i1 = mr->mIndices[i*3+0];
+          NxI32 i2 = mr->mIndices[i*3+1];
+          NxI32 i3 = mr->mIndices[i*3+2];
+          const NxF32 *p1 = &mr->mVertices[i1*3];
+          const NxF32 *p2 = &mr->mVertices[i2*3];
+          const NxF32 *p3 = &mr->mVertices[i3*3];
           mRobustMesh->addTriangle(p1,p2,p3,0);
         }
 		MESHIMPORT::MeshSystem *msh = ms->getMeshSystem();
@@ -263,12 +263,12 @@ public:
 		NxU32 pcount = ring->getPolygonCount();
 		for (NxU32 i=0; i<pcount; i++)
 		{
-			double center[3];
+			NxF64 center[3];
 			size_t count;
 			bool concave,closed;
-			const double *points = ring->getPolygon(i,count,closed,concave,center);
+			const NxF64 *points = ring->getPolygon(i,count,closed,concave,center);
 			assert(closed);
-			const double *previous = &points[(count-1)*3];
+			const NxF64 *previous = &points[(count-1)*3];
 			for (NxU32 i=0; i<count; i++)
 			{
         NxF32 p1[3];
@@ -530,17 +530,17 @@ public:
       size_t i1 = s.mIndices[i*3+0];
       size_t i2 = s.mIndices[i*3+1];
       size_t i3 = s.mIndices[i*3+2];
-      const float *p1 = &s.mVertices[i1*3];
-      const float *p2 = &s.mVertices[i2*3];
-      const float *p3 = &s.mVertices[i3*3];
-      float _p1[3];
-      float _p2[3];
-      float _p3[3];
+      const NxF32 *p1 = &s.mVertices[i1*3];
+      const NxF32 *p2 = &s.mVertices[i2*3];
+      const NxF32 *p3 = &s.mVertices[i3*3];
+      NxF32 _p1[3];
+      NxF32 _p2[3];
+      NxF32 _p3[3];
       getF(p1,_p1);
       getF(p2,_p2);
       getF(p3,_p3);
 
-      unsigned int color = 0x00FFFF;
+      NxU32 color = 0x00FFFF;
 
       if ( ids )
       {
@@ -562,18 +562,18 @@ public:
 #endif
   }
 
-  void command(SplitMeshCommand _command,bool state,const float *data)
+  void command(SplitMeshCommand _command,bool state,const NxF32 *data)
   {
     switch ( _command )
     {
       case SMC_FILL_BASIN:
-        mDesc.mFillBasin = (int) data[0];
+        mDesc.mFillBasin = (NxI32) data[0];
         break;
       case SMC_FILL_BASIN_PER:
-        mDesc.mFillBasinPer = (int) data[0];
+        mDesc.mFillBasinPer = (NxI32) data[0];
         break;
       case SMC_ERODE_ITERATIONS:
-        mDesc.mErodeIterations = (int)data[0];
+        mDesc.mErodeIterations = (NxI32)data[0];
         break;
       case SMC_ERODE_RATE:
         mDesc.mErodeRate = data[0];
@@ -747,12 +747,12 @@ public:
 #if 0
     Perlin4 *p = createPerlin4();
 
-    for (float z=0; z<256; z++)
+    for (NxF32 z=0; z<256; z++)
     {
-      for (float x=0; x<256; x++)
+      for (NxF32 x=0; x<256; x++)
       {
-        float y = p->get(x*0.5f,z*0.5f);
-        float pos[3] = { x, y, z };
+        NxF32 y = p->get(x*0.5f,z*0.5f);
+        NxF32 pos[3] = { x, y, z };
         gRenderDebug->DebugPoint(pos,0.1f,0xFFFF00,60.0f);
       }
     }
@@ -820,9 +820,9 @@ public:
         size_t i1 = s.mIndices[i*3+0];
         size_t i2 = s.mIndices[i*3+1];
         size_t i3 = s.mIndices[i*3+2];
-        const float *p1 = &s.mVertices[i1*3];
-        const float *p2 = &s.mVertices[i2*3];
-        const float *p3 = &s.mVertices[i3*3];
+        const NxF32 *p1 = &s.mVertices[i1*3];
+        const NxF32 *p2 = &s.mVertices[i2*3];
+        const NxF32 *p3 = &s.mVertices[i3*3];
         cm->addTriangle(p1,p2,p3);
       }
       ConsolidateMeshOutput results;
@@ -871,18 +871,18 @@ public:
       NxU32 edgeCount;
       const NxF64 *edges = ring->getEdges(edgeCount);
 
-      gLog->Display("EdgeCount=%d  PlaneEquation: %0.9f,%0.9f,%9f,%0.9f\r\n", edgeCount, (float)mPlane[0], (float)mPlane[1], (float)mPlane[2],(float) mPlane[3]);
+      gLog->Display("EdgeCount=%d  PlaneEquation: %0.9f,%0.9f,%9f,%0.9f\r\n", edgeCount, (NxF32)mPlane[0], (NxF32)mPlane[1], (NxF32)mPlane[2],(NxF32) mPlane[3]);
 
       for (NxU32 i=0; i<edgeCount; i++)
       {
         gLog->Display("Edge%d: %0.9f,%0.9f,%0.9f,            %0.9f, %0.9f,%0.9f,\r\n",
           i+1,
-          (float)edges[0],
-          (float)edges[1],
-          (float)edges[2],
-          (float)edges[3],
-          (float)edges[4],
-          (float)edges[5] );
+          (NxF32)edges[0],
+          (NxF32)edges[1],
+          (NxF32)edges[2],
+          (NxF32)edges[3],
+          (NxF32)edges[4],
+          (NxF32)edges[5] );
 
         edges+=6;
       }
@@ -911,10 +911,10 @@ public:
         mRightMesh.release();
 
         NxF32 plane[4];
-        plane[0] = (float)mPlane[0];
-        plane[1] = (float)mPlane[1];
-        plane[2] = (float)mPlane[2];
-        plane[3] = (float)mPlane[3];
+        plane[0] = (NxF32)mPlane[0];
+        plane[1] = (NxF32)mPlane[1];
+        plane[2] = (NxF32)mPlane[2];
+        plane[3] = (NxF32)mPlane[3];
 
         SPLIT_MESH::splitMesh(s,mLeftMesh,mRightMesh,plane,mTesselate,mRemoveTjunctions,true,mPerlinNoise);
 
@@ -959,14 +959,14 @@ public:
   void testIntersection(void)
   {
 #if 0
-    double plane[4] = { 1.000000000,0.000000000, 0.000000,-0.244000003 };
+    NxF64 plane[4] = { 1.000000000,0.000000000, 0.000000,-0.244000003 };
 
-//    double plane[4] = { 000000000,1.000000000, 0.000000,-0.244000003 };
+//    NxF64 plane[4] = { 000000000,1.000000000, 0.000000,-0.244000003 };
 
 //    #define EDGE_COUNT 2
     #define EDGE_COUNT 30
 
-    double edges[EDGE_COUNT*6] =
+    NxF64 edges[EDGE_COUNT*6] =
     {
       -0.244000003,0.436521113,0.101231068,            -0.244000003, 0.436521113,0.256136000,
       -0.244000003,0.436521113,-0.224148005,            -0.244000003, 0.436521113,0.101231068,
@@ -1011,9 +1011,9 @@ public:
 
     LineSegmentVector segments;
 
-    double *scan = edges;
+    NxF64 *scan = edges;
 
-    for (int i=0; i<EDGE_COUNT; i++)
+    for (NxI32 i=0; i<EDGE_COUNT; i++)
     {
       bool newPos;
       SPLIT_MESH::LineSegment seg;
@@ -1069,7 +1069,7 @@ public:
         NxF32 tp2[3];
         getDF(p1,tp1);
         getDF(p2,tp2);
-        float radius = 0.01f;
+        NxF32 radius = 0.01f;
         NxU32 color = 0x00FF00;
         gRenderDebug->DebugRay(tp1,tp2,radius,0xFFFF00,color,15.0f);
         results++;
@@ -1085,28 +1085,28 @@ public:
   void testOBB(void)
   {
 #if 0
-    float plane[4];
-    plane[0] = (float)mPlane[0];
-    plane[1] = (float)mPlane[1];
-    plane[2] = (float)mPlane[2];
-    plane[3] = (float)mPlane[3];
+    NxF32 plane[4];
+    plane[0] = (NxF32)mPlane[0];
+    plane[1] = (NxF32)mPlane[1];
+    plane[2] = (NxF32)mPlane[2];
+    plane[3] = (NxF32)mPlane[3];
 
-    float matrix[16];
+    NxF32 matrix[16];
 
     fm_planeToMatrix(plane,matrix);
 
     #define PCOUNT 60
 
-    float points[PCOUNT*3];
-    float *pos = points;
+    NxF32 points[PCOUNT*3];
+    NxF32 *pos = points;
 
-    for (int i=0; i<PCOUNT; i++)
+    for (NxI32 i=0; i<PCOUNT; i++)
     {
-      pos[0] = (float) ((rand()&63)-32)*0.15f;
-      pos[1] = (float) ((rand()&63)-32)*0.0015f;
-      pos[2] = (float) ((rand()%63)-32)*0.05f;
+      pos[0] = (NxF32) ((rand()&63)-32)*0.15f;
+      pos[1] = (NxF32) ((rand()&63)-32)*0.0015f;
+      pos[2] = (NxF32) ((rand()%63)-32)*0.05f;
 
-      float t[3];
+      NxF32 t[3];
 
       fm_transform(matrix,pos,t);
 
@@ -1119,11 +1119,11 @@ public:
     }
 
     {
-      float sides[3];
-      fm_computeBestFitOBB(PCOUNT,points,sizeof(float)*3,sides,matrix);
+      NxF32 sides[3];
+      fm_computeBestFitOBB(PCOUNT,points,sizeof(NxF32)*3,sides,matrix);
 
-      float bmin[3];
-      float bmax[3];
+      NxF32 bmin[3];
+      NxF32 bmax[3];
 
       bmin[0] = -sides[0]*0.5f;
       bmin[1] = -sides[1]*0.5f;
@@ -1138,15 +1138,15 @@ public:
       gRenderDebug->DebugOrientedBound(bmin,bmax,matrix,0xFFFF00,15.0f);
     }
     {
-      float sides[3];
+      NxF32 sides[3];
 
-      float position[3];
-      float quat[4];
+      NxF32 position[3];
+      NxF32 quat[4];
 
-      ConvexDecomposition::computeBestFitOBB(PCOUNT,points,sizeof(float)*3,sides,position,quat);
+      ConvexDecomposition::computeBestFitOBB(PCOUNT,points,sizeof(NxF32)*3,sides,position,quat);
 
-      float bmin[3];
-      float bmax[3];
+      NxF32 bmin[3];
+      NxF32 bmax[3];
 
       bmin[0] = -sides[0]*0.5f;
       bmin[1] = -sides[1]*0.5f;
@@ -1169,7 +1169,7 @@ public:
 
 
    const size_t vcount = 1396;
-   float vertices[3*vcount] = {
+   NxF32 vertices[3*vcount] = {
    2.872505903f,-0.444000006f,-0.532456040f,
    2.832604647f,-0.444000006f,-0.567921460f,
    2.736197948f,-0.346224993f,-0.659344971f,
@@ -2636,13 +2636,13 @@ public:
   1386,895,
  };
 
-    fm_VertexIndex *vindex = fm_createVertexIndex((double)0.0001,false);
+    fm_VertexIndex *vindex = fm_createVertexIndex((NxF64)0.0001,false);
 
     for (size_t i=0; i<vcount; i++)
     {
       bool np;
-      const float *v = &vertices[i*3];
-      double p[3];
+      const NxF32 *v = &vertices[i*3];
+      NxF64 p[3];
       p[0] = v[0];
       p[1] = v[1];
       p[2] = v[2];
@@ -2655,11 +2655,11 @@ public:
       size_t i1 = edges[i*2+0];
       size_t i2 = edges[i*2+1];
 
-      const float *_p1 = &vertices[i1*3];
-      const float *_p2 = &vertices[i2*3];
+      const NxF32 *_p1 = &vertices[i1*3];
+      const NxF32 *_p2 = &vertices[i2*3];
 
-      double p1[3];
-      double p2[3];
+      NxF64 p1[3];
+      NxF64 p2[3];
 
       p1[0] = _p1[0];
       p1[1] = _p1[1];
@@ -2686,7 +2686,7 @@ public:
 
   void testTriangulate(void)
   {
-    double points[10*3] =
+    NxF64 points[10*3] =
     {
       -1.884502053, 5.153564930, -1.050009012,
       -1.585170984, 5.153564930, -0.276419014,
@@ -2701,16 +2701,16 @@ public:
     };
 
 
-    double results[10*3];
+    NxF64 results[10*3];
 
-    size_t pcount = fm_consolidatePolygon(10,points,sizeof(double)*3,results);
+    size_t pcount = fm_consolidatePolygon(10,points,sizeof(NxF64)*3,results);
 
-    const double *prev = &results[(pcount-1)*3];
-    const double *scan = results;
+    const NxF64 *prev = &results[(pcount-1)*3];
+    const NxF64 *scan = results;
     for (size_t i=0; i<pcount; i++)
     {
-      float p1[3];
-      float p2[3];
+      NxF32 p1[3];
+      NxF32 p2[3];
       fm_doubleToFloat3(prev,p1);
       fm_doubleToFloat3(scan,p2);
 //      gRenderDebug->DebugRay(p1,p2,0.01f,0xFFFFFF,0xFF0000,30.0f);
@@ -2720,7 +2720,7 @@ public:
 
     fm_Triangulate *t = fm_createTriangulate();
     size_t tcount;
-    const double *tris = t->triangulate3d(pcount,results,sizeof(double)*3,tcount,true,SPLIT_EPSILON);
+    const NxF64 *tris = t->triangulate3d(pcount,results,sizeof(NxF64)*3,tcount,true,SPLIT_EPSILON);
     if ( tris )
     {
       for (size_t i=0; i<tcount; i++)
@@ -2736,8 +2736,8 @@ public:
   void testSphereIntersect(void)
   {
     gRenderDebug->reset();
-    float radius = ranf(1,5);
-    float center[3];
+    NxF32 radius = ranf(1,5);
+    NxF32 center[3];
     center[0] = ranf(-1,1);
     center[1] = ranf(-1,1);
     center[2] = ranf(-1,1);
@@ -2746,8 +2746,8 @@ public:
 
     for (size_t i=0; i<100; i++)
     {
-      float p1[3];
-      float p2[3];
+      NxF32 p1[3];
+      NxF32 p2[3];
 
       p1[0] = ranf(-5,5);
       p1[1] = ranf(-5,5);
@@ -2757,7 +2757,7 @@ public:
       p2[1] = ranf(-5,5);
       p2[2] = ranf(-5,5);
 
-      float intersect[3];
+      NxF32 intersect[3];
       bool hit = fm_lineSphereIntersect(center,radius,p1,p2,intersect);
       if ( hit )
       {
@@ -2776,16 +2776,16 @@ public:
 
   void testAABB(void)
   {
-    float bmin[3] = { -1, -2, -3 };
-    float bmax[3] = {  2,  4,  6 };
+    NxF32 bmin[3] = { -1, -2, -3 };
+    NxF32 bmax[3] = {  2,  4,  6 };
 
     //gRenderDebug->DebugBound(bmin,bmax,0xFF00FF,60.0f,true,true);
     //gRenderDebug->DebugBound(bmin,bmax,0xFFFFFF,60.0f,true,false);
 
     for (NxU32 i=0; i<10; i++)
     {
-      float p1[3];
-      float p2[3];
+      NxF32 p1[3];
+      NxF32 p2[3];
 
       p1[0] = ranf(-5,5);
       p1[1] = ranf(-5,5);
@@ -2795,7 +2795,7 @@ public:
       p2[1] = ranf(-5,5);
       p2[2] = ranf(-5,5);
 
-      float intersect[3];
+      NxF32 intersect[3];
 
       bool hit = fm_intersectLineSegmentAABB(bmin,bmax,p1,p2,intersect);
       if ( hit )
@@ -2923,7 +2923,7 @@ void appRender(void)
 }
 
 
-void appCommand(SplitMeshCommand _command,bool state,const float *data)
+void appCommand(SplitMeshCommand _command,bool state,const NxF32 *data)
 {
   gApp.command(_command,state,data);
 }

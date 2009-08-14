@@ -25,15 +25,15 @@ namespace AUTO_GEOMETRY
 class Vec3
 {
 public:
-  Vec3(const float *pos)
+  Vec3(const NxF32 *pos)
   {
     x = pos[0];
     y = pos[1];
     z = pos[2];
   }
-  float x;
-  float y;
-  float z;
+  NxF32 x;
+  NxF32 y;
+  NxF32 z;
 };
 
 typedef USER_STL::vector< Vec3 > Vec3Vector;
@@ -53,21 +53,21 @@ public:
 
   void release(void)
   {
-    MEMALLOC_DELETE_ARRAY(unsigned int,mIndices);
-    MEMALLOC_DELETE_ARRAY(float,mVertices);
+    MEMALLOC_DELETE_ARRAY(NxU32,mIndices);
+    MEMALLOC_DELETE_ARRAY(NxF32,mVertices);
     mIndices = 0;
     mVertices = 0;
     mTriCount = 0;
     mVertexCount = 0;
   }
 
-  void addPos(const float *p)
+  void addPos(const NxF32 *p)
   {
     Vec3 v(p);
     mPoints.push_back(v);
   }
 
-  float generateHull(void)
+  NxF32 generateHull(void)
   {
     release();
     fm_identity(mOBBTransform);
@@ -75,7 +75,7 @@ public:
     if ( mPoints.size() >= 3 ) // must have at least 3 vertices to create a hull.
     {
       // now generate the convex hull.
-      STAN_HULL::HullDesc desc((STAN_HULL::HullFlag)(STAN_HULL::QF_TRIANGLES | STAN_HULL::QF_SKIN_WIDTH),mPoints.size(),&mPoints[0].x,sizeof(float)*3);
+      STAN_HULL::HullDesc desc((STAN_HULL::HullFlag)(STAN_HULL::QF_TRIANGLES | STAN_HULL::QF_SKIN_WIDTH),mPoints.size(),&mPoints[0].x,sizeof(NxF32)*3);
       desc.mMaxVertices = 32;
       desc.mSkinWidth = 0.001f;
 
@@ -85,11 +85,11 @@ public:
       if ( e == STAN_HULL::QE_OK )
       {
         mTriCount = result.mNumFaces;
-        mIndices  = MEMALLOC_NEW_ARRAY(unsigned int,mTriCount*3)[mTriCount*3];
-        memcpy(mIndices,result.mIndices,sizeof(unsigned int)*mTriCount*3);
+        mIndices  = MEMALLOC_NEW_ARRAY(NxU32,mTriCount*3)[mTriCount*3];
+        memcpy(mIndices,result.mIndices,sizeof(NxU32)*mTriCount*3);
         mVertexCount = result.mNumOutputVertices;
-        mVertices = MEMALLOC_NEW_ARRAY(float,mVertexCount*3)[mVertexCount*3];
-        memcpy(mVertices,result.mOutputVertices,sizeof(float)*mVertexCount*3);
+        mVertices = MEMALLOC_NEW_ARRAY(NxF32,mVertexCount*3)[mVertexCount*3];
+        memcpy(mVertices,result.mOutputVertices,sizeof(NxF32)*mVertexCount*3);
         mValidHull = true;
         mMeshVolume = fm_computeMeshVolume( mVertices, mTriCount, mIndices ); // compute the volume of this mesh.
         h.ReleaseResult(result);
@@ -110,7 +110,7 @@ public:
     generateHull();
   }
 
-  void setTransform(const SimpleBone &b,int bone_index)
+  void setTransform(const SimpleBone &b,NxI32 bone_index)
   {
     mBoneName    = b.mBoneName;
     mBoneIndex   = bone_index;
@@ -118,9 +118,9 @@ public:
     fm_identity(mConvexTransform);
     if ( mVertexCount )
     {
-      for (unsigned int i=0; i<mVertexCount; i++)
+      for (NxU32 i=0; i<mVertexCount; i++)
       {
-        float *vtx = &mVertices[i*3];
+        NxF32 *vtx = &mVertices[i*3];
         fm_transform(b.mInverseTransform,vtx,vtx); // inverse transform the point into bone relative object space
       }
     }
@@ -128,7 +128,7 @@ public:
 
   void computeCapsule(void)
   {
-    fm_computeBestFitCapsule( (size_t)mVertexCount, (const float *)mVertices, sizeof(float)*3,mCapsuleRadius, mCapsuleHeight, mCapsuleTransform, true);
+    fm_computeBestFitCapsule( (size_t)mVertexCount, (const NxF32 *)mVertices, sizeof(NxF32)*3,mCapsuleRadius, mCapsuleHeight, mCapsuleTransform, true);
     if ( mCapsuleHeight > 0 )
     {
       mCapsuleVolume = fm_capsuleVolume(mCapsuleRadius,mCapsuleHeight);
@@ -141,14 +141,14 @@ public:
 
   void computeOBB(void)
   {
-    fm_computeBestFitOBB( (size_t)mVertexCount, (const float *)mVertices, sizeof(float)*3,mOBBSides, mOBBTransform, true);
+    fm_computeBestFitOBB( (size_t)mVertexCount, (const NxF32 *)mVertices, sizeof(NxF32)*3,mOBBSides, mOBBTransform, true);
     mOBBVolume = mOBBSides[0]*mOBBSides[1]*mOBBSides[2];
   }
 
 
   void computeSphere(void)
   {
-    mSphereRadius = fm_computeBestFitSphere( (size_t)mVertexCount, (const float *)mVertices, sizeof(float)*3, mSphereCenter );
+    mSphereRadius = fm_computeBestFitSphere( (size_t)mVertexCount, (const NxF32 *)mVertices, sizeof(NxF32)*3, mSphereCenter );
     mSphereVolume = fm_sphereVolume(mSphereRadius);
   }
 
@@ -184,13 +184,13 @@ public:
 
   #define MAX_BONE_COUNT 8
 
-  void addBone(unsigned int bone,unsigned int *bones,unsigned int &bcount)
+  void addBone(NxU32 bone,NxU32 *bones,NxU32 &bcount)
   {
     if ( bcount < MAX_BONE_COUNT )
     {
       bool found = false;
 
-      for (unsigned int i=0; i<bcount; i++)
+      for (NxU32 i=0; i<bcount; i++)
       {
         if ( bones[i] == bone )
         {
@@ -207,7 +207,7 @@ public:
   }
 
   #define MIN_WEIGHT 0.1f
-  void addBones(const SimpleSkinnedVertex &v,unsigned int *bones,unsigned int &bcount)
+  void addBones(const SimpleSkinnedVertex &v,NxU32 *bones,NxU32 &bcount)
   {
     if ( v.mWeight[0] >= MIN_WEIGHT ) addBone(v.mBone[0],bones,bcount);
     if ( v.mWeight[1] >= MIN_WEIGHT ) addBone(v.mBone[1],bones,bcount);
@@ -217,12 +217,12 @@ public:
 
   void addTri(const SimpleSkinnedVertex &v1,const SimpleSkinnedVertex &v2,const SimpleSkinnedVertex &v3,const SimpleBone *sbones)
   {
-    unsigned int bcount = 0;
-    unsigned int bones[MAX_BONE_COUNT];
+    NxU32 bcount = 0;
+    NxU32 bones[MAX_BONE_COUNT];
     addBones(v1,bones,bcount);
     addBones(v2,bones,bcount);
     addBones(v3,bones,bcount);
-    for (unsigned int i=0; i<bcount; i++)
+    for (NxU32 i=0; i<bcount; i++)
     {
       addPos(v1.mPos, bones[i], sbones );
       addPos(v2.mPos, bones[i], sbones );
@@ -230,26 +230,26 @@ public:
     }
   }
 
-  virtual SimpleHull ** createCollisionVolumes(float collapse_percentage,
-                                               unsigned int bone_count,
+  virtual SimpleHull ** createCollisionVolumes(NxF32 collapse_percentage,
+                                               NxU32 bone_count,
                                                const SimpleBone *bones,
                                                const SimpleSkinnedMesh *mesh,
-                                               unsigned int &geom_count)
+                                               NxU32 &geom_count)
   {
     release();
     geom_count = 0;
 
     mHulls = MEMALLOC_NEW_ARRAY(MyHull,bone_count)[bone_count];
 
-    for (unsigned int i=0; i<bone_count; i++)
+    for (NxU32 i=0; i<bone_count; i++)
     {
       const SimpleBone &b = bones[i];
       mHulls[i].setTransform(b,i);
     }
 
-    unsigned int tcount = mesh->mVertexCount/3;
+    NxU32 tcount = mesh->mVertexCount/3;
 
-    for (unsigned int i=0; i<tcount; i++)
+    for (NxU32 i=0; i<tcount; i++)
     {
       const SimpleSkinnedVertex &v1 = mesh->mVertices[i*3+0];
       const SimpleSkinnedVertex &v2 = mesh->mVertices[i*3+0];
@@ -257,8 +257,8 @@ public:
       addTri(v1,v2,v3,bones);
     }
 
-    float totalVolume = 0;
-    for (unsigned int i=0; i<bone_count; i++)
+    NxF32 totalVolume = 0;
+    for (NxU32 i=0; i<bone_count; i++)
     {
       totalVolume+=mHulls[i].generateHull();
     }
@@ -266,8 +266,8 @@ public:
     // ok.. now do auto-collapse of hulls...
     if ( collapse_percentage > 0 )
     {
-      float ratio = collapse_percentage / 100.0f;
-      for (int i=(int)(bone_count-1); i>=0; i--)
+      NxF32 ratio = collapse_percentage / 100.0f;
+      for (NxI32 i=(NxI32)(bone_count-1); i>=0; i--)
       {
         MyHull &h = mHulls[i];
         const SimpleBone &b = bones[i];
@@ -284,7 +284,7 @@ public:
         }
       }
     }
-    for (int i=0; i<(int)bone_count; i++)
+    for (NxI32 i=0; i<(NxI32)bone_count; i++)
     {
       MyHull &h = mHulls[i];
       if ( h.mValidHull )
@@ -294,8 +294,8 @@ public:
     if ( geom_count )
     {
       mSimpleHulls = MEMALLOC_NEW_ARRAY(SimpleHull *,geom_count)[geom_count];
-      int index = 0;
-      for (int i=0; i<(int)bone_count; i++)
+      NxI32 index = 0;
+      for (NxI32 i=0; i<(NxI32)bone_count; i++)
       {
         MyHull *h = &mHulls[i];
         if ( h->mValidHull )
@@ -314,7 +314,7 @@ public:
     return mSimpleHulls;
   }
 
-  void addPos(const float *p,int bone,const SimpleBone *bones)
+  void addPos(const NxF32 *p,NxI32 bone,const SimpleBone *bones)
   {
     switch ( bones[bone].mOption )
     {
@@ -346,7 +346,7 @@ public:
   }
 
 
-  virtual SimpleHull ** createCollisionVolumes(float collapse_percentage,unsigned int &geom_count)
+  virtual SimpleHull ** createCollisionVolumes(NxF32 collapse_percentage,NxU32 &geom_count)
   {
     SimpleHull **ret = 0;
 
@@ -392,14 +392,14 @@ public:
   	char *foo = strstr(istr,ikey);
   	if ( foo )
   	{
-  		unsigned int loc = (unsigned int)(foo - istr);
+  		NxU32 loc = (NxU32)(foo - istr);
   		foo = (char *)str+loc;
   	}
 
   	return foo;
   }
 
-  virtual bool createCollisionVolumes(float collapse_percentage,JOB_SWARM::JobSwarmContext *context)
+  virtual bool createCollisionVolumes(NxF32 collapse_percentage,JOB_SWARM::JobSwarmContext *context)
   {
     bool ret = true;
 
@@ -412,7 +412,7 @@ public:
     return ret;
   }
 
-  virtual SimpleHull ** getResults(unsigned int &geom_count,bool &ready)
+  virtual SimpleHull ** getResults(NxU32 &geom_count,bool &ready)
   {
     SimpleHull **ret = 0;
     geom_count = 0;
@@ -426,7 +426,7 @@ public:
     return ret;
   }
 
-  virtual void job_process(void *userData,int userId)    // RUNS IN ANOTHER THREAD!! MUST BE THREAD SAFE!
+  virtual void job_process(void *userData,NxI32 userId)    // RUNS IN ANOTHER THREAD!! MUST BE THREAD SAFE!
   {
     if ( !mVertices.empty() && !mBones.empty() )
     {
@@ -441,13 +441,13 @@ public:
     mReady = true;
   }
 
-  virtual void job_onFinish(void *userData,int userId)   // runs in primary thread of the context
+  virtual void job_onFinish(void *userData,NxI32 userId)   // runs in primary thread of the context
   {
     mFinished = true;
     mSwarmJob = 0;
   }
 
-  virtual void job_onCancel(void *userData,int userId)  // runs in primary thread of the context
+  virtual void job_onCancel(void *userData,NxI32 userId)  // runs in primary thread of the context
   {
     mSwarmJob = 0;
     mFinished = true;
@@ -474,14 +474,14 @@ private:
   typedef USER_STL::vector< SimpleSkinnedVertex > SimpleSkinnedVertexVector;
   SimpleBoneVector mBones;
   SimpleSkinnedVertexVector mVertices;
-  float                      mCollapsePercentage;
+  NxF32                      mCollapsePercentage;
   bool                       mReady;
   bool                       mFinished;
 
   JOB_SWARM::SwarmJob        *mSwarmJob;
   JOB_SWARM::JobSwarmContext *mContext;
 
-  unsigned int mHullCount;
+  NxU32 mHullCount;
   MyHull      *mHulls;
   SimpleHull **mSimpleHulls;
 

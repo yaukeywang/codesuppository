@@ -64,7 +64,7 @@ public:
 
 
 HtmlTableInterface *getHtmlTableInterface(void);
-int                 getHtmlMemoryUsage(void);
+NxI32                 getHtmlMemoryUsage(void);
 
 
 }; // end of namespace HTML_TABLE

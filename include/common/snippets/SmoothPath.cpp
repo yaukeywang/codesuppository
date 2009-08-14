@@ -161,8 +161,8 @@ public:
 
   NxF32 EvaluateLinear(NxF32 t,NxU32 i)
   {
-    float y1 = mNodes[i].y;
-    float y2 = mNodes[i+1].y;
+    NxF32 y1 = mNodes[i].y;
+    NxF32 y2 = mNodes[i+1].y;
 
     return (y2-y1)*t+y1;
 

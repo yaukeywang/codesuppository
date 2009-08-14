@@ -2,6 +2,7 @@
 
 #define MESH_CLEANUP_H
 
+#include "UserMemAlloc.h"
 /*!
 **
 ** Copyright (c) 2007 by John W. Ratcliff mailto:jratcliff@infiniplex.net
@@ -101,7 +102,7 @@ public:
 
 };
 
-// searches for double-sided triangles, and either removes them or
+// searches for NxF64-sided triangles, and either removes them or
 // extrudes them.
 
 bool meshCleanup(MeshCleanupDesc &desc,NxF32 weldDistance=0.001f,NxF32 projectDistance=0.01f,RENDER_DEBUG::RenderDebug *debug=0);

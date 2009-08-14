@@ -55,17 +55,17 @@
 namespace TRIANGULATOR
 {
 
-typedef unsigned int TU32;
+typedef NxU32 TU32;
 
 class TVec
 {
 public:
-	TVec(double _x,double _y,double _z) { x = _x; y = _y; z = _z; };
+	TVec(NxF64 _x,NxF64 _y,NxF64 _z) { x = _x; y = _y; z = _z; };
 	TVec(void) { };
 
-  double x;
-  double y;
-  double z;
+  NxF64 x;
+  NxF64 y;
+  NxF64 z;
 };
 
 typedef std::vector< TVec >  TVecVector;
@@ -93,12 +93,12 @@ public:
         mIndices.clear();
     }
 
-    virtual void addPoint(float x,float y,float z)
+    virtual void addPoint(NxF32 x,NxF32 y,NxF32 z)
     {
-        addPoint( (double)x,(double)y,(double)z);
+        addPoint( (NxF64)x,(NxF64)y,(NxF64)z);
     }
 
-    virtual void addPoint(double x,double y,double z)
+    virtual void addPoint(NxF64 x,NxF64 y,NxF64 z)
     {
         TVec v(x,y,z);
         // update bounding box...
@@ -122,9 +122,9 @@ public:
 
     // Triangulation happens in 2d.  We could inverse transform the polygon around the normal direction, or we just use the two most signficant axes
     // Here we find the two longest axes and use them to triangulate.  Inverse transforming them would introduce more doubleing point error and isn't worth it.
-    virtual unsigned int * triangulate(unsigned int &tcount,double epsilon)
+    virtual NxU32 * triangulate(NxU32 &tcount,NxF64 epsilon)
     {
-        unsigned int *ret = 0;
+        NxU32 *ret = 0;
         tcount = 0;
         mEpsilon = epsilon;
 
@@ -132,11 +132,11 @@ public:
         {
             mPoints.clear();
 
-          double dx = mMax.x - mMin.x; // locate the first, second and third longest edges and store them in i1, i2, i3
-          double dy = mMax.y - mMin.y;
-          double dz = mMax.z - mMin.z;
+          NxF64 dx = mMax.x - mMin.x; // locate the first, second and third longest edges and store them in i1, i2, i3
+          NxF64 dy = mMax.y - mMin.y;
+          NxF64 dz = mMax.z - mMin.z;
 
-          unsigned int i1,i2,i3;
+          NxU32 i1,i2,i3;
 
           if ( dx > dy && dx > dz )
           {
@@ -181,9 +181,9 @@ public:
               }
           }
 
-          unsigned int pcount = mInputPoints.size();
-          const double *points = &mInputPoints[0].x;
-          for (unsigned int i=0; i<pcount; i++)
+          NxU32 pcount = mInputPoints.size();
+          const NxF64 *points = &mInputPoints[0].x;
+          for (NxU32 i=0; i<pcount; i++)
           {
             TVec v( points[i1], points[i2], points[i3] );
             mPoints.push_back(v);
@@ -201,7 +201,7 @@ public:
         return ret;
     }
 
-    virtual void getPoint(unsigned int index,double &x,double &y,double &z) const
+    virtual void getPoint(NxU32 index,NxF64 &x,NxF64 &y,NxF64 &z) const
     {
         const TVec &t = mInputPoints[index];
         x = t.x;
@@ -209,17 +209,17 @@ public:
         z = t.z;
     }
 
-    virtual void getPoint(unsigned int index,float &x,float &y,float &z) const
+    virtual void getPoint(NxU32 index,NxF32 &x,NxF32 &y,NxF32 &z) const
     {
         const TVec &t = mInputPoints[index];
-        x = (float)t.x;
-        y = (float)t.y;
-        z = (float)t.z;
+        x = (NxF32)t.x;
+        y = (NxF32)t.y;
+        z = (NxF32)t.z;
     }
 
 
 private:
-    double                  mEpsilon;
+    NxF64                  mEpsilon;
     TVec                   mMin;
     TVec                   mMax;
     TVecVector             mInputPoints;
@@ -230,9 +230,9 @@ private:
     bool _insideTriangle(const TVec& A, const TVec& B, const TVec& C,const TVec& P);
 
     ///     Returns the area of the contour
-    double _area();
+    NxF64 _area();
 
-    bool _snip(int u, int v, int w, int n, int *V);
+    bool _snip(NxI32 u, NxI32 v, NxI32 w, NxI32 n, NxI32 *V);
 
     ///     Processes the triangulation
     void _process(TU32Vector &indices);
@@ -258,42 +258,42 @@ void CTriangulator::triangulate(TU32Vector &indices)
 ///     Processes the triangulation
 void CTriangulator::_process(TU32Vector &indices)
 {
-    const int n = mPoints.size();
+    const NxI32 n = mPoints.size();
     if (n < 3)
         return;
-    int *V = new int[n];
+    NxI32 *V = new NxI32[n];
 	bool flipped = false;
     if (0.0f < _area())
     {
-        for (int v = 0; v < n; v++)
+        for (NxI32 v = 0; v < n; v++)
             V[v] = v;
     }
     else
     {
-        for (int v = 0; v < n; v++)
+        for (NxI32 v = 0; v < n; v++)
             V[v] = (n - 1) - v;
 		flipped = true;
     }
-    int nv = n;
-    int count = 2 * nv;
-    for (int m = 0, v = nv - 1; nv > 2;)
+    NxI32 nv = n;
+    NxI32 count = 2 * nv;
+    for (NxI32 m = 0, v = nv - 1; nv > 2;)
     {
         if (0 >= (count--))
             return;
 
-        int u = v;
+        NxI32 u = v;
         if (nv <= u)
             u = 0;
         v = u + 1;
         if (nv <= v)
             v = 0;
-        int w = v + 1;
+        NxI32 w = v + 1;
         if (nv <= w)
             w = 0;
 
         if (_snip(u, v, w, nv, V))
         {
-            int a, b, c, s, t;
+            NxI32 a, b, c, s, t;
             a = V[u];
             b = V[v];
             c = V[w];
@@ -321,11 +321,11 @@ void CTriangulator::_process(TU32Vector &indices)
 }
 
 ///     Returns the area of the contour
-double CTriangulator::_area()
+NxF64 CTriangulator::_area()
 {
-    int n = mPoints.size();
-    double A = 0.0f;
-    for (int p = n - 1, q = 0; q < n; p = q++)
+    NxI32 n = mPoints.size();
+    NxF64 A = 0.0f;
+    for (NxI32 p = n - 1, q = 0; q < n; p = q++)
     {
         const TVec &pval = mPoints[p];
         const TVec &qval = mPoints[q];
@@ -334,9 +334,9 @@ double CTriangulator::_area()
     return(A * 0.5f);
 }
 
-bool CTriangulator::_snip(int u, int v, int w, int n, int *V)
+bool CTriangulator::_snip(NxI32 u, NxI32 v, NxI32 w, NxI32 n, NxI32 *V)
 {
-    int p;
+    NxI32 p;
 
     const TVec &A = mPoints[ V[u] ];
     const TVec &B = mPoints[ V[v] ];
@@ -359,8 +359,8 @@ bool CTriangulator::_snip(int u, int v, int w, int n, int *V)
 ///     Tests if a point is inside the given triangle
 bool CTriangulator::_insideTriangle(const TVec& A, const TVec& B, const TVec& C,const TVec& P)
 {
-    double ax, ay, bx, by, cx, cy, apx, apy, bpx, bpy, cpx, cpy;
-    double cCROSSap, bCROSScp, aCROSSbp;
+    NxF64 ax, ay, bx, by, cx, cy, apx, apy, bpx, bpy, cpx, cpy;
+    NxF64 cCROSSap, bCROSScp, aCROSSbp;
 
     ax = C.x - B.x;  ay = C.y - B.y;
     bx = A.x - C.x;  by = A.y - C.y;

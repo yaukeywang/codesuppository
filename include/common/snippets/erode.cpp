@@ -24,21 +24,21 @@ namespace ERODE
 
 #define PCONST 0.6366197723     /* constant value 2/pi */
 
-const float recip_scale = 1.0f / 1.414f;
+const NxF32 recip_scale = 1.0f / 1.414f;
 
-int xo[9] =                      /* 8-dir index offset arrays */
+NxI32 xo[9] =                      /* 8-dir index offset arrays */
    { 0,-1,0,1,1,1,0,-1,-1 };
-int yo[9] =
+NxI32 yo[9] =
    { 0,-1,-1,-1,0,1,1,1,0 };
-int x4[4] =                      /* 4-dir index offset arr */
+NxI32 x4[4] =                      /* 4-dir index offset arr */
    { -1,0,1,0 };
-int y4[4] =
+NxI32 y4[4] =
    { 0,-1,0,1 };
-int dhash[9] =                /* 8-direction hash mx */
+NxI32 dhash[9] =                /* 8-direction hash mx */
   { 1,2,3,8,0,4,7,6,5 };
 
 
-double sgn(double a)
+NxF64 sgn(NxF64 a)
 {
   if (a > 0)
    return (1);
@@ -48,9 +48,9 @@ double sgn(double a)
    return (0);
 }
 
-double sgn1(double a)
+NxF64 sgn1(NxF64 a)
 {
- double sign = 0;
+ NxF64 sign = 0;
 
   if (a > 0.0)
   {
@@ -93,7 +93,7 @@ public:
     }
     if ( data )
     {
-      memcpy(mData,data,sizeof(float)*size);
+      memcpy(mData,data,sizeof(NxF32)*size);
       for (NxI32 i=0; i<size; i++)
       {
         Type v = data[i];
@@ -370,7 +370,7 @@ public:
     }
   }
 
-  int fillBasin(const HeightMap<NxF32> &hf1,HeightMap<NxF32> &hf2)
+  NxI32 fillBasin(const HeightMap<NxF32> &hf1,HeightMap<NxF32> &hf2)
   {
     NxI32 ix,iy,i;
     NxI32 changed;
@@ -421,10 +421,10 @@ public:
     return changed;
   }
 
-  int fillBasins(int imax)
+  NxI32 fillBasins(NxI32 imax)
   {
-    int icount = 0;
-    int tmp = 1;
+    NxI32 icount = 0;
+    NxI32 tmp = 1;
 
     while ((tmp > 0) && (icount<imax) )
     {
@@ -440,13 +440,13 @@ public:
 
   void findUphillArea(void)
   {
-    int ix,iy;
-    int i;
-    int dir;              /* direction this element points in */
+    NxI32 ix,iy;
+    NxI32 i;
+    NxI32 dir;              /* direction this element points in */
     NxU8 ff;               /* flag variable for this loc */
-    int o_summed;         /* flag indicating all neighbors summed */
+    NxI32 o_summed;         /* flag indicating all neighbors summed */
     long added;            /* # found unsummed nodes this pass */
-    float area;           /* sum of uphill area for this element */
+    NxF32 area;           /* sum of uphill area for this element */
 
 
     /* first pass: set local highpoints to "summed", area to 1 */
@@ -524,16 +524,16 @@ public:
   }
 
 
-  int ua_iter(int ix, int iy)   /* one iteration of uphill-area +bounds checks */
+  NxI32 ua_iter(NxI32 ix, NxI32 iy)   /* one iteration of uphill-area +bounds checks */
   {
-    int i;
-    int xx, yy;
-    int tmp;
-    int dir;              /* direction this element points in */
+    NxI32 i;
+    NxI32 xx, yy;
+    NxI32 tmp;
+    NxI32 dir;              /* direction this element points in */
     NxU8 ff;               /* flag variable for this loc */
-    int o_summed;         /* flag indicating all neighbors summed */
-    int added=0;          /* if this node was added */
-    float area;           /* sum of uphill area for this element */
+    NxI32 o_summed;         /* flag indicating all neighbors summed */
+    NxI32 added=0;          /* if this node was added */
+    NxF32 area;           /* sum of uphill area for this element */
 
     NxI32 xsize = mHF.getWidth()-2;
     NxI32 ysize = mHF.getDepth()-2;
@@ -594,7 +594,7 @@ public:
   /* ------------------------------------------------------------------- */
   /* erode_1()  --  erode one step, taking input hf1[] into output hf2[] */
   /* ------------------------------------------------------------------- */
-  void erode_1(HeightMap<float> &hf1,HeightMap<float> &hf2)
+  void erode_1(HeightMap<NxF32> &hf1,HeightMap<NxF32> &hf2)
   {
     /* Erodef(slope,flow)  is the function controlling erosion rate */
     /*                               slope exponent   flow exponent */
@@ -604,14 +604,14 @@ public:
     #define MAXSLOPE        1.5       /* maximum slope in radians (ngl of repose) */
     #define MINSLOPE        1.0     /* slope in lowlands */
 
-    int ix,iy,i,dir=0;              /* indexes into arrays */
-    int upd;                       /* direction of uphill neighbor */
-    double inslope, outslope;      /* product of slope and flow_rate */
-    double outflow;                /* flow out of this cell */
-    double erval;                  /* erosion potential at this point */
-    int x1,y1;
-    double slopefactor;            /* correction factor to scale slope */
-    double h, dh, slope;  /* dh- delta height  dr- horizontal travel */
+    NxI32 ix,iy,i,dir=0;              /* indexes into arrays */
+    NxI32 upd;                       /* direction of uphill neighbor */
+    NxF64 inslope, outslope;      /* product of slope and flow_rate */
+    NxF64 outflow;                /* flow out of this cell */
+    NxF64 erval;                  /* erosion potential at this point */
+    NxI32 x1,y1;
+    NxF64 slopefactor;            /* correction factor to scale slope */
+    NxF64 h, dh, slope;  /* dh- delta height  dr- horizontal travel */
 
     NxI32 xsize = hf1.getWidth()-2;
     NxI32 ysize = hf1.getDepth()-2;
@@ -642,7 +642,7 @@ public:
   	            slope *= slopefactor;                 /* scale to corr. units */
   	            if ( (i&1) )
             	    slope = slope * recip_scale;      /* diagonal neighbor; reduce slope */
-  	            inslope += Erodef(slope,(double)mUphill.get(x1,y1));
+  	            inslope += Erodef(slope,(NxF64)mUphill.get(x1,y1));
   	          }
             }
           }
@@ -660,7 +660,7 @@ public:
             slope *= slopefactor;
   	        if ( (dir&1) )
       	     slope = slope * recip_scale;      /* diagonal neighbor; reduce slope */
-            outflow = (double) mUphill.get(ix,iy);
+            outflow = (NxF64) mUphill.get(ix,iy);
 
             if (outflow<1) outflow = 0.9;
             outslope = Erodef(slope,outflow);
@@ -669,7 +669,7 @@ public:
   	        /* sedimentation when (inslope) greater than (er_sedfac*outslope) */
 
             erval = mDesc.mErodeRate * (mDesc.mErodeSedimentation*outslope - inslope);
-            erval *= pow(outflow,(double)mDesc.mErodePower);
+            erval *= pow(outflow,(NxF64)mDesc.mErodePower);
             dh = mDesc.mErodeRate * erval;
             h = hf1.get(ix+1,iy+1);      /* old altitude at this point */
 
@@ -709,11 +709,11 @@ public:
    /*                      actually downhill, and if it isn't, makes it so. */
    /*                      Does not set the border pixels in hf2[].         */
    /* --------------------------------------------------------------------- */
-   int correct_1(HeightMap<float> &hf1,HeightMap<float> &hf2)
+   NxI32 correct_1(HeightMap<NxF32> &hf1,HeightMap<NxF32> &hf2)
    {
-     int ix, iy;
-     int dir;
-     int fixed;              /* number of pixels with altitude adjusted */
+     NxI32 ix, iy;
+     NxI32 dir;
+     NxI32 fixed;              /* number of pixels with altitude adjusted */
      NxF32 h, hdown;
 
      NxI32 xsize = hf1.getWidth()-2;
@@ -747,14 +747,14 @@ public:
   /* ------------------------------------------------------------ *
    * slump  --  simulate land slippage; mudslides
    * ------------------------------------------------------------ */
-  void slump(double rate)
+  void slump(NxF64 rate)
   {
-    int i,ix,iy;
+    NxI32 i,ix,iy;
     NxF32 h,dh,avg,sum1,sum2;
     NxF32 afac, n1, n2;
     NxF32 af1, af2;
     NxF32 dscale;    /* average difference between neighboring pixels */
-    int dcount;
+    NxI32 dcount;
 
     /* find dscale by sampling a few pixels in the grid */
     NxI32 xsize = mHF.getWidth()-2;
@@ -826,7 +826,7 @@ public:
 #pragma warning(disable:4244)
 
 
-        afac = dh * PCONST*atan( pow((double)(rate*fabs(dh/dscale)),3.0) ); /* slump! */
+        afac = dh * PCONST*atan( pow((NxF64)(rate*fabs(dh/dscale)),3.0) ); /* slump! */
 
 #pragma warning(pop)
         if (h < mDesc.mErodeThreshold )

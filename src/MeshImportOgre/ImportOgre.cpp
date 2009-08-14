@@ -23,7 +23,7 @@ namespace MESHIMPORT
 class MyKeyFrame
 {
 public:
-  MyKeyFrame(float t)
+  MyKeyFrame(NxF32 t)
   {
     mTime = t;
     mPosition[0] = 0;
@@ -38,9 +38,9 @@ public:
     mScale[2] = 1;
   }
 
-  void setOrientationFromAxisAngle(const float axis[3],float angle)
+  void setOrientationFromAxisAngle(const NxF32 axis[3],NxF32 angle)
   {
-    float x,y,z,w;
+    NxF32 x,y,z,w;
 
     x = axis[0];
     y = axis[1];
@@ -48,17 +48,17 @@ public:
 
     // required: Normalize the axis
 
-    const float i_length =  float(1.0f) / sqrtf( x*x + y*y + z*z );
+    const NxF32 i_length =  NxF32(1.0f) / sqrtf( x*x + y*y + z*z );
 
     x = x * i_length;
     y = y * i_length;
     z = z * i_length;
 
     // now make a clQuaternionernion out of it
-    float Half = angle * float(0.5);
+    NxF32 Half = angle * NxF32(0.5);
 
     w = cosf(Half);//this used to be w/o deg to rad.
-    const float sin_theta_over_two = sinf(Half);
+    const NxF32 sin_theta_over_two = sinf(Half);
 
     x = x * sin_theta_over_two;
     y = y * sin_theta_over_two;
@@ -72,10 +72,10 @@ public:
 
 
 
-  float  mTime;
-  float  mPosition[3];
-  float  mOrientation[4];
-  float  mScale[3];
+  NxF32  mTime;
+  NxF32  mPosition[3];
+  NxF32  mOrientation[4];
+  NxF32  mScale[3];
 };
 
 typedef USER_STL::vector< MyKeyFrame *> MyKeyFrameVector;
@@ -102,7 +102,7 @@ public:
     MEMALLOC_DELETE_ARRAY(MeshAnimPose,mTrack.mPose);
   }
 
-  void addKey(float t)
+  void addKey(NxF32 t)
   {
     mDtime = t-mDuration;
     mDuration = t;
@@ -117,7 +117,7 @@ public:
     mTrack.mDuration = mDuration;
     mTrack.mDtime    = mDtime;
     mTrack.mPose = MEMALLOC_NEW_ARRAY(MeshAnimPose,mTrack.mFrameCount)[mTrack.mFrameCount];
-    for (int i=0; i<mTrack.mFrameCount; i++)
+    for (NxI32 i=0; i<mTrack.mFrameCount; i++)
     {
       MeshAnimPose &dst = mTrack.mPose[i];
       const MyKeyFrame &src = *mKeys[i];
@@ -130,8 +130,8 @@ public:
   MyKeyFrame       *mCurrentKey;
   MyKeyFrameVector mKeys;
   MeshAnimTrack    mTrack;
-  float            mDtime;
-  float            mDuration;
+  NxF32            mDtime;
+  NxF32            mDuration;
 };
 
 typedef USER_STL::vector< MeshBone > MeshBoneVector;
@@ -140,15 +140,15 @@ typedef USER_STL::vector< MyAnimTrack * > MyAnimTrackVector;
 class Face
 {
 public:
-  int v1;
-  int v2;
-  int v3;
+  NxI32 v1;
+  NxI32 v2;
+  NxI32 v3;
 };
 
 class MySubMesh
 {
 public:
-  MySubMesh(int fcount,const StringRef &material)
+  MySubMesh(NxI32 fcount,const StringRef &material)
   {
     mMaterial = material;
     mFaceCount = fcount;
@@ -160,9 +160,9 @@ public:
     MEMALLOC_DELETE_ARRAY(Face,mFaces);
   }
 
-  void transmit(const char *fname,MeshImportInterface *callback,const MeshVertex *buffer,int vertex_count,unsigned int vertex_flags)
+  void transmit(const char *fname,MeshImportInterface *callback,const MeshVertex *buffer,NxI32 vertex_count,NxU32 vertex_flags)
   {
-    for (int i=0; i<mFaceCount; i++)
+    for (NxI32 i=0; i<mFaceCount; i++)
     {
       Face &f = mFaces[i];
 
@@ -179,8 +179,8 @@ public:
   }
 
   StringRef mMaterial;
-  int       mFaceIndex;
-  int       mFaceCount;
+  NxI32       mFaceIndex;
+  NxI32       mFaceCount;
   Face     *mFaces;
 };
 
@@ -400,18 +400,18 @@ public:
     flushAnimation();
   }
 
-  virtual const char * getExtension(int index)  // report the default file name extension for this mesh type.
+  virtual const char * getExtension(NxI32 index)  // report the default file name extension for this mesh type.
   {
     return ".xml";
   }
 
-  virtual const char * getDescription(int index)  // report the default file name extension for this mesh type.
+  virtual const char * getDescription(NxI32 index)  // report the default file name extension for this mesh type.
   {
     return "Ogre3d XML Mesh Files";
   }
 
 
-  virtual bool importMesh(const char *fname,const void *data,unsigned int dlen,MeshImportInterface *callback,const char *options,MeshImportApplicationResource *appResource)
+  virtual bool importMesh(const char *fname,const void *data,NxU32 dlen,MeshImportInterface *callback,const char *options,MeshImportApplicationResource *appResource)
   {
     bool ret = false;
 
@@ -443,7 +443,7 @@ public:
             strcpy(scratch,mSkeletonName.Get());
             strcat(scratch,".xml");
           }
-          unsigned int len;
+          NxU32 len;
           void *mem = appResource->getApplicationResource(fname,scratch,len);
           if ( mem )
           {
@@ -468,7 +468,7 @@ public:
         // ok.. send the results back..
         mCallback->importMesh(fname,mSkeletonName.Get());
 
-        unsigned int vertex_flags = 0;
+        NxU32 vertex_flags = 0;
         if ( mPositions ) vertex_flags|=MIVF_POSITION;
         if ( mNormals ) vertex_flags|=MIVF_NORMAL;
         if ( mColors ) vertex_flags|=MIVF_COLOR;
@@ -503,7 +503,7 @@ public:
       if ( !mAnimTracks.empty() )
       {
         mAnimation->mTracks = MEMALLOC_NEW_ARRAY(MeshAnimTrack *,mAnimation->mTrackCount)[mAnimation->mTrackCount];
-        for (int i=0; i<mAnimation->mTrackCount; i++)
+        for (NxI32 i=0; i<mAnimation->mTrackCount; i++)
         {
           MyAnimTrack *mat = mAnimTracks[i];
           MeshAnimTrack *t = mat->gather();
@@ -529,15 +529,15 @@ public:
   }
 
   virtual bool processElement(const char *elementName,         // name of the element
-                              int         argc,                // number of attributes
+                              NxI32         argc,                // number of attributes
                               const char **argv,               // list of attributes.
                               const char  *elementData,        // element data, null if none
-                              int         lineno)         // line number in the source XML file
+                              NxI32         lineno)         // line number in the source XML file
   {
     if ( !elementData ) elementData = "";
     ProcessNode(elementName,elementData);
-    int acount = argc/2;
-    for (int i=0; i<acount; i++)
+    NxI32 acount = argc/2;
+    for (NxI32 i=0; i<acount; i++)
     {
       const char *key = argv[i*2];
       const char *value = argv[i*2+1];
@@ -601,11 +601,11 @@ public:
         if ( mElement == NE_BONE )
         {
           mCurrentBone = atoi(savalue);
-          int bsize = mBones.size();
-          int breserve = mCurrentBone+1;
+          NxI32 bsize = mBones.size();
+          NxI32 breserve = mCurrentBone+1;
           if ( bsize < breserve )
           {
-            for (int i=bsize; i<breserve; i++)
+            for (NxI32 i=bsize; i<breserve; i++)
             {
               MeshBone b;
               mBones.push_back(b);
@@ -616,7 +616,7 @@ public:
       case NA_COUNT:
         if ( mElement == NE_FACES )
         {
-          int fcount = atoi( savalue );
+          NxI32 fcount = atoi( savalue );
           if ( fcount > 0 )
           {
             mCurrentSubMesh = MEMALLOC_NEW(MySubMesh)(fcount,mCurrentMaterial);
@@ -640,12 +640,12 @@ public:
       case NA_ANGLE:
         if ( mCurrentAnimTrack && mCurrentAnimTrack->mCurrentKey && mElement == NE_ROTATE)
         {
-          mCurrentAnimTrack->mCurrentKey->mOrientation[3] = (float)atof(savalue);
+          mCurrentAnimTrack->mCurrentKey->mOrientation[3] = (NxF32)atof(savalue);
         }
         else if ( !mBones.empty() && mCurrentBone != -1 )
         {
           MeshBone &b = mBones[mCurrentBone];
-          b.mOrientation[3] = (float)atof(savalue);
+          b.mOrientation[3] = (NxF32)atof(savalue);
         }
         break;
       case NA_X:
@@ -653,7 +653,7 @@ public:
       case NA_Z:
         if ( mCurrentAnimTrack && mCurrentAnimTrack->mCurrentKey )
         {
-          float *dest = 0;
+          NxF32 *dest = 0;
           if ( mElement == NE_SCALE )
             dest = mCurrentAnimTrack->mCurrentKey->mScale;
           else if ( mElement == NE_TRANSLATE )
@@ -667,7 +667,7 @@ public:
           assert(dest);
           if ( dest )
           {
-            float v = (float)atof(savalue);
+            NxF32 v = (NxF32)atof(savalue);
             if ( a == NA_X )
               dest[0] = v;
             else if ( a == NA_Y )
@@ -677,8 +677,8 @@ public:
               dest[2] = v;
               if ( mElement == NE_AXIS )
               {
-                float angle = mCurrentAnimTrack->mCurrentKey->mOrientation[3];
-                float axis[3] = { dest[0], dest[1], dest[2] };
+                NxF32 angle = mCurrentAnimTrack->mCurrentKey->mOrientation[3];
+                NxF32 axis[3] = { dest[0], dest[1], dest[2] };
                 mCurrentAnimTrack->mCurrentKey->setOrientationFromAxisAngle(axis,angle);
                 // ok..now we have to multiply this tranform times the root bone
                 if ( !mBones.empty() )
@@ -689,12 +689,12 @@ public:
                     MeshBone &b = (*i);
                     if ( strcmp(b.mName,mCurrentAnimTrack->mName) == 0 )
                     {
-                      float matrix1[16];
-                      float matrix2[16];
+                      NxF32 matrix1[16];
+                      NxF32 matrix2[16];
                       MyKeyFrame *key = mCurrentAnimTrack->mCurrentKey;
                       fmi_composeTransform(b.mPosition,b.mOrientation,b.mScale,matrix1);
                       fmi_composeTransform(key->mPosition,key->mOrientation,key->mScale,matrix2);
-                      float combined[16];
+                      NxF32 combined[16];
                       fmi_multiply(matrix2,matrix1,combined);
                       fmi_decomposeTransform(combined, key->mPosition, key->mOrientation, key->mScale );
                       break;
@@ -708,8 +708,8 @@ public:
         else if ( !mBones.empty() && mCurrentBone != -1 )
         {
           MeshBone &b = mBones[mCurrentBone];
-          float v = (float)atof(savalue);
-          float *dest = 0;
+          NxF32 v = (NxF32)atof(savalue);
+          NxF32 *dest = 0;
           if ( mElement == NE_POSITION )
             dest = b.mPosition;
           else if ( mElement == NE_AXIS )
@@ -741,16 +741,16 @@ public:
               if ( mElement == NE_AXIS ) // need to convert from axis angle into a quaternion!!
               {
                 // into quat here...
-                float angle = dest[3];
-                float axis[3] = { dest[0], dest[1], dest[2] };
+                NxF32 angle = dest[3];
+                NxF32 axis[3] = { dest[0], dest[1], dest[2] };
                 b.setOrientationFromAxisAngle(axis,angle);
               }
               else if ( mElement == NE_ROTATE )
               {
                 if ( mCurrentAnimTrack && mCurrentAnimTrack->mCurrentKey )
                 {
-                  float angle = mCurrentAnimTrack->mCurrentKey->mOrientation[3];
-                  float axis[3] = { dest[0], dest[1], dest[2] };
+                  NxF32 angle = mCurrentAnimTrack->mCurrentKey->mOrientation[3];
+                  NxF32 axis[3] = { dest[0], dest[1], dest[2] };
                   mCurrentAnimTrack->mCurrentKey->setOrientationFromAxisAngle(axis,angle);
                 }
               }
@@ -764,8 +764,8 @@ public:
           if ( mVertexIndex >= 0 && mVertexIndex < mVertexCount )
           {
             MeshVertex &vtx = mVertexBuffer[mVertexIndex];
-            float v = (float)atof(savalue);
-            float *dest = 0;
+            NxF32 v = (NxF32)atof(savalue);
+            NxF32 *dest = 0;
             if ( mElement == NE_POSITION )
               dest = vtx.mPos;
             else if ( mElement == NE_NORMAL )
@@ -787,7 +787,7 @@ public:
         assert( mVertexIndex >= 0 && mVertexIndex < mVertexCount && mBoneCount >= 0 && mBoneCount < 4 );
         if ( mVertexIndex >= 0 && mVertexIndex < mVertexCount && mBoneCount >= 0 && mBoneCount < 4 )
         {
-          int bindex = atoi( savalue );
+          NxI32 bindex = atoi( savalue );
           assert( bindex >=0 && bindex < 65536 );
           mVertexBuffer[mVertexIndex].mBone[mBoneCount] = (unsigned short)bindex;
         }
@@ -798,7 +798,7 @@ public:
         if ( mVertexIndex >= 0 && mVertexIndex < mVertexCount )
         {
           MeshVertex &v = mVertexBuffer[mVertexIndex];
-          float tv = (float)atof(savalue);
+          NxF32 tv = (NxF32)atof(savalue);
           if ( a == NA_U )
             v.mTexel1[0] = tv;
           else
@@ -819,7 +819,7 @@ public:
           assert( mCurrentSubMesh );
           if ( mCurrentSubMesh )
           {
-            int i1 = atoi(savalue);
+            NxI32 i1 = atoi(savalue);
             assert( i1 >= 0 && i1 < mVertexCount );
             assert( mCurrentSubMesh->mFaceIndex >= 0 && mCurrentSubMesh->mFaceIndex < mCurrentSubMesh->mFaceCount );
             if ( mCurrentSubMesh->mFaceIndex >= 0 && mCurrentSubMesh->mFaceIndex < mCurrentSubMesh->mFaceCount )
@@ -864,12 +864,12 @@ public:
           assert( mAnimation );
           if ( mAnimation )
           {
-            int len = atoi(savalue);
+            NxI32 len = atoi(savalue);
             if ( len > 0 )
             {
               mAnimation->mFrameCount = len;
               mAnimation->mDtime      = 1.0f / 30.0f;
-              mAnimation->mDuration   = (float)len*mAnimation->mDtime;
+              mAnimation->mDuration   = (NxF32)len*mAnimation->mDtime;
             }
           }
         }
@@ -880,9 +880,9 @@ public:
           if ( mCurrentBone != -1 )
           {
             StringRef ref = mStrings.Get(savalue);
-            int bcount = mBones.size();
+            NxI32 bcount = mBones.size();
             MeshBone &bp = mBones[mCurrentBone];
-            for (int i=0; i<bcount; i++)
+            for (NxI32 i=0; i<bcount; i++)
             {
               MeshBone &b = mBones[i];
               if ( b.mName == ref.Get() )
@@ -898,9 +898,9 @@ public:
         if ( mElement == NE_BONEPARENT )
         {
           StringRef ref = mStrings.Get(savalue);
-          int bcount = mBones.size();
+          NxI32 bcount = mBones.size();
           mCurrentBone = -1;
-          for (int i=0; i<bcount; i++)
+          for (NxI32 i=0; i<bcount; i++)
           {
             MeshBone &b = mBones[i];
             if ( b.mName == ref.Get() )
@@ -921,7 +921,7 @@ public:
 	    case NA_VERTEX_INDEX:
         if ( mElement == NE_VERTEX_BONE_ASSIGNMENT )
         {
-          int v = atoi( savalue );
+          NxI32 v = atoi( savalue );
           if ( v != mVertexIndex )
           {
             mBoneCount = 0;
@@ -934,7 +934,7 @@ public:
         assert( mVertexIndex >= 0 && mVertexIndex < mVertexCount && mBoneCount >= 0 && mBoneCount < 4 );
         if ( mVertexIndex >= 0 && mVertexIndex < mVertexCount && mBoneCount >= 0 && mBoneCount < 4 )
         {
-          float w = (float)atof( savalue );
+          NxF32 w = (NxF32)atof( savalue );
           assert( w >= 0 && w <= 1 );
           mVertexBuffer[mVertexIndex].mWeight[mBoneCount] = w;
           mBoneCount++;
@@ -949,7 +949,7 @@ public:
           assert( mCurrentAnimTrack );
           if ( mCurrentAnimTrack )
           {
-            float t = (float)atof(savalue);
+            NxF32 t = (NxF32)atof(savalue);
             mCurrentAnimTrack->addKey(t);
           }
         }
@@ -973,19 +973,19 @@ public:
               const char *b = strstr(g," ");
               if ( b )
               {
-                float af = (float)atof(a);
-                float rf = (float)atof(r);
-                float gf = (float)atof(g);
-                float bf = (float)atof(b);
+                NxF32 af = (NxF32)atof(a);
+                NxF32 rf = (NxF32)atof(r);
+                NxF32 gf = (NxF32)atof(g);
+                NxF32 bf = (NxF32)atof(b);
                 assert( af >= 0 && af <= 1 );
                 assert( rf >= 0 && rf <= 1 );
                 assert( gf >= 0 && gf <= 1 );
                 assert( bf >= 0 && bf <= 1 );
-                unsigned int ai = (unsigned int)(af*255.0f);
-                unsigned int ri = (unsigned int)(rf*255.0f);
-                unsigned int gi = (unsigned int)(gf*255.0f);
-                unsigned int bi = (unsigned int)(bf*255.0f);
-                unsigned int color = (ai<<24)|(ri<<16)||(gi<<8)|bi;
+                NxU32 ai = (NxU32)(af*255.0f);
+                NxU32 ri = (NxU32)(rf*255.0f);
+                NxU32 gi = (NxU32)(gf*255.0f);
+                NxU32 bi = (NxU32)(bf*255.0f);
+                NxU32 color = (ai<<24)|(ri<<16)||(gi<<8)|bi;
                 mVertexBuffer[mVertexIndex].mColor = color;
               }
             }
@@ -1028,13 +1028,13 @@ private:
   bool                 mPositions;
   bool                 mNormals;
   bool                 mColors;
-  int                  mTextureCoordDimensions;
-  int                  mTextureCoords;
+  NxI32                  mTextureCoordDimensions;
+  NxI32                  mTextureCoords;
 
   OperationType        mOperationType;
   MeshImportInterface *mCallback;
-  int                  mVertexCount;
-  int                  mVertexIndex;
+  NxI32                  mVertexCount;
+  NxI32                  mVertexIndex;
   MeshVertex          *mVertexBuffer;
   NodeElement          mElement; // current element being processed
   StringRef            mSkeletonName;
@@ -1043,12 +1043,12 @@ private:
   StringRef            mCurrentMesh;
   MySubMesh           *mCurrentSubMesh;
   MySubMeshVector      mSubMeshes;
-  int                  mBoneCount; // which bone we are
+  NxI32                  mBoneCount; // which bone we are
 
 	StringTableInt         mToElement;         // convert string to element enumeration.
 	StringTableInt         mToAttribute;       // convert string to attribute enumeration
 
-  int                    mCurrentBone;
+  NxI32                    mCurrentBone;
   MeshBoneVector         mBones;
   MeshAnimation       *mAnimation;
   MyAnimTrack         *mCurrentAnimTrack;

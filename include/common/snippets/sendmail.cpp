@@ -56,21 +56,21 @@ void MemoryFreeLibrary(HMEMORYMODULE);
 typedef struct
 {
 	PIMAGE_NT_HEADERS headers;
-	unsigned char *codeBase;
+	NxU8 *codeBase;
 	HMODULE *modules;
-	int numModules;
-	int initialized;
+	NxI32 numModules;
+	NxI32 initialized;
 } MEMORYMODULE, *PMEMORYMODULE;
 
 typedef BOOL (WINAPI *DllEntryProc)(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpReserved);
 
 #define GET_HEADER_DICTIONARY(module, idx)	&(module)->headers->OptionalHeader.DataDirectory[idx]
 
-static void CopySections(const unsigned char *data, PIMAGE_NT_HEADERS old_headers, PMEMORYMODULE module)
+static void CopySections(const NxU8 *data, PIMAGE_NT_HEADERS old_headers, PMEMORYMODULE module)
 {
-	int i, size;
-	unsigned char *codeBase = module->codeBase;
-	unsigned char *dest;
+	NxI32 i, size;
+	NxU8 *codeBase = module->codeBase;
+	NxU8 *dest;
 	PIMAGE_SECTION_HEADER section = IMAGE_FIRST_SECTION(module->headers);
 	for (i=0; i<module->headers->FileHeader.NumberOfSections; i++, section++)
 	{
@@ -81,7 +81,7 @@ static void CopySections(const unsigned char *data, PIMAGE_NT_HEADERS old_header
 			size = old_headers->OptionalHeader.SectionAlignment;
 			if (size > 0)
 			{
-				dest = (unsigned char *)VirtualAlloc(codeBase + section->VirtualAddress,
+				dest = (NxU8 *)VirtualAlloc(codeBase + section->VirtualAddress,
 					size,
 					MEM_COMMIT,
 					PAGE_READWRITE);
@@ -95,7 +95,7 @@ static void CopySections(const unsigned char *data, PIMAGE_NT_HEADERS old_header
 		}
 
 		// commit memory block and copy data from dll
-		dest = (unsigned char *)VirtualAlloc(codeBase + section->VirtualAddress,
+		dest = (NxU8 *)VirtualAlloc(codeBase + section->VirtualAddress,
 							section->SizeOfRawData,
 							MEM_COMMIT,
 							PAGE_READWRITE);
@@ -105,7 +105,7 @@ static void CopySections(const unsigned char *data, PIMAGE_NT_HEADERS old_header
 }
 
 // Protection flags for memory pages (Executable, Readable, Writeable)
-static int ProtectionFlags[2][2][2] =
+static NxI32 ProtectionFlags[2][2][2] =
 {
 	{
 		// not executable
@@ -120,16 +120,16 @@ static int ProtectionFlags[2][2][2] =
 
 static void FinalizeSections(PMEMORYMODULE module)
 {
-	int i;
+	NxI32 i;
 	PIMAGE_SECTION_HEADER section = IMAGE_FIRST_SECTION(module->headers);
 
 	// loop through all sections and change access flags
 	for (i=0; i<module->headers->FileHeader.NumberOfSections; i++, section++)
 	{
 		DWORD protect, oldProtect, size;
-		int executable = (section->Characteristics & IMAGE_SCN_MEM_EXECUTE) != 0;
-		int readable =   (section->Characteristics & IMAGE_SCN_MEM_READ) != 0;
-		int writeable =  (section->Characteristics & IMAGE_SCN_MEM_WRITE) != 0;
+		NxI32 executable = (section->Characteristics & IMAGE_SCN_MEM_EXECUTE) != 0;
+		NxI32 readable =   (section->Characteristics & IMAGE_SCN_MEM_READ) != 0;
+		NxI32 writeable =  (section->Characteristics & IMAGE_SCN_MEM_WRITE) != 0;
 
 		if (section->Characteristics & IMAGE_SCN_MEM_DISCARDABLE)
 		{
@@ -164,7 +164,7 @@ static void FinalizeSections(PMEMORYMODULE module)
 static void PerformBaseRelocation(PMEMORYMODULE module, DWORD delta)
 {
 	DWORD i;
-	unsigned char *codeBase = module->codeBase;
+	NxU8 *codeBase = module->codeBase;
 
 	PIMAGE_DATA_DIRECTORY directory = GET_HEADER_DICTIONARY(module, IMAGE_DIRECTORY_ENTRY_BASERELOC);
 	if (directory->Size > 0)
@@ -172,12 +172,12 @@ static void PerformBaseRelocation(PMEMORYMODULE module, DWORD delta)
 		PIMAGE_BASE_RELOCATION relocation = (PIMAGE_BASE_RELOCATION)(codeBase + directory->VirtualAddress);
 		for (; relocation->VirtualAddress > 0; )
 		{
-			unsigned char *dest = (unsigned char *)(codeBase + relocation->VirtualAddress);
-			unsigned short *relInfo = (unsigned short *)((unsigned char *)relocation + IMAGE_SIZEOF_BASE_RELOCATION);
+			NxU8 *dest = (NxU8 *)(codeBase + relocation->VirtualAddress);
+			unsigned short *relInfo = (unsigned short *)((NxU8 *)relocation + IMAGE_SIZEOF_BASE_RELOCATION);
 			for (i=0; i<((relocation->SizeOfBlock-IMAGE_SIZEOF_BASE_RELOCATION) / 2); i++, relInfo++)
 			{
 				DWORD *patchAddrHL;
-				int type, offset;
+				NxI32 type, offset;
 
 				// the upper 4 bits define the type of relocation
 				type = *relInfo >> 12;
@@ -208,10 +208,10 @@ static void PerformBaseRelocation(PMEMORYMODULE module, DWORD delta)
 	}
 }
 
-static int BuildImportTable(PMEMORYMODULE module)
+static NxI32 BuildImportTable(PMEMORYMODULE module)
 {
-	int result=1;
-	unsigned char *codeBase = module->codeBase;
+	NxI32 result=1;
+	NxU8 *codeBase = module->codeBase;
 
 	PIMAGE_DATA_DIRECTORY directory = GET_HEADER_DICTIONARY(module, IMAGE_DIRECTORY_ENTRY_IMPORT);
 	if (directory->Size > 0)
@@ -272,7 +272,7 @@ static HMEMORYMODULE MemoryLoadLibrary(const void *data)
 	PMEMORYMODULE result;
 	PIMAGE_DOS_HEADER dos_header;
 	PIMAGE_NT_HEADERS old_header;
-	unsigned char *code, *headers;
+	NxU8 *code, *headers;
 	DWORD locationDelta;
 	DllEntryProc DllEntry;
 	BOOL successfull;
@@ -283,21 +283,21 @@ static HMEMORYMODULE MemoryLoadLibrary(const void *data)
 		return NULL;
 	}
 
-	old_header = (PIMAGE_NT_HEADERS)&((const unsigned char *)(data))[dos_header->e_lfanew];
+	old_header = (PIMAGE_NT_HEADERS)&((const NxU8 *)(data))[dos_header->e_lfanew];
 	if (old_header->Signature != IMAGE_NT_SIGNATURE)
 	{
 		return NULL;
 	}
 
 	// reserve memory for image of library
-	code = (unsigned char *)VirtualAlloc((LPVOID)(old_header->OptionalHeader.ImageBase),
+	code = (NxU8 *)VirtualAlloc((LPVOID)(old_header->OptionalHeader.ImageBase),
 		old_header->OptionalHeader.SizeOfImage,
 		MEM_RESERVE,
 		PAGE_READWRITE);
 
     if (code == NULL)
         // try to allocate memory at arbitrary position
-        code = (unsigned char *)VirtualAlloc(NULL,
+        code = (NxU8 *)VirtualAlloc(NULL,
             old_header->OptionalHeader.SizeOfImage,
             MEM_RESERVE,
             PAGE_READWRITE);
@@ -321,20 +321,20 @@ static HMEMORYMODULE MemoryLoadLibrary(const void *data)
 		PAGE_READWRITE);
 
 	// commit memory for headers
-	headers = (unsigned char *)VirtualAlloc(code,
+	headers = (NxU8 *)VirtualAlloc(code,
 		old_header->OptionalHeader.SizeOfHeaders,
 		MEM_COMMIT,
 		PAGE_READWRITE);
 
 	// copy PE header to code
 	memcpy(headers, dos_header, dos_header->e_lfanew + old_header->OptionalHeader.SizeOfHeaders);
-	result->headers = (PIMAGE_NT_HEADERS)&((const unsigned char *)(headers))[dos_header->e_lfanew];
+	result->headers = (PIMAGE_NT_HEADERS)&((const NxU8 *)(headers))[dos_header->e_lfanew];
 
 	// update position
 	result->headers->OptionalHeader.ImageBase = (DWORD)code;
 
 	// copy sections from DLL file block to new memory location
-	CopySections((const unsigned char *)data, old_header, result);
+	CopySections((const NxU8 *)data, old_header, result);
 
 	// adjust base address of imported data
 	locationDelta = (DWORD)(code - old_header->OptionalHeader.ImageBase);
@@ -377,8 +377,8 @@ error:
 
 static FARPROC MemoryGetProcAddress(HMEMORYMODULE module, const char *name)
 {
-	unsigned char *codeBase = ((PMEMORYMODULE)module)->codeBase;
-	int idx=-1;
+	NxU8 *codeBase = ((PMEMORYMODULE)module)->codeBase;
+	NxI32 idx=-1;
 	DWORD i, *nameRef;
 	WORD *ordinal;
 	PIMAGE_EXPORT_DIRECTORY exports;
@@ -416,7 +416,7 @@ static FARPROC MemoryGetProcAddress(HMEMORYMODULE module, const char *name)
 
 static void MemoryFreeLibrary(HMEMORYMODULE mod)
 {
-	int i;
+	NxI32 i;
 	PMEMORYMODULE module = (PMEMORYMODULE)mod;
 
 	if (module != NULL)
@@ -447,7 +447,7 @@ static void MemoryFreeLibrary(HMEMORYMODULE mod)
 	}
 }
 
-static unsigned char g_blat[122880] =
+static NxU8 g_blat[122880] =
 {
   0x4D,0x5A,0x90,0x00,0x03,0x00,0x00,0x00,0x04,0x00,0x00,0x00,0xFF,0xFF,0x00,0x00,0xB8,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x40,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
   0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x08,0x01,0x00,0x00,
@@ -4308,7 +4308,7 @@ static void init(void)
 }
 
 
-bool sendBlat(int argc,const char *_argv[]) // refer to the Blat documentation for the full set of command line arguments.
+bool sendBlat(NxI32 argc,const char *_argv[]) // refer to the Blat documentation for the full set of command line arguments.
 {
   bool ret = false;
 
@@ -4323,20 +4323,20 @@ bool sendBlat(int argc,const char *_argv[]) // refer to the Blat documentation f
 #endif
     if ( proc )
     {
-      typedef int (_stdcall * blat)(int argc,char *argv[]);
+      typedef NxI32 (_stdcall * blat)(NxI32 argc,char *argv[]);
 
       char **argv = new char *[argc];
-      for (int i=0; i<argc; i++)
+      for (NxI32 i=0; i<argc; i++)
       {
         const char *str = _argv[i];
-        int len = (int) strlen(str);
+        NxI32 len = (NxI32) strlen(str);
         argv[i] = (char *)malloc(len+1);
         strcpy(argv[i],str);
       }
 
-  	  int ok = ((blat)proc)(argc,argv);
+  	  NxI32 ok = ((blat)proc)(argc,argv);
 
-      for (int i=0; i<argc; i++)
+      for (NxI32 i=0; i<argc; i++)
       {
         free(argv[i]);
       }
@@ -4361,7 +4361,7 @@ bool sendMail(const char *mail_server,const char *from,const char *to,const char
   if ( subject == 0 ) subject = "No Subject";
   if ( body == 0 )    body = "";
 
-  int argc = 11;
+  NxI32 argc = 11;
   const char *argv[13];
   argv[0] = "blat.dll";
   argv[1] = "-server";

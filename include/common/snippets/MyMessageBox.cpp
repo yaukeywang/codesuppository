@@ -32,7 +32,7 @@ static char *stristr(const char *str,const char *key)       // case insensitive 
   char *foo = strstr(istr,ikey);
   if ( foo )
   {
-    unsigned int loc = (unsigned int)(foo - istr);
+    NxU32 loc = (NxU32)(foo - istr);
     foo = (char *)str+loc;
   }
 
@@ -41,7 +41,7 @@ static char *stristr(const char *str,const char *key)       // case insensitive 
 
 
 
-static bool CharToWide(const char *source,void *dest,int maxlen)
+static bool CharToWide(const char *source,void *dest,NxI32 maxlen)
 {
   bool ret = false;
 
@@ -86,7 +86,7 @@ bool myMessageBoxYesNo(const char *fmt, ...)
   wbuff[2047] = 0;
   _vsnprintf(buff,2047, fmt, (char *)(&fmt+1));
   mbstowcs(wbuff,buff,2048);
-  int v = MessageBox(0,wbuff,L"Are you sure?",MB_YESNO);
+  NxI32 v = MessageBox(0,wbuff,L"Are you sure?",MB_YESNO);
   if ( v == IDYES )
   {
     ret = true;
@@ -105,13 +105,13 @@ bool myMessageBoxYesNo(const char *fmt, ...)
 }
 
 
-static void add(wchar_t *dest,const wchar_t *src,unsigned int &index)
+static void add(wchar_t *dest,const wchar_t *src,NxU32 &index)
 {
   if ( src )
   {
     size_t len;
     StringCchLength(src,512,&len);
-    for (unsigned int i=0; i<len; i++)
+    for (NxU32 i=0; i<len; i++)
     {
       wchar_t c = *src++;
       dest[index++] = c;
@@ -130,7 +130,7 @@ const char * getFileName(const char *fileType,const char *initial,const char *de
 
   const char *extension = fileType;
 
-  static int sWhichFileType = 1;
+  static NxI32 sWhichFileType = 1;
   char curdir[512];
   getcwd(curdir,512);
   wchar_t buffer[257] = L"";
@@ -158,7 +158,7 @@ const char * getFileName(const char *fileType,const char *initial,const char *de
   CharToWide(description,_desc,512);
   CharToWide(extension,_ext,512);
 
-  unsigned int index = 0;
+  NxU32 index = 0;
   _filter[0] = 0;
 
   add(_filter,_desc,index);
@@ -180,7 +180,7 @@ const char * getFileName(const char *fileType,const char *initial,const char *de
 
   mbstowcs(buffer,exportName,512);
 
-  int ok = 0;
+  NxI32 ok = 0;
   if ( saveMode )
     ok = GetSaveFileName(&f);
   else

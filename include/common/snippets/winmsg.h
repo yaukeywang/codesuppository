@@ -2,6 +2,7 @@
 
 #define WIN_MSG_H
 
+#include "UserMemAlloc.h"
 
 /*!
 **
@@ -44,10 +45,10 @@ class WinMsg
 {
 public:
 	virtual const char * receiveWindowsMessage(void) = 0;
-	virtual const char * receiveWindowsMessageBlob(const void *&msg,unsigned int &len) = 0;
-    virtual const char ** getArgs(const char *input,unsigned int &argc) = 0; // parse string into a series of arguments.
+	virtual const char * receiveWindowsMessageBlob(const void *&msg,NxU32 &len) = 0;
+    virtual const char ** getArgs(const char *input,NxU32 &argc) = 0; // parse string into a series of arguments.
     virtual bool sendWinMsg(const char *app,const char *fmt,...) = 0;
-    virtual bool sendWinMsgBinary(const char *app,const char *blobType,const void *mem,unsigned int len) = 0;
+    virtual bool sendWinMsgBinary(const char *app,const char *blobType,const void *mem,NxU32 len) = 0;
     virtual bool hasWindow(const char *app) = 0; // returns true if this application window exists on the system.
 };
 

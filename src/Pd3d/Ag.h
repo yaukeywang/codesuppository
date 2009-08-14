@@ -2,6 +2,8 @@
 #ifndef AG_H
 #define AG_H
 
+#include "UserMemAlloc.h"
+
 #define NOMINMAX
 
 ///

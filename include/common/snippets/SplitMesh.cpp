@@ -36,11 +36,11 @@ namespace SPLIT_MESH
 {
 
 static bool gFreeze=false;
-static double gPlane[4] = { 1.000000000,0.000000000,0.000000000,0.948000014 };
+static NxF64 gPlane[4] = { 1.000000000,0.000000000,0.000000000,0.948000014 };
 
-static float ranf(void)
+static NxF32 ranf(void)
 {
-  float v = (float)rand();
+  NxF32 v = (NxF32)rand();
   v*=(1.0f/32768.0f);
   v-=0.5f;
   return v;
@@ -48,7 +48,7 @@ static float ranf(void)
 
 //************************************************************************************
 //************************************************************************************
-//** Code to support 'RobustMeshes'; full double precision, snapped and welded vertices
+//** Code to support 'RobustMeshes'; full NxF64 precision, snapped and welded vertices
 //************************************************************************************
 //************************************************************************************
 
@@ -66,7 +66,7 @@ public:
     }
     else
     {
-      mVertexIndex = fm_createVertexIndex( (double)SPLIT_EPSILON, false );
+      mVertexIndex = fm_createVertexIndex( (NxF64)SPLIT_EPSILON, false );
       mMyVertexIndex = true;
     }
   }
@@ -79,11 +79,11 @@ public:
     }
   }
 
-  void addTriangle(const float *_p1,const float *_p2,const float *_p3,size_t id)
+  void addTriangle(const NxF32 *_p1,const NxF32 *_p2,const NxF32 *_p3,size_t id)
 	{
-    double p1[3];
-    double p2[3];
-    double p3[3];
+    NxF64 p1[3];
+    NxF64 p2[3];
+    NxF64 p3[3];
 
     fm_floatToDouble3(_p1,p1);
     fm_floatToDouble3(_p2,p2);
@@ -92,7 +92,7 @@ public:
     addTriangle(p1,p2,p3,id);
 	}
 
-  void addTriangle(const double *p1,const double *p2,const double *p3,size_t id)
+  void addTriangle(const NxF64 *p1,const NxF64 *p2,const NxF64 *p3,size_t id)
 	{
     bool np;
 
@@ -122,9 +122,9 @@ public:
         size_t i2 = *indices++;
         size_t i3 = *indices++;
 
-        const double *v1 = mVertexIndex->getVertexDouble(i1);
-        const double *v2 = mVertexIndex->getVertexDouble(i2);
-        const double *v3 = mVertexIndex->getVertexDouble(i3);
+        const NxF64 *v1 = mVertexIndex->getVertexDouble(i1);
+        const NxF64 *v2 = mVertexIndex->getVertexDouble(i2);
+        const NxF64 *v3 = mVertexIndex->getVertexDouble(i3);
 
         size_t _id = *id++;
 
@@ -142,7 +142,7 @@ public:
     {
       size_t *idx = &mIndices[0];
       size_t tcount   = mIndices.size()/3;
-      const double *vertices = mVertexIndex->getVerticesDouble();
+      const NxF64 *vertices = mVertexIndex->getVerticesDouble();
       size_t vcount = mVertexIndex->getVcount();
       size_t *ids = &mId[0];
 
@@ -165,7 +165,7 @@ public:
     {
       size_t *idx = &mIndices[0];
       size_t tcount   = mIndices.size()/3;
-      const double *vertices = mVertexIndex->getVerticesDouble();
+      const NxF64 *vertices = mVertexIndex->getVerticesDouble();
       size_t vcount = mVertexIndex->getVcount();
       size_t *ids = &mId[0];
       simpleMesh.setSimpleMesh(vcount,tcount,vertices,idx,ids);
@@ -175,11 +175,11 @@ public:
     return ret;
   }
 
-  void getOffset(const double *p,float *t)
+  void getOffset(const NxF64 *p,NxF32 *t)
   {
-    t[0] = (float)(p[0]+40);
-    t[1] = (float)p[1];
-    t[2] = (float)p[2];
+    t[0] = (NxF32)(p[0]+40);
+    t[1] = (NxF32)p[1];
+    t[2] = (NxF32)p[2];
   }
 
     bool saveObj(const char * fname)
@@ -192,7 +192,7 @@ public:
         FILE *fph = fopen(fname,"wb");
         if ( fph )
         {
-          const float *v = s.mVertices;
+          const NxF32 *v = s.mVertices;
           for (size_t i=0; i<s.mVcount; i++)
           {
             fprintf(fph,"v %0.9f %0.9f %0.9f\r\n", v[0], v[1], v[2] );
@@ -276,7 +276,7 @@ void         releaseRobustMesh(RobustMesh *mesh)
 //************************************************************************************
 
 
-typedef USER_STL::vector< double >  doubleVector;
+typedef USER_STL::vector< NxF64 >  doubleVector;
 
 class Edge
 {
@@ -299,7 +299,7 @@ typedef USER_STL::vector< Edge *> EdgePtrVector;
 
 typedef USER_STL_EXT::hash_map<size_t, Edge *> EdgeIndexMap;
 typedef USER_STL::vector< size_t > SizeTVector;
-typedef USER_STL::vector< int > intVector;
+typedef USER_STL::vector< NxI32 > intVector;
 
 
 class Ring
@@ -350,9 +350,9 @@ public:
       size_t i2 = mPoints[pindex+1];
       size_t i3 = i;
 
-      const double *p1 = pool->getVertexDouble(i1);
-      const double *p2 = pool->getVertexDouble(i2);
-      const double *p3 = pool->getVertexDouble(i3);
+      const NxF64 *p1 = pool->getVertexDouble(i1);
+      const NxF64 *p2 = pool->getVertexDouble(i2);
+      const NxF64 *p3 = pool->getVertexDouble(i3);
 
       if ( fm_colinear(p1,p2,p3) )
       {
@@ -381,9 +381,9 @@ public:
       size_t i2 = mPoints[pindex+1];
       size_t i3 = 0;
 
-      const double *p1 = pool->getVertexDouble(i1);
-      const double *p2 = pool->getVertexDouble(i2);
-      const double *p3 = pool->getVertexDouble(i3);
+      const NxF64 *p1 = pool->getVertexDouble(i1);
+      const NxF64 *p2 = pool->getVertexDouble(i2);
+      const NxF64 *p3 = pool->getVertexDouble(i3);
 
       if ( fm_colinear(p1,p2,p3) )
       {
@@ -396,7 +396,7 @@ public:
   bool isClosed(void) const { return mClosed; };
   bool isConcave(void) const { return mConcave; };
 
-  void getCenter(double *center) const
+  void getCenter(NxF64 *center) const
   {
     if ( center )
     {
@@ -406,10 +406,10 @@ public:
     }
   }
 
-  void normalize(double *p) const
+  void normalize(NxF64 *p) const
   {
-    double dist = sqrt(p[0]*p[0]+p[1]*p[1]+p[2]*p[2]);
-    double recip = 1 / dist;
+    NxF64 dist = sqrt(p[0]*p[0]+p[1]*p[1]+p[2]*p[2]);
+    NxF64 recip = 1 / dist;
     p[0]*=recip;
     p[1]*=recip;
     p[2]*=recip;
@@ -419,12 +419,12 @@ public:
   {
     bool ret = false;
 
-    const double *p1 = p->getVertexDouble(a);
-    const double *p2 = p->getVertexDouble(b);
-    const double *p3 = p->getVertexDouble(c);
+    const NxF64 *p1 = p->getVertexDouble(a);
+    const NxF64 *p2 = p->getVertexDouble(b);
+    const NxF64 *p3 = p->getVertexDouble(c);
 
-    double e1[3];
-    double e2[3];
+    NxF64 e1[3];
+    NxF64 e2[3];
 
     e1[0] = p1[0] - p2[0];
     e1[1] = p1[1] - p2[1];
@@ -437,7 +437,7 @@ public:
     normalize(e1);
     normalize(e2);
 
-    double dot = e1[0]*e2[0]+e1[1]*e2[1]+e1[2]*e2[2];
+    NxF64 dot = e1[0]*e2[0]+e1[1]*e2[1]+e1[2]*e2[2];
 
     if ( dot > 0.000001 )
     {
@@ -475,13 +475,13 @@ public:
         }
       }
 
-      double bmin[3];
-      double bmax[3];
+      NxF64 bmin[3];
+      NxF64 bmax[3];
 
       for (size_t i=0; i<count; i++)
       {
         size_t a = mPoints[i];
-        const double *pos = pool->getVertexDouble(a);
+        const NxF64 *pos = pool->getVertexDouble(a);
         if ( i==0)
         {
           bmin[0] = pos[0];
@@ -512,7 +512,7 @@ public:
 
   bool        mClosed:1;
   bool        mConcave:1;
-  double       mCenter[3];
+  NxF64       mCenter[3];
   SizeTVector mPoints;
 };
 
@@ -522,7 +522,7 @@ class LineSegment
 {
 public:
 
-  LineSegment(const double *p1,const double *p2,fm_VertexIndex *vindex)
+  LineSegment(const NxF64 *p1,const NxF64 *p2,fm_VertexIndex *vindex)
   {
     copy(mP1,p1);
     copy(mP2,p2);
@@ -541,13 +541,13 @@ public:
 
   }
 
-  bool collapse(const double *p1,const double *p2) const
+  bool collapse(const NxF64 *p1,const NxF64 *p2) const
   {
-    double d = fm_distanceSquared(p1,p2);
+    NxF64 d = fm_distanceSquared(p1,p2);
     return  ( d < (SPLIT_EPSILON*SPLIT_EPSILON) ) ? true : false;
   }
 
-  void copy(double *dest,const double *src) const
+  void copy(NxF64 *dest,const NxF64 *src) const
   {
     dest[0] = src[0];
     dest[1] = src[1];
@@ -590,8 +590,8 @@ public:
   size_t   mI1;
   size_t   mI2;
 
-  double  mP1[3];
-  double  mP2[3];
+  NxF64  mP1[3];
+  NxF64  mP2[3];
 };
 
 typedef USER_STL::vector< LineSegment > LineSegmentVector;
@@ -613,7 +613,7 @@ public:
     }
     else
     {
-      mVertexIndex = fm_createVertexIndex( (double)SPLIT_EPSILON, false );
+      mVertexIndex = fm_createVertexIndex( (NxF64)SPLIT_EPSILON, false );
       mMyVertexIndex = true;
     }
   }
@@ -626,7 +626,7 @@ public:
     }
   }
 
-  void addLineSegment(const double *p1,const double *p2)
+  void addLineSegment(const NxF64 *p1,const NxF64 *p2)
   {
     LineSegment s(p1,p2,mVertexIndex);
     mLineSegments.push_back(s);
@@ -785,9 +785,9 @@ public:
     return ret;
   }
 
-  double *getPolygon(size_t polygonIndex,size_t &vertexCount,bool &closed,bool &concave,double *center)
+  NxF64 *getPolygon(size_t polygonIndex,size_t &vertexCount,bool &closed,bool &concave,NxF64 *center)
   {
-    double *ret = 0;
+    NxF64 *ret = 0;
     vertexCount = 0;
     closed = false;
     mResults.clear();
@@ -806,7 +806,7 @@ public:
         for (i=r.mPoints.begin(); i!=r.mPoints.end(); ++i)
         {
           size_t v = (*i);
-          const double *pos = mVertexIndex->getVertexDouble(v);
+          const NxF64 *pos = mVertexIndex->getVertexDouble(v);
           mResults.push_back(pos[0]);
           mResults.push_back(pos[1]);
           mResults.push_back(pos[2]);
@@ -822,9 +822,9 @@ public:
   }
 
 
-  double *getEdges(size_t &edgeCount)
+  NxF64 *getEdges(size_t &edgeCount)
   {
-    double *ret = 0;
+    NxF64 *ret = 0;
 
     mResults.clear();
     edgeCount = mEdges.size();
@@ -833,8 +833,8 @@ public:
     for (i=mEdges.begin(); i!=mEdges.end(); ++i)
     {
       const Edge &e = (*i);
-      const double * p1 = mVertexIndex->getVertexDouble( e.mI1 );
-      const double * p2 = mVertexIndex->getVertexDouble( e.mI2 );
+      const NxF64 * p1 = mVertexIndex->getVertexDouble( e.mI1 );
+      const NxF64 * p2 = mVertexIndex->getVertexDouble( e.mI2 );
 
       mResults.push_back( p1[0] );
       mResults.push_back( p1[1] );
@@ -853,9 +853,9 @@ public:
     return ret;
   }
 
-  const double * getTriangulation(size_t &tcount)  // returns the delauney triangulation
+  const NxF64 * getTriangulation(size_t &tcount)  // returns the delauney triangulation
   {
-    const double *ret = 0;
+    const NxF64 *ret = 0;
     tcount = 0;
 
     if ( mTriangles.empty() && !mEdges.empty() )
@@ -872,7 +872,7 @@ public:
   }
 
 
-  void setPlaneEquation(const double *plane)
+  void setPlaneEquation(const NxF64 *plane)
   {
     mPlane[0] = plane[0];
     mPlane[1] = plane[1];
@@ -888,7 +888,7 @@ private:
   doubleVector  mResults;
   RingVector   mRings;
   doubleVector  mTriangles;
-  double        mPlane[4];
+  NxF64        mPlane[4];
   FM_Axis      mAxis;
   LineSegmentVector mLineSegments;
 };
@@ -920,13 +920,13 @@ void        releaseRingSystem(RingSystem *rs)
 //************************************************************************************
 
 
-static const double EPSILON=0.0001;
+static const NxF64 EPSILON=0.0001;
 
 class BuildRingSystem : public RobustMeshInterface
 {
 public:
 
-  RingSystem * buildRingSystem(RobustMesh *mesh,double *plane,bool collapseColinear,bool edgeIntersect,bool saveResults,fm_VertexIndex *vindex)
+  RingSystem * buildRingSystem(RobustMesh *mesh,NxF64 *plane,bool collapseColinear,bool edgeIntersect,bool saveResults,fm_VertexIndex *vindex)
   {
 
     mVertexIndex = vindex;
@@ -945,16 +945,16 @@ public:
     return mRingSystem;
   }
 
-  inline double distTo(const double *plane,const double *p) const
+  inline NxF64 distTo(const NxF64 *plane,const NxF64 *p) const
   {
     return plane[3]+(p[0]*plane[0]+p[1]*plane[1]+p[2]*plane[2]);
   }
 
-  bool onPlane(const double *p) const
+  bool onPlane(const NxF64 *p) const
   {
     bool ret = false;
 
-    double d = fabs(distTo(mPlane,p));
+    NxF64 d = fabs(distTo(mPlane,p));
 
     if ( d < EPSILON )
     {
@@ -964,7 +964,7 @@ public:
     return ret;
   }
 
-  void iterateTriangle(const double *p1,const double *p2,const double *p3,size_t /*id*/)
+  void iterateTriangle(const NxF64 *p1,const NxF64 *p2,const NxF64 *p3,size_t /*id*/)
   {
     bool np;
 
@@ -994,7 +994,7 @@ public:
 
 private:
   RingSystem *mRingSystem;
-  double      mPlane[4];
+  NxF64      mPlane[4];
   fm_VertexIndex *mVertexIndex;
 
 };
@@ -1026,16 +1026,16 @@ public:
 
   }
 
-  bool splitMesh(RobustMesh *rm,const double *plane,bool collapseColinear,bool edgeIntersect,bool saveResults)
+  bool splitMesh(RobustMesh *rm,const NxF64 *plane,bool collapseColinear,bool edgeIntersect,bool saveResults)
   {
     bool ret = false;
 
     release();
 
-    mPlane[0] = (double)plane[0];
-    mPlane[1] = (double)plane[1];
-    mPlane[2] = (double)plane[2];
-    mPlane[3] = (double)plane[3];
+    mPlane[0] = (NxF64)plane[0];
+    mPlane[1] = (NxF64)plane[1];
+    mPlane[2] = (NxF64)plane[2];
+    mPlane[3] = (NxF64)plane[3];
 
     if ( gFreeze )
     {
@@ -1072,22 +1072,22 @@ public:
       size_t pcount;
       bool closed;
       bool concave;
-      double center[3];
-      double *_points = ring->getPolygon(i,pcount,closed,concave,center);
+      NxF64 center[3];
+      NxF64 *_points = ring->getPolygon(i,pcount,closed,concave,center);
       if ( _points && closed )
       {
         fm_Triangulate *t = fm_createTriangulate();
         size_t tcount;
 
-        const double *vertices = t->triangulate3d(pcount,_points,sizeof(double)*3,tcount,true,SPLIT_EPSILON);
+        const NxF64 *vertices = t->triangulate3d(pcount,_points,sizeof(NxF64)*3,tcount,true,SPLIT_EPSILON);
         if ( vertices )
         {
           size_tVector indices;
           for (size_t i=0; i<tcount; i++,vertices+=9)
           {
-            const double *dp1 = vertices;
-            const double *dp2 = vertices+3;
-            const double *dp3 = vertices+6;
+            const NxF64 *dp1 = vertices;
+            const NxF64 *dp2 = vertices+3;
+            const NxF64 *dp3 = vertices+6;
 
             bool newp;
             size_t i1 = mVertexIndex->getIndex(dp1,newp);
@@ -1116,7 +1116,7 @@ public:
             size_t tcount = indices.size()/3;
             size_t outcount;
 
-            const size_t *idx = tess->tesselate(mVertexIndex,tcount,&indices[0],(float)TESSELATE_SIZE,8,outcount);
+            const size_t *idx = tess->tesselate(mVertexIndex,tcount,&indices[0],(NxF32)TESSELATE_SIZE,8,outcount);
 
             mesh->addTriangles(outcount,idx,CLOSURE_ID);
 
@@ -1143,9 +1143,9 @@ public:
     return mRightMesh;
   }
 
-  void iterateTriangle(const double *p1,const double *p2,const double *p3,size_t id)
+  void iterateTriangle(const NxF64 *p1,const NxF64 *p2,const NxF64 *p3,size_t id)
   {
-    double triangle[9];
+    NxF64 triangle[9];
 
     triangle[0] = p1[0];
     triangle[1] = p1[1];
@@ -1159,13 +1159,13 @@ public:
     triangle[7] = p3[1];
     triangle[8] = p3[2];
 
-    double front[3*5];
-    double back[3*5];
+    NxF64 front[3*5];
+    NxF64 back[3*5];
 
     size_t fcount;
     size_t bcount;
 
-    PlaneTriResult result = fm_planeTriIntersection(mPlane,triangle,sizeof(double)*3, 0.00000001, front, fcount, back, bcount );
+    PlaneTriResult result = fm_planeTriIntersection(mPlane,triangle,sizeof(NxF64)*3, 0.00000001, front, fcount, back, bcount );
 
     switch ( result )
     {
@@ -1207,7 +1207,7 @@ private:
   fm_VertexIndex *mVertexIndex;
   RobustMesh  *mLeftMesh;
   RobustMesh  *mRightMesh;
-  double        mPlane[4];
+  NxF64        mPlane[4];
   RingSystem  *mLeftRingSystem;
 };
 
@@ -1226,7 +1226,7 @@ void        releaseSplitMesh(SplitMesh *sm)
 
 #if USE_PERLIN
 #pragma warning(disable:4305)
-static float adjustV(float v,float vmin,float vmax)
+static NxF32 adjustV(NxF32 v,NxF32 vmin,NxF32 vmax)
 {
   v-=vmin;
   v = v / (vmax-vmin);
@@ -1241,7 +1241,7 @@ static float adjustV(float v,float vmin,float vmax)
 //************************************************************************************
 //**** End of the 'SplitMesh' source code
 //************************************************************************************
-bool splitMesh(const SimpleMesh &inputMesh,SimpleMesh &leftMesh,SimpleMesh &rightMesh,const float *planeEquation,bool tesselate,bool remove_tjunctions,bool build_closure,bool perlin_noise)
+bool splitMesh(const SimpleMesh &inputMesh,SimpleMesh &leftMesh,SimpleMesh &rightMesh,const NxF32 *planeEquation,bool tesselate,bool remove_tjunctions,bool build_closure,bool perlin_noise)
 {
   bool ret = true;
 
@@ -1266,9 +1266,9 @@ bool splitMesh(const SimpleMesh &inputMesh,SimpleMesh &leftMesh,SimpleMesh &righ
     assert( i2 >= 0 && i2 < ivcount );
     assert( i3 >= 0 && i3 < ivcount );
 
-    const float *p1 = &inputMesh.mVertices[i1*3];
-    const float *p2 = &inputMesh.mVertices[i2*3];
-    const float *p3 = &inputMesh.mVertices[i3*3];
+    const NxF32 *p1 = &inputMesh.mVertices[i1*3];
+    const NxF32 *p2 = &inputMesh.mVertices[i2*3];
+    const NxF32 *p3 = &inputMesh.mVertices[i3*3];
 
     bool np;
     size_t _i1 = vindex->getIndex(p1,np);
@@ -1291,7 +1291,7 @@ bool splitMesh(const SimpleMesh &inputMesh,SimpleMesh &leftMesh,SimpleMesh &righ
   SplitMesh *s = createSplitMesh(vindex); // create the SplitMesh system
 
 
-  double plane[4];
+  NxF64 plane[4];
 
   plane[0] = planeEquation[0];
   plane[1] = planeEquation[1];
@@ -1370,17 +1370,17 @@ bool splitMesh(const SimpleMesh &inputMesh,SimpleMesh &leftMesh,SimpleMesh &righ
   {
     Perlin4 *perlin = createPerlin4();
 
-    float vmin = 1e9;
-    float vmax = -1e9;
+    NxF32 vmin = 1e9;
+    NxF32 vmax = -1e9;
 
     for (size_t i=0; i<leftMesh.mVcount; i++)
     {
-      float *p = &leftMesh.mVertices[i*3];
-      float d = fabsf(fm_distToPlane(planeEquation,p));
+      NxF32 *p = &leftMesh.mVertices[i*3];
+      NxF32 d = fabsf(fm_distToPlane(planeEquation,p));
       if ( d < 0.001f )
       {
 
-        float v = perlin->get(p[0]*PSCALE,p[2]*PSCALE);
+        NxF32 v = perlin->get(p[0]*PSCALE,p[2]*PSCALE);
 
         if ( v < vmin )
           vmin = v;
@@ -1392,11 +1392,11 @@ bool splitMesh(const SimpleMesh &inputMesh,SimpleMesh &leftMesh,SimpleMesh &righ
 
     for (size_t i=0; i<rightMesh.mVcount; i++)
     {
-      float *p = &rightMesh.mVertices[i*3];
-      float d = fabsf(fm_distToPlane(planeEquation,p));
+      NxF32 *p = &rightMesh.mVertices[i*3];
+      NxF32 d = fabsf(fm_distToPlane(planeEquation,p));
       if ( d < 0.001f )
       {
-        float v = perlin->get(p[0]*PSCALE,p[2]*PSCALE);
+        NxF32 v = perlin->get(p[0]*PSCALE,p[2]*PSCALE);
         if ( v < vmin )
           v = vmin;
         if ( v > vmax )
@@ -1409,20 +1409,20 @@ bool splitMesh(const SimpleMesh &inputMesh,SimpleMesh &leftMesh,SimpleMesh &righ
 
     for (size_t i=0; i<leftMesh.mVcount; i++)
     {
-      float *p = &leftMesh.mVertices[i*3];
-      float d = fabsf(fm_distToPlane(planeEquation,p));
+      NxF32 *p = &leftMesh.mVertices[i*3];
+      NxF32 d = fabsf(fm_distToPlane(planeEquation,p));
       if ( d < 0.001f )
       {
 
-        float v = perlin->get(p[0]*PSCALE,p[2]*PSCALE);
+        NxF32 v = perlin->get(p[0]*PSCALE,p[2]*PSCALE);
 
         v = adjustV(v,vmin,vmax);
 
-        float dir[3];
+        NxF32 dir[3];
 
-        dir[0] = (float)plane[0]*v;
-        dir[1] = (float)plane[1]*v;
-        dir[2] = (float)plane[2]*v;
+        dir[0] = (NxF32)plane[0]*v;
+        dir[1] = (NxF32)plane[1]*v;
+        dir[2] = (NxF32)plane[2]*v;
 
         p[0]+=dir[0];
         p[1]+=dir[1];
@@ -1434,17 +1434,17 @@ bool splitMesh(const SimpleMesh &inputMesh,SimpleMesh &leftMesh,SimpleMesh &righ
 
     for (size_t i=0; i<rightMesh.mVcount; i++)
     {
-      float *p = &rightMesh.mVertices[i*3];
-      float d = fabsf(fm_distToPlane(planeEquation,p));
+      NxF32 *p = &rightMesh.mVertices[i*3];
+      NxF32 d = fabsf(fm_distToPlane(planeEquation,p));
       if ( d < 0.001f )
       {
-        float v = perlin->get(p[0]*PSCALE,p[2]*PSCALE);
+        NxF32 v = perlin->get(p[0]*PSCALE,p[2]*PSCALE);
         v = adjustV(v,vmin,vmax);
 
-        float dir[3];
-        dir[0] = (float)plane[0]*v;
-        dir[1] = (float)plane[1]*v;
-        dir[2] = (float)plane[2]*v;
+        NxF32 dir[3];
+        dir[0] = (NxF32)plane[0]*v;
+        dir[1] = (NxF32)plane[1]*v;
+        dir[2] = (NxF32)plane[2]*v;
 
         p[0]+=dir[0];
         p[1]+=dir[1];
@@ -1466,7 +1466,7 @@ bool splitMesh(const SimpleMesh &inputMesh,SimpleMesh &leftMesh,SimpleMesh &righ
   return ret;
 }
 
-bool splitMesh(const SimpleMeshDouble &inputMesh,SimpleMeshDouble &leftMesh,SimpleMeshDouble &rightMesh,const double *planeEquation,bool tesselate,bool remove_tjunctions,bool build_closure,bool /*perlin_noise*/)
+bool splitMesh(const SimpleMeshDouble &inputMesh,SimpleMeshDouble &leftMesh,SimpleMeshDouble &rightMesh,const NxF64 *planeEquation,bool tesselate,bool remove_tjunctions,bool build_closure,bool /*perlin_noise*/)
 {
   bool ret = true;
 
@@ -1490,9 +1490,9 @@ bool splitMesh(const SimpleMeshDouble &inputMesh,SimpleMeshDouble &leftMesh,Simp
     assert( i2 >= 0 && i2 < ivcount );
     assert( i3 >= 0 && i3 < ivcount );
 
-    const double *p1 = &inputMesh.mVertices[i1*3];
-    const double *p2 = &inputMesh.mVertices[i2*3];
-    const double *p3 = &inputMesh.mVertices[i3*3];
+    const NxF64 *p1 = &inputMesh.mVertices[i1*3];
+    const NxF64 *p2 = &inputMesh.mVertices[i2*3];
+    const NxF64 *p3 = &inputMesh.mVertices[i3*3];
 
     bool np;
     size_t _i1 = vindex->getIndex(p1,np);
@@ -1511,7 +1511,7 @@ bool splitMesh(const SimpleMeshDouble &inputMesh,SimpleMeshDouble &leftMesh,Simp
   SplitMesh *s = createSplitMesh(vindex); // create the SplitMesh system
 
 
-  double plane[4];
+  NxF64 plane[4];
 
   plane[0] = planeEquation[0];
   plane[1] = planeEquation[1];
@@ -1589,27 +1589,27 @@ bool splitMesh(const SimpleMeshDouble &inputMesh,SimpleMeshDouble &leftMesh,Simp
   {
     for (size_t i=inputVcount; i<leftMesh.mVcount; i++)
     {
-      double *p = &leftMesh.mVertices[i*3];
-      float v = ranf()*0.1f;
-      float dir[3];
-      dir[0] = (float)plane[0]*v;
-      dir[1] = (float)plane[1]*v;
-      dir[2] = (float)plane[2]*v;
-      p[0]+=(double)dir[0];
-      p[1]+=(double)dir[1];
-      p[2]+=(double)dir[2];
+      NxF64 *p = &leftMesh.mVertices[i*3];
+      NxF32 v = ranf()*0.1f;
+      NxF32 dir[3];
+      dir[0] = (NxF32)plane[0]*v;
+      dir[1] = (NxF32)plane[1]*v;
+      dir[2] = (NxF32)plane[2]*v;
+      p[0]+=(NxF64)dir[0];
+      p[1]+=(NxF64)dir[1];
+      p[2]+=(NxF64)dir[2];
     }
     for (size_t i=inputVcount; i<rightMesh.mVcount; i++)
     {
-      double *p = &rightMesh.mVertices[i*3];
-      float v = ranf()*0.1f;
-      float dir[3];
-      dir[0] = (float)plane[0]*v;
-      dir[1] = (float)plane[1]*v;
-      dir[2] = (float)plane[2]*v;
-      p[0]+=(double)dir[0];
-      p[1]+=(double)dir[1];
-      p[2]+=(double)dir[2];
+      NxF64 *p = &rightMesh.mVertices[i*3];
+      NxF32 v = ranf()*0.1f;
+      NxF32 dir[3];
+      dir[0] = (NxF32)plane[0]*v;
+      dir[1] = (NxF32)plane[1]*v;
+      dir[2] = (NxF32)plane[2]*v;
+      p[0]+=(NxF64)dir[0];
+      p[1]+=(NxF64)dir[1];
+      p[2]+=(NxF64)dir[2];
     }
 
   }

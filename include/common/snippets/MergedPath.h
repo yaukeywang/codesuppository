@@ -2,7 +2,7 @@
 
 #define MERGED_PATH_H
 
-#include "NxSimpleTypes.h"
+#include "UserMemAlloc.h"
 
 namespace MERGED_PATH
 {

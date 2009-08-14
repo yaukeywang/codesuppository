@@ -9,6 +9,8 @@
 #ifndef DXUT_RES_H
 #define DXUT_RES_H
 
+#include "UserMemAlloc.h"
+
 HRESULT DXUTCreateGUITextureFromInternalArray( LPDIRECT3DDEVICE9 pd3dDevice, IDirect3DTexture9** ppTexture, D3DXIMAGE_INFO* pInfo );
 HRESULT DXUTCreateArrowMeshFromInternalArray( LPDIRECT3DDEVICE9 pd3dDevice, ID3DXMesh** ppMesh );
 

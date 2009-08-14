@@ -2,6 +2,8 @@
 
 #define JOB_SWARM_H
 
+#include "UserMemAlloc.h"
+
 // This is the main JobSwarm system.
 //* This project is now officially hosted at source forge at the location:
 //  http://sourceforge.net/projects/jobswarm/
@@ -58,9 +60,9 @@ namespace JOB_SWARM
 class JobSwarmInterface
 {
 public:
-  virtual void job_process(void *userData,int userId) = 0;   // RUNS IN ANOTHER THREAD!! MUST BE THREAD SAFE!
-  virtual void job_onFinish(void *userData,int userId) = 0;  // runs in primary thread of the context
-  virtual void job_onCancel(void *userData,int userId) = 0;  // runs in primary thread of the context
+  virtual void job_process(void *userData,NxI32 userId) = 0;   // RUNS IN ANOTHER THREAD!! MUST BE THREAD SAFE!
+  virtual void job_onFinish(void *userData,NxI32 userId) = 0;  // runs in primary thread of the context
+  virtual void job_onCancel(void *userData,NxI32 userId) = 0;  // runs in primary thread of the context
 };
 
 
@@ -71,14 +73,14 @@ class JobSwarmContext
 {
 public:
 
-  virtual SwarmJob *   createSwarmJob(JobSwarmInterface *iface,void *userData,int userId) = 0; // creates a job to be processed and returns a handle.
+  virtual SwarmJob *   createSwarmJob(JobSwarmInterface *iface,void *userData,NxI32 userId) = 0; // creates a job to be processed and returns a handle.
   virtual void         cancel(SwarmJob *job) = 0; // cancels the job, use cannot delete the memory until he receives the onCancel event!
 
-  virtual unsigned int processSwarmJobs(void) = 0; // This is a pump loop run in the main thread to handle the disposition of finished and/or cancelled jobs.
+  virtual NxU32 processSwarmJobs(void) = 0; // This is a pump loop run in the main thread to handle the disposition of finished and/or cancelled jobs.
   virtual void         setUseThreads(bool state) = 0; // Whether or not to run in hardware threads.  This is for debugging only, threading is always true by default.
 };
 
-JobSwarmContext * createJobSwarmContext(unsigned int maxThreadCount=4); // create a JobSwarmContext with the give number of physical threads
+JobSwarmContext * createJobSwarmContext(NxU32 maxThreadCount=4); // create a JobSwarmContext with the give number of physical threads
 bool              releaseJobSwarmContext(JobSwarmContext *c); // release a JobSwarmContet
 
 

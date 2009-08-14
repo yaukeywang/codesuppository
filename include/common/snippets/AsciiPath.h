@@ -2,7 +2,7 @@
 
 #define ASCII_PATH_H
 
-#include "NxSimpleTypes.h"
+#include "UserMemAlloc.h"
 
 // Converts a 2d path represented as a CSV data asset into something we can easily index.  Used to parse RegionNode data.  Shared by the path system and hbphysics.
 class AsciiPath

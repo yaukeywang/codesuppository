@@ -25,6 +25,7 @@
 				<OutDir>../../bin/win32</OutDir>
 				<SearchPaths type="header">
                  ../../include/MeshImport
+                 ../../include/common/snippets
 				</SearchPaths>
 				<Files name="MeshImport Files" root="../../include/MeshImport" type="header">
         *.cpp

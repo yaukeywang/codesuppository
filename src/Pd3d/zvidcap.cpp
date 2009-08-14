@@ -57,7 +57,7 @@ DEFINE_GUID( CLSID_Vidcap_Filter, 0x17d93618, 0xe0a3, 0x4dde, 0x9b, 0x64, 0xea, 
 char *zVidcapDevices[vidcapMAXDEVICES] = {0,};
 	// A static list of all the devices as found on the last enumeration
 
-int zVidcapNumDevices = 0;
+NxI32 zVidcapNumDevices = 0;
 	// This is a global list by name of all the vidcap input devices
 	// This global list is returned by zVidcapGetDevices
 
@@ -76,7 +76,7 @@ VidcapConnection vidcapConns[vidcapMAXDEVICES] = {0,};
 	// Holds onto all the DirectShow interfaces we need to accesss
 
 CRITICAL_SECTION vidcapCriticalSection;
-	// A critical section is used to mutex locks on the double buffering system
+	// A critical section is used to mutex locks on the NxF64 buffering system
 
 
 // VidCap Filter and Pin overloads.
@@ -114,7 +114,7 @@ class ZVidcapPin : public IMemInputPin, public IPin {
 	STDMETHODIMP QueryAccept(const AM_MEDIA_TYPE *media_type);
 	STDMETHODIMP QueryInternalConnections(IPin **pins_return, ULONG *num_pins_return);
 	STDMETHODIMP EndOfStream();
-	STDMETHODIMP NewSegment(REFERENCE_TIME tStart, REFERENCE_TIME tStop, double dRate);
+	STDMETHODIMP NewSegment(REFERENCE_TIME tStart, REFERENCE_TIME tStop, NxF64 dRate);
 	STDMETHODIMP Notify(IBaseFilter * pSender, Quality q);
 	STDMETHODIMP SetSink(IQualityControl * piqc);
 	STDMETHODIMP GetAllocator(IMemAllocator ** ppAllocator);
@@ -134,21 +134,21 @@ class ZVidcapFilter : public IBaseFilter {
 	~ZVidcapFilter();
 
   public:
-	int maxWidth, maxHeight;
-	int width, height, stride, depth;
+	NxI32 maxWidth, maxHeight;
+	NxI32 width, height, stride, depth;
 	char *incoming_image_buffers[2];
-	int locks[2];
-	int frameNums[2];
-	int readLock;
-	int frameTimings[16];
-	unsigned int lastTime;
+	NxI32 locks[2];
+	NxI32 frameNums[2];
+	NxI32 readLock;
+	NxI32 frameTimings[16];
+	NxU32 lastTime;
 	const IUnknown *m_pUnknown;
 	ZVidcapPin *input_pin;
 	IFilterGraph *filter_graph;
 	WCHAR *name;
 	LONG reference_count;
 
-	int getAvgFrameTimings();
+	NxI32 getAvgFrameTimings();
 	HRESULT CheckMediaType(const AM_MEDIA_TYPE *media_type);
 	HRESULT SetMediaType(const AM_MEDIA_TYPE *media_type);
 	virtual HRESULT Receive(IMediaSample *incoming_sample);
@@ -179,7 +179,7 @@ inline HRESULT vidcapGetInterface(IUnknown *unknown, void **result) {
 }
 
 class ZVidcapMediaTypeEnumerator : public IEnumMediaTypes {
-	int index;
+	NxI32 index;
 	ZVidcapPin *my_pin;
 	LONG version;
 	LONG reference_count;
@@ -402,7 +402,7 @@ STDMETHODIMP ZVidcapPin::Notify(IBaseFilter *sender, Quality quality) {
 	return E_NOTIMPL;
 }
 
-STDMETHODIMP ZVidcapPin::NewSegment(REFERENCE_TIME /* tStart */, REFERENCE_TIME /* tStop */, double /* dRate */) 
+STDMETHODIMP ZVidcapPin::NewSegment(REFERENCE_TIME /* tStart */, REFERENCE_TIME /* tStop */, NxF64 /* dRate */) 
 {
 	return S_OK;
 }
@@ -421,7 +421,7 @@ STDMETHODIMP ZVidcapPin::ReceiveCanBlock() {
 
 STDMETHODIMP ZVidcapPin::ReceiveMultiple(IMediaSample **samples, long num_samples, long *num_processed_return) {
 	HRESULT result = S_OK;
-	int num_processed = 0;
+	NxI32 num_processed = 0;
 
 	while (num_samples-- > 0) {
 		 result = Receive(samples[num_processed]);
@@ -540,7 +540,7 @@ STDMETHODIMP ZVidcapMediaTypeEnumerator::Next(ULONG /* num_media_types */, AM_ME
 STDMETHODIMP ZVidcapMediaTypeEnumerator::Skip(ULONG num_to_skip) {
 	// Since we know we only have one media type, this is
 	// real simple.
-	const int NUM_TYPES = 1;
+	const NxI32 NUM_TYPES = 1;
 	ULONG types_left = NUM_TYPES - index;
 	if (num_to_skip > types_left) return S_FALSE;
 
@@ -560,7 +560,7 @@ class ZVidcapPinEnumerator : public IEnumPins {
 	ZVidcapPinEnumerator(ZVidcapFilter *receiver, ZVidcapPinEnumerator *enumerator_to_copy);
 	virtual ~ZVidcapPinEnumerator();
 
-	int index;
+	NxI32 index;
 	ZVidcapFilter *receiver;
 	LONG reference_count;
 
@@ -611,13 +611,13 @@ ZVidcapFilter::~ZVidcapFilter() {
 	if (incoming_image_buffers[1]) delete [] incoming_image_buffers[1];
 }
 
-int ZVidcapFilter::getAvgFrameTimings() {
-	int i;
-	unsigned int sum = 0;
+NxI32 ZVidcapFilter::getAvgFrameTimings() {
+	NxI32 i;
+	NxU32 sum = 0;
 	for( i=0; i<sizeof(frameTimings)/sizeof(frameTimings[0]); i++ ) {
 		sum += frameTimings[i];
 	}
-	return int( sum / (unsigned)i );
+	return NxI32( sum / (unsigned)i );
 }
 
 STDMETHODIMP ZVidcapFilter::QueryInterface(REFIID riid, void **result) {
@@ -725,7 +725,7 @@ HRESULT ZVidcapFilter::Receive(IMediaSample *incoming_sample) {
 	// DECIDE on which buffer.	Pick the oldest one that isn't locked
 	EnterCriticalSection( &vidcapCriticalSection );
 
-	int which = 0;
+	NxI32 which = 0;
 	if( !locks[0] && !locks[1] ) {
 		// Both are unlocked, pick the older
 		which = frameNums[0] < frameNums[1] ? 0 : 1;
@@ -740,23 +740,23 @@ HRESULT ZVidcapFilter::Receive(IMediaSample *incoming_sample) {
 		which = !locks[0] ? 0 : 1;
 	}
 
-	int nextFrameNum = max( frameNums[0], frameNums[1] ) + 1;
+	NxI32 nextFrameNum = max( frameNums[0], frameNums[1] ) + 1;
 
 	char *dest_line_start = incoming_image_buffers[which];
 	locks[which] = 1;
 
 	LeaveCriticalSection( &vidcapCriticalSection );
 
-	int numTimingSlots = sizeof(frameTimings) / sizeof(frameTimings[0]);
-	unsigned int now = timeGetTime();
+	NxI32 numTimingSlots = sizeof(frameTimings) / sizeof(frameTimings[0]);
+	NxU32 now = timeGetTime();
 	frameTimings[nextFrameNum % numTimingSlots] = now - lastTime;
 	lastTime = now;
 
 	BYTE *input_line_start = input_image + (height-1)*stride;
-	int bpp = depth;
+	NxI32 bpp = depth;
 
 	if( bpp == 1 ) {
-		for (int j = 0; j < height; j++) {
+		for (NxI32 j = 0; j < height; j++) {
 			BYTE *src = input_line_start;
 			char *dest = dest_line_start;
 			memcpy( dest, src, width );
@@ -765,7 +765,7 @@ HRESULT ZVidcapFilter::Receive(IMediaSample *incoming_sample) {
 		}
 	}
 	else if( bpp == 2 ) {
-		for (int j = 0; j < height; j++) {
+		for (NxI32 j = 0; j < height; j++) {
 			BYTE *src = input_line_start;
 			char *dest = dest_line_start;
 			memcpy( dest, src, width*2 );
@@ -774,10 +774,10 @@ HRESULT ZVidcapFilter::Receive(IMediaSample *incoming_sample) {
 		}
 	}
 	else if( bpp == 3 ) {
-		for (int j = 0; j < height; j++) {
+		for (NxI32 j = 0; j < height; j++) {
 			BYTE *src = input_line_start;
 			char *dest = dest_line_start;
-			int i;
+			NxI32 i;
 			for (i = 0; i < width; i++) {
 				dest[0] = src[2];
 				dest[1] = src[1];
@@ -950,8 +950,8 @@ STDMETHODIMP ZVidcapPinEnumerator::Next(ULONG /* num_pins */, IPin **pins_return
 {
 	if (num_fetched_return != NULL) *num_fetched_return = 0;
 
-	const int NUM_PINS = 1;
-	int pins_left = NUM_PINS - index;
+	const NxI32 NUM_PINS = 1;
+	NxI32 pins_left = NUM_PINS - index;
 	if (pins_left <= 0) return S_FALSE;
 
 	assert(index == 0);
@@ -967,7 +967,7 @@ STDMETHODIMP ZVidcapPinEnumerator::Skip(ULONG num_to_skip) {
 	// Since we know we only have one pin, this is
 	// real simple.
 
-	const int NUM_PINS = 1;
+	const NxI32 NUM_PINS = 1;
 	ULONG pins_left = NUM_PINS - index;
 	if(num_to_skip > pins_left) return S_FALSE;
 
@@ -988,7 +988,7 @@ STDMETHODIMP ZVidcapPinEnumerator::Refresh() {
 // VidCap Internal Interfaces
 //------------------------------------------------------------------------------------------
 
-int zVidcapTraverseAndBindDevices( char *bindTo, void **boundFilter ) 
+NxI32 zVidcapTraverseAndBindDevices( char *bindTo, void **boundFilter ) 
 {
 
   // INSTANCIATE a class enumerator on vidcap inputs
@@ -996,7 +996,7 @@ int zVidcapTraverseAndBindDevices( char *bindTo, void **boundFilter )
 
 
 	// CLEAR the device list
-	for( int i=0; i<zVidcapNumDevices; i++ ) {
+	for( NxI32 i=0; i<zVidcapNumDevices; i++ ) {
 		if( zVidcapDevices[i] ) {
 			MEMALLOC_FREE( zVidcapDevices[i] );
 			zVidcapDevices[i] = 0;
@@ -1010,7 +1010,7 @@ int zVidcapTraverseAndBindDevices( char *bindTo, void **boundFilter )
 	// INIT local
 	HRESULT hr = 0;
 	if( boundFilter ) *boundFilter = NULL;
-	int success = 0;
+	NxI32 success = 0;
 
 	// ASSUME success if we are merely enumerating and not binding
 	if( !bindTo ) success = 1;
@@ -1074,7 +1074,7 @@ VidcapConnection *zVidcapGetConnectionFromName( char *deviceName ) {
 		return NULL;
 	}
 
-	for( int i=0; i<zVidcapNumDevices; i++ ) {
+	for( NxI32 i=0; i<zVidcapNumDevices; i++ ) {
 		if( !stricmp(zVidcapDevices[i],deviceName) ) {
 			return &vidcapConns[i];
 		}
@@ -1118,7 +1118,7 @@ void zVidcapRecursiveDestoryGraph( IFilterGraph *filterGraph, IBaseFilter *pf ) 
 // vidcap public interfaces
 //--------------------------------------------------------------
 
-char **zVidcapGetDevices( int *count ) {
+char **zVidcapGetDevices( NxI32 *count ) {
 	zVidcapTraverseAndBindDevices( NULL, NULL );
 	if( count ) {
 		*count = zVidcapNumDevices;
@@ -1126,7 +1126,7 @@ char **zVidcapGetDevices( int *count ) {
 	return zVidcapDevices;
 }
 
-int zVidcapStartDevice( char *deviceName, int maxWidth, int maxHeight ) {
+NxI32 zVidcapStartDevice( char *deviceName, NxI32 maxWidth, NxI32 maxHeight ) {
 	InitializeCriticalSection( &vidcapCriticalSection );
 
 	if( !deviceName ) {
@@ -1216,7 +1216,7 @@ int zVidcapStartDevice( char *deviceName, int maxWidth, int maxHeight ) {
 	return 1;
 }
 
-int zVidcapStartAVI( char *filename, int maxWidth, int maxHeight ) {
+NxI32 zVidcapStartAVI( char *filename, NxI32 maxWidth, NxI32 maxHeight ) {
 	InitializeCriticalSection( &vidcapCriticalSection );
 
 	HRESULT hr;
@@ -1363,12 +1363,12 @@ void zVidcapShutdownDevice( char *deviceName ) {
 }
 
 void zVidcapShutdownAll() {
-	for( int i=0; i<zVidcapNumDevices; i++ ) {
+	for( NxI32 i=0; i<zVidcapNumDevices; i++ ) {
 		zVidcapShutdownDevice( zVidcapDevices[i] );
 	}
 }
 
-void zVidcapGetBitmapDesc( char *deviceName, int &w, int &h, int &d ) {
+void zVidcapGetBitmapDesc( char *deviceName, NxI32 &w, NxI32 &h, NxI32 &d ) {
 	w = 0;
 	h = 0;
 	d = 0;
@@ -1382,9 +1382,9 @@ void zVidcapGetBitmapDesc( char *deviceName, int &w, int &h, int &d ) {
 	}
 }
 
-int zVidcapShowFilterPropertyPageModalDialog( char *deviceName ) {
+NxI32 zVidcapShowFilterPropertyPageModalDialog( char *deviceName ) {
 	HRESULT hr = 0;
-	int w0, h0, d0, w1, h1, d1;
+	NxI32 w0, h0, d0, w1, h1, d1;
 	VidcapConnection *conn = zVidcapGetConnectionFromName( deviceName );
 	if( conn ) {
 		// Don't do anything if we don't have a media control
@@ -1432,9 +1432,9 @@ int zVidcapShowFilterPropertyPageModalDialog( char *deviceName ) {
 	return 0;
 }
 
-int zVidcapShowPinPropertyPageModalDialog( char *deviceName ) {
+NxI32 zVidcapShowPinPropertyPageModalDialog( char *deviceName ) {
 	HRESULT hr = 0;
-	int w0, h0, d0, w1, h1, d1;
+	NxI32 w0, h0, d0, w1, h1, d1;
 	VidcapConnection *conn = zVidcapGetConnectionFromName( deviceName );
 	if( conn ) {
 		// Don't do anything if we don't have a media control
@@ -1492,13 +1492,13 @@ int zVidcapShowPinPropertyPageModalDialog( char *deviceName ) {
 	return 0;
 }
 
-char *zVidcapLockNewest( char *deviceName, int *frameNumber ) {
+char *zVidcapLockNewest( char *deviceName, NxI32 *frameNumber ) {
 	VidcapConnection *conn = zVidcapGetConnectionFromName( deviceName );
 	if( conn ) {
 		EnterCriticalSection( &vidcapCriticalSection );
 
 		// WHICH one is newer and unlocked?
-		int which = 0;
+		NxI32 which = 0;
 		if( !conn->filter->locks[0] && !conn->filter->locks[1] ) {
 			// Both are unlocked, pick the newer
 			which = conn->filter->frameNums[0] > conn->filter->frameNums[1] ? 0 : 1;
@@ -1546,7 +1546,7 @@ void zVidcapUnlock( char *deviceName ) {
 	}
 }
 
-int zVidcapGetAvgFrameTimeInMils( char *deviceName ) {
+NxI32 zVidcapGetAvgFrameTimeInMils( char *deviceName ) {
 	VidcapConnection *conn = zVidcapGetConnectionFromName( deviceName );
 	if( conn ) {
 		return conn->filter->getAvgFrameTimings();
@@ -1576,9 +1576,9 @@ void clrscr() {
 	SetConsoleCursorPosition( hConsole, coordScreen );
 }
 
-int menu( char **items, int count ) {
+NxI32 menu( char **items, NxI32 count ) {
 	printf( "Select one:\n" );
-	for( int i=0; i<count; i++ ) {
+	for( NxI32 i=0; i<count; i++ ) {
 		printf( "%2d. %s\n", i+1, items[i] );
 	}
 	scanf( "%d", &i );
@@ -1588,14 +1588,14 @@ int menu( char **items, int count ) {
 void main() {
 	char *mainMenu[] = { "Open AVI File", "Select Camera", "View Camera in ASCII text", "Pin Options", "Filter Options", "Quit" };
 
-	int numCameras = 0;
+	NxI32 numCameras = 0;
 	char **cameras = zVidcapGetDevices( &numCameras );
 
 	char *camera = 0;
 
-	int w, h, d;
+	NxI32 w, h, d;
 	zVidcapGetBitmapDesc( camera, w, h, d );
-	int lastFrame = 0;
+	NxI32 lastFrame = 0;
 
 	while( 1 ) {
 		switch( menu( mainMenu, sizeof(mainMenu)/sizeof(mainMenu[0]) ) ) {
@@ -1605,17 +1605,17 @@ void main() {
 				scanf( "%s", filename );
 				camera = strdup( filename );
 				zVidcapShutdownAll();
-				int ok = zVidcapStartAVI( camera, 320, 240 );
+				NxI32 ok = zVidcapStartAVI( camera, 320, 240 );
 				zVidcapGetBitmapDesc( camera, w, h, d );
 				lastFrame = 0;
 				break;
 			}
 
 			case 2: {
-				int i = menu( cameras, numCameras );
+				NxI32 i = menu( cameras, numCameras );
 				camera = strdup( cameras[i-1] );
 				zVidcapShutdownAll();
-				int ok = zVidcapStartDevice( camera );
+				NxI32 ok = zVidcapStartDevice( camera );
 				zVidcapGetBitmapDesc( camera, w, h, d );
 				lastFrame = 0;
 				break;
@@ -1631,10 +1631,10 @@ void main() {
 						static char disp[(W+1)*H];
 						char *dst = disp;
 						clrscr();
-						for( int y=0; y<H; y++ ) {
-							unsigned char *src = (unsigned char *)( cap + d*w*(h*y/H) );
-							for( int x=0; x<W; x++ ) {
-								unsigned char *_src = src + d * (x * w / W);
+						for( NxI32 y=0; y<H; y++ ) {
+							NxU8 *src = (NxU8 *)( cap + d*w*(h*y/H) );
+							for( NxI32 x=0; x<W; x++ ) {
+								NxU8 *_src = src + d * (x * w / W);
 								*dst++ = " .-:;/>)|I!%H*&#"[ ((*_src) >> 5) & 15 ];
 							}
 							*dst++ = '\n';
@@ -1644,9 +1644,9 @@ void main() {
 						// UNLOCK
 						zVidcapUnlock( NULL );
 
-						int mils = zVidcapGetAvgFrameTimeInMils();
+						NxI32 mils = zVidcapGetAvgFrameTimeInMils();
 
-						printf( "w=%d h=%d d=%d lastFrame=%d FPS=%2.1f\n", w, h, d, lastFrame, 1000.f / (float)mils );
+						printf( "w=%d h=%d d=%d lastFrame=%d FPS=%2.1f\n", w, h, d, lastFrame, 1000.f / (NxF32)mils );
 					}
 
 					Sleep( 10 );

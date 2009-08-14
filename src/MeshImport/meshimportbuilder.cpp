@@ -17,13 +17,13 @@ namespace MESHIMPORT
 {
 
 typedef USER_STL::vector< MeshVertex >   MeshVertexVector;
-typedef USER_STL::vector< unsigned int > MeshIndexVector;
+typedef USER_STL::vector< NxU32 > MeshIndexVector;
 typedef USER_STL::vector< SubMesh * >    SubMeshVector;
 typedef USER_STL::vector< Mesh * >       MeshVector;
 typedef USER_STL::vector< MeshAnimation * > MeshAnimationVector;
 typedef USER_STL::vector< MeshSkeleton * > MeshSkeletonVector;
 
-static int gSerializeFrame=1;
+static NxI32 gSerializeFrame=1;
 
 class MyMesh;
 
@@ -58,7 +58,7 @@ void validate(const MeshVertex &v)
 	assert( v.mWeight[2] >= 0 && v.mWeight[2] <= 1 );
 	assert( v.mWeight[3] >= 0 && v.mWeight[3] <= 1 );
 
-	float sum = v.mWeight[0] + v.mWeight[1] + v.mWeight[2] + v.mWeight[3];
+	NxF32 sum = v.mWeight[0] + v.mWeight[1] + v.mWeight[2] + v.mWeight[3];
 	assert( sum >= 0 && sum <= 1.001f );
 	assert( v.mBone[0] >= 0 && v.mBone[0] < 1024 );
 	assert( v.mBone[1] >= 0 && v.mBone[1] < 1024 );
@@ -78,7 +78,7 @@ void validate(const MeshVertex &v)
 class MySubMesh : public SubMesh
 {
 public:
-  MySubMesh(const char *mat,unsigned int vertexFlags)
+  MySubMesh(const char *mat,NxU32 vertexFlags)
   {
     mMaterialName = mat;
     mVertexFlags  = (MeshVertexFlag)vertexFlags;
@@ -88,7 +88,7 @@ public:
   {
   }
 
-  bool isSame(const char *mat,unsigned int vertexFlags) const
+  bool isSame(const char *mat,NxU32 vertexFlags) const
   {
     bool ret = false;
     assert(mat);
@@ -109,9 +109,9 @@ public:
     mAABB.include(v2.mPos);
     mAABB.include(v3.mPos);
 
-    unsigned int i1 = vpool.GetVertex(v1);
-    unsigned int i2 = vpool.GetVertex(v2);
-    unsigned int i3 = vpool.GetVertex(v3);
+    NxU32 i1 = vpool.GetVertex(v1);
+    NxU32 i2 = vpool.GetVertex(v2);
+    NxU32 i3 = vpool.GetVertex(v3);
 
     mMyIndices.push_back(i1);
     mMyIndices.push_back(i2);
@@ -159,7 +159,7 @@ public:
     return ret;
   }
 
-  void getCurrent(const char *materialName,unsigned int vertexFlags)
+  void getCurrent(const char *materialName,NxU32 vertexFlags)
   {
     if ( materialName == 0 ) materialName = "default_material";
     if ( mCurrent == 0 || !mCurrent->isSame(materialName,vertexFlags) )
@@ -184,7 +184,7 @@ public:
   }
 
   virtual void        importTriangle(const char *materialName,
-                                     unsigned int vertexFlags,
+                                     NxU32 vertexFlags,
                                      const MeshVertex &_v1,
                                      const MeshVertex &_v2,
                                      const MeshVertex &_v3)
@@ -218,17 +218,17 @@ public:
   }
 
   virtual void        importIndexedTriangleList(const char *materialName,
-                                                unsigned int vertexFlags,
-                                                unsigned int vcount,
+                                                NxU32 vertexFlags,
+                                                NxU32 vcount,
                                                 const MeshVertex *vertices,
-                                                unsigned int tcount,
-                                                const unsigned int *indices)
+                                                NxU32 tcount,
+                                                const NxU32 *indices)
   {
-    for (unsigned int i=0; i<tcount; i++)
+    for (NxU32 i=0; i<tcount; i++)
     {
-      unsigned int i1 = indices[i*3+0];
-      unsigned int i2 = indices[i*3+1];
-      unsigned int i3 = indices[i*3+2];
+      NxU32 i1 = indices[i*3+0];
+      NxU32 i2 = indices[i*3+1];
+      NxU32 i3 = indices[i*3+2];
       const MeshVertex &v1 = vertices[i1];
       const MeshVertex &v2 = vertices[i2];
       const MeshVertex &v3 = vertices[i3];
@@ -236,7 +236,7 @@ public:
     }
   }
 
-  void gather(int bone_count)
+  void gather(NxI32 bone_count)
   {
     mSubMeshes = 0;
     mSubMeshCount = 0;
@@ -244,7 +244,7 @@ public:
     {
       mSubMeshCount = mMySubMeshes.size();
       mSubMeshes    = &mMySubMeshes[0];
-      for (unsigned int i=0; i<mSubMeshCount; i++)
+      for (NxU32 i=0; i<mSubMeshCount; i++)
       {
         MySubMesh *m = static_cast<MySubMesh *>(mSubMeshes[i]);
         m->gather();
@@ -256,7 +256,7 @@ public:
       mVertices = mVertexPool.GetBuffer();
       if ( bone_count > 0 )
       {
-        for (unsigned int i=0; i<mVertexCount; i++)
+        for (NxU32 i=0; i<mVertexCount; i++)
         {
           MeshVertex &vtx = mVertices[i];
           if ( vtx.mBone[0] >= bone_count ) vtx.mBone[0] = 0;
@@ -296,8 +296,8 @@ public:
       if ( mc->getType() == MCT_CONVEX )
       {
         MeshCollisionConvex *mcc = static_cast< MeshCollisionConvex *>(mc);
-        MEMALLOC_DELETE_ARRAY(float,mcc->mVertices);
-        MEMALLOC_DELETE_ARRAY(unsigned int,mcc->mIndices);
+        MEMALLOC_DELETE_ARRAY(NxF32,mcc->mVertices);
+        MEMALLOC_DELETE_ARRAY(NxU32,mcc->mIndices);
       }
     }
   }
@@ -316,7 +316,7 @@ typedef USER_STL::vector< MeshCollisionRepresentation * > MeshCollisionRepresent
 class MyMeshBuilder : public MeshBuilder
 {
 public:
-  MyMeshBuilder(KeyValueIni *ini,const char *meshName,const void *data,unsigned int dlen,MeshImporter *mi,const char *options,MeshImportApplicationResource *appResource)
+  MyMeshBuilder(KeyValueIni *ini,const char *meshName,const void *data,NxU32 dlen,MeshImporter *mi,const char *options,MeshImportApplicationResource *appResource)
   {
     mINI = ini;
     gSerializeFrame++;
@@ -354,7 +354,7 @@ public:
       for (i=mMyAnimations.begin(); i!=mMyAnimations.end(); ++i)
       {
         MeshAnimation *a = (*i);
-        for (int j=0; j<a->mTrackCount; j++)
+        for (NxI32 j=0; j<a->mTrackCount; j++)
         {
           MeshAnimTrack *ma = a->mTracks[j];
           MEMALLOC_DELETE_ARRAY(MeshAnimPose,ma->mPose);
@@ -411,7 +411,7 @@ public:
     else
       mAnimations = 0;
 
-    int bone_count = 0;
+    NxI32 bone_count = 0;
     mSkeletonCount = mMySkeletons.size();
     if ( mSkeletonCount )
     {
@@ -445,7 +445,7 @@ public:
     if ( mMeshCollisionCount )
     {
       mMeshCollisionRepresentations = &mCollisionReps[0];
-      for (unsigned int i=0; i<mMeshCollisionCount; i++)
+      for (NxU32 i=0; i<mMeshCollisionCount; i++)
       {
         MeshCollisionRepresentation *r = mMeshCollisionRepresentations[i];
         MyMeshCollisionRepresentation *mr = static_cast< MyMeshCollisionRepresentation *>(r);
@@ -462,7 +462,7 @@ public:
   void gatherMaterials(void)
   {
     mMyMaterials.clear();
-    unsigned int mcount = mMaterialMap.size();
+    NxU32 mcount = mMaterialMap.size();
     mMyMaterials.reserve(mcount);
     StringRefMap::iterator i;
     for (i=mMaterialMap.begin(); i!=mMaterialMap.end(); ++i)
@@ -479,12 +479,12 @@ public:
     assert(0); // not yet implemented
   }
 
-  virtual void        importUserBinaryData(const char *name,unsigned int len,const unsigned char *data)
+  virtual void        importUserBinaryData(const char *name,NxU32 len,const NxU8 *data)
   {
     assert(0); // not yet implemented
   }
 
-  virtual void        importTetraMesh(const char *tetraName,const char *meshName,unsigned int tcount,const float *tetraData)
+  virtual void        importTetraMesh(const char *tetraName,const char *meshName,NxU32 tcount,const NxF32 *tetraData)
   {
     assert(0); // not yet implemented
   }
@@ -540,7 +540,7 @@ public:
     }
   }
 
-  virtual void importPlane(const float *p)
+  virtual void importPlane(const NxF32 *p)
   {
 	  mPlane[0] = p[0];
 	  mPlane[1] = p[1];
@@ -552,7 +552,7 @@ public:
 
   virtual void        importTriangle(const char *_meshName,
                                      const char *_materialName,
-                                     unsigned int vertexFlags,
+                                     NxU32 vertexFlags,
                                      const MeshVertex &v1,
                                      const MeshVertex &v2,
                                      const MeshVertex &v3)
@@ -569,17 +569,17 @@ public:
 
   virtual void        importIndexedTriangleList(const char *_meshName,
                                                 const char *_materialName,
-                                                unsigned int vertexFlags,
-                                                unsigned int vcount,
+                                                NxU32 vertexFlags,
+                                                NxU32 vcount,
                                                 const MeshVertex *vertices,
-                                                unsigned int tcount,
-                                                const unsigned int *indices)
+                                                NxU32 tcount,
+                                                const NxU32 *indices)
   {
     _materialName = getMaterialName(_materialName);
     const char *meshName = mStrings.Get(_meshName).Get();
     const char *materialName = mStrings.Get(_materialName).Get();
     getCurrentMesh(meshName);
-    for (unsigned int i=0; i<vcount; i++)
+    for (NxU32 i=0; i<vcount; i++)
     {
       mAABB.include( vertices[i].mPos );
     }
@@ -596,7 +596,7 @@ public:
     a->mDuration = animation.mDuration;
     a->mDtime = animation.mDtime;
     a->mTracks = MEMALLOC_NEW_ARRAY(MeshAnimTrack *,a->mTrackCount)[a->mTrackCount];
-    for (int i=0; i<a->mTrackCount; i++)
+    for (NxI32 i=0; i<a->mTrackCount; i++)
     {
       const MeshAnimTrack &src =*animation.mTracks[i];
       MeshAnimTrack *t = MEMALLOC_NEW(MeshAnimTrack);
@@ -622,7 +622,7 @@ public:
       sk->mBones = MEMALLOC_NEW_ARRAY(MeshBone,sk->mBoneCount)[sk->mBoneCount];
       MeshBone *dest = sk->mBones;
       const MeshBone *src = skeleton.mBones;
-      for (unsigned int i=0; i<(unsigned int)sk->mBoneCount; i++)
+      for (NxU32 i=0; i<(NxU32)sk->mBoneCount; i++)
       {
         *dest = *src;
         dest->mName = mStrings.Get(src->mName).Get();
@@ -633,12 +633,12 @@ public:
     mMySkeletons.push_back(sk);
   }
 
-  virtual void        importRawTexture(const char *textureName,const unsigned char *pixels,unsigned int wid,unsigned int hit)
+  virtual void        importRawTexture(const char *textureName,const NxU8 *pixels,NxU32 wid,NxU32 hit)
   {
 //    assert(0); // not yet implemented
   }
 
-  virtual void        importMeshInstance(const char *meshName,const float pos[3],const float rotation[4],const float scale[3])
+  virtual void        importMeshInstance(const char *meshName,const NxF32 pos[3],const NxF32 rotation[4],const NxF32 scale[3])
   {
     StringRef ref = mStrings.Get(meshName);
     MeshInstance m;
@@ -712,15 +712,15 @@ public:
 
   virtual void importSphere(const char *collision_rep,    // the collision representation it is associated with
                             const char *boneName,         // the name of the bone it is associated with in a skeleton.
-                            const float *transform,
-                            float radius)
+                            const NxF32 *transform,
+                            NxF32 radius)
   {
     getCurrentRep(collision_rep);
     MeshCollisionSphere *c = MEMALLOC_NEW(MeshCollisionSphere);
     c->mName = mStrings.Get(boneName).Get();
     if ( transform )
     {
-      memcpy(c->mTransform,transform,sizeof(float)*16);
+      memcpy(c->mTransform,transform,sizeof(NxF32)*16);
     }
     c->mRadius = radius;
     MeshCollision *mc = static_cast< MeshCollision *>(c);
@@ -729,16 +729,16 @@ public:
 
   virtual void importCapsule(const char *collision_rep,    // the collision representation it is associated with
                                 const char *boneName,         // the name of the bone it is associated with in a skeleton.
-                                const float *transform,       // the full 4x4 transform for this hull, null if in world space.
-                                float radius,
-                                float height)
+                                const NxF32 *transform,       // the full 4x4 transform for this hull, null if in world space.
+                                NxF32 radius,
+                                NxF32 height)
   {
     getCurrentRep(collision_rep);
     MeshCollisionCapsule *c = MEMALLOC_NEW(MeshCollisionCapsule);
     c->mName = mStrings.Get(boneName).Get();
     if ( transform )
     {
-      memcpy(c->mTransform,transform,sizeof(float)*16);
+      memcpy(c->mTransform,transform,sizeof(NxF32)*16);
     }
     c->mRadius = radius;
     c->mHeight = height;
@@ -748,15 +748,15 @@ public:
 
   virtual void importOBB(const char *collision_rep,    // the collision representation it is associated with
                          const char *boneName,         // the name of the bone it is associated with in a skeleton.
-                         const float *transform,       // the full 4x4 transform for this hull, null if in world space.
-                         const float *sides)
+                         const NxF32 *transform,       // the full 4x4 transform for this hull, null if in world space.
+                         const NxF32 *sides)
   {
     getCurrentRep(collision_rep);
     MeshCollisionBox *c = MEMALLOC_NEW(MeshCollisionBox);
     c->mName = mStrings.Get(boneName).Get();
     if ( transform )
     {
-      memcpy(c->mTransform,transform,sizeof(float)*16);
+      memcpy(c->mTransform,transform,sizeof(NxF32)*16);
     }
     c->mSides[0] = sides[0];
     c->mSides[1] = sides[1];
@@ -769,38 +769,38 @@ public:
 
   virtual void importConvexHull(const char *collision_rep,    // the collision representation it is associated with
     const char *boneName,         // the name of the bone it is associated with in a skeleton.
-    const float *transform,       // the full 4x4 transform for this hull, null if in world space.
-    unsigned int vertex_count,
-    const float *vertices,
-    unsigned int tri_count,
-    const unsigned int *indices)
+    const NxF32 *transform,       // the full 4x4 transform for this hull, null if in world space.
+    NxU32 vertex_count,
+    const NxF32 *vertices,
+    NxU32 tri_count,
+    const NxU32 *indices)
   {
     getCurrentRep(collision_rep);
     MeshCollisionConvex *c = MEMALLOC_NEW(MeshCollisionConvex);
     c->mName = mStrings.Get(boneName).Get();
     if ( transform )
     {
-      memcpy(c->mTransform,transform,sizeof(float)*16);
+      memcpy(c->mTransform,transform,sizeof(NxF32)*16);
     }
     c->mVertexCount = vertex_count;
     if ( c->mVertexCount )
     {
-      c->mVertices = MEMALLOC_NEW_ARRAY(float,vertex_count*3)[vertex_count*3];
-      memcpy(c->mVertices,vertices,sizeof(float)*vertex_count*3);
+      c->mVertices = MEMALLOC_NEW_ARRAY(NxF32,vertex_count*3)[vertex_count*3];
+      memcpy(c->mVertices,vertices,sizeof(NxF32)*vertex_count*3);
     }
     c->mTriCount = tri_count;
     if ( c->mTriCount )
     {
-      c->mIndices = MEMALLOC_NEW_ARRAY(unsigned int,tri_count*3)[tri_count*3];
-      memcpy(c->mIndices,indices,sizeof(unsigned int)*tri_count*3);
+      c->mIndices = MEMALLOC_NEW_ARRAY(NxU32,tri_count*3)[tri_count*3];
+      memcpy(c->mIndices,indices,sizeof(NxU32)*tri_count*3);
     }
     MeshCollision *mc = static_cast< MeshCollision *>(c);
     mCurrentCollision->mGeometries.push_back(mc);
   }
 
-  virtual void rotate(float rotX,float rotY,float rotZ)
+  virtual void rotate(NxF32 rotX,NxF32 rotY,NxF32 rotZ)
   {
-    float quat[4];
+    NxF32 quat[4];
     fm_eulerToQuat(rotX*FM_DEG_TO_RAD,rotY*FM_DEG_TO_RAD,rotZ*FM_DEG_TO_RAD,quat);
 
     {
@@ -808,7 +808,7 @@ public:
       for (i=mMySkeletons.begin(); i!=mMySkeletons.end(); ++i)
       {
         MeshSkeleton *ms = (*i);
-        for (int j=0; j<ms->mBoneCount; j++)
+        for (NxI32 j=0; j<ms->mBoneCount; j++)
         {
           MeshBone &b = ms->mBones[j];
           if ( b.mParentIndex == -1 )
@@ -825,11 +825,11 @@ public:
       for (i=mMyMeshes.begin(); i!=mMyMeshes.end(); ++i)
       {
         MyMesh *m = (*i);
-        unsigned int vcount = m->mVertexPool.GetSize();
+        NxU32 vcount = m->mVertexPool.GetSize();
         if ( vcount > 0 )
         {
           MeshVertex *vb = m->mVertexPool.GetBuffer();
-          for (unsigned int j=0; j<vcount; j++)
+          for (NxU32 j=0; j<vcount; j++)
           {
             fm_quatRotate(quat,vb->mPos,vb->mPos);
             vb++;
@@ -843,10 +843,10 @@ public:
       for (i=mMyAnimations.begin(); i!=mMyAnimations.end(); ++i)
       {
         MeshAnimation *ma = (*i);
-        for (int j=0; j<ma->mTrackCount && j <1; j++)
+        for (NxI32 j=0; j<ma->mTrackCount && j <1; j++)
         {
           MeshAnimTrack *t = ma->mTracks[j];
-          for (int k=0; k<t->mFrameCount; k++)
+          for (NxI32 k=0; k<t->mFrameCount; k++)
           {
             MeshAnimPose &p = t->mPose[k];
             fm_quatRotate(quat,p.mPos,p.mPos);
@@ -857,14 +857,14 @@ public:
     }
   }
 
-  virtual void scale(float s)
+  virtual void scale(NxF32 s)
   {
     {
       MeshSkeletonVector::iterator i;
       for (i=mMySkeletons.begin(); i!=mMySkeletons.end(); ++i)
       {
         MeshSkeleton *ms = (*i);
-        for (int j=0; j<ms->mBoneCount; j++)
+        for (NxI32 j=0; j<ms->mBoneCount; j++)
         {
           MeshBone &b = ms->mBones[j];
           b.mPosition[0]*=s;
@@ -879,11 +879,11 @@ public:
       for (i=mMyMeshes.begin(); i!=mMyMeshes.end(); ++i)
       {
         MyMesh *m = (*i);
-        unsigned int vcount = m->mVertexPool.GetSize();
+        NxU32 vcount = m->mVertexPool.GetSize();
         if ( vcount > 0 )
         {
           MeshVertex *vb = m->mVertexPool.GetBuffer();
-          for (unsigned int j=0; j<vcount; j++)
+          for (NxU32 j=0; j<vcount; j++)
           {
             vb->mPos[0]*=s;
             vb->mPos[1]*=s;
@@ -899,10 +899,10 @@ public:
       for (i=mMyAnimations.begin(); i!=mMyAnimations.end(); ++i)
       {
         MeshAnimation *ma = (*i);
-        for (int j=0; j<ma->mTrackCount; j++)
+        for (NxI32 j=0; j<ma->mTrackCount; j++)
         {
           MeshAnimTrack *t = ma->mTracks[j];
-          for (int k=0; k<t->mFrameCount; k++)
+          for (NxI32 k=0; k<t->mFrameCount; k++)
           {
             MeshAnimPose &p = t->mPose[k];
             p.mPos[0]*=s;
@@ -914,7 +914,7 @@ public:
     }
   }
 
-  virtual int getSerializeFrame(void)
+  virtual NxI32 getSerializeFrame(void)
   {
     return gSerializeFrame;
   }
@@ -924,12 +924,12 @@ public:
     const char *ret = matName;
     if ( mINI )
     {
-        unsigned int keycount;
-        unsigned int lineno;
+        NxU32 keycount;
+        NxU32 lineno;
         const KeyValueSection *section = locateSection(mINI,"REMAP_MATERIALS",keycount,lineno);
         if ( section )
         {
-            for (unsigned int i=0; i<keycount; i++)
+            for (NxU32 i=0; i<keycount; i++)
             {
                 const char *key = getKey(section,i,lineno);
                 const char *value = getValue(section,i,lineno);
@@ -963,7 +963,7 @@ private:
   KeyValueIni                        *mINI;
 };
 
-MeshBuilder * createMeshBuilder(KeyValueIni *ini,const char *meshName,const void *data,unsigned int dlen,MeshImporter *mi,const char *options,MeshImportApplicationResource *appResource)
+MeshBuilder * createMeshBuilder(KeyValueIni *ini,const char *meshName,const void *data,NxU32 dlen,MeshImporter *mi,const char *options,MeshImportApplicationResource *appResource)
 {
   MyMeshBuilder *b = MEMALLOC_NEW(MyMeshBuilder)(ini,meshName,data,dlen,mi,options,appResource);
   return static_cast< MeshBuilder *>(b);

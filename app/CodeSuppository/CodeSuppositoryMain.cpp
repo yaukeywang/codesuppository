@@ -176,13 +176,13 @@ class MyRenderDebugInterface : public RenderDebugInterface
 public:
   virtual void debugRenderLines(NxU32 lcount,const RenderDebugVertex *vertices,bool useZ,bool isScreenSpace)
   {
-    float vm[16];
-    float pm[16];
+    NxF32 vm[16];
+    NxF32 pm[16];
     if ( isScreenSpace )
     {
-        memcpy(vm, gPd3d->getViewMatrix(), sizeof(float)*16);
-        memcpy(pm, gPd3d->getProjectionMatrix(), sizeof(float)*16);
-        float identity[16];
+        memcpy(vm, gPd3d->getViewMatrix(), sizeof(NxF32)*16);
+        memcpy(pm, gPd3d->getProjectionMatrix(), sizeof(NxF32)*16);
+        NxF32 identity[16];
         fm_identity(identity);
         gPd3d->setViewProjectionMatrix(identity,identity);
     }
@@ -197,14 +197,14 @@ public:
 
   virtual void debugRenderTriangles(NxU32 tcount,const RenderDebugSolidVertex *vertices,bool useZ,bool isScreenSpace)
   {
-    float vm[16];
-    float pm[16];
+    NxF32 vm[16];
+    NxF32 pm[16];
 
     if ( isScreenSpace )
     {
-        memcpy(vm, gPd3d->getViewMatrix(), sizeof(float)*16);
-        memcpy(pm, gPd3d->getProjectionMatrix(), sizeof(float)*16);
-        float identity[16];
+        memcpy(vm, gPd3d->getViewMatrix(), sizeof(NxF32)*16);
+        memcpy(pm, gPd3d->getProjectionMatrix(), sizeof(NxF32)*16);
+        NxF32 identity[16];
         fm_identity(identity);
 		gPd3d->setViewProjectionMatrix(identity,identity);
     }
@@ -767,7 +767,7 @@ void CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, NxF64 fTime, NxF32 fE
 
 
     //ok..now let's render the debug visualization data.
-    float dtime = fElapsedTime < 0.02f ? fElapsedTime : 0.02f;
+    NxF32 dtime = fElapsedTime < 0.02f ? fElapsedTime : 0.02f;
 	MyRenderDebugInterface mr;
 	gRenderDebug->render(fElapsedTime,&mr);
 	gPd3d->restoreRenderState();

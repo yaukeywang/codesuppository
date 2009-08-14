@@ -179,6 +179,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\MeshImport\ImportOgre.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\MeshImport\MeshImport.cpp"
 				>
 			</File>
@@ -196,6 +200,10 @@
 			>
 			<File
 				RelativePath="..\..\src\MeshImport\CommLayer.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\MeshImport\ImportOgre.h"
 				>
 			</File>
 			<File

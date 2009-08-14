@@ -26,14 +26,14 @@ namespace REMOVE_TJUNCTIONS
 class AABB
 {
 public:
-  float mMin[3];
-  float mMax[3];
+  NxF32 mMin[3];
+  NxF32 mMax[3];
 };
 
 bool gDebug=false;
 size_t gCount=0;
 
-const double EPSILON = 0.001f;
+const NxF64 EPSILON = 0.001f;
 
 typedef USER_STL::vector< size_t > size_tVector;
 
@@ -48,14 +48,14 @@ public:
     mId = 0;
   }
 
-  Triangle(size_t i1,size_t i2,size_t i3,const double *vertices,size_t id)
+  Triangle(size_t i1,size_t i2,size_t i3,const NxF64 *vertices,size_t id)
   {
     mPending = false;
     init(i1,i2,i3,vertices,id);
     mSplit = false;
   }
 
-  void init(size_t i1,size_t i2,size_t i3,const double *vertices,size_t id)
+  void init(size_t i1,size_t i2,size_t i3,const NxF64 *vertices,size_t id)
   {
     mSplit = false;
     mI1 = i1;
@@ -63,14 +63,14 @@ public:
     mI3 = i3;
     mId = id;
 
-    const double *p1 = &vertices[mI1*3];
-    const double *p2 = &vertices[mI2*3];
-    const double *p3 = &vertices[mI3*3];
+    const NxF64 *p1 = &vertices[mI1*3];
+    const NxF64 *p2 = &vertices[mI2*3];
+    const NxF64 *p3 = &vertices[mI3*3];
 
     initMinMax(p1,p2,p3);
   }
 
-  void initMinMax(const double *p1,const double *p2,const double *p3)
+  void initMinMax(const NxF64 *p1,const NxF64 *p2,const NxF64 *p3)
   {
     fm_copy3(p1,mBmin);
     fm_copy3(p1,mBmax);
@@ -78,7 +78,7 @@ public:
     fm_minmax(p3,mBmin,mBmax);
   }
 
-  void init(const size_t *idx,const double *vertices,size_t id)
+  void init(const size_t *idx,const NxF64 *vertices,size_t id)
   {
     mSplit = false;
     mI1 = idx[0];
@@ -86,23 +86,23 @@ public:
     mI3 = idx[2];
     mId = id;
 
-    const double *p1 = &vertices[mI1*3];
-    const double *p2 = &vertices[mI2*3];
-    const double *p3 = &vertices[mI3*3];
+    const NxF64 *p1 = &vertices[mI1*3];
+    const NxF64 *p2 = &vertices[mI2*3];
+    const NxF64 *p3 = &vertices[mI3*3];
 
     initMinMax(p1,p2,p3);
 
   }
 
 #if DEBUG_SHOW
-  void debug(unsigned int color,const double *vertices,double pass=0) const
+  void debug(NxU32 color,const NxF64 *vertices,NxF64 pass=0) const
   {
-    const double *_p1 = &vertices[mI1*3];
-    const double *_p2 = &vertices[mI2*3];
-    const double *_p3 = &vertices[mI3*3];
-    double p1[3];
-    double p2[3];
-    double p3[3];
+    const NxF64 *_p1 = &vertices[mI1*3];
+    const NxF64 *_p2 = &vertices[mI2*3];
+    const NxF64 *_p3 = &vertices[mI3*3];
+    NxF64 p1[3];
+    NxF64 p2[3];
+    NxF64 p3[3];
     fm_copy3(_p1,p1);
     fm_copy3(_p2,p2);
     fm_copy3(_p3,p3);
@@ -120,13 +120,13 @@ public:
 #endif
 
 
-  bool intersects(const double *pos,const double *p1,const double *p2) const
+  bool intersects(const NxF64 *pos,const NxF64 *p1,const NxF64 *p2) const
   {
     bool ret = false;
 
-    double sect[3];
+    NxF64 sect[3];
     LineSegmentType type;
-    double dist = fm_distancePointLineSegment(pos,p1,p2,sect,type,EPSILON);
+    NxF64 dist = fm_distancePointLineSegment(pos,p1,p2,sect,type,EPSILON);
     if ( type == LS_MIDDLE && dist < EPSILON )
     {
       ret = true;
@@ -135,14 +135,14 @@ public:
     return ret;
   }
 
-  bool intersects(size_t i,const double *vertices,size_t &edge) const
+  bool intersects(size_t i,const NxF64 *vertices,size_t &edge) const
   {
     bool ret = true;
 
-    const double *pos = &vertices[i*3];
-    const double *p1  = &vertices[mI1*3];
-    const double *p2  = &vertices[mI2*3];
-    const double *p3  = &vertices[mI3*3];
+    const NxF64 *pos = &vertices[i*3];
+    const NxF64 *p1  = &vertices[mI1*3];
+    const NxF64 *p2  = &vertices[mI2*3];
+    const NxF64 *p3  = &vertices[mI3*3];
     if ( intersects(pos,p1,p2) )
     {
       edge = 0;
@@ -162,7 +162,7 @@ public:
     return ret;
   }
 
-  bool intersects(const Triangle *t,const double *vertices,size_t &intersection_index,size_t &edge)
+  bool intersects(const Triangle *t,const NxF64 *vertices,size_t &intersection_index,size_t &edge)
   {
     bool ret = false;
 
@@ -199,8 +199,8 @@ public:
   size_t  mI3;
   size_t  mId;
 
-  double   mBmin[3];
-  double   mBmax[3];
+  NxF64   mBmin[3];
+  NxF64   mBmax[3];
 };
 
 class Edge
@@ -266,15 +266,15 @@ public:
   }
 
   size_t * removeTjunctions(size_t vcount,
-                            const float *vertices,
+                            const NxF32 *vertices,
                             size_t tcount,
                             const size_t *indices,
                             size_t &tcount_out,
                             const size_t *ids)
   {
-    double *dvertices = new double[vcount*3];
-    const float *source = vertices;
-    double *dest        = dvertices;
+    NxF64 *dvertices = new NxF64[vcount*3];
+    const NxF32 *source = vertices;
+    NxF64 *dest        = dvertices;
     for (size_t i=0; i<vcount; i++)
     {
       dest[0] = source[0];
@@ -311,7 +311,7 @@ public:
     return e;
   }
 
-  Edge * init(Triangle *t,const size_t *indices,const double *vertices,Edge *e,size_t id)
+  Edge * init(Triangle *t,const size_t *indices,const NxF64 *vertices,Edge *e,size_t id)
   {
     t->init(indices,vertices,id);
     e = addEdge(t,e,t->mI1,t->mI2);
@@ -321,7 +321,7 @@ public:
   }
 
   virtual size_t * removeTjunctions(size_t vcount,
-                                    const double *vertices,
+                                    const NxF64 *vertices,
                                     size_t tcount,
                                     const size_t *indices,
                                     size_t &tcount_out,
@@ -500,7 +500,7 @@ public:
         newt->mSplit = true;
 
 #if DEBUG_SHOW
-        const double *point = &mVertices[intersection_index*3];
+        const NxF64 *point = &mVertices[intersection_index*3];
         gRenderDebug->DebugSphere(point,0.01f,0xFFFF00,60.0f);
 #endif
 
@@ -534,7 +534,7 @@ public:
   size_t                mVcount;
   size_t                mMaxTcount;
   size_t                mTcount;
-  const double          *mVertices;
+  const NxF64          *mVertices;
   size_tVector          mIndices;
   size_tVector          mIds;
   TriangleVector        mSplit;

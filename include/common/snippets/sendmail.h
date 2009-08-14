@@ -2,6 +2,8 @@
 
 #define SEND_MAIL_H
 
+#include "UserMemAlloc.h"
+
 //** SendMail is a C++ wrapper for the Blat email utility.
 //**
 //** The official website for Blat is at http://www.blat.net/
@@ -35,7 +37,7 @@
 #define USE_DLL 1
 #endif
 
-bool sendBlat(int argc,const char *argv[]); // refer to the Blat documentation for the full set of command line arguments.
+bool sendBlat(NxI32 argc,const char *argv[]); // refer to the Blat documentation for the full set of command line arguments.
 
 bool sendMail(const char *mail_server,   // mail server to use for sending the email message.
               const char *from,          // email address of the sender

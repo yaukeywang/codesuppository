@@ -2,7 +2,7 @@
 
 #define SEND_TEXT_MESSAGE_H
 
-#include "NxSimpleTypes.h"
+#include "UserMemAlloc.h"
 
 enum TextMessageChannel
 {

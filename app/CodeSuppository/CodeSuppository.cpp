@@ -107,7 +107,7 @@ public:
     appSetMeshSystemHelper(0);
   }
 
-  void processCommand(CodeSuppositoryCommand command,bool state,const float * data)
+  void processCommand(CodeSuppositoryCommand command,bool state,const NxF32 * data)
   {
     switch ( command )
     {
@@ -116,7 +116,7 @@ public:
         break;
       case CSC_SELECT_COLLISION:
         {
-          int s = (int) data[0];
+          NxI32 s = (NxI32) data[0];
           if ( mMeshSystemHelper )
           {
             mMeshSystemHelper->setSelectCollision(s);
@@ -133,13 +133,13 @@ public:
         mFitObb = state;
         break;
       case CSC_DEPTH:
-        mDepth = (unsigned int)data[0];
+        mDepth = (NxU32)data[0];
         break;
       case CSC_VOLUME_PERCENTAGE:
         mVolumePercentage = data[0];
         break;
       case CSC_MAX_VERTICES:
-        mMaxVertices = (unsigned int )data[0];
+        mMaxVertices = (NxU32 )data[0];
         break;
       case CSC_SKIN_WIDTH:
         mSkinWidth = data[0];
@@ -181,7 +181,7 @@ public:
         mFlipWinding = state;
         {
             const char *test = "This is a test of the emergency blob cast system.";
-            unsigned int len = strlen(test);
+            NxU32 len = strlen(test);
             mCommLayer->sendBlob(0,"testBlob", test, len+1 );
         }
         break;
@@ -323,12 +323,12 @@ public:
     }
   }
 
-  void render(float dtime)
+  void render(NxF32 dtime)
   {
 
     if ( mCommLayer )
     {
-        unsigned int client;
+        NxU32 client;
         const char *msg = mCommLayer->receiveMessage(client);
         if ( msg )
         {
@@ -341,7 +341,7 @@ public:
             SEND_TEXT_MESSAGE(0,"%s\r\n", msg );
         }
 		const void *data;
-		unsigned int dlen;
+		NxU32 dlen;
 		const char *blobType = mCommLayer->receiveBlob(client,data,dlen);
 		if ( blobType )
 		{
@@ -373,7 +373,7 @@ public:
   }
 
 
-  virtual void process(float /*dtime*/)
+  virtual void process(NxF32 /*dtime*/)
   {
     if ( mTestAutoGeometry )
     {
@@ -397,15 +397,15 @@ private:
   bool               mPlayAnimation;
   bool               mFlipWinding;
   bool               mShowCollision;
-  float              mAnimationSpeed;
+  NxF32              mAnimationSpeed;
   MeshSystemHelper  *mMeshSystemHelper;
-  float mMergePercentage;
-  float mConcavityPercentage;
+  NxF32 mMergePercentage;
+  NxF32 mConcavityPercentage;
   bool  mFitObb;
-  unsigned int mDepth;
-  float mVolumePercentage;
-  unsigned int mMaxVertices;
-  float mSkinWidth;
+  NxU32 mDepth;
+  NxF32 mVolumePercentage;
+  NxU32 mMaxVertices;
+  NxF32 mSkinWidth;
   bool mRemoveTjunctions;
   bool mInitialIslandGeneration;
   bool mIslandGeneration;

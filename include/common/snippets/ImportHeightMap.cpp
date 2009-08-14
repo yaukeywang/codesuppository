@@ -39,7 +39,7 @@ typedef struct
 
 
 /* Handy converters between fixed and floating-point types */
-#define FixedToFloat(hv)	((float)(hv)/65536)
+#define FixedToFloat(hv)	((NxF32)(hv)/65536)
 #define FloatToFixed(f)	((FIX32)((f)*65536))
 
 
@@ -779,7 +779,7 @@ public:
     hf.breadth = mDepth;
     hf.pElevs = mData;
 
-    int ok = LevHF_Write(&hf,fname,6);
+    NxI32 ok = LevHF_Write(&hf,fname,6);
     if ( ok )
     {
       ret = true;
@@ -788,7 +788,7 @@ public:
     return ret;
   }
 
-  float getHeightRange(float &vlow,float &vhigh)
+  NxF32 getHeightRange(NxF32 &vlow,NxF32 &vhigh)
   {
     vlow = mVlow;
     vhigh = mVhigh;
@@ -796,8 +796,8 @@ public:
   }
 
 private:
-  float         mVhigh;
-  float         mVlow;
+  NxF32         mVhigh;
+  NxF32         mVlow;
 
   NxU32  mWidth;
   NxU32  mDepth;

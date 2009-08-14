@@ -30,8 +30,8 @@ CDXUTTimer* DXUTGetGlobalTimer()
 //--------------------------------------------------------------------------------------
 // Internal functions forward declarations
 //--------------------------------------------------------------------------------------
-bool DXUTFindMediaSearchTypicalDirs( WCHAR* strSearchPath, int cchSearch, LPCWSTR strLeaf, WCHAR* strExePath, WCHAR* strExeName );
-bool DXUTFindMediaSearchParentDirs( WCHAR* strSearchPath, int cchSearch, WCHAR* strStartAt, WCHAR* strLeafName );
+bool DXUTFindMediaSearchTypicalDirs( WCHAR* strSearchPath, NxI32 cchSearch, LPCWSTR strLeaf, WCHAR* strExePath, WCHAR* strExeName );
+bool DXUTFindMediaSearchParentDirs( WCHAR* strSearchPath, NxI32 cchSearch, WCHAR* strStartAt, WCHAR* strLeafName );
 INT_PTR CALLBACK DisplaySwitchToREFWarningProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
 
 
@@ -73,7 +73,7 @@ void DXUTDisplaySwitchingToREFWarning()
                 {{WS_CHILD|WS_VISIBLE|BS_CHECKBOX,0,7,59,70,16,IDIGNORE},0xFFFF,0x0080,0,0,0}, // checkbox
             }; 
 
-            int nResult = (int) DialogBoxIndirect( DXUTGetHINSTANCE(), (DLGTEMPLATE*)&dtp, DXUTGetHWND(), DisplaySwitchToREFWarningProc ); 
+            NxI32 nResult = (NxI32) DialogBoxIndirect( DXUTGetHINSTANCE(), (DLGTEMPLATE*)&dtp, DXUTGetHWND(), DisplaySwitchToREFWarningProc ); 
 
             if( (nResult & 0x80) == 0x80 ) // "Don't show again" checkbox was checked
             {
@@ -191,36 +191,36 @@ void CDXUTTimer::Advance()
 
 
 //--------------------------------------------------------------------------------------
-double CDXUTTimer::GetAbsoluteTime()
+NxF64 CDXUTTimer::GetAbsoluteTime()
 {
     LARGE_INTEGER qwTime;
     QueryPerformanceCounter( &qwTime );
 
-    double fTime = qwTime.QuadPart / (double) m_llQPFTicksPerSec;
+    NxF64 fTime = qwTime.QuadPart / (NxF64) m_llQPFTicksPerSec;
 
     return fTime;
 }
 
 
 //--------------------------------------------------------------------------------------
-double CDXUTTimer::GetTime()
+NxF64 CDXUTTimer::GetTime()
 {
     LARGE_INTEGER qwTime = GetAdjustedCurrentTime();
 
-    double fAppTime = (double) ( qwTime.QuadPart - m_llBaseTime ) / (double) m_llQPFTicksPerSec;
+    NxF64 fAppTime = (NxF64) ( qwTime.QuadPart - m_llBaseTime ) / (NxF64) m_llQPFTicksPerSec;
 
     return fAppTime;
 }
 
 
 //--------------------------------------------------------------------------------------
-void CDXUTTimer::GetTimeValues( double* pfTime, double* pfAbsoluteTime, float* pfElapsedTime )
+void CDXUTTimer::GetTimeValues( NxF64* pfTime, NxF64* pfAbsoluteTime, NxF32* pfElapsedTime )
 {
     assert( pfTime && pfAbsoluteTime && pfElapsedTime );    
 
     LARGE_INTEGER qwTime = GetAdjustedCurrentTime();
 
-    float fElapsedTime = (float) ((double) ( qwTime.QuadPart - m_llLastElapsedTime ) / (double) m_llQPFTicksPerSec);
+    NxF32 fElapsedTime = (NxF32) ((NxF64) ( qwTime.QuadPart - m_llLastElapsedTime ) / (NxF64) m_llQPFTicksPerSec);
     m_llLastElapsedTime = qwTime.QuadPart;
 
     // Clamp the timer to non-negative values to ensure the timer is accurate.
@@ -233,18 +233,18 @@ void CDXUTTimer::GetTimeValues( double* pfTime, double* pfAbsoluteTime, float* p
     if( fElapsedTime < 0.0f )
         fElapsedTime = 0.0f;
     
-    *pfAbsoluteTime = qwTime.QuadPart / (double) m_llQPFTicksPerSec;
-    *pfTime = ( qwTime.QuadPart - m_llBaseTime ) / (double) m_llQPFTicksPerSec;   
+    *pfAbsoluteTime = qwTime.QuadPart / (NxF64) m_llQPFTicksPerSec;
+    *pfTime = ( qwTime.QuadPart - m_llBaseTime ) / (NxF64) m_llQPFTicksPerSec;   
     *pfElapsedTime = fElapsedTime;
 }
 
 
 //--------------------------------------------------------------------------------------
-double CDXUTTimer::GetElapsedTime()
+NxF64 CDXUTTimer::GetElapsedTime()
 {
     LARGE_INTEGER qwTime = GetAdjustedCurrentTime();
 
-    double fElapsedTime = (double) ( qwTime.QuadPart - m_llLastElapsedTime ) / (double) m_llQPFTicksPerSec;
+    NxF64 fElapsedTime = (NxF64) ( qwTime.QuadPart - m_llLastElapsedTime ) / (NxF64) m_llQPFTicksPerSec;
     m_llLastElapsedTime = qwTime.QuadPart;
 
     // See the explanation about clamping in CDXUTTimer::GetTimeValues()
@@ -353,7 +353,7 @@ HRESULT DXUTSetMediaSearchPath( LPCWSTR strPath )
 //       cchDest is the size in WCHARs of strDestPath.  Be careful not to
 //       pass in sizeof(strDest) on UNICODE builds.
 //--------------------------------------------------------------------------------------
-HRESULT DXUTFindDXSDKMediaFileCch( WCHAR* strDestPath, int cchDest, LPCWSTR strFilename )
+HRESULT DXUTFindDXSDKMediaFileCch( WCHAR* strDestPath, NxI32 cchDest, LPCWSTR strFilename )
 {
 
     if( NULL==strFilename || strFilename[0] == 0 || NULL==strDestPath || cchDest < 10 )
@@ -398,7 +398,7 @@ HRESULT DXUTFindDXSDKMediaFileCch( WCHAR* strDestPath, int cchDest, LPCWSTR strF
 //--------------------------------------------------------------------------------------
 // Search a set of typical directories
 //--------------------------------------------------------------------------------------
-bool DXUTFindMediaSearchTypicalDirs( WCHAR* strSearchPath, int cchSearch, LPCWSTR strLeaf,
+bool DXUTFindMediaSearchTypicalDirs( WCHAR* strSearchPath, NxI32 cchSearch, LPCWSTR strLeaf,
                                      WCHAR* strExePath, WCHAR* strExeName )
 {
     return false;
@@ -410,7 +410,7 @@ bool DXUTFindMediaSearchTypicalDirs( WCHAR* strSearchPath, int cchSearch, LPCWST
 // Search parent directories starting at strStartAt, and appending strLeafName
 // at each parent directory.  It stops at the root directory.
 //--------------------------------------------------------------------------------------
-bool DXUTFindMediaSearchParentDirs( WCHAR* strSearchPath, int cchSearch, WCHAR* strStartAt, WCHAR* strLeafName )
+bool DXUTFindMediaSearchParentDirs( WCHAR* strSearchPath, NxI32 cchSearch, WCHAR* strStartAt, WCHAR* strLeafName )
 {
     WCHAR strFullPath[MAX_PATH] = {0};
     WCHAR strFullFileName[MAX_PATH] = {0};
@@ -465,7 +465,7 @@ HRESULT CDXUTResourceCache::CreateTextureFromFile( LPDIRECT3DDEVICE9 pDevice, LP
 HRESULT CDXUTResourceCache::CreateTextureFromFileEx( LPDIRECT3DDEVICE9 pDevice, LPCTSTR pSrcFile, UINT Width, UINT Height, UINT MipLevels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, DWORD Filter, DWORD MipFilter, D3DCOLOR ColorKey, D3DXIMAGE_INFO *pSrcInfo, PALETTEENTRY *pPalette, LPDIRECT3DTEXTURE9 *ppTexture )
 {
     // Search the cache for a matching entry.
-    for( int i = 0; i < m_TextureCache.GetSize(); ++i )
+    for( NxI32 i = 0; i < m_TextureCache.GetSize(); ++i )
     {
         DXUTCache_Texture &Entry = m_TextureCache[i];
         if( Entry.Location == DXUTCACHE_LOCATION_FILE &&
@@ -521,7 +521,7 @@ HRESULT CDXUTResourceCache::CreateTextureFromResource( LPDIRECT3DDEVICE9 pDevice
 HRESULT CDXUTResourceCache::CreateTextureFromResourceEx( LPDIRECT3DDEVICE9 pDevice, HMODULE hSrcModule, LPCTSTR pSrcResource, UINT Width, UINT Height, UINT MipLevels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, DWORD Filter, DWORD MipFilter, D3DCOLOR ColorKey, D3DXIMAGE_INFO *pSrcInfo, PALETTEENTRY *pPalette, LPDIRECT3DTEXTURE9 *ppTexture )
 {
     // Search the cache for a matching entry.
-    for( int i = 0; i < m_TextureCache.GetSize(); ++i )
+    for( NxI32 i = 0; i < m_TextureCache.GetSize(); ++i )
     {
         DXUTCache_Texture &Entry = m_TextureCache[i];
         if( Entry.Location == DXUTCACHE_LOCATION_RESOURCE &&
@@ -579,7 +579,7 @@ HRESULT CDXUTResourceCache::CreateCubeTextureFromFile( LPDIRECT3DDEVICE9 pDevice
 HRESULT CDXUTResourceCache::CreateCubeTextureFromFileEx( LPDIRECT3DDEVICE9 pDevice, LPCTSTR pSrcFile, UINT Size, UINT MipLevels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, DWORD Filter, DWORD MipFilter, D3DCOLOR ColorKey, D3DXIMAGE_INFO *pSrcInfo, PALETTEENTRY *pPalette, LPDIRECT3DCUBETEXTURE9 *ppCubeTexture )
 {
     // Search the cache for a matching entry.
-    for( int i = 0; i < m_TextureCache.GetSize(); ++i )
+    for( NxI32 i = 0; i < m_TextureCache.GetSize(); ++i )
     {
         DXUTCache_Texture &Entry = m_TextureCache[i];
         if( Entry.Location == DXUTCACHE_LOCATION_FILE &&
@@ -633,7 +633,7 @@ HRESULT CDXUTResourceCache::CreateCubeTextureFromResource( LPDIRECT3DDEVICE9 pDe
 HRESULT CDXUTResourceCache::CreateCubeTextureFromResourceEx( LPDIRECT3DDEVICE9 pDevice, HMODULE hSrcModule, LPCTSTR pSrcResource, UINT Size, UINT MipLevels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, DWORD Filter, DWORD MipFilter, D3DCOLOR ColorKey, D3DXIMAGE_INFO *pSrcInfo, PALETTEENTRY *pPalette, LPDIRECT3DCUBETEXTURE9 *ppCubeTexture )
 {
     // Search the cache for a matching entry.
-    for( int i = 0; i < m_TextureCache.GetSize(); ++i )
+    for( NxI32 i = 0; i < m_TextureCache.GetSize(); ++i )
     {
         DXUTCache_Texture &Entry = m_TextureCache[i];
         if( Entry.Location == DXUTCACHE_LOCATION_RESOURCE &&
@@ -689,7 +689,7 @@ HRESULT CDXUTResourceCache::CreateVolumeTextureFromFile( LPDIRECT3DDEVICE9 pDevi
 HRESULT CDXUTResourceCache::CreateVolumeTextureFromFileEx( LPDIRECT3DDEVICE9 pDevice, LPCTSTR pSrcFile, UINT Width, UINT Height, UINT Depth, UINT MipLevels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, DWORD Filter, DWORD MipFilter, D3DCOLOR ColorKey, D3DXIMAGE_INFO *pSrcInfo, PALETTEENTRY *pPalette, LPDIRECT3DVOLUMETEXTURE9 *ppTexture )
 {
     // Search the cache for a matching entry.
-    for( int i = 0; i < m_TextureCache.GetSize(); ++i )
+    for( NxI32 i = 0; i < m_TextureCache.GetSize(); ++i )
     {
         DXUTCache_Texture &Entry = m_TextureCache[i];
         if( Entry.Location == DXUTCACHE_LOCATION_FILE &&
@@ -747,7 +747,7 @@ HRESULT CDXUTResourceCache::CreateVolumeTextureFromResource( LPDIRECT3DDEVICE9 p
 HRESULT CDXUTResourceCache::CreateVolumeTextureFromResourceEx( LPDIRECT3DDEVICE9 pDevice, HMODULE hSrcModule, LPCTSTR pSrcResource, UINT Width, UINT Height, UINT Depth, UINT MipLevels, DWORD Usage, D3DFORMAT Format, D3DPOOL Pool, DWORD Filter, DWORD MipFilter, D3DCOLOR ColorKey, D3DXIMAGE_INFO *pSrcInfo, PALETTEENTRY *pPalette, LPDIRECT3DVOLUMETEXTURE9 *ppVolumeTexture )
 {
     // Search the cache for a matching entry.
-    for( int i = 0; i < m_TextureCache.GetSize(); ++i )
+    for( NxI32 i = 0; i < m_TextureCache.GetSize(); ++i )
     {
         DXUTCache_Texture &Entry = m_TextureCache[i];
         if( Entry.Location == DXUTCACHE_LOCATION_RESOURCE &&
@@ -818,7 +818,7 @@ HRESULT CDXUTResourceCache::CreateFont( LPDIRECT3DDEVICE9 pDevice, UINT Height, 
 HRESULT CDXUTResourceCache::CreateFontIndirect( LPDIRECT3DDEVICE9 pDevice, CONST D3DXFONT_DESC *pDesc, LPD3DXFONT *ppFont )
 {
     // Search the cache for a matching entry.
-    for( int i = 0; i < m_FontCache.GetSize(); ++i )
+    for( NxI32 i = 0; i < m_FontCache.GetSize(); ++i )
     {
         DXUTCache_Font &Entry = m_FontCache[i];
 
@@ -863,7 +863,7 @@ HRESULT CDXUTResourceCache::CreateFontIndirect( LPDIRECT3DDEVICE9 pDevice, CONST
 HRESULT CDXUTResourceCache::CreateEffectFromFile( LPDIRECT3DDEVICE9 pDevice, LPCTSTR pSrcFile, const D3DXMACRO *pDefines, LPD3DXINCLUDE pInclude, DWORD Flags, LPD3DXEFFECTPOOL pPool, LPD3DXEFFECT *ppEffect, LPD3DXBUFFER *ppCompilationErrors )
 {
     // Search the cache for a matching entry.
-    for( int i = 0; i < m_EffectCache.GetSize(); ++i )
+    for( NxI32 i = 0; i < m_EffectCache.GetSize(); ++i )
     {
         DXUTCache_Effect &Entry = m_EffectCache[i];
 
@@ -901,7 +901,7 @@ HRESULT CDXUTResourceCache::CreateEffectFromFile( LPDIRECT3DDEVICE9 pDevice, LPC
 HRESULT CDXUTResourceCache::CreateEffectFromResource( LPDIRECT3DDEVICE9 pDevice, HMODULE hSrcModule, LPCTSTR pSrcResource, const D3DXMACRO *pDefines, LPD3DXINCLUDE pInclude, DWORD Flags, LPD3DXEFFECTPOOL pPool, LPD3DXEFFECT *ppEffect, LPD3DXBUFFER *ppCompilationErrors )
 {
     // Search the cache for a matching entry.
-    for( int i = 0; i < m_EffectCache.GetSize(); ++i )
+    for( NxI32 i = 0; i < m_EffectCache.GetSize(); ++i )
     {
         DXUTCache_Effect &Entry = m_EffectCache[i];
 
@@ -954,9 +954,9 @@ HRESULT CDXUTResourceCache::OnCreateDevice( IDirect3DDevice9 *pd3dDevice )
 HRESULT CDXUTResourceCache::OnResetDevice( IDirect3DDevice9 *pd3dDevice )
 {
     // Call OnResetDevice on all effect and font objects
-    for( int i = 0; i < m_EffectCache.GetSize(); ++i )
+    for( NxI32 i = 0; i < m_EffectCache.GetSize(); ++i )
         m_EffectCache[i].pEffect->OnResetDevice();
-    for( int i = 0; i < m_FontCache.GetSize(); ++i )
+    for( NxI32 i = 0; i < m_FontCache.GetSize(); ++i )
         m_FontCache[i].pFont->OnResetDevice();
 
 
@@ -968,13 +968,13 @@ HRESULT CDXUTResourceCache::OnResetDevice( IDirect3DDevice9 *pd3dDevice )
 HRESULT CDXUTResourceCache::OnLostDevice()
 {
     // Call OnLostDevice on all effect and font objects
-    for( int i = 0; i < m_EffectCache.GetSize(); ++i )
+    for( NxI32 i = 0; i < m_EffectCache.GetSize(); ++i )
         m_EffectCache[i].pEffect->OnLostDevice();
-    for( int i = 0; i < m_FontCache.GetSize(); ++i )
+    for( NxI32 i = 0; i < m_FontCache.GetSize(); ++i )
         m_FontCache[i].pFont->OnLostDevice();
 
     // Release all the default pool textures
-    for( int i = m_TextureCache.GetSize() - 1; i >= 0; --i )
+    for( NxI32 i = m_TextureCache.GetSize() - 1; i >= 0; --i )
         if( m_TextureCache[i].Pool == D3DPOOL_DEFAULT )
         {
             SAFE_RELEASE( m_TextureCache[i].pTexture );
@@ -989,17 +989,17 @@ HRESULT CDXUTResourceCache::OnLostDevice()
 HRESULT CDXUTResourceCache::OnDestroyDevice()
 {
     // Release all resources
-    for( int i = m_EffectCache.GetSize() - 1; i >= 0; --i )
+    for( NxI32 i = m_EffectCache.GetSize() - 1; i >= 0; --i )
     {
         SAFE_RELEASE( m_EffectCache[i].pEffect );
         m_EffectCache.Remove( i );
     }
-    for( int i = m_FontCache.GetSize() - 1; i >= 0; --i )
+    for( NxI32 i = m_FontCache.GetSize() - 1; i >= 0; --i )
     {
         SAFE_RELEASE( m_FontCache[i].pFont );
         m_FontCache.Remove( i );
     }
-    for( int i = m_TextureCache.GetSize() - 1; i >= 0; --i )
+    for( NxI32 i = m_TextureCache.GetSize() - 1; i >= 0; --i )
     {
         SAFE_RELEASE( m_TextureCache[i].pTexture );
         m_TextureCache.Remove( i );
@@ -1043,7 +1043,7 @@ void CD3DArcBall::Reset()
 
 
 //--------------------------------------------------------------------------------------
-D3DXVECTOR3 CD3DArcBall::ScreenToVector( float fScreenPtX, float fScreenPtY )
+D3DXVECTOR3 CD3DArcBall::ScreenToVector( NxF32 fScreenPtX, NxF32 fScreenPtY )
 {
     // Scale to screen
     FLOAT x   = -(fScreenPtX - m_Offset.x - m_nWidth/2)  / (m_fRadius*m_nWidth/2);
@@ -1072,7 +1072,7 @@ D3DXVECTOR3 CD3DArcBall::ScreenToVector( float fScreenPtX, float fScreenPtY )
 D3DXQUATERNION CD3DArcBall::QuatFromBallPoints(const D3DXVECTOR3 &vFrom, const D3DXVECTOR3 &vTo)
 {
     D3DXVECTOR3 vPart;
-    float fDot = D3DXVec3Dot(&vFrom, &vTo);
+    NxF32 fDot = D3DXVec3Dot(&vFrom, &vTo);
     D3DXVec3Cross(&vPart, &vFrom, &vTo);
 
     return D3DXQUATERNION(vPart.x, vPart.y, vPart.z, fDot);
@@ -1082,7 +1082,7 @@ D3DXQUATERNION CD3DArcBall::QuatFromBallPoints(const D3DXVECTOR3 &vFrom, const D
 
 
 //--------------------------------------------------------------------------------------
-void CD3DArcBall::OnBegin( int nX, int nY )
+void CD3DArcBall::OnBegin( NxI32 nX, NxI32 nY )
 {
     // Only enter the drag state if the click falls
     // inside the click rectangle.
@@ -1093,7 +1093,7 @@ void CD3DArcBall::OnBegin( int nX, int nY )
     {
         m_bDrag = true;
         m_qDown = m_qNow;
-        m_vDownPt = ScreenToVector( (float)nX, (float)nY );
+        m_vDownPt = ScreenToVector( (NxF32)nX, (NxF32)nY );
     }
 }
 
@@ -1101,11 +1101,11 @@ void CD3DArcBall::OnBegin( int nX, int nY )
 
 
 //--------------------------------------------------------------------------------------
-void CD3DArcBall::OnMove( int nX, int nY )
+void CD3DArcBall::OnMove( NxI32 nX, NxI32 nY )
 {
     if (m_bDrag) 
     { 
-        m_vCurrentPt = ScreenToVector( (float)nX, (float)nY );
+        m_vCurrentPt = ScreenToVector( (NxF32)nX, (NxF32)nY );
         m_qNow = m_qDown * QuatFromBallPoints( m_vDownPt, m_vCurrentPt );
     }
 }
@@ -1128,8 +1128,8 @@ void CD3DArcBall::OnEnd()
 LRESULT CD3DArcBall::HandleMessages( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
     // Current mouse position
-    int iMouseX = (short)LOWORD(lParam);
-    int iMouseY = (short)HIWORD(lParam);
+    NxI32 iMouseX = (short)LOWORD(lParam);
+    NxI32 iMouseY = (short)HIWORD(lParam);
 
     switch( uMsg )
     {
@@ -1280,7 +1280,7 @@ VOID CBaseCamera::SetViewParams( D3DXVECTOR3* pvEyePt, D3DXVECTOR3* pvLookatPt )
     D3DXVECTOR3* pZBasis = (D3DXVECTOR3*) &mInvView._31;
 
     m_fCameraYawAngle   = atan2f( pZBasis->x, pZBasis->z );
-    float fLen = sqrtf(pZBasis->z*pZBasis->z + pZBasis->x*pZBasis->x);
+    NxF32 fLen = sqrtf(pZBasis->z*pZBasis->z + pZBasis->x*pZBasis->x);
     m_fCameraPitchAngle = -atan2f( pZBasis->y, fLen );
 }
 
@@ -1488,8 +1488,8 @@ void CBaseCamera::GetInput( bool bGetKeyboardInput, bool bGetMouseInput, bool bG
 
         // Smooth the relative mouse data over a few frames so it isn't 
         // jerky when moving slowly at low frame rates.
-        float fPercentOfNew =  1.0f / m_fFramesToSmoothMouseData;
-        float fPercentOfOld =  1.0f - fPercentOfNew;
+        NxF32 fPercentOfNew =  1.0f / m_fFramesToSmoothMouseData;
+        NxF32 fPercentOfOld =  1.0f - fPercentOfNew;
         m_vMouseDelta.x = m_vMouseDelta.x*fPercentOfOld + ptCurMouseDelta.x*fPercentOfNew;
         m_vMouseDelta.y = m_vMouseDelta.y*fPercentOfOld + ptCurMouseDelta.y*fPercentOfNew;
 
@@ -1516,8 +1516,8 @@ void CBaseCamera::GetInput( bool bGetKeyboardInput, bool bGetMouseInput, bool bG
         }
 
         // Find out which controller was non-zero last
-        int iMostRecentlyActive = -1;
-        double fMostRecentlyActiveTime = 0.0f;
+        NxI32 iMostRecentlyActive = -1;
+        NxF64 fMostRecentlyActiveTime = 0.0f;
         for( DWORD iUserIndex=0; iUserIndex<DXUT_MAX_CONTROLLERS; iUserIndex++ )
         {
             if( m_GamePadLastActive[iUserIndex] > fMostRecentlyActiveTime )
@@ -1545,7 +1545,7 @@ void CBaseCamera::GetInput( bool bGetKeyboardInput, bool bGetMouseInput, bool bG
 //--------------------------------------------------------------------------------------
 // Figure out the velocity based on keyboard input & drag if any
 //--------------------------------------------------------------------------------------
-void CBaseCamera::UpdateVelocity( float fElapsedTime )
+void CBaseCamera::UpdateVelocity( NxF32 fElapsedTime )
 {
     D3DXMATRIX mRotDelta;
 
@@ -1716,8 +1716,8 @@ VOID CFirstPersonCamera::FrameMove( FLOAT fElapsedTime )
         m_vGamePadRightThumb.z != 0 )
     {
         // Update the pitch & yaw angle based on mouse movement
-        float fYawDelta   = m_vRotVelocity.x;
-        float fPitchDelta = m_vRotVelocity.y;
+        NxF32 fYawDelta   = m_vRotVelocity.x;
+        NxF32 fPitchDelta = m_vRotVelocity.y;
 
         // Invert pitch if requested
         if( m_bInvertPitch )
@@ -1975,8 +1975,8 @@ LRESULT CModelViewerCamera::HandleMessages( HWND hWnd, UINT uMsg, WPARAM wParam,
         ( (uMsg == WM_MBUTTONDOWN || uMsg == WM_MBUTTONDBLCLK ) && m_nRotateModelButtonMask & MOUSE_MIDDLE_BUTTON) ||
         ( (uMsg == WM_RBUTTONDOWN || uMsg == WM_RBUTTONDBLCLK ) && m_nRotateModelButtonMask & MOUSE_RIGHT_BUTTON) )
     {
-        int iMouseX = (short)LOWORD(lParam);
-        int iMouseY = (short)HIWORD(lParam);
+        NxI32 iMouseX = (short)LOWORD(lParam);
+        NxI32 iMouseY = (short)HIWORD(lParam);
         m_WorldArcBall.OnBegin( iMouseX, iMouseY );
     }
 
@@ -1984,15 +1984,15 @@ LRESULT CModelViewerCamera::HandleMessages( HWND hWnd, UINT uMsg, WPARAM wParam,
         ( (uMsg == WM_MBUTTONDOWN || uMsg == WM_MBUTTONDBLCLK ) && m_nRotateCameraButtonMask & MOUSE_MIDDLE_BUTTON) ||
         ( (uMsg == WM_RBUTTONDOWN || uMsg == WM_RBUTTONDBLCLK ) && m_nRotateCameraButtonMask & MOUSE_RIGHT_BUTTON) )
     {
-        int iMouseX = (short)LOWORD(lParam);
-        int iMouseY = (short)HIWORD(lParam);
+        NxI32 iMouseX = (short)LOWORD(lParam);
+        NxI32 iMouseY = (short)HIWORD(lParam);
         m_ViewArcBall.OnBegin( iMouseX, iMouseY );
     }
 
     if( uMsg == WM_MOUSEMOVE )
     {
-        int iMouseX = (short)LOWORD(lParam);
-        int iMouseY = (short)HIWORD(lParam);
+        NxI32 iMouseX = (short)LOWORD(lParam);
+        NxI32 iMouseY = (short)HIWORD(lParam);
         m_WorldArcBall.OnMove( iMouseX, iMouseY );
         m_ViewArcBall.OnMove( iMouseX, iMouseY );
     }
@@ -2259,10 +2259,10 @@ HRESULT CDXUTLineManager::OnRender()
         return E_INVALIDARG;
 
     bool bDrawingHasBegun = false;
-    float fLastWidth = 0.0f;
+    NxF32 fLastWidth = 0.0f;
     bool bLastAntiAlias = false;
     
-    for( int i=0; i<m_LinesList.GetSize(); i++ )
+    for( NxI32 i=0; i<m_LinesList.GetSize(); i++ )
     {
         LINE_NODE* pLineNode = m_LinesList.GetAt(i);
         if( pLineNode )
@@ -2328,7 +2328,7 @@ HRESULT CDXUTLineManager::OnDeletedDevice()
 
 
 //--------------------------------------------------------------------------------------
-HRESULT CDXUTLineManager::AddLine( int* pnLineID, D3DXVECTOR2* pVertexList, DWORD dwVertexListCount, D3DCOLOR Color, float fWidth, float fScaleRatio, bool bAntiAlias )
+HRESULT CDXUTLineManager::AddLine( NxI32* pnLineID, D3DXVECTOR2* pVertexList, DWORD dwVertexListCount, D3DCOLOR Color, NxF32 fWidth, NxF32 fScaleRatio, bool bAntiAlias )
 {
     if( pVertexList == NULL || dwVertexListCount == 0 )
         return E_INVALIDARG;
@@ -2365,55 +2365,55 @@ HRESULT CDXUTLineManager::AddLine( int* pnLineID, D3DXVECTOR2* pVertexList, DWOR
 
 
 //--------------------------------------------------------------------------------------
-HRESULT CDXUTLineManager::AddRect( int* pnLineID, RECT rc, D3DCOLOR Color, float fWidth, float fScaleRatio, bool bAntiAlias )
+HRESULT CDXUTLineManager::AddRect( NxI32* pnLineID, RECT rc, D3DCOLOR Color, NxF32 fWidth, NxF32 fScaleRatio, bool bAntiAlias )
 {
     if( fWidth > 2.0f )
     {
         D3DXVECTOR2 vertexList[8];
 
-        vertexList[0].x = (float)rc.left;
-        vertexList[0].y = (float)rc.top - (fWidth/2.0f);
+        vertexList[0].x = (NxF32)rc.left;
+        vertexList[0].y = (NxF32)rc.top - (fWidth/2.0f);
 
-        vertexList[1].x = (float)rc.left;
-        vertexList[1].y = (float)rc.bottom + (fWidth/2.0f);
+        vertexList[1].x = (NxF32)rc.left;
+        vertexList[1].y = (NxF32)rc.bottom + (fWidth/2.0f);
 
-        vertexList[2].x = (float)rc.left;
-        vertexList[2].y = (float)rc.bottom - 0.5f;
+        vertexList[2].x = (NxF32)rc.left;
+        vertexList[2].y = (NxF32)rc.bottom - 0.5f;
 
-        vertexList[3].x = (float)rc.right;
-        vertexList[3].y = (float)rc.bottom - 0.5f;
+        vertexList[3].x = (NxF32)rc.right;
+        vertexList[3].y = (NxF32)rc.bottom - 0.5f;
 
-        vertexList[4].x = (float)rc.right;
-        vertexList[4].y = (float)rc.bottom + (fWidth/2.0f);
+        vertexList[4].x = (NxF32)rc.right;
+        vertexList[4].y = (NxF32)rc.bottom + (fWidth/2.0f);
 
-        vertexList[5].x = (float)rc.right;
-        vertexList[5].y = (float)rc.top - (fWidth/2.0f);
+        vertexList[5].x = (NxF32)rc.right;
+        vertexList[5].y = (NxF32)rc.top - (fWidth/2.0f);
 
-        vertexList[6].x = (float)rc.right;
-        vertexList[6].y = (float)rc.top;
+        vertexList[6].x = (NxF32)rc.right;
+        vertexList[6].y = (NxF32)rc.top;
 
-        vertexList[7].x = (float)rc.left;
-        vertexList[7].y = (float)rc.top;
+        vertexList[7].x = (NxF32)rc.left;
+        vertexList[7].y = (NxF32)rc.top;
         
         return AddLine( pnLineID, vertexList, 8, Color, fWidth, fScaleRatio, bAntiAlias );
     }
     else
     {
         D3DXVECTOR2 vertexList[5];
-        vertexList[0].x = (float)rc.left;
-        vertexList[0].y = (float)rc.top;
+        vertexList[0].x = (NxF32)rc.left;
+        vertexList[0].y = (NxF32)rc.top;
 
-        vertexList[1].x = (float)rc.left;
-        vertexList[1].y = (float)rc.bottom;
+        vertexList[1].x = (NxF32)rc.left;
+        vertexList[1].y = (NxF32)rc.bottom;
 
-        vertexList[2].x = (float)rc.right;
-        vertexList[2].y = (float)rc.bottom;
+        vertexList[2].x = (NxF32)rc.right;
+        vertexList[2].y = (NxF32)rc.bottom;
 
-        vertexList[3].x = (float)rc.right;
-        vertexList[3].y = (float)rc.top;
+        vertexList[3].x = (NxF32)rc.right;
+        vertexList[3].y = (NxF32)rc.top;
 
-        vertexList[4].x = (float)rc.left;
-        vertexList[4].y = (float)rc.top;
+        vertexList[4].x = (NxF32)rc.left;
+        vertexList[4].y = (NxF32)rc.top;
         
         return AddLine( pnLineID, vertexList, 5, Color, fWidth, fScaleRatio, bAntiAlias );
     }
@@ -2422,9 +2422,9 @@ HRESULT CDXUTLineManager::AddRect( int* pnLineID, RECT rc, D3DCOLOR Color, float
 
 
 //--------------------------------------------------------------------------------------
-HRESULT CDXUTLineManager::RemoveLine( int nLineID )
+HRESULT CDXUTLineManager::RemoveLine( NxI32 nLineID )
 {
-    for( int i=0; i<m_LinesList.GetSize(); i++ )
+    for( NxI32 i=0; i<m_LinesList.GetSize(); i++ )
     {
         LINE_NODE* pLineNode = m_LinesList.GetAt(i);
         if( pLineNode && pLineNode->nLineID == nLineID )
@@ -2442,7 +2442,7 @@ HRESULT CDXUTLineManager::RemoveLine( int nLineID )
 //--------------------------------------------------------------------------------------
 HRESULT CDXUTLineManager::RemoveAllLines()
 {
-    for( int i=0; i<m_LinesList.GetSize(); i++ )
+    for( NxI32 i=0; i<m_LinesList.GetSize(); i++ )
     {
         LINE_NODE* pLineNode = m_LinesList.GetAt(i);
         if( pLineNode )
@@ -2458,7 +2458,7 @@ HRESULT CDXUTLineManager::RemoveAllLines()
 
 
 //--------------------------------------------------------------------------------------
-CDXUTTextHelper::CDXUTTextHelper( ID3DXFont* pFont, ID3DXSprite* pSprite, int nLineHeight )
+CDXUTTextHelper::CDXUTTextHelper( ID3DXFont* pFont, ID3DXSprite* pSprite, NxI32 nLineHeight )
 {
     m_pFont = pFont;
     m_pSprite = pSprite;
@@ -2683,8 +2683,8 @@ LRESULT CDXUTDirectionWidget::HandleMessages( HWND hWnd, UINT uMsg,
                 ((m_nRotateMask & MOUSE_MIDDLE_BUTTON) != 0 && uMsg == WM_MBUTTONDOWN) ||
                 ((m_nRotateMask & MOUSE_RIGHT_BUTTON) != 0 && uMsg == WM_RBUTTONDOWN) )
             {
-                int iMouseX = (int)(short)LOWORD(lParam);
-                int iMouseY = (int)(short)HIWORD(lParam);
+                NxI32 iMouseX = (NxI32)(short)LOWORD(lParam);
+                NxI32 iMouseY = (NxI32)(short)HIWORD(lParam);
                 m_ArcBall.OnBegin( iMouseX, iMouseY );
                 SetCapture(hWnd);
             }
@@ -2695,8 +2695,8 @@ LRESULT CDXUTDirectionWidget::HandleMessages( HWND hWnd, UINT uMsg,
         {
             if( m_ArcBall.IsBeingDragged() )
             {
-                int iMouseX = (int)(short)LOWORD(lParam);
-                int iMouseY = (int)(short)HIWORD(lParam);
+                NxI32 iMouseX = (NxI32)(short)LOWORD(lParam);
+                NxI32 iMouseY = (NxI32)(short)HIWORD(lParam);
                 m_ArcBall.OnMove( iMouseX, iMouseY );
                 UpdateLightDir();
             }
@@ -2780,7 +2780,7 @@ HRESULT CDXUTDirectionWidget::OnRender( D3DXCOLOR color, const D3DXMATRIX* pmVie
     V( s_pEffect->SetMatrix( "g_mWorldViewProjection", &mWorldViewProj ) );
     V( s_pEffect->SetMatrix( "g_mWorld", &mWorld ) );
 
-    for( int iSubset=0; iSubset<2; iSubset++ )
+    for( NxI32 iSubset=0; iSubset<2; iSubset++ )
     {
         V( s_pEffect->Begin(&cPasses, 0) );
         for (iPass = 0; iPass < cPasses; iPass++)
@@ -2890,7 +2890,7 @@ IDirect3D9 * WINAPI DXUT_Dynamic_Direct3DCreate9(UINT SDKVersion)
         return NULL;
 }
 
-int WINAPI DXUT_Dynamic_D3DPERF_BeginEvent( D3DCOLOR col, LPCWSTR wszName )
+NxI32 WINAPI DXUT_Dynamic_D3DPERF_BeginEvent( D3DCOLOR col, LPCWSTR wszName )
 {
     if( DXUT_EnsureD3DAPIs() && s_DynamicD3DPERF_BeginEvent != NULL )
         return s_DynamicD3DPERF_BeginEvent( col, wszName );
@@ -2898,7 +2898,7 @@ int WINAPI DXUT_Dynamic_D3DPERF_BeginEvent( D3DCOLOR col, LPCWSTR wszName )
         return -1;
 }
 
-int WINAPI DXUT_Dynamic_D3DPERF_EndEvent( void )
+NxI32 WINAPI DXUT_Dynamic_D3DPERF_EndEvent( void )
 {
     if( DXUT_EnsureD3DAPIs() && s_DynamicD3DPERF_EndEvent != NULL )
         return s_DynamicD3DPERF_EndEvent();
@@ -2946,7 +2946,7 @@ DWORD WINAPI DXUT_Dynamic_D3DPERF_GetStatus( void )
 //--------------------------------------------------------------------------------------
 void DXUTTraceDecl( D3DVERTEXELEMENT9 decl[MAX_FVF_DECL_SIZE] )
 {
-    int iDecl=0;
+    NxI32 iDecl=0;
     for( iDecl=0; iDecl<MAX_FVF_DECL_SIZE; iDecl++ )
     {
         if( decl[iDecl].Stream == 0xFF )
@@ -3308,7 +3308,7 @@ HRESULT DXUTStopRumbleOnAllControllers()
     XINPUT_VIBRATION vibration;
     vibration.wLeftMotorSpeed  = 0;
     vibration.wRightMotorSpeed = 0;
-    for( int iUserIndex=0; iUserIndex<DXUT_MAX_CONTROLLERS; iUserIndex++ )
+    for( NxI32 iUserIndex=0; iUserIndex<DXUT_MAX_CONTROLLERS; iUserIndex++ )
         s_pXInputSetState( iUserIndex, &vibration );
 
     return S_OK;
@@ -3339,9 +3339,9 @@ bool DXUTReLaunchMediaCenter()
 }
 
 
-int CDXUTTextHelper::GetFontHeight( void )
+NxI32 CDXUTTextHelper::GetFontHeight( void )
 {
-	int height = -1;
+	NxI32 height = -1;
 	if ( m_pFont )
 	{
 		D3DXFONT_DESC desc;
@@ -3351,9 +3351,9 @@ int CDXUTTextHelper::GetFontHeight( void )
 	return height;
 }
 
-int CDXUTTextHelper::GetFontWidth( void )
+NxI32 CDXUTTextHelper::GetFontWidth( void )
 {
-	int width = -1;
+	NxI32 width = -1;
 	if ( m_pFont )
 	{
 		D3DXFONT_DESC desc;
@@ -3363,9 +3363,9 @@ int CDXUTTextHelper::GetFontWidth( void )
 	return width;
 }
 
-int CDXUTTextHelper::GetAvgFontWidth( void )
+NxI32 CDXUTTextHelper::GetAvgFontWidth( void )
 {
-	int width = 10;
+	NxI32 width = 10;
 	if ( m_pFont )
 	{
 		TEXTMETRICW textMetrics;

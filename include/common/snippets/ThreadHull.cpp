@@ -23,19 +23,19 @@ public:
     mRet = QE_NOT_READY;
     mDesc.mFlags         = desc.mFlags;
     mDesc.mVcount        = desc.mVcount;
-    mDesc.mVertices      = MEMALLOC_NEW_ARRAY(float,mDesc.mVcount*3)[mDesc.mVcount*3];
-    mDesc.mVertexStride  = sizeof(float)*3;
+    mDesc.mVertices      = MEMALLOC_NEW_ARRAY(NxF32,mDesc.mVcount*3)[mDesc.mVcount*3];
+    mDesc.mVertexStride  = sizeof(NxF32)*3;
     if ( mDesc.mVertexStride == desc.mVertexStride )
     {
       memcpy((void *)mDesc.mVertices,desc.mVertices,mDesc.mVertexStride*mDesc.mVcount);
     }
     else
     {
-      const unsigned char *source = (const unsigned char *)desc.mVertices;
-      float *dest = (float *)mDesc.mVertices;
-      for (unsigned int i=0; i<mDesc.mVcount; i++)
+      const NxU8 *source = (const NxU8 *)desc.mVertices;
+      NxF32 *dest = (NxF32 *)mDesc.mVertices;
+      for (NxU32 i=0; i<mDesc.mVcount; i++)
       {
-        const float *temp = (const float *)source;
+        const NxF32 *temp = (const NxF32 *)source;
         dest[0] = temp[0];
         dest[1] = temp[1];
         dest[2] = temp[2];
@@ -63,18 +63,18 @@ public:
     return mRet;
   }
 
-  virtual void job_process(void *userData,int userId)    // RUNS IN ANOTHER THREAD!! MUST BE THREAD SAFE!
+  virtual void job_process(void *userData,NxI32 userId)    // RUNS IN ANOTHER THREAD!! MUST BE THREAD SAFE!
   {
     mRet = mHull.CreateConvexHull(mDesc,mResult);
-    MEMALLOC_DELETE_ARRAY(float,mDesc.mVertices);
+    MEMALLOC_DELETE_ARRAY(NxF32,mDesc.mVertices);
     mDesc.mVertices = 0;
   }
 
-  virtual void job_onFinish(void *userData,int userId)  // runs in primary thread of the context
+  virtual void job_onFinish(void *userData,NxI32 userId)  // runs in primary thread of the context
   {
   }
 
-  virtual void job_onCancel(void *userData,int userId)  // runs in primary thread of the context
+  virtual void job_onCancel(void *userData,NxI32 userId)  // runs in primary thread of the context
   {
     mRet = QE_FAIL;
   }

@@ -14,7 +14,7 @@
 //--------------------------------------------------------------------------------------
 // Forward declarations
 //--------------------------------------------------------------------------------------
-static int __cdecl SortModesCallback( const void* arg1, const void* arg2 );
+static NxI32 __cdecl SortModesCallback( const void* arg1, const void* arg2 );
 UINT DXUTStencilBits( D3DFORMAT fmt );
 UINT DXUTDepthBits( D3DFORMAT fmt );
 UINT DXUTAlphaChannelBits( D3DFORMAT fmt );
@@ -162,11 +162,11 @@ HRESULT CD3DEnumeration::Enumerate( IDirect3D9* pD3D,
 
     bool bUniqueDesc = true;
     CD3DEnumAdapterInfo* pAdapterInfo;
-    for( int i=0; i<m_AdapterInfoList.GetSize(); i++ )
+    for( NxI32 i=0; i<m_AdapterInfoList.GetSize(); i++ )
     {
         CD3DEnumAdapterInfo* pAdapterInfo1 = m_AdapterInfoList.GetAt(i);
 
-        for( int j=i+1; j<m_AdapterInfoList.GetSize(); j++ )
+        for( NxI32 j=i+1; j<m_AdapterInfoList.GetSize(); j++ )
         {
             CD3DEnumAdapterInfo* pAdapterInfo2 = m_AdapterInfoList.GetAt(j);
             if( _stricmp( pAdapterInfo1->AdapterIdentifier.Description, 
@@ -181,7 +181,7 @@ HRESULT CD3DEnumeration::Enumerate( IDirect3D9* pD3D,
             break;
     }
 
-    for( int i=0; i<m_AdapterInfoList.GetSize(); i++ )
+    for( NxI32 i=0; i<m_AdapterInfoList.GetSize(); i++ )
     {
         pAdapterInfo = m_AdapterInfoList.GetAt(i);
 
@@ -299,7 +299,7 @@ HRESULT CD3DEnumeration::EnumerateDeviceCombos( CD3DEnumAdapterInfo* pAdapterInf
     const UINT backBufferFormatArrayCount = sizeof(backBufferFormatArray) / sizeof(backBufferFormatArray[0]);
 
     // See which adapter formats are supported by this device
-    for( int iFormat=0; iFormat<pAdapterFormatList->GetSize(); iFormat++ )
+    for( NxI32 iFormat=0; iFormat<pAdapterFormatList->GetSize(); iFormat++ )
     {
         D3DFORMAT adapterFormat = pAdapterFormatList->GetAt(iFormat);
 
@@ -307,7 +307,7 @@ HRESULT CD3DEnumeration::EnumerateDeviceCombos( CD3DEnumAdapterInfo* pAdapterInf
         {
             D3DFORMAT backBufferFormat = backBufferFormatArray[iBackBufferFormat];
 
-            for( int nWindowed = 0; nWindowed < 2; nWindowed++)
+            for( NxI32 nWindowed = 0; nWindowed < 2; nWindowed++)
             {
                 if( !nWindowed && pAdapterInfo->displayModeList.GetSize() == 0 )
                     continue;
@@ -383,7 +383,7 @@ HRESULT CD3DEnumeration::EnumerateDeviceCombos( CD3DEnumAdapterInfo* pAdapterInf
 void CD3DEnumeration::BuildDepthStencilFormatList( CD3DEnumDeviceSettingsCombo* pDeviceCombo )
 {
     D3DFORMAT depthStencilFmt;
-    for( int idsf = 0; idsf < m_DepthStecilPossibleList.GetSize(); idsf++ )
+    for( NxI32 idsf = 0; idsf < m_DepthStecilPossibleList.GetSize(); idsf++ )
     {
         depthStencilFmt = m_DepthStecilPossibleList.GetAt(idsf);
         if (SUCCEEDED(m_pD3D->CheckDeviceFormat(pDeviceCombo->AdapterOrdinal, 
@@ -411,7 +411,7 @@ void CD3DEnumeration::BuildMultiSampleTypeList( CD3DEnumDeviceSettingsCombo* pDe
 {
     D3DMULTISAMPLE_TYPE msType;
     DWORD msQuality;
-    for( int imst = 0; imst < m_MultiSampleTypeList.GetSize(); imst++ )
+    for( NxI32 imst = 0; imst < m_MultiSampleTypeList.GetSize(); imst++ )
     {
         msType = m_MultiSampleTypeList.GetAt(imst);
         if( SUCCEEDED( m_pD3D->CheckDeviceMultiSampleType( pDeviceCombo->AdapterOrdinal, 
@@ -437,11 +437,11 @@ void CD3DEnumeration::BuildDSMSConflictList( CD3DEnumDeviceSettingsCombo* pDevic
 {
     CD3DEnumDSMSConflict DSMSConflict;
 
-    for( int iDS=0; iDS<pDeviceCombo->depthStencilFormatList.GetSize(); iDS++ )
+    for( NxI32 iDS=0; iDS<pDeviceCombo->depthStencilFormatList.GetSize(); iDS++ )
     {
         D3DFORMAT dsFmt = pDeviceCombo->depthStencilFormatList.GetAt(iDS);
 
-        for( int iMS=0; iMS<pDeviceCombo->multiSampleTypeList.GetSize(); iMS++ )
+        for( NxI32 iMS=0; iMS<pDeviceCombo->multiSampleTypeList.GetSize(); iMS++ )
         {
             D3DMULTISAMPLE_TYPE msType = pDeviceCombo->multiSampleTypeList.GetAt(iMS);
 
@@ -466,7 +466,7 @@ void CD3DEnumeration::BuildPresentIntervalList( CD3DEnumDeviceInfo* pDeviceInfo,
                                                 CD3DEnumDeviceSettingsCombo* pDeviceCombo )
 {
     UINT pi;
-    for( int ipi = 0; ipi < m_PresentIntervalList.GetSize(); ipi++ )
+    for( NxI32 ipi = 0; ipi < m_PresentIntervalList.GetSize(); ipi++ )
     {
         pi = m_PresentIntervalList.GetAt(ipi);
         if( pDeviceCombo->Windowed )
@@ -497,7 +497,7 @@ void CD3DEnumeration::BuildPresentIntervalList( CD3DEnumDeviceInfo* pDeviceInfo,
 void CD3DEnumeration::ClearAdapterInfoList()
 {
     CD3DEnumAdapterInfo* pAdapterInfo;
-    for( int i=0; i<m_AdapterInfoList.GetSize(); i++ )
+    for( NxI32 i=0; i<m_AdapterInfoList.GetSize(); i++ )
     {
         pAdapterInfo = m_AdapterInfoList.GetAt(i);
         delete pAdapterInfo;
@@ -522,7 +522,7 @@ CGrowableArray<CD3DEnumAdapterInfo*>* CD3DEnumeration::GetAdapterInfoList()
 //--------------------------------------------------------------------------------------
 CD3DEnumAdapterInfo* CD3DEnumeration::GetAdapterInfo( UINT AdapterOrdinal )
 {
-    for( int iAdapter=0; iAdapter<m_AdapterInfoList.GetSize(); iAdapter++ )
+    for( NxI32 iAdapter=0; iAdapter<m_AdapterInfoList.GetSize(); iAdapter++ )
     {
         CD3DEnumAdapterInfo* pAdapterInfo = m_AdapterInfoList.GetAt(iAdapter);
         if( pAdapterInfo->AdapterOrdinal == AdapterOrdinal )
@@ -539,7 +539,7 @@ CD3DEnumDeviceInfo* CD3DEnumeration::GetDeviceInfo( UINT AdapterOrdinal, D3DDEVT
     CD3DEnumAdapterInfo* pAdapterInfo = GetAdapterInfo( AdapterOrdinal );
     if( pAdapterInfo )
     {
-        for( int iDeviceInfo=0; iDeviceInfo<pAdapterInfo->deviceInfoList.GetSize(); iDeviceInfo++ )
+        for( NxI32 iDeviceInfo=0; iDeviceInfo<pAdapterInfo->deviceInfoList.GetSize(); iDeviceInfo++ )
         {
             CD3DEnumDeviceInfo* pDeviceInfo = pAdapterInfo->deviceInfoList.GetAt(iDeviceInfo);
             if( pDeviceInfo->DeviceType == DeviceType )
@@ -559,7 +559,7 @@ CD3DEnumDeviceSettingsCombo* CD3DEnumeration::GetDeviceSettingsCombo( UINT Adapt
     CD3DEnumDeviceInfo* pDeviceInfo = GetDeviceInfo( AdapterOrdinal, DeviceType );
     if( pDeviceInfo )
     {
-        for( int iDeviceCombo=0; iDeviceCombo<pDeviceInfo->deviceSettingsComboList.GetSize(); iDeviceCombo++ )
+        for( NxI32 iDeviceCombo=0; iDeviceCombo<pDeviceInfo->deviceSettingsComboList.GetSize(); iDeviceCombo++ )
         {
             CD3DEnumDeviceSettingsCombo* pDeviceSettingsCombo = pDeviceInfo->deviceSettingsComboList.GetAt(iDeviceCombo);
             if( pDeviceSettingsCombo->AdapterFormat == AdapterFormat &&
@@ -725,7 +725,7 @@ UINT DXUTStencilBits( D3DFORMAT fmt )
 //--------------------------------------------------------------------------------------
 // Used to sort D3DDISPLAYMODEs
 //--------------------------------------------------------------------------------------
-static int __cdecl SortModesCallback( const void* arg1, const void* arg2 )
+static NxI32 __cdecl SortModesCallback( const void* arg1, const void* arg2 )
 {
     D3DDISPLAYMODE* pdm1 = (D3DDISPLAYMODE*)arg1;
     D3DDISPLAYMODE* pdm2 = (D3DDISPLAYMODE*)arg2;
@@ -755,7 +755,7 @@ static int __cdecl SortModesCallback( const void* arg1, const void* arg2 )
 CD3DEnumAdapterInfo::~CD3DEnumAdapterInfo( void )
 {
     CD3DEnumDeviceInfo* pDeviceInfo;
-    for( int i=0; i<deviceInfoList.GetSize(); i++ )
+    for( NxI32 i=0; i<deviceInfoList.GetSize(); i++ )
     {
         pDeviceInfo = deviceInfoList.GetAt(i);
         delete pDeviceInfo;
@@ -770,7 +770,7 @@ CD3DEnumAdapterInfo::~CD3DEnumAdapterInfo( void )
 CD3DEnumDeviceInfo::~CD3DEnumDeviceInfo( void )
 {
     CD3DEnumDeviceSettingsCombo* pDeviceCombo;
-    for( int i=0; i<deviceSettingsComboList.GetSize(); i++ )
+    for( NxI32 i=0; i<deviceSettingsComboList.GetSize(); i++ )
     {
         pDeviceCombo = deviceSettingsComboList.GetAt(i);
         delete pDeviceCombo;

@@ -41,7 +41,7 @@ Where it is assumed that Sortable implements the compare operator:
 class SortElem
 	{
 	public:
-	int sortKey;
+	NxI32 sortKey;
 
 	....
 

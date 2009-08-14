@@ -2,6 +2,8 @@
 
 #define GUITUI_H
 
+#include "UserMemAlloc.h"
+
 class CDXUTDialog;
 class CDXUTDialogResourceManager;
 

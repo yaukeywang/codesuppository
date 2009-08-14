@@ -55,16 +55,16 @@
 #define DXUT_MAX_EDITBOXLENGTH 0xFFFF
 
 
-double        CDXUTDialog::s_fTimeRefresh = 0.0f;
+NxF64        CDXUTDialog::s_fTimeRefresh = 0.0f;
 CDXUTControl* CDXUTDialog::s_pControlFocus = NULL;        // The control which has focus
 CDXUTControl* CDXUTDialog::s_pControlPressed = NULL;      // The control currently pressed
 
 
 struct DXUT_SCREEN_VERTEX
 {
-    float x, y, z, h;
+    NxF32 x, y, z, h;
     D3DCOLOR color;
-    float tu, tv;
+    NxF32 tu, tv;
 
     static DWORD FVF;
 };
@@ -73,7 +73,7 @@ DWORD DXUT_SCREEN_VERTEX::FVF = D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1;
 
 struct DXUT_SCREEN_VERTEX_UNTEX
 {
-    float x, y, z, h;
+    NxF32 x, y, z, h;
     D3DCOLOR color;
 
     static DWORD FVF;
@@ -81,8 +81,8 @@ struct DXUT_SCREEN_VERTEX_UNTEX
 DWORD DXUT_SCREEN_VERTEX_UNTEX::FVF = D3DFVF_XYZRHW | D3DFVF_DIFFUSE;
 
 
-inline int RectWidth( RECT &rc ) { return ( (rc).right - (rc).left ); }
-inline int RectHeight( RECT &rc ) { return ( (rc).bottom - (rc).top ); }
+inline NxI32 RectWidth( RECT &rc ) { return ( (rc).right - (rc).left ); }
+inline NxI32 RectHeight( RECT &rc ) { return ( (rc).bottom - (rc).top ); }
 
 
 
@@ -132,7 +132,7 @@ CDXUTDialog::CDXUTDialog()
 //--------------------------------------------------------------------------------------
 CDXUTDialog::~CDXUTDialog()
 {
-    int i=0;
+    NxI32 i=0;
 
     RemoveAllControls();
 
@@ -199,9 +199,9 @@ void CDXUTDialog::SetCallback( PCALLBACKDXUTGUIEVENT pCallback, void* pUserConte
 
 
 //--------------------------------------------------------------------------------------
-void CDXUTDialog::RemoveControl( int ID )
+void CDXUTDialog::RemoveControl( NxI32 ID )
 {
-    for( int i=0; i < m_Controls.GetSize(); i++ )
+    for( NxI32 i=0; i < m_Controls.GetSize(); i++ )
     {
         CDXUTControl* pControl = m_Controls.GetAt( i );
         if( pControl->GetID() == ID )
@@ -235,7 +235,7 @@ void CDXUTDialog::RemoveAllControls()
         s_pControlPressed = NULL;
     m_pControlMouseOver = NULL;
 
-    for( int i=0; i < m_Controls.GetSize(); i++ )
+    for( NxI32 i=0; i < m_Controls.GetSize(); i++ )
     {
         CDXUTControl* pControl = m_Controls.GetAt( i );
         SAFE_DELETE( pControl );
@@ -257,7 +257,7 @@ CDXUTDialogResourceManager::CDXUTDialogResourceManager()
 //--------------------------------------------------------------------------------------
 CDXUTDialogResourceManager::~CDXUTDialogResourceManager()
 {
-    int i;
+    NxI32 i;
     for( i=0; i < m_FontCache.GetSize(); i++ )
     {
         DXUTFontNode* pFontNode = m_FontCache.GetAt( i );
@@ -281,7 +281,7 @@ CDXUTDialogResourceManager::~CDXUTDialogResourceManager()
 HRESULT CDXUTDialogResourceManager::OnCreateDevice( LPDIRECT3DDEVICE9 pd3dDevice )
 {
     HRESULT hr = S_OK;
-    int i=0;
+    NxI32 i=0;
 
     m_pd3dDevice = pd3dDevice;
     
@@ -316,7 +316,7 @@ HRESULT CDXUTDialogResourceManager::OnResetDevice()
 {
     HRESULT hr = S_OK;
 
-    for( int i=0; i < m_FontCache.GetSize(); i++ )
+    for( NxI32 i=0; i < m_FontCache.GetSize(); i++ )
     {
         DXUTFontNode* pFontNode = m_FontCache.GetAt( i );
 
@@ -351,7 +351,7 @@ bool CDXUTDialogResourceManager::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, L
 //--------------------------------------------------------------------------------------
 void CDXUTDialogResourceManager::OnLostDevice()
 {
-    for( int i=0; i < m_FontCache.GetSize(); i++ )
+    for( NxI32 i=0; i < m_FontCache.GetSize(); i++ )
     {
         DXUTFontNode* pFontNode = m_FontCache.GetAt( i );
 
@@ -369,7 +369,7 @@ void CDXUTDialogResourceManager::OnLostDevice()
 //--------------------------------------------------------------------------------------
 void CDXUTDialogResourceManager::OnDestroyDevice()
 {
-    int i=0; 
+    NxI32 i=0; 
 
     m_pd3dDevice = NULL;
 
@@ -395,7 +395,7 @@ void CDXUTDialogResourceManager::OnDestroyDevice()
 bool CDXUTDialogResourceManager::RegisterDialog( CDXUTDialog *pDialog )
 {
     // Check that the dialog isn't already registered.
-    for( int i = 0; i < m_Dialogs.GetSize(); ++i )
+    for( NxI32 i = 0; i < m_Dialogs.GetSize(); ++i )
         if( m_Dialogs.GetAt( i ) == pDialog )
             return true;
 
@@ -416,13 +416,13 @@ bool CDXUTDialogResourceManager::RegisterDialog( CDXUTDialog *pDialog )
 void CDXUTDialogResourceManager::UnregisterDialog( CDXUTDialog *pDialog )
 {
     // Search for the dialog in the list.
-    for( int i = 0; i < m_Dialogs.GetSize(); ++i )
+    for( NxI32 i = 0; i < m_Dialogs.GetSize(); ++i )
         if( m_Dialogs.GetAt( i ) == pDialog )
         {
             m_Dialogs.Remove( i );
             if( m_Dialogs.GetSize() > 0 )
             {
-                int l, r;
+                NxI32 l, r;
 
                 if( 0 == i )
                     l = m_Dialogs.GetSize() - 1;
@@ -445,7 +445,7 @@ void CDXUTDialogResourceManager::UnregisterDialog( CDXUTDialog *pDialog )
 void CDXUTDialogResourceManager::EnableKeyboardInputForAllDialogs()
 {
     // Enable keyboard input for all registered dialogs
-    for( int i = 0; i < m_Dialogs.GetSize(); ++i )
+    for( NxI32 i = 0; i < m_Dialogs.GetSize(); ++i )
         m_Dialogs[i]->EnableKeyboardInput( true );
 }
 
@@ -463,7 +463,7 @@ void CDXUTDialog::Refresh()
     s_pControlPressed = NULL;
     m_pControlMouseOver = NULL;
 
-    for( int i=0; i < m_Controls.GetSize(); i++ )
+    for( NxI32 i=0; i < m_Controls.GetSize(); i++ )
     {
         CDXUTControl* pControl = m_Controls.GetAt(i);
         pControl->Refresh();
@@ -475,7 +475,7 @@ void CDXUTDialog::Refresh()
 
 
 //--------------------------------------------------------------------------------------
-HRESULT CDXUTDialog::OnRender( float fElapsedTime )
+HRESULT CDXUTDialog::OnRender( NxF32 fElapsedTime )
 {   
     // If this assert triggers, you need to call CDXUTDialogResourceManager::On*Device() from inside
     // the application's device callbacks.  See the SDK samples for an example of how to do this.
@@ -524,10 +524,10 @@ HRESULT CDXUTDialog::OnRender( float fElapsedTime )
     {
         DXUT_SCREEN_VERTEX_UNTEX vertices[4] =
         {
-            (float)m_x,           (float)m_y,            0.5f, 1.0f, m_colorTopLeft,
-            (float)m_x + m_width, (float)m_y,            0.5f, 1.0f, m_colorTopRight,
-            (float)m_x + m_width, (float)m_y + m_height, 0.5f, 1.0f, m_colorBottomRight,
-            (float)m_x,           (float)m_y + m_height, 0.5f, 1.0f, m_colorBottomLeft,
+            (NxF32)m_x,           (NxF32)m_y,            0.5f, 1.0f, m_colorTopLeft,
+            (NxF32)m_x + m_width, (NxF32)m_y,            0.5f, 1.0f, m_colorTopRight,
+            (NxF32)m_x + m_width, (NxF32)m_y + m_height, 0.5f, 1.0f, m_colorBottomRight,
+            (NxF32)m_x,           (NxF32)m_y + m_height, 0.5f, 1.0f, m_colorBottomLeft,
         };
 
         pd3dDevice->SetVertexShader( NULL );
@@ -574,7 +574,7 @@ HRESULT CDXUTDialog::OnRender( float fElapsedTime )
     // its controls.
     if( !m_bMinimized )
     {
-        for( int i=0; i < m_Controls.GetSize(); i++ )
+        for( NxI32 i=0; i < m_Controls.GetSize(); i++ )
         {
             CDXUTControl* pControl = m_Controls.GetAt(i);   
 
@@ -614,10 +614,10 @@ VOID CDXUTDialog::SendEvent( UINT nEvent, bool bTriggeredByUser, CDXUTControl* p
 
 
 //--------------------------------------------------------------------------------------
-int CDXUTDialogResourceManager::AddFont( LPCWSTR strFaceName, LONG height, LONG weight )
+NxI32 CDXUTDialogResourceManager::AddFont( LPCWSTR strFaceName, LONG height, LONG weight )
 {
     // See if this font already exists
-    for( int i=0; i < m_FontCache.GetSize(); i++ )
+    for( NxI32 i=0; i < m_FontCache.GetSize(); i++ )
     {
         DXUTFontNode* pFontNode = m_FontCache.GetAt(i);
         size_t nLen = 0;
@@ -641,7 +641,7 @@ int CDXUTDialogResourceManager::AddFont( LPCWSTR strFaceName, LONG height, LONG 
     pNewFontNode->nWeight = weight;
     m_FontCache.Add( pNewFontNode );
     
-    int iFont = m_FontCache.GetSize()-1;
+    NxI32 iFont = m_FontCache.GetSize()-1;
 
     // If a device is available, try to create immediately
     if( m_pd3dDevice )
@@ -667,7 +667,7 @@ HRESULT CDXUTDialog::SetFont( UINT index, LPCWSTR strFaceName, LONG height, LONG
         m_Fonts.Add( -1 );
     }
 
-    int iFont = m_pManager->AddFont( strFaceName, height, weight );
+    NxI32 iFont = m_pManager->AddFont( strFaceName, height, weight );
     m_Fonts.SetAt( index, iFont );
 
     return S_OK;
@@ -684,10 +684,10 @@ DXUTFontNode* CDXUTDialog::GetFont( UINT index )
 
 
 //--------------------------------------------------------------------------------------
-int CDXUTDialogResourceManager::AddTexture( LPCWSTR strFilename )
+NxI32 CDXUTDialogResourceManager::AddTexture( LPCWSTR strFilename )
 {
     // See if this texture already exists
-    for( int i=0; i < m_TextureCache.GetSize(); i++ )
+    for( NxI32 i=0; i < m_TextureCache.GetSize(); i++ )
     {
         DXUTTextureNode* pTextureNode = m_TextureCache.GetAt(i);
         size_t nLen = 0;
@@ -708,7 +708,7 @@ int CDXUTDialogResourceManager::AddTexture( LPCWSTR strFilename )
 
     m_TextureCache.Add( pNewTextureNode );
     
-    int iTexture = m_TextureCache.GetSize()-1;
+    NxI32 iTexture = m_TextureCache.GetSize()-1;
 
     // If a device is available, try to create immediately
     if( m_pd3dDevice )
@@ -719,10 +719,10 @@ int CDXUTDialogResourceManager::AddTexture( LPCWSTR strFilename )
 
 
 //--------------------------------------------------------------------------------------
-int CDXUTDialogResourceManager::AddTexture( LPCWSTR strResourceName, HMODULE hResourceModule )
+NxI32 CDXUTDialogResourceManager::AddTexture( LPCWSTR strResourceName, HMODULE hResourceModule )
 {
     // See if this texture already exists
-    for( int i=0; i < m_TextureCache.GetSize(); i++ )
+    for( NxI32 i=0; i < m_TextureCache.GetSize(); i++ )
     {
         DXUTTextureNode* pTextureNode = m_TextureCache.GetAt(i);
         if( !pTextureNode->bFileSource &&      // Sources must match
@@ -754,7 +754,7 @@ int CDXUTDialogResourceManager::AddTexture( LPCWSTR strResourceName, HMODULE hRe
     pNewTextureNode->hResourceModule = hResourceModule;
     if( IS_INTRESOURCE( strResourceName ) )
     {
-        pNewTextureNode->nResourceID = (int)(size_t)strResourceName;
+        pNewTextureNode->nResourceID = (NxI32)(size_t)strResourceName;
     }
     else
     {
@@ -764,7 +764,7 @@ int CDXUTDialogResourceManager::AddTexture( LPCWSTR strResourceName, HMODULE hRe
 
     m_TextureCache.Add( pNewTextureNode );
     
-    int iTexture = m_TextureCache.GetSize()-1;
+    NxI32 iTexture = m_TextureCache.GetSize()-1;
 
     // If a device is available, try to create immediately
     if( m_pd3dDevice )
@@ -789,7 +789,7 @@ HRESULT CDXUTDialog::SetTexture( UINT index, LPCWSTR strFilename )
         m_Textures.Add( -1 );
     }
 
-    int iTexture = m_pManager->AddTexture( strFilename );
+    NxI32 iTexture = m_pManager->AddTexture( strFilename );
 
     m_Textures.SetAt( index, iTexture );
     return S_OK;
@@ -811,7 +811,7 @@ HRESULT CDXUTDialog::SetTexture( UINT index, LPCWSTR strResourceName, HMODULE hR
         m_Textures.Add( -1 );
     }
 
-    int iTexture = m_pManager->AddTexture( strResourceName, hResourceModule );
+    NxI32 iTexture = m_pManager->AddTexture( strResourceName, hResourceModule );
 
     m_Textures.SetAt( index, iTexture );
     return S_OK;
@@ -941,7 +941,7 @@ bool CDXUTDialog::MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
                                       ( s_pControlFocus->GetType() != DXUT_CONTROL_EDITBOX
                                      && s_pControlFocus->GetType() != DXUT_CONTROL_IMEEDITBOX ) ) )
             {
-                for( int i=0; i < m_Controls.GetSize(); i++ )
+                for( NxI32 i=0; i < m_Controls.GetSize(); i++ )
                 {
                     CDXUTControl* pControl = m_Controls.GetAt( i );
                     if( pControl->GetHotkey() == wParam )
@@ -1081,7 +1081,7 @@ CDXUTControl* CDXUTDialog::GetControlAtPoint( POINT pt )
 {
     // Search through all child controls for the first one which
     // contains the mouse point
-    for( int i=0; i < m_Controls.GetSize(); i++ )
+    for( NxI32 i=0; i < m_Controls.GetSize(); i++ )
     {
         CDXUTControl* pControl = m_Controls.GetAt(i);
 
@@ -1104,7 +1104,7 @@ CDXUTControl* CDXUTDialog::GetControlAtPoint( POINT pt )
 
 
 //--------------------------------------------------------------------------------------
-bool CDXUTDialog::GetControlEnabled( int ID )
+bool CDXUTDialog::GetControlEnabled( NxI32 ID )
 {
     CDXUTControl* pControl = GetControl( ID );
     if( pControl == NULL )
@@ -1116,7 +1116,7 @@ bool CDXUTDialog::GetControlEnabled( int ID )
 
 
 //--------------------------------------------------------------------------------------
-void CDXUTDialog::SetControlEnabled( int ID, bool bEnabled )
+void CDXUTDialog::SetControlEnabled( NxI32 ID, bool bEnabled )
 {
     CDXUTControl* pControl = GetControl( ID );
     if( pControl == NULL )
@@ -1159,7 +1159,7 @@ void CDXUTDialog::OnMouseMove( POINT pt )
 HRESULT CDXUTDialog::SetDefaultElement( UINT nControlType, UINT iElement, CDXUTElement* pElement )
 {
     // If this Element type already exist in the list, simply update the stored Element
-    for( int i=0; i < m_DefaultElements.GetSize(); i++ )
+    for( NxI32 i=0; i < m_DefaultElements.GetSize(); i++ )
     {
         DXUTElementHolder* pElementHolder = m_DefaultElements.GetAt( i );
         
@@ -1189,7 +1189,7 @@ HRESULT CDXUTDialog::SetDefaultElement( UINT nControlType, UINT iElement, CDXUTE
 //--------------------------------------------------------------------------------------
 CDXUTElement* CDXUTDialog::GetDefaultElement( UINT nControlType, UINT iElement )
 {
-    for( int i=0; i < m_DefaultElements.GetSize(); i++ )
+    for( NxI32 i=0; i < m_DefaultElements.GetSize(); i++ )
     {
         DXUTElementHolder* pElementHolder = m_DefaultElements.GetAt( i );
         
@@ -1206,7 +1206,7 @@ CDXUTElement* CDXUTDialog::GetDefaultElement( UINT nControlType, UINT iElement )
 
 
 //--------------------------------------------------------------------------------------
-HRESULT CDXUTDialog::AddStatic( int ID, LPCWSTR strText, int x, int y, int width, int height, bool bIsDefault, CDXUTStatic** ppCreated )
+HRESULT CDXUTDialog::AddStatic( NxI32 ID, LPCWSTR strText, NxI32 x, NxI32 y, NxI32 width, NxI32 height, bool bIsDefault, CDXUTStatic** ppCreated )
 {
     HRESULT hr = S_OK;
 
@@ -1234,7 +1234,7 @@ HRESULT CDXUTDialog::AddStatic( int ID, LPCWSTR strText, int x, int y, int width
 
 
 //--------------------------------------------------------------------------------------
-HRESULT CDXUTDialog::AddButton( int ID, LPCWSTR strText, int x, int y, int width, int height, UINT nHotkey, bool bIsDefault, CDXUTButton** ppCreated )
+HRESULT CDXUTDialog::AddButton( NxI32 ID, LPCWSTR strText, NxI32 x, NxI32 y, NxI32 width, NxI32 height, UINT nHotkey, bool bIsDefault, CDXUTButton** ppCreated )
 {
     HRESULT hr = S_OK;
 
@@ -1263,7 +1263,7 @@ HRESULT CDXUTDialog::AddButton( int ID, LPCWSTR strText, int x, int y, int width
 
 
 //--------------------------------------------------------------------------------------
-HRESULT CDXUTDialog::AddCheckBox( int ID, LPCWSTR strText, int x, int y, int width, int height, bool bChecked, UINT nHotkey, bool bIsDefault, CDXUTCheckBox** ppCreated )
+HRESULT CDXUTDialog::AddCheckBox( NxI32 ID, LPCWSTR strText, NxI32 x, NxI32 y, NxI32 width, NxI32 height, bool bChecked, UINT nHotkey, bool bIsDefault, CDXUTCheckBox** ppCreated )
 {
     HRESULT hr = S_OK;
 
@@ -1294,7 +1294,7 @@ HRESULT CDXUTDialog::AddCheckBox( int ID, LPCWSTR strText, int x, int y, int wid
 
 
 //--------------------------------------------------------------------------------------
-HRESULT CDXUTDialog::AddRadioButton( int ID, UINT nButtonGroup, LPCWSTR strText, int x, int y, int width, int height, bool bChecked, UINT nHotkey, bool bIsDefault, CDXUTRadioButton** ppCreated )
+HRESULT CDXUTDialog::AddRadioButton( NxI32 ID, UINT nButtonGroup, LPCWSTR strText, NxI32 x, NxI32 y, NxI32 width, NxI32 height, bool bChecked, UINT nHotkey, bool bIsDefault, CDXUTRadioButton** ppCreated )
 {
     HRESULT hr = S_OK;
 
@@ -1328,7 +1328,7 @@ HRESULT CDXUTDialog::AddRadioButton( int ID, UINT nButtonGroup, LPCWSTR strText,
 
 
 //--------------------------------------------------------------------------------------
-HRESULT CDXUTDialog::AddComboBox( int ID, int x, int y, int width, int height, UINT nHotkey, bool bIsDefault, CDXUTComboBox** ppCreated )
+HRESULT CDXUTDialog::AddComboBox( NxI32 ID, NxI32 x, NxI32 y, NxI32 width, NxI32 height, UINT nHotkey, bool bIsDefault, CDXUTComboBox** ppCreated )
 {
     HRESULT hr = S_OK;
 
@@ -1357,7 +1357,7 @@ HRESULT CDXUTDialog::AddComboBox( int ID, int x, int y, int width, int height, U
 
 
 //--------------------------------------------------------------------------------------
-HRESULT CDXUTDialog::AddSlider( int ID, int x, int y, int width, int height, int min, int max, int value, bool bIsDefault, CDXUTSlider** ppCreated )
+HRESULT CDXUTDialog::AddSlider( NxI32 ID, NxI32 x, NxI32 y, NxI32 width, NxI32 height, NxI32 min, NxI32 max, NxI32 value, bool bIsDefault, CDXUTSlider** ppCreated )
 {
     HRESULT hr = S_OK;
 
@@ -1388,7 +1388,7 @@ HRESULT CDXUTDialog::AddSlider( int ID, int x, int y, int width, int height, int
 
 
 //--------------------------------------------------------------------------------------
-HRESULT CDXUTDialog::AddEditBox( int ID, LPCWSTR strText, int x, int y, int width, int height, bool bIsDefault, CDXUTEditBox** ppCreated )
+HRESULT CDXUTDialog::AddEditBox( NxI32 ID, LPCWSTR strText, NxI32 x, NxI32 y, NxI32 width, NxI32 height, bool bIsDefault, CDXUTEditBox** ppCreated )
 {
     HRESULT hr = S_OK;
 
@@ -1419,7 +1419,7 @@ HRESULT CDXUTDialog::AddEditBox( int ID, LPCWSTR strText, int x, int y, int widt
 
 
 //--------------------------------------------------------------------------------------
-HRESULT CDXUTDialog::AddIMEEditBox( int ID, LPCWSTR strText, int x, int y, int width, int height, bool bIsDefault, CDXUTIMEEditBox** ppCreated )
+HRESULT CDXUTDialog::AddIMEEditBox( NxI32 ID, LPCWSTR strText, NxI32 x, NxI32 y, NxI32 width, NxI32 height, bool bIsDefault, CDXUTIMEEditBox** ppCreated )
 {
     HRESULT hr = S_OK;
     CDXUTIMEEditBox *pEditBox = MEMALLOC_NEW(CDXUTIMEEditBox)( this );
@@ -1449,7 +1449,7 @@ HRESULT CDXUTDialog::AddIMEEditBox( int ID, LPCWSTR strText, int x, int y, int w
 
 
 //--------------------------------------------------------------------------------------
-HRESULT CDXUTDialog::AddListBox( int ID, int x, int y, int width, int height, DWORD dwStyle, CDXUTListBox** ppCreated )
+HRESULT CDXUTDialog::AddListBox( NxI32 ID, NxI32 x, NxI32 y, NxI32 width, NxI32 height, DWORD dwStyle, CDXUTListBox** ppCreated )
 {
     HRESULT hr = S_OK;
     CDXUTListBox *pListBox = MEMALLOC_NEW(CDXUTListBox)( this );
@@ -1486,7 +1486,7 @@ HRESULT CDXUTDialog::InitControl( CDXUTControl* pControl )
     pControl->m_Index = m_Controls.GetSize();
     
     // Look for a default Element entries
-    for( int i=0; i < m_DefaultElements.GetSize(); i++ )
+    for( NxI32 i=0; i < m_DefaultElements.GetSize(); i++ )
     {
         DXUTElementHolder* pElementHolder = m_DefaultElements.GetAt( i );
         if( pElementHolder->nControlType == pControl->GetType() )
@@ -1521,10 +1521,10 @@ HRESULT CDXUTDialog::AddControl( CDXUTControl* pControl )
 
 
 //--------------------------------------------------------------------------------------
-CDXUTControl* CDXUTDialog::GetControl( int ID )
+CDXUTControl* CDXUTDialog::GetControl( NxI32 ID )
 {
     // Try to find the control with the given ID
-    for( int i=0; i < m_Controls.GetSize(); i++ )
+    for( NxI32 i=0; i < m_Controls.GetSize(); i++ )
     {
         CDXUTControl* pControl = m_Controls.GetAt( i );
 
@@ -1541,10 +1541,10 @@ CDXUTControl* CDXUTDialog::GetControl( int ID )
 
 
 //--------------------------------------------------------------------------------------
-CDXUTControl* CDXUTDialog::GetControl( int ID, UINT nControlType )
+CDXUTControl* CDXUTDialog::GetControl( NxI32 ID, UINT nControlType )
 {
     // Try to find the control with the given ID
-    for( int i=0; i < m_Controls.GetSize(); i++ )
+    for( NxI32 i=0; i < m_Controls.GetSize(); i++ )
     {
         CDXUTControl* pControl = m_Controls.GetAt( i );
 
@@ -1563,14 +1563,14 @@ CDXUTControl* CDXUTDialog::GetControl( int ID, UINT nControlType )
 //--------------------------------------------------------------------------------------
 CDXUTControl* CDXUTDialog::GetNextControl( CDXUTControl* pControl )
 {
-    int index = pControl->m_Index + 1;
+    NxI32 index = pControl->m_Index + 1;
 
     CDXUTDialog* pDialog = pControl->m_pDialog;
 
     // Cycle through dialogs in the loop to find the next control. Note
     // that if only one control exists in all looped dialogs it will
     // be the returned 'next' control.
-    while( index >= (int) pDialog->m_Controls.GetSize() )
+    while( index >= (NxI32) pDialog->m_Controls.GetSize() )
     {
         pDialog = pDialog->m_pNextDialog;
         index = 0;
@@ -1582,7 +1582,7 @@ CDXUTControl* CDXUTDialog::GetNextControl( CDXUTControl* pControl )
 //--------------------------------------------------------------------------------------
 CDXUTControl* CDXUTDialog::GetPrevControl( CDXUTControl* pControl )
 {
-    int index = pControl->m_Index - 1;
+    NxI32 index = pControl->m_Index - 1;
 
     CDXUTDialog* pDialog = pControl->m_pDialog;
     
@@ -1606,7 +1606,7 @@ CDXUTControl* CDXUTDialog::GetPrevControl( CDXUTControl* pControl )
 void CDXUTDialog::ClearRadioButtonGroup( UINT nButtonGroup )
 {
     // Find all radio buttons with the given group number
-    for( int i=0; i < m_Controls.GetSize(); i++ )
+    for( NxI32 i=0; i < m_Controls.GetSize(); i++ )
     {
         CDXUTControl* pControl = m_Controls.GetAt( i );
 
@@ -1623,7 +1623,7 @@ void CDXUTDialog::ClearRadioButtonGroup( UINT nButtonGroup )
 
 
 //--------------------------------------------------------------------------------------
-void CDXUTDialog::ClearComboBox( int ID )
+void CDXUTDialog::ClearComboBox( NxI32 ID )
 {
     CDXUTComboBox* pComboBox = GetComboBox( ID );
     if( pComboBox == NULL )
@@ -1664,10 +1664,10 @@ HRESULT CDXUTDialog::DrawRect( RECT* pRect, D3DCOLOR color )
 
     DXUT_SCREEN_VERTEX vertices[4] =
     {
-        (float) rcScreen.left -0.5f,  (float) rcScreen.top -0.5f,    0.5f, 1.0f, color, 0, 0,
-        (float) rcScreen.right -0.5f, (float) rcScreen.top -0.5f,    0.5f, 1.0f, color, 0, 0, 
-        (float) rcScreen.right -0.5f, (float) rcScreen.bottom -0.5f, 0.5f, 1.0f, color, 0, 0, 
-        (float) rcScreen.left -0.5f,  (float) rcScreen.bottom -0.5f, 0.5f, 1.0f, color, 0, 0,
+        (NxF32) rcScreen.left -0.5f,  (NxF32) rcScreen.top -0.5f,    0.5f, 1.0f, color, 0, 0,
+        (NxF32) rcScreen.right -0.5f, (NxF32) rcScreen.top -0.5f,    0.5f, 1.0f, color, 0, 0, 
+        (NxF32) rcScreen.right -0.5f, (NxF32) rcScreen.bottom -0.5f, 0.5f, 1.0f, color, 0, 0, 
+        (NxF32) rcScreen.left -0.5f,  (NxF32) rcScreen.bottom -0.5f, 0.5f, 1.0f, color, 0, 0,
     };
 
     IDirect3DDevice9* pd3dDevice = m_pManager->GetD3DDevice();
@@ -1705,8 +1705,8 @@ HRESULT CDXUTDialog::DrawPolyLine( POINT* apPoints, UINT nNumPoints, D3DCOLOR co
     POINT* pt = apPoints;
     for( UINT i=0; i < nNumPoints; i++ )
     {
-        pVertex->x = m_x + (float) pt->x;
-        pVertex->y = m_y + (float) pt->y;
+        pVertex->x = m_x + (NxF32) pt->x;
+        pVertex->y = m_y + (NxF32) pt->y;
         pVertex->z = 0.5f;
         pVertex->h = 1.0f;
         pVertex->color = color;
@@ -1763,15 +1763,15 @@ HRESULT CDXUTDialog::DrawSprite( CDXUTElement* pElement, RECT* prcDest )
     if( pTextureNode == NULL )
         return E_FAIL;
     
-    float fScaleX = (float) RectWidth( rcScreen ) / RectWidth( rcTexture );
-    float fScaleY = (float) RectHeight( rcScreen ) / RectHeight( rcTexture );
+    NxF32 fScaleX = (NxF32) RectWidth( rcScreen ) / RectWidth( rcTexture );
+    NxF32 fScaleY = (NxF32) RectHeight( rcScreen ) / RectHeight( rcTexture );
 
     D3DXMATRIXA16 matTransform;
     D3DXMatrixScaling( &matTransform, fScaleX, fScaleY, 1.0f );
 
     m_pManager->m_pSprite->SetTransform( &matTransform );
     
-    D3DXVECTOR3 vPos( (float)rcScreen.left, (float)rcScreen.top, 0.0f );
+    D3DXVECTOR3 vPos( (NxF32)rcScreen.left, (NxF32)rcScreen.top, 0.0f );
 
     vPos.x /= fScaleX;
     vPos.y /= fScaleY;
@@ -1781,7 +1781,7 @@ HRESULT CDXUTDialog::DrawSprite( CDXUTElement* pElement, RECT* prcDest )
 
 
 //--------------------------------------------------------------------------------------
-HRESULT CDXUTDialog::CalcTextRect( LPCWSTR strText, CDXUTElement* pElement, RECT* prcDest, int nCount )
+HRESULT CDXUTDialog::CalcTextRect( LPCWSTR strText, CDXUTElement* pElement, RECT* prcDest, NxI32 nCount )
 {
     HRESULT hr = S_OK;
 
@@ -1800,7 +1800,7 @@ HRESULT CDXUTDialog::CalcTextRect( LPCWSTR strText, CDXUTElement* pElement, RECT
 
 
 //--------------------------------------------------------------------------------------
-HRESULT CDXUTDialog::DrawText( LPCWSTR strText, CDXUTElement* pElement, RECT* prcDest, bool bShadow, int nCount )
+HRESULT CDXUTDialog::DrawText( LPCWSTR strText, CDXUTElement* pElement, RECT* prcDest, bool bShadow, NxI32 nCount )
 {
     HRESULT hr = S_OK;
 
@@ -1880,7 +1880,7 @@ void CDXUTDialog::ClearFocus()
 void CDXUTDialog::FocusDefaultControl()
 {
     // Check for default control in this dialog
-    for( int i=0; i < m_Controls.GetSize(); i++ )
+    for( NxI32 i=0; i < m_Controls.GetSize(); i++ )
     {
         CDXUTControl* pControl = m_Controls.GetAt( i );
         if( pControl->m_bIsDefault )
@@ -1914,7 +1914,7 @@ bool CDXUTDialog::OnCycleFocus( bool bForward )
         {
             // Search for the first control from the start of the dialog
             // array.
-            for( int d = 0; d < m_pManager->m_Dialogs.GetSize(); ++d )
+            for( NxI32 d = 0; d < m_pManager->m_Dialogs.GetSize(); ++d )
             {
                 pDialog = pLastDialog = m_pManager->m_Dialogs.GetAt(d);
                 if( pDialog && pDialog->m_Controls.GetSize() > 0 )
@@ -1935,7 +1935,7 @@ bool CDXUTDialog::OnCycleFocus( bool bForward )
         {
             // Search for the first control from the end of the dialog
             // array.
-            for( int d = m_pManager->m_Dialogs.GetSize() - 1; d >= 0; --d )
+            for( NxI32 d = m_pManager->m_Dialogs.GetSize() - 1; d >= 0; --d )
             {
                 pDialog = pLastDialog = m_pManager->m_Dialogs.GetAt(d);
                 if( pDialog && pDialog->m_Controls.GetSize() > 0 )
@@ -1970,13 +1970,13 @@ bool CDXUTDialog::OnCycleFocus( bool bForward )
         pDialog = pControl->m_pDialog;
     }
 
-    for( int i=0; i < 0xffff; i++ )
+    for( NxI32 i=0; i < 0xffff; i++ )
     {
         // If we just wrapped from last control to first or vice versa,
         // set the focused control to NULL. This state, where no control
         // has focus, allows the camera to work.
-        int nLastDialogIndex = m_pManager->m_Dialogs.IndexOf( pLastDialog );
-        int nDialogIndex = m_pManager->m_Dialogs.IndexOf( pDialog );
+        NxI32 nLastDialogIndex = m_pManager->m_Dialogs.IndexOf( pLastDialog );
+        NxI32 nDialogIndex = m_pManager->m_Dialogs.IndexOf( pDialog );
         if( ( !bForward && nLastDialogIndex < nDialogIndex ) ||
             ( bForward && nDialogIndex < nLastDialogIndex ) )
         {
@@ -2279,8 +2279,8 @@ void CDXUTDialog::InitDefaultElements()
     //-------------------------------------
     // CDXUTScrollBar - Track
     //-------------------------------------
-    int nScrollBarStartX = 196;
-    int nScrollBarStartY = 191;
+    NxI32 nScrollBarStartX = 196;
+    NxI32 nScrollBarStartY = 191;
     SetRect( &rcTexture, nScrollBarStartX + 0, nScrollBarStartY + 21, nScrollBarStartX + 22, nScrollBarStartY + 32 );
     Element.SetTexture( 0, &rcTexture );
     Element.TextureColor.States[ DXUT_STATE_DISABLED ] = D3DCOLOR_ARGB(255, 200, 200, 200);
@@ -2462,7 +2462,7 @@ CDXUTControl::CDXUTControl( CDXUTDialog *pDialog )
 
 CDXUTControl::~CDXUTControl()
 {
-    for( int i = 0; i < m_Elements.GetSize(); ++i )
+    for( NxI32 i = 0; i < m_Elements.GetSize(); ++i )
     {
         delete m_Elements[i];
     }
@@ -2517,7 +2517,7 @@ void CDXUTControl::Refresh()
     m_bMouseOver = false;
     m_bHasFocus = false;
 
-    for( int i=0; i < m_Elements.GetSize(); i++ )
+    for( NxI32 i=0; i < m_Elements.GetSize(); i++ )
     {
         CDXUTElement* pElement = m_Elements.GetAt( i );
         pElement->Refresh();
@@ -2544,7 +2544,7 @@ CDXUTStatic::CDXUTStatic( CDXUTDialog *pDialog )
 
     ZeroMemory( &m_strText, sizeof(m_strText) );  
 
-    for( int i=0; i < m_Elements.GetSize(); i++ )
+    for( NxI32 i=0; i < m_Elements.GetSize(); i++ )
     {
         CDXUTElement* pElement = m_Elements.GetAt( i );
         SAFE_DELETE( pElement );
@@ -2555,7 +2555,7 @@ CDXUTStatic::CDXUTStatic( CDXUTDialog *pDialog )
 
 
 //--------------------------------------------------------------------------------------
-void CDXUTStatic::Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
+void CDXUTStatic::Render( IDirect3DDevice9* pd3dDevice, NxF32 fElapsedTime )
 {    
     if( m_bVisible == false )
         return;
@@ -2703,10 +2703,10 @@ bool CDXUTButton::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lParam
 }
 
 //--------------------------------------------------------------------------------------
-void CDXUTButton::Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
+void CDXUTButton::Render( IDirect3DDevice9* pd3dDevice, NxF32 fElapsedTime )
 {
-    int nOffsetX = 0;
-    int nOffsetY = 0;
+    NxI32 nOffsetX = 0;
+    NxI32 nOffsetY = 0;
 
     DXUT_CONTROL_STATE iState = DXUT_STATE_NORMAL;
 
@@ -2741,7 +2741,7 @@ void CDXUTButton::Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
     //TODO: remove magic numbers
     CDXUTElement* pElement = m_Elements.GetAt( 0 );
     
-    float fBlendRate = ( iState == DXUT_STATE_PRESSED ) ? 0.0f : 0.8f;
+    NxF32 fBlendRate = ( iState == DXUT_STATE_PRESSED ) ? 0.0f : 0.8f;
 
     RECT rcWindow = m_rcBoundingBox;
     OffsetRect( &rcWindow, nOffsetX, nOffsetY );
@@ -2893,13 +2893,13 @@ void CDXUTCheckBox::UpdateRects()
     m_rcButton.right = m_rcButton.left + RectHeight( m_rcButton );
 
     m_rcText = m_rcBoundingBox;
-    m_rcText.left += (int) ( 1.25f * RectWidth( m_rcButton ) );
+    m_rcText.left += (NxI32) ( 1.25f * RectWidth( m_rcButton ) );
 }
 
 
 
 //--------------------------------------------------------------------------------------
-void CDXUTCheckBox::Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
+void CDXUTCheckBox::Render( IDirect3DDevice9* pd3dDevice, NxF32 fElapsedTime )
 {
     DXUT_CONTROL_STATE iState = DXUT_STATE_NORMAL;
 
@@ -2916,7 +2916,7 @@ void CDXUTCheckBox::Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
 
     CDXUTElement* pElement = m_Elements.GetAt( 0 );
 
-    float fBlendRate = ( iState == DXUT_STATE_PRESSED ) ? 0.0f : 0.8f;
+    NxF32 fBlendRate = ( iState == DXUT_STATE_PRESSED ) ? 0.0f : 0.8f;
 
     pElement->TextureColor.Blend( iState, fElapsedTime, fBlendRate );
     pElement->FontColor.Blend( iState, fElapsedTime, fBlendRate );
@@ -3109,15 +3109,15 @@ void CDXUTComboBox::UpdateRects()
     m_rcText.right = m_rcButton.left;
 
     m_rcDropdown = m_rcText;
-    OffsetRect( &m_rcDropdown, 0, (int) (0.90f * RectHeight( m_rcText )) );
+    OffsetRect( &m_rcDropdown, 0, (NxI32) (0.90f * RectHeight( m_rcText )) );
     m_rcDropdown.bottom += m_nDropHeight;
     m_rcDropdown.right -= m_nSBWidth;
 
     m_rcDropdownText = m_rcDropdown;
-    m_rcDropdownText.left += (int) (0.1f * RectWidth( m_rcDropdown ));
-    m_rcDropdownText.right -= (int) (0.1f * RectWidth( m_rcDropdown ));
-    m_rcDropdownText.top += (int) (0.1f * RectHeight( m_rcDropdown ));
-    m_rcDropdownText.bottom -= (int) (0.1f * RectHeight( m_rcDropdown ));
+    m_rcDropdownText.left += (NxI32) (0.1f * RectWidth( m_rcDropdown ));
+    m_rcDropdownText.right -= (NxI32) (0.1f * RectWidth( m_rcDropdown ));
+    m_rcDropdownText.top += (NxI32) (0.1f * RectHeight( m_rcDropdown ));
+    m_rcDropdownText.bottom -= (NxI32) (0.1f * RectHeight( m_rcDropdown ));
 
     // Update the scrollbar's rects
     m_ScrollBar.SetLocation( m_rcDropdown.right, m_rcDropdown.top+2 );
@@ -3210,7 +3210,7 @@ bool CDXUTComboBox::HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam )
 
                 case VK_RIGHT:
                 case VK_DOWN:
-                    if( m_iFocused+1 < (int)GetNumItems() )
+                    if( m_iFocused+1 < (NxI32)GetNumItems() )
                     {
                         m_iFocused++;
                         m_iSelected = m_iFocused;
@@ -3246,7 +3246,7 @@ bool CDXUTComboBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPar
             if( m_bOpened && PtInRect( &m_rcDropdown, pt ) )
             {
                 // Determine which item has been selected
-                for( int i=0; i < m_Items.GetSize(); i++ )
+                for( NxI32 i=0; i < m_Items.GetSize(); i++ )
                 {
                     DXUTComboBoxItem* pItem = m_Items.GetAt( i );
                     if( pItem -> bVisible &&
@@ -3291,7 +3291,7 @@ bool CDXUTComboBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPar
             if( m_bOpened && PtInRect( &m_rcDropdown, pt ) )
             {
                 // Determine which item has been selected
-                for( int i=m_ScrollBar.GetTrackPos(); i < m_Items.GetSize(); i++ )
+                for( NxI32 i=m_ScrollBar.GetTrackPos(); i < m_Items.GetSize(); i++ )
                 {
                     DXUTComboBoxItem* pItem = m_Items.GetAt( i );
                     if( pItem -> bVisible &&
@@ -3347,7 +3347,7 @@ bool CDXUTComboBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPar
 
         case WM_MOUSEWHEEL:
         {
-            int zDelta = (short) HIWORD(wParam) / WHEEL_DELTA;
+            NxI32 zDelta = (short) HIWORD(wParam) / WHEEL_DELTA;
             if( m_bOpened )
             {
                 UINT uLines;
@@ -3368,7 +3368,7 @@ bool CDXUTComboBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPar
                 }
                 else
                 {
-                    if( m_iFocused+1 < (int)GetNumItems() )
+                    if( m_iFocused+1 < (NxI32)GetNumItems() )
                     {
                         m_iFocused++;
                         m_iSelected = m_iFocused;   
@@ -3400,7 +3400,7 @@ void CDXUTComboBox::OnHotkey()
 
     m_iSelected++;
     
-    if( m_iSelected >= (int) m_Items.GetSize() )
+    if( m_iSelected >= (NxI32) m_Items.GetSize() )
         m_iSelected = 0;
 
     m_iFocused = m_iSelected;
@@ -3409,7 +3409,7 @@ void CDXUTComboBox::OnHotkey()
 
 
 //--------------------------------------------------------------------------------------
-void CDXUTComboBox::Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
+void CDXUTComboBox::Render( IDirect3DDevice9* pd3dDevice, NxF32 fElapsedTime )
 {
     DXUT_CONTROL_STATE iState = DXUT_STATE_NORMAL;
     
@@ -3450,11 +3450,11 @@ void CDXUTComboBox::Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
     DXUTFontNode* pFont = m_pDialog->GetFont( pElement->iFont );
     if( pFont )
     {
-        int curY = m_rcDropdownText.top;
-        int nRemainingHeight = RectHeight( m_rcDropdownText );
+        NxI32 curY = m_rcDropdownText.top;
+        NxI32 nRemainingHeight = RectHeight( m_rcDropdownText );
         //WCHAR strDropdown[4096] = {0};
 
-        for( int i = m_ScrollBar.GetTrackPos(); i < m_Items.GetSize(); i++ )
+        for( NxI32 i = m_ScrollBar.GetTrackPos(); i < m_Items.GetSize(); i++ )
         {
             DXUTComboBoxItem* pItem = m_Items.GetAt( i );
 
@@ -3470,14 +3470,14 @@ void CDXUTComboBox::Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
             curY += pFont->nHeight;
             
             //debug
-            //int blue = 50 * i;
+            //NxI32 blue = 50 * i;
             //m_pDialog->DrawRect( &pItem->rcActive, 0xFFFF0000 | blue );
 
             pItem->bVisible = true;
 
             if( m_bOpened )
             {
-                if( (int)i == m_iFocused )
+                if( (NxI32)i == m_iFocused )
                 {
                     RECT rc;
                     SetRect( &rc, m_rcDropdown.left, pItem->rcActive.top-2, m_rcDropdown.right, pItem->rcActive.bottom+2 );
@@ -3492,8 +3492,8 @@ void CDXUTComboBox::Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
         }
     }
 
-    int nOffsetX = 0;
-    int nOffsetY = 0;
+    NxI32 nOffsetX = 0;
+    NxI32 nOffsetY = 0;
 
     iState = DXUT_STATE_NORMAL;
     
@@ -3518,7 +3518,7 @@ void CDXUTComboBox::Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
     else if( m_bHasFocus )
         iState = DXUT_STATE_FOCUS;
 
-    float fBlendRate = ( iState == DXUT_STATE_PRESSED ) ? 0.0f : 0.8f;
+    NxF32 fBlendRate = ( iState == DXUT_STATE_PRESSED ) ? 0.0f : 0.8f;
     
     // Button
     pElement = m_Elements.GetAt( 1 );
@@ -3543,7 +3543,7 @@ void CDXUTComboBox::Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
 
     m_pDialog->DrawSprite( pElement, &m_rcText);
     
-    if( m_iSelected >= 0 && m_iSelected < (int) m_Items.GetSize() )
+    if( m_iSelected >= 0 && m_iSelected < (NxI32) m_Items.GetSize() )
     {
         DXUTComboBoxItem* pItem = m_Items.GetAt( m_iSelected );
         if( pItem != NULL )
@@ -3607,7 +3607,7 @@ void CDXUTComboBox::RemoveItem( UINT index )
 //--------------------------------------------------------------------------------------
 void CDXUTComboBox::RemoveAllItems()
 {
-    for( int i=0; i < m_Items.GetSize(); i++ )
+    for( NxI32 i=0; i < m_Items.GetSize(); i++ )
     {
         DXUTComboBoxItem* pItem = m_Items.GetAt( i );
         SAFE_DELETE( pItem );
@@ -3628,12 +3628,12 @@ bool CDXUTComboBox::ContainsItem( const WCHAR* strText, UINT iStart )
 
 
 //--------------------------------------------------------------------------------------
-int CDXUTComboBox::FindItem( const WCHAR* strText, UINT iStart )
+NxI32 CDXUTComboBox::FindItem( const WCHAR* strText, UINT iStart )
 {
     if( strText == NULL )
         return -1;
 
-    for( int i = iStart; i < m_Items.GetSize(); i++ )
+    for( NxI32 i = iStart; i < m_Items.GetSize(); i++ )
     {
         DXUTComboBoxItem* pItem = m_Items.GetAt(i);
 
@@ -3671,7 +3671,7 @@ DXUTComboBoxItem* CDXUTComboBox::GetSelectedItem()
 //--------------------------------------------------------------------------------------
 void* CDXUTComboBox::GetItemData( const WCHAR* strText )
 {
-    int index = FindItem( strText );
+    NxI32 index = FindItem( strText );
     if( index == -1 )
     {
         return NULL;
@@ -3689,7 +3689,7 @@ void* CDXUTComboBox::GetItemData( const WCHAR* strText )
 
 
 //--------------------------------------------------------------------------------------
-void* CDXUTComboBox::GetItemData( int nIndex )
+void* CDXUTComboBox::GetItemData( NxI32 nIndex )
 {
     if( nIndex < 0 || nIndex >= m_Items.GetSize() )
         return NULL;
@@ -3718,7 +3718,7 @@ HRESULT CDXUTComboBox::SetSelectedByText( const WCHAR* strText )
     if( strText == NULL )
         return E_INVALIDARG;
 
-    int index = FindItem( strText );
+    NxI32 index = FindItem( strText );
     if( index == -1 )
         return E_FAIL;
 
@@ -3733,7 +3733,7 @@ HRESULT CDXUTComboBox::SetSelectedByText( const WCHAR* strText )
 //--------------------------------------------------------------------------------------
 HRESULT CDXUTComboBox::SetSelectedByData( void* pData )
 {
-    for( int i=0; i < m_Items.GetSize(); i++ )
+    for( NxI32 i=0; i < m_Items.GetSize(); i++ )
     {
         DXUTComboBoxItem* pItem = m_Items.GetAt(i);
 
@@ -3781,14 +3781,14 @@ void CDXUTSlider::UpdateRects()
     m_rcButton.right = m_rcButton.left + RectHeight( m_rcButton );
     OffsetRect( &m_rcButton, -RectWidth( m_rcButton )/2, 0 );
 
-    m_nButtonX = (int) ( (m_nValue - m_nMin) * (float)RectWidth( m_rcBoundingBox ) / (m_nMax - m_nMin) );
+    m_nButtonX = (NxI32) ( (m_nValue - m_nMin) * (NxF32)RectWidth( m_rcBoundingBox ) / (m_nMax - m_nMin) );
     OffsetRect( &m_rcButton, m_nButtonX, 0 );
 }
 
-int CDXUTSlider::ValueFromPos( int x )
+NxI32 CDXUTSlider::ValueFromPos( NxI32 x )
 { 
-    float fValuePerPixel = (float)(m_nMax - m_nMin) / RectWidth( m_rcBoundingBox );
-    return (int) (0.5f + m_nMin + fValuePerPixel * (x - m_rcBoundingBox.left)) ; 
+    NxF32 fValuePerPixel = (NxF32)(m_nMax - m_nMin) / RectWidth( m_rcBoundingBox );
+    return (NxI32) (0.5f + m_nMin + fValuePerPixel * (x - m_rcBoundingBox.left)) ; 
 }
 
 //--------------------------------------------------------------------------------------
@@ -3919,7 +3919,7 @@ bool CDXUTSlider::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lParam
 
         case WM_MOUSEWHEEL:
         {
-            int nScrollAmount = int((short)HIWORD(wParam)) / WHEEL_DELTA;
+            NxI32 nScrollAmount = NxI32((short)HIWORD(wParam)) / WHEEL_DELTA;
             SetValueInternal( m_nValue - nScrollAmount, true );
             return true;
         }
@@ -3930,7 +3930,7 @@ bool CDXUTSlider::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lParam
 
 
 //--------------------------------------------------------------------------------------
-void CDXUTSlider::SetRange( int nMin, int nMax ) 
+void CDXUTSlider::SetRange( NxI32 nMin, NxI32 nMax ) 
 {
     m_nMin = nMin;
     m_nMax = nMax;
@@ -3940,7 +3940,7 @@ void CDXUTSlider::SetRange( int nMin, int nMax )
 
 
 //--------------------------------------------------------------------------------------
-void CDXUTSlider::SetValueInternal( int nValue, bool bFromInput )
+void CDXUTSlider::SetValueInternal( NxI32 nValue, bool bFromInput )
 {
     // Clamp to range
     nValue = __max( m_nMin, nValue );
@@ -3957,10 +3957,10 @@ void CDXUTSlider::SetValueInternal( int nValue, bool bFromInput )
 
 
 //--------------------------------------------------------------------------------------
-void CDXUTSlider::Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
+void CDXUTSlider::Render( IDirect3DDevice9* pd3dDevice, NxF32 fElapsedTime )
 {
-    int nOffsetX = 0;
-    int nOffsetY = 0;
+    NxI32 nOffsetX = 0;
+    NxI32 nOffsetY = 0;
 
     DXUT_CONTROL_STATE iState = DXUT_STATE_NORMAL;
 
@@ -3991,7 +3991,7 @@ void CDXUTSlider::Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
         iState = DXUT_STATE_FOCUS;
     }
 
-    float fBlendRate = ( iState == DXUT_STATE_PRESSED ) ? 0.0f : 0.8f;
+    NxF32 fBlendRate = ( iState == DXUT_STATE_PRESSED ) ? 0.0f : 0.8f;
 
     CDXUTElement* pElement = m_Elements.GetAt( 0 );
     
@@ -4066,8 +4066,8 @@ void CDXUTScrollBar::UpdateThumbRect()
 {
     if( m_nEnd - m_nStart > m_nPageSize )
     {
-        int nThumbHeight = __max( RectHeight( m_rcTrack ) * m_nPageSize / ( m_nEnd - m_nStart ), SCROLLBAR_MINTHUMBSIZE );
-        int nMaxPosition = m_nEnd - m_nStart - m_nPageSize;
+        NxI32 nThumbHeight = __max( RectHeight( m_rcTrack ) * m_nPageSize / ( m_nEnd - m_nStart ), SCROLLBAR_MINTHUMBSIZE );
+        NxI32 nMaxPosition = m_nEnd - m_nStart - m_nPageSize;
         m_rcThumb.top = m_rcTrack.top + ( m_nPosition - m_nStart ) * ( RectHeight( m_rcTrack ) - nThumbHeight )
                         / nMaxPosition;
         m_rcThumb.bottom = m_rcThumb.top + nThumbHeight;
@@ -4086,7 +4086,7 @@ void CDXUTScrollBar::UpdateThumbRect()
 //--------------------------------------------------------------------------------------
 // Scroll() scrolls by nDelta items.  A positive value scrolls down, while a negative
 // value scrolls up.
-void CDXUTScrollBar::Scroll( int nDelta )
+void CDXUTScrollBar::Scroll( NxI32 nDelta )
 {
     // Perform scroll
     m_nPosition += nDelta;
@@ -4100,7 +4100,7 @@ void CDXUTScrollBar::Scroll( int nDelta )
 
 
 //--------------------------------------------------------------------------------------
-void CDXUTScrollBar::ShowItem( int nIndex )
+void CDXUTScrollBar::ShowItem( NxI32 nIndex )
 {
     // Cap the index
 
@@ -4132,7 +4132,7 @@ bool CDXUTScrollBar::HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam )
 //--------------------------------------------------------------------------------------
 bool CDXUTScrollBar::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lParam )
 {
-    static int ThumbOffsetY;
+    static NxI32 ThumbOffsetY;
 
     m_LastMouse = pt;
     switch( uMsg )
@@ -4222,8 +4222,8 @@ bool CDXUTScrollBar::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPa
 
                 // Compute first item index based on thumb position
 
-                int nMaxFirstItem = m_nEnd - m_nStart - m_nPageSize;  // Largest possible index for first item
-                int nMaxThumb = RectHeight( m_rcTrack ) - RectHeight( m_rcThumb );  // Largest possible thumb position from the top
+                NxI32 nMaxFirstItem = m_nEnd - m_nStart - m_nPageSize;  // Largest possible index for first item
+                NxI32 nMaxThumb = RectHeight( m_rcTrack ) - RectHeight( m_rcThumb );  // Largest possible thumb position from the top
 
                 m_nPosition = m_nStart +
                               ( m_rcThumb.top - m_rcTrack.top +
@@ -4257,14 +4257,14 @@ bool CDXUTScrollBar::MsgProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
 
 
 //--------------------------------------------------------------------------------------
-void CDXUTScrollBar::Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
+void CDXUTScrollBar::Render( IDirect3DDevice9* pd3dDevice, NxF32 fElapsedTime )
 {
     // Check if the arrow button has been held for a while.
     // If so, update the thumb position to simulate repeated
     // scroll.
     if( m_Arrow != CLEAR )
     {
-        double dCurrTime = DXUTGetTime();
+        NxF64 dCurrTime = DXUTGetTime();
         if( PtInRect( &m_rcUpButton, m_LastMouse ) )
         {
             switch( m_Arrow )
@@ -4321,7 +4321,7 @@ void CDXUTScrollBar::Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
         iState = DXUT_STATE_FOCUS;
 
 
-    float fBlendRate = ( iState == DXUT_STATE_PRESSED ) ? 0.0f : 0.8f;
+    NxF32 fBlendRate = ( iState == DXUT_STATE_PRESSED ) ? 0.0f : 0.8f;
 
     // Background track layer
     CDXUTElement* pElement = m_Elements.GetAt( 0 );
@@ -4355,7 +4355,7 @@ void CDXUTScrollBar::Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
 
 
 //--------------------------------------------------------------------------------------
-void CDXUTScrollBar::SetTrackRange( int nStart, int nEnd )
+void CDXUTScrollBar::SetTrackRange( NxI32 nStart, NxI32 nEnd )
 {
     m_nStart = nStart; m_nEnd = nEnd;
     Cap();
@@ -4458,7 +4458,7 @@ HRESULT CDXUTListBox::AddItem( const WCHAR *wszText, void *pData )
 
 
 //--------------------------------------------------------------------------------------
-HRESULT CDXUTListBox::InsertItem( int nIndex, const WCHAR *wszText, void *pData )
+HRESULT CDXUTListBox::InsertItem( NxI32 nIndex, const WCHAR *wszText, void *pData )
 {
     DXUTListBoxItem *pNewItem = MEMALLOC_NEW(DXUTListBoxItem);
     if( !pNewItem )
@@ -4480,9 +4480,9 @@ HRESULT CDXUTListBox::InsertItem( int nIndex, const WCHAR *wszText, void *pData 
 
 
 //--------------------------------------------------------------------------------------
-void CDXUTListBox::RemoveItem( int nIndex )
+void CDXUTListBox::RemoveItem( NxI32 nIndex )
 {
-    if( nIndex < 0 || nIndex >= (int)m_Items.GetSize() )
+    if( nIndex < 0 || nIndex >= (NxI32)m_Items.GetSize() )
         return;
 
     DXUTListBoxItem *pItem = m_Items.GetAt( nIndex );
@@ -4490,7 +4490,7 @@ void CDXUTListBox::RemoveItem( int nIndex )
     delete pItem;
     m_Items.Remove( nIndex );
     m_ScrollBar.SetTrackRange( 0, m_Items.GetSize() );
-    if( m_nSelected >= (int)m_Items.GetSize() )
+    if( m_nSelected >= (NxI32)m_Items.GetSize() )
         m_nSelected = m_Items.GetSize() - 1;
 
     m_pDialog->SendEvent( EVENT_LISTBOX_SELECTION, true, this );
@@ -4512,7 +4512,7 @@ void CDXUTListBox::RemoveItemByData( void *pData )
 //--------------------------------------------------------------------------------------
 void CDXUTListBox::RemoveAllItems()
 {
-    for( int i = 0; i < m_Items.GetSize(); ++i )
+    for( NxI32 i = 0; i < m_Items.GetSize(); ++i )
     {
         DXUTListBoxItem *pItem = m_Items.GetAt( i );
         delete pItem;
@@ -4524,9 +4524,9 @@ void CDXUTListBox::RemoveAllItems()
 
 
 //--------------------------------------------------------------------------------------
-DXUTListBoxItem *CDXUTListBox::GetItem( int nIndex )
+DXUTListBoxItem *CDXUTListBox::GetItem( NxI32 nIndex )
 {
-    if( nIndex < 0 || nIndex >= (int)m_Items.GetSize() )
+    if( nIndex < 0 || nIndex >= (NxI32)m_Items.GetSize() )
         return NULL;
 
     return m_Items[nIndex];
@@ -4540,7 +4540,7 @@ DXUTListBoxItem *CDXUTListBox::GetItem( int nIndex )
 // subsequent searches, the app passes the returned index back to GetSelectedIndex as.
 // nPreviousSelected.
 // Returns -1 on error or if no item is selected.
-int CDXUTListBox::GetSelectedIndex( int nPreviousSelected )
+NxI32 CDXUTListBox::GetSelectedIndex( NxI32 nPreviousSelected )
 {
     if( nPreviousSelected < -1 )
         return -1;
@@ -4548,7 +4548,7 @@ int CDXUTListBox::GetSelectedIndex( int nPreviousSelected )
     if( m_dwStyle & MULTISELECTION )
     {
         // Multiple selection enabled. Search for the next item with the selected flag.
-        for( int i = nPreviousSelected + 1; i < (int)m_Items.GetSize(); ++i )
+        for( NxI32 i = nPreviousSelected + 1; i < (NxI32)m_Items.GetSize(); ++i )
         {
             DXUTListBoxItem *pItem = m_Items.GetAt( i );
 
@@ -4567,13 +4567,13 @@ int CDXUTListBox::GetSelectedIndex( int nPreviousSelected )
 
 
 //--------------------------------------------------------------------------------------
-void CDXUTListBox::SelectItem( int nNewIndex )
+void CDXUTListBox::SelectItem( NxI32 nNewIndex )
 {
     // If no item exists, do nothing.
     if( m_Items.GetSize() == 0 )
         return;
 
-    int nOldSelected = m_nSelected;
+    NxI32 nOldSelected = m_nSelected;
 
     // Adjust m_nSelected
     m_nSelected = nNewIndex;
@@ -4581,7 +4581,7 @@ void CDXUTListBox::SelectItem( int nNewIndex )
     // Perform capping
     if( m_nSelected < 0 )
         m_nSelected = 0;
-    if( m_nSelected >= (int)m_Items.GetSize() )
+    if( m_nSelected >= (NxI32)m_Items.GetSize() )
         m_nSelected = m_Items.GetSize() - 1;
 
     if( nOldSelected != m_nSelected )
@@ -4628,7 +4628,7 @@ bool CDXUTListBox::HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam )
                     if( m_Items.GetSize() == 0 )
                         return true;
 
-                    int nOldSelected = m_nSelected;
+                    NxI32 nOldSelected = m_nSelected;
 
                     // Adjust m_nSelected
                     switch( wParam )
@@ -4644,7 +4644,7 @@ bool CDXUTListBox::HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam )
                     // Perform capping
                     if( m_nSelected < 0 )
                         m_nSelected = 0;
-                    if( m_nSelected >= (int)m_Items.GetSize() )
+                    if( m_nSelected >= (NxI32)m_Items.GetSize() )
                         m_nSelected = m_Items.GetSize() - 1;
 
                     if( nOldSelected != m_nSelected )
@@ -4654,7 +4654,7 @@ bool CDXUTListBox::HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam )
                             // Multiple selection
 
                             // Clear all selection
-                            for( int i = 0; i < (int)m_Items.GetSize(); ++i )
+                            for( NxI32 i = 0; i < (NxI32)m_Items.GetSize(); ++i )
                             {
                                 DXUTListBoxItem *pItem = m_Items[i];
                                 pItem->bSelected = false;
@@ -4664,9 +4664,9 @@ bool CDXUTListBox::HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam )
                             {
                                 // Select all items from m_nSelStart to
                                 // m_nSelected
-                                int nEnd = __max( m_nSelStart, m_nSelected );
+                                NxI32 nEnd = __max( m_nSelStart, m_nSelected );
 
-                                for( int n = __min( m_nSelStart, m_nSelected ); n <= nEnd; ++n )
+                                for( NxI32 n = __min( m_nSelStart, m_nSelected ); n <= nEnd; ++n )
                                     m_Items[n]->bSelected = true;
                             }
                             else
@@ -4690,7 +4690,7 @@ bool CDXUTListBox::HandleKeyboard( UINT uMsg, WPARAM wParam, LPARAM lParam )
                     return true;
                 }
 
-                // Space is the hotkey for double-clicking an item.
+                // Space is the hotkey for NxF64-clicking an item.
                 //
                 case VK_SPACE:
                     m_pDialog->SendEvent( EVENT_LISTBOX_ITEM_DBLCLK, true, this );
@@ -4727,7 +4727,7 @@ bool CDXUTListBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPara
             {
                 // Compute the index of the clicked item
 
-                int nClicked;
+                NxI32 nClicked;
                 if( m_nTextHeight )
                     nClicked = m_ScrollBar.GetTrackPos() + ( pt.y - m_rcText.top ) / m_nTextHeight;
                 else
@@ -4736,13 +4736,13 @@ bool CDXUTListBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPara
                 // Only proceed if the click falls on top of an item.
 
                 if( nClicked >= m_ScrollBar.GetTrackPos() &&
-                    nClicked < (int)m_Items.GetSize() &&
+                    nClicked < (NxI32)m_Items.GetSize() &&
                     nClicked < m_ScrollBar.GetTrackPos() + m_ScrollBar.GetPageSize() )
                 {
                     SetCapture( DXUTGetHWND() );
                     m_bDrag = true;
 
-                    // If this is a double click, fire off an event and exit
+                    // If this is a NxF64 click, fire off an event and exit
                     // since the first click would have taken care of the selection
                     // updating.
                     if( uMsg == WM_LBUTTONDBLCLK )
@@ -4775,22 +4775,22 @@ bool CDXUTListBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPara
                             // from last selected item to the current item.
                             // Clear everything else.
 
-                            int nBegin = __min( m_nSelStart, m_nSelected );
-                            int nEnd = __max( m_nSelStart, m_nSelected );
+                            NxI32 nBegin = __min( m_nSelStart, m_nSelected );
+                            NxI32 nEnd = __max( m_nSelStart, m_nSelected );
 
-                            for( int i = 0; i < nBegin; ++i )
+                            for( NxI32 i = 0; i < nBegin; ++i )
                             {
                                 DXUTListBoxItem *pItem = m_Items.GetAt( i );
                                 pItem->bSelected = false;
                             }
 
-                            for( int i = nEnd + 1; i < (int)m_Items.GetSize(); ++i )
+                            for( NxI32 i = nEnd + 1; i < (NxI32)m_Items.GetSize(); ++i )
                             {
                                 DXUTListBoxItem *pItem = m_Items.GetAt( i );
                                 pItem->bSelected = false;
                             }
 
-                            for( int i = nBegin; i <= nEnd; ++i )
+                            for( NxI32 i = nBegin; i <= nEnd; ++i )
                             {
                                 DXUTListBoxItem *pItem = m_Items.GetAt( i );
                                 pItem->bSelected = true;
@@ -4805,13 +4805,13 @@ bool CDXUTListBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPara
                             //     the same state as m_nSelStart, not including m_nSelected.
                             //   Set m_nSelected to selected.
 
-                            int nBegin = __min( m_nSelStart, m_nSelected );
-                            int nEnd = __max( m_nSelStart, m_nSelected );
+                            NxI32 nBegin = __min( m_nSelStart, m_nSelected );
+                            NxI32 nEnd = __max( m_nSelStart, m_nSelected );
 
                             // The two ends do not need to be set here.
 
                             bool bLastSelected = m_Items.GetAt( m_nSelStart )->bSelected;
-                            for( int i = nBegin + 1; i < nEnd; ++i )
+                            for( NxI32 i = nBegin + 1; i < nEnd; ++i )
                             {
                                 DXUTListBoxItem *pItem = m_Items.GetAt( i );
                                 pItem->bSelected = bLastSelected;
@@ -4829,7 +4829,7 @@ bool CDXUTListBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPara
                             // item.
 
 
-                            for( int i = 0; i < (int)m_Items.GetSize(); ++i )
+                            for( NxI32 i = 0; i < (NxI32)m_Items.GetSize(); ++i )
                             {
                                 DXUTListBoxItem *pItem = m_Items.GetAt( i );
                                 pItem->bSelected = false;
@@ -4855,9 +4855,9 @@ bool CDXUTListBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPara
             {
                 // Set all items between m_nSelStart and m_nSelected to
                 // the same state as m_nSelStart
-                int nEnd = __max( m_nSelStart, m_nSelected );
+                NxI32 nEnd = __max( m_nSelStart, m_nSelected );
 
-                for( int n = __min( m_nSelStart, m_nSelected ) + 1; n < nEnd; ++n )
+                for( NxI32 n = __min( m_nSelStart, m_nSelected ) + 1; n < nEnd; ++n )
                     m_Items[n]->bSelected = m_Items[m_nSelStart]->bSelected;
                 m_Items[m_nSelected]->bSelected = m_Items[m_nSelStart]->bSelected;
 
@@ -4877,7 +4877,7 @@ bool CDXUTListBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPara
             {
                 // Compute the index of the item below cursor
 
-                int nItem;
+                NxI32 nItem;
                 if( m_nTextHeight )
                     nItem = m_ScrollBar.GetTrackPos() + ( pt.y - m_rcText.top ) / m_nTextHeight;
                 else
@@ -4885,14 +4885,14 @@ bool CDXUTListBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPara
 
                 // Only proceed if the cursor is on top of an item.
 
-                if( nItem >= (int)m_ScrollBar.GetTrackPos() &&
-                    nItem < (int)m_Items.GetSize() &&
+                if( nItem >= (NxI32)m_ScrollBar.GetTrackPos() &&
+                    nItem < (NxI32)m_Items.GetSize() &&
                     nItem < m_ScrollBar.GetTrackPos() + m_ScrollBar.GetPageSize() )
                 {
                     m_nSelected = nItem;
                     m_pDialog->SendEvent( EVENT_LISTBOX_SELECTION, true, this );
                 } else
-                if( nItem < (int)m_ScrollBar.GetTrackPos() )
+                if( nItem < (NxI32)m_ScrollBar.GetTrackPos() )
                 {
                     // User drags the mouse above window top
                     m_ScrollBar.Scroll( -1 );
@@ -4903,7 +4903,7 @@ bool CDXUTListBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPara
                 {
                     // User drags the mouse below window bottom
                     m_ScrollBar.Scroll( 1 );
-                    m_nSelected = __min( (int)m_Items.GetSize(), m_ScrollBar.GetTrackPos() + m_ScrollBar.GetPageSize() ) - 1;
+                    m_nSelected = __min( (NxI32)m_Items.GetSize(), m_ScrollBar.GetTrackPos() + m_ScrollBar.GetPageSize() ) - 1;
                     m_pDialog->SendEvent( EVENT_LISTBOX_SELECTION, true, this );
                 }
             }
@@ -4913,7 +4913,7 @@ bool CDXUTListBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPara
         {
             UINT uLines;
             SystemParametersInfo( SPI_GETWHEELSCROLLLINES, 0, &uLines, 0 );
-            int nScrollAmount = int((short)HIWORD(wParam)) / WHEEL_DELTA * uLines;
+            NxI32 nScrollAmount = NxI32((short)HIWORD(wParam)) / WHEEL_DELTA * uLines;
             m_ScrollBar.Scroll( -nScrollAmount );
             return true;
         }
@@ -4939,7 +4939,7 @@ bool CDXUTListBox::MsgProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
 
 
 //--------------------------------------------------------------------------------------
-void CDXUTListBox::Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
+void CDXUTListBox::Render( IDirect3DDevice9* pd3dDevice, NxF32 fElapsedTime )
 {
     if( m_bVisible == false )
         return;
@@ -4977,7 +4977,7 @@ void CDXUTListBox::Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
         }
 
         rc.right = m_rcText.right;
-        for( int i = m_ScrollBar.GetTrackPos(); i < (int)m_Items.GetSize(); ++i )
+        for( NxI32 i = m_ScrollBar.GetTrackPos(); i < (NxI32)m_Items.GetSize(); ++i )
         {
             if( rc.bottom > m_rcText.bottom )
                 break;
@@ -5024,12 +5024,12 @@ void CDXUTListBox::Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
 // Static member initialization
 HINSTANCE CUniBuffer::s_hDll = NULL;
 HRESULT (WINAPI *CUniBuffer::_ScriptApplyDigitSubstitution)( const SCRIPT_DIGITSUBSTITUTE*, SCRIPT_CONTROL*, SCRIPT_STATE* ) = Dummy_ScriptApplyDigitSubstitution;
-HRESULT (WINAPI *CUniBuffer::_ScriptStringAnalyse)( HDC, const void *, int, int, int, DWORD, int, SCRIPT_CONTROL*, SCRIPT_STATE*, const int*, SCRIPT_TABDEF*, const BYTE*, SCRIPT_STRING_ANALYSIS* ) = Dummy_ScriptStringAnalyse;
-HRESULT (WINAPI *CUniBuffer::_ScriptStringCPtoX)( SCRIPT_STRING_ANALYSIS, int, BOOL, int* ) = Dummy_ScriptStringCPtoX;
-HRESULT (WINAPI *CUniBuffer::_ScriptStringXtoCP)( SCRIPT_STRING_ANALYSIS, int, int*, int* ) = Dummy_ScriptStringXtoCP;
+HRESULT (WINAPI *CUniBuffer::_ScriptStringAnalyse)( HDC, const void *, NxI32, NxI32, NxI32, DWORD, NxI32, SCRIPT_CONTROL*, SCRIPT_STATE*, const NxI32*, SCRIPT_TABDEF*, const BYTE*, SCRIPT_STRING_ANALYSIS* ) = Dummy_ScriptStringAnalyse;
+HRESULT (WINAPI *CUniBuffer::_ScriptStringCPtoX)( SCRIPT_STRING_ANALYSIS, NxI32, BOOL, NxI32* ) = Dummy_ScriptStringCPtoX;
+HRESULT (WINAPI *CUniBuffer::_ScriptStringXtoCP)( SCRIPT_STRING_ANALYSIS, NxI32, NxI32*, NxI32* ) = Dummy_ScriptStringXtoCP;
 HRESULT (WINAPI *CUniBuffer::_ScriptStringFree)( SCRIPT_STRING_ANALYSIS* ) = Dummy_ScriptStringFree;
 const SCRIPT_LOGATTR* (WINAPI *CUniBuffer::_ScriptString_pLogAttr)( SCRIPT_STRING_ANALYSIS ) = Dummy_ScriptString_pLogAttr;
-const int* (WINAPI *CUniBuffer::_ScriptString_pcOutChars)( SCRIPT_STRING_ANALYSIS ) = Dummy_ScriptString_pcOutChars;
+const NxI32* (WINAPI *CUniBuffer::_ScriptString_pcOutChars)( SCRIPT_STRING_ANALYSIS ) = Dummy_ScriptString_pcOutChars;
 bool CDXUTEditBox::s_bHideCaret;   // If true, we don't render the caret.
 
 
@@ -5077,13 +5077,13 @@ CDXUTEditBox::~CDXUTEditBox()
 // PlaceCaret: Set the caret to a character position, and adjust the scrolling if
 //             necessary.
 //--------------------------------------------------------------------------------------
-void CDXUTEditBox::PlaceCaret( int nCP )
+void CDXUTEditBox::PlaceCaret( NxI32 nCP )
 {
     assert( nCP >= 0 && nCP <= m_Buffer.GetTextSize() );
     m_nCaret = nCP;
 
     // Obtain the X offset of the character.
-    int nX1st, nX, nX2;
+    NxI32 nX1st, nX, nX2;
     m_Buffer.CPtoX( m_nFirstVisible, FALSE, &nX1st );  // 1st visible char
     m_Buffer.CPtoX( nCP, FALSE, &nX );  // LEAD
     // If nCP is the NULL terminator, get the leading edge instead of trailing.
@@ -5105,16 +5105,16 @@ void CDXUTEditBox::PlaceCaret( int nCP )
     if( nX2 > nX1st + RectWidth( m_rcText ) )
     {
         // Compute the X of the new left-most pixel
-        int nXNewLeft = nX2 - RectWidth( m_rcText );
+        NxI32 nXNewLeft = nX2 - RectWidth( m_rcText );
 
         // Compute the char position of this character
-        int nCPNew1st, nNewTrail;
+        NxI32 nCPNew1st, nNewTrail;
         m_Buffer.XtoCP( nXNewLeft, &nCPNew1st, &nNewTrail );
 
         // If this coordinate is not on a character border,
         // start from the next character so that the caret
         // position does not fall outside the text rectangle.
-        int nXNew1st;
+        NxI32 nXNew1st;
         m_Buffer.CPtoX( nCPNew1st, FALSE, &nXNew1st );
         if( nXNew1st < nXNewLeft )
             ++nCPNew1st;
@@ -5161,13 +5161,13 @@ HRESULT CDXUTEditBox::GetTextCopy( LPWSTR strDest, UINT bufferCount )
 //--------------------------------------------------------------------------------------
 void CDXUTEditBox::DeleteSelectionText()
 {
-    int nFirst = __min( m_nCaret, m_nSelStart );
-    int nLast = __max( m_nCaret, m_nSelStart );
+    NxI32 nFirst = __min( m_nCaret, m_nSelStart );
+    NxI32 nLast = __max( m_nCaret, m_nSelStart );
     // Update caret and selection
     PlaceCaret( nFirst );
     m_nSelStart = m_nCaret;
     // Remove the characters
-    for( int i = nFirst; i < nLast; ++i )
+    for( NxI32 i = nFirst; i < nLast; ++i )
         m_Buffer.RemoveChar( nFirst );
 }
 
@@ -5211,8 +5211,8 @@ void CDXUTEditBox::CopyToClipboard()
             WCHAR *pwszText = (WCHAR*)GlobalLock( hBlock );
             if( pwszText )
             {
-                int nFirst = __min( m_nCaret, m_nSelStart );
-                int nLast = __max( m_nCaret, m_nSelStart );
+                NxI32 nFirst = __min( m_nCaret, m_nSelStart );
+                NxI32 nLast = __max( m_nCaret, m_nSelStart );
                 if( nLast - nFirst > 0 )
                     CopyMemory( pwszText, m_Buffer.GetBuffer() + nFirst, (nLast - nFirst) * sizeof(WCHAR) );
                 pwszText[nLast - nFirst] = L'\0';  // Terminate it
@@ -5401,7 +5401,7 @@ bool CDXUTEditBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPara
             m_bMouseDrag = true;
             SetCapture( DXUTGetHWND() );
             // Determine the character corresponding to the coordinates.
-            int nCP, nTrail, nX1st;
+            NxI32 nCP, nTrail, nX1st;
             m_Buffer.CPtoX( m_nFirstVisible, FALSE, &nX1st );  // X offset of the 1st visible char
             if( SUCCEEDED( m_Buffer.XtoCP( pt.x - m_rcText.left + nX1st, &nCP, &nTrail ) ) )
             {
@@ -5425,7 +5425,7 @@ bool CDXUTEditBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lPara
             if( m_bMouseDrag )
             {
                 // Determine the character corresponding to the coordinates.
-                int nCP, nTrail, nX1st;
+                NxI32 nCP, nTrail, nX1st;
                 m_Buffer.CPtoX( m_nFirstVisible, FALSE, &nX1st );  // X offset of the 1st visible char
                 if( SUCCEEDED( m_Buffer.XtoCP( pt.x - m_rcText.left + nX1st, &nCP, &nTrail ) ) )
                 {
@@ -5593,13 +5593,13 @@ bool CDXUTEditBox::MsgProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
 
 
 //--------------------------------------------------------------------------------------
-void CDXUTEditBox::Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
+void CDXUTEditBox::Render( IDirect3DDevice9* pd3dDevice, NxF32 fElapsedTime )
 {
     if( m_bVisible == false )
         return;
 
     HRESULT hr;
-    int nSelStartX = 0, nCaretX = 0;  // Left and right X cordinates of the selection region
+    NxI32 nSelStartX = 0, nCaretX = 0;  // Left and right X cordinates of the selection region
 
     CDXUTElement* pElement = GetElement( 0 );
     if( pElement )
@@ -5610,7 +5610,7 @@ void CDXUTEditBox::Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
     }
 
     // Render the control graphics
-    for( int e = 0; e < 9; ++e )
+    for( NxI32 e = 0; e < 9; ++e )
     {
         pElement = m_Elements.GetAt( e );
         pElement->TextureColor.Blend( DXUT_STATE_NORMAL, fElapsedTime );
@@ -5621,7 +5621,7 @@ void CDXUTEditBox::Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
     //
     // Compute the X coordinates of the first visible character.
     //
-    int nXFirst;
+    NxI32 nXFirst;
     m_Buffer.CPtoX( m_nFirstVisible, FALSE, &nXFirst );
 
     //
@@ -5639,10 +5639,10 @@ void CDXUTEditBox::Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
     RECT rcSelection;  // Make this available for rendering selected text
     if( m_nCaret != m_nSelStart )
     {
-        int nSelLeftX = nCaretX, nSelRightX = nSelStartX;
+        NxI32 nSelLeftX = nCaretX, nSelRightX = nSelStartX;
         // Swap if left is bigger than right
         if( nSelLeftX > nSelRightX )
-            { int nTemp = nSelLeftX; nSelLeftX = nSelRightX; nSelRightX = nTemp; }
+            { NxI32 nTemp = nSelLeftX; nSelLeftX = nSelRightX; nSelRightX = nTemp; }
 
         SetRect( &rcSelection, nSelLeftX, m_rcText.top, nSelRightX, m_rcText.bottom );
         OffsetRect( &rcSelection, m_rcText.left - nXFirst, 0 );
@@ -5662,8 +5662,8 @@ void CDXUTEditBox::Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
     // Render the selected text
     if( m_nCaret != m_nSelStart )
     {
-        int nFirstToRender = __max( m_nFirstVisible, __min( m_nSelStart, m_nCaret ) );
-        int nNumChatToRender = __max( m_nSelStart, m_nCaret ) - nFirstToRender;
+        NxI32 nFirstToRender = __max( m_nFirstVisible, __min( m_nSelStart, m_nCaret ) );
+        NxI32 nNumChatToRender = __max( m_nSelStart, m_nCaret ) - nFirstToRender;
         m_Elements.GetAt( 0 )->FontColor.Current = m_SelTextColor;
         m_pDialog->DrawText( m_Buffer.GetBuffer() + nFirstToRender,
                              m_Elements.GetAt( 0 ), &rcSelection, false, nNumChatToRender );
@@ -5692,7 +5692,7 @@ void CDXUTEditBox::Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
         if( !m_bInsertMode )
         {
             // Obtain the right edge X coord of the current character
-            int nRightEdgeX;
+            NxI32 nRightEdgeX;
             m_Buffer.CPtoX( m_nCaret, TRUE, &nRightEdgeX );
             rcCaret.right = m_rcText.left - nXFirst + nRightEdgeX;
         }
@@ -5705,9 +5705,9 @@ void CDXUTEditBox::Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
 #define IN_FLOAT_CHARSET( c ) \
     ( (c) == L'-' || (c) == L'.' || ( (c) >= L'0' && (c) <= L'9' ) )
 
-void CDXUTEditBox::ParseFloatArray( float *pNumbers, int nCount )
+void CDXUTEditBox::ParseFloatArray( NxF32 *pNumbers, NxI32 nCount )
 {
-    int nWritten = 0;  // Number of floats written
+    NxI32 nWritten = 0;  // Number of floats written
     const WCHAR *pToken, *pEnd;
     WCHAR wszToken[60];
 
@@ -5727,9 +5727,9 @@ void CDXUTEditBox::ParseFloatArray( float *pNumbers, int nCount )
             ++pEnd;
 
         // Copy the token to our buffer
-        int nTokenLen = __min( sizeof(wszToken) / sizeof(wszToken[0]) - 1, int(pEnd - pToken) );
+        NxI32 nTokenLen = __min( sizeof(wszToken) / sizeof(wszToken[0]) - 1, NxI32(pEnd - pToken) );
         StringCchCopy( wszToken, nTokenLen, pToken );
-        *pNumbers = (float)wcstod( wszToken, NULL );
+        *pNumbers = (NxF32)wcstod( wszToken, NULL );
         ++nWritten;
         ++pNumbers;
         pToken = pEnd;
@@ -5737,7 +5737,7 @@ void CDXUTEditBox::ParseFloatArray( float *pNumbers, int nCount )
 }
 
 
-void CDXUTEditBox::SetTextFloatArray( const float *pNumbers, int nCount )
+void CDXUTEditBox::SetTextFloatArray( const NxF32 *pNumbers, NxI32 nCount )
 {
     WCHAR wszBuffer[512] = {0};
     WCHAR wszTmp[64];
@@ -5745,7 +5745,7 @@ void CDXUTEditBox::SetTextFloatArray( const float *pNumbers, int nCount )
     if( pNumbers == NULL )
         return;
         
-    for( int i = 0; i < nCount; ++i )
+    for( NxI32 i = 0; i < nCount; ++i )
     {
         StringCchPrintf( wszTmp, 64, L"%.4f ", pNumbers[i] );
         StringCchCat( wszBuffer, 512, wszTmp );
@@ -5833,8 +5833,8 @@ HIMC      CDXUTIMEEditBox::s_hImcDef;           // Default input context
 CDXUTIMEEditBox::IMESTATE  CDXUTIMEEditBox::s_ImeState = IMEUI_STATE_OFF;
 bool      CDXUTIMEEditBox::s_bEnableImeSystem;  // Whether the IME system is active
 POINT     CDXUTIMEEditBox::s_ptCompString;      // Composition string position. Updated every frame.
-int       CDXUTIMEEditBox::s_nCompCaret;
-int       CDXUTIMEEditBox::s_nFirstTargetConv;  // Index of the first target converted char in comp string.  If none, -1.
+NxI32       CDXUTIMEEditBox::s_nCompCaret;
+NxI32       CDXUTIMEEditBox::s_nFirstTargetConv;  // Index of the first target converted char in comp string.  If none, -1.
 CUniBuffer CDXUTIMEEditBox::s_CompString = CUniBuffer( 0 );
 BYTE      CDXUTIMEEditBox::s_abCompStringAttr[MAX_COMPSTRING_SIZE];
 DWORD     CDXUTIMEEditBox::s_adwCompStringClause[MAX_COMPSTRING_SIZE];
@@ -5914,7 +5914,7 @@ void CDXUTIMEEditBox::UpdateRects()
     // Temporary adjust m_width so that CDXUTEditBox can compute
     // the correct rects for its rendering since we need to make space
     // for the indicator button
-    int nWidth = m_width;
+    NxI32 nWidth = m_width;
     m_width -= m_nIndicatorWidth + m_nBorder * 2; // Make room for the indicator button
     CDXUTEditBox::UpdateRects();
     m_width = nWidth;  // Restore
@@ -6166,17 +6166,17 @@ void CDXUTIMEEditBox::ResetCompositionString()
 
 //--------------------------------------------------------------------------------------
 // Truncate composition string by sending keystrokes to the window.
-void CDXUTIMEEditBox::TruncateCompString( bool bUseBackSpace, int iNewStrLen )
+void CDXUTIMEEditBox::TruncateCompString( bool bUseBackSpace, NxI32 iNewStrLen )
 {
     if( !s_bInsertOnType )
         return;
 
-    int cc = (int) wcslen( s_CompString.GetBuffer() );
+    NxI32 cc = (NxI32) wcslen( s_CompString.GetBuffer() );
     assert( iNewStrLen == 0 || iNewStrLen >= cc );
 
     // Send right arrow keystrokes to move the caret
     //   to the end of the composition string.
-    for (int i = 0; i < cc - s_nCompCaret; ++i )
+    for (NxI32 i = 0; i < cc - s_nCompCaret; ++i )
         SendMessage( DXUTGetHWND(), WM_KEYDOWN, VK_RIGHT, 0 );
     SendMessage( DXUTGetHWND(), WM_KEYUP, VK_RIGHT, 0 );
 
@@ -6192,7 +6192,7 @@ void CDXUTIMEEditBox::TruncateCompString( bool bUseBackSpace, int iNewStrLen )
     // New comp string will overwrite old one.
     if( iNewStrLen < cc )
     {
-        for( int i = 0; i < cc - iNewStrLen; ++i )
+        for( NxI32 i = 0; i < cc - iNewStrLen; ++i )
         {
             SendMessage( DXUTGetHWND(), WM_KEYDOWN, VK_BACK, 0 );  // Backspace character
             SendMessageW( DXUTGetHWND(), WM_CHAR, VK_BACK, 0 );
@@ -6203,7 +6203,7 @@ void CDXUTIMEEditBox::TruncateCompString( bool bUseBackSpace, int iNewStrLen )
         iNewStrLen = cc;
 
     // Move the caret to the beginning by sending left keystrokes
-    for (int i = 0; i < iNewStrLen; ++i )
+    for (NxI32 i = 0; i < iNewStrLen; ++i )
         SendMessage( DXUTGetHWND(), WM_KEYDOWN, VK_LEFT, 0 );
     SendMessage( DXUTGetHWND(), WM_KEYUP, VK_LEFT, 0 );
 }
@@ -6214,7 +6214,7 @@ void CDXUTIMEEditBox::TruncateCompString( bool bUseBackSpace, int iNewStrLen )
 // messages.
 void CDXUTIMEEditBox::SendCompString()
 {
-    for( int i = 0; i < lstrlen( s_CompString.GetBuffer() ); ++i )
+    for( NxI32 i = 0; i < lstrlen( s_CompString.GetBuffer() ); ++i )
         MsgProc( WM_CHAR, (WPARAM)s_CompString[i], 0 );
 }
 
@@ -6240,7 +6240,7 @@ void CDXUTIMEEditBox::FinalizeString( bool bSend )
     {
         // Send composition string to app.
         LONG lLength = lstrlen( s_CompString.GetBuffer() );
-        // In case of CHT IME, don't send the trailing double byte space, if it exists.
+        // In case of CHT IME, don't send the trailing NxF64 byte space, if it exists.
         if( GetLanguage() == LANG_CHT
             && s_CompString[lLength - 1] == 0x3000 )
         {
@@ -6391,7 +6391,7 @@ void CDXUTIMEEditBox::GetPrivateReadingString()
             // the code tested only with Win 98 SE (MSPY 1.5/ ver 4.1.0.21)
             case IMEID_CHS_VER41:
             {
-                int nOffset;
+                NxI32 nOffset;
                 nOffset = ( GetImeId( 1 ) >= 0x00000002 ) ? 8 : 7;
 
                 p = *(LPBYTE *)((LPBYTE)_ImmLockIMCC( lpIC->hPrivate ) + nOffset * 4);
@@ -6410,7 +6410,7 @@ void CDXUTIMEEditBox::GetPrivateReadingString()
                 osi.dwOSVersionInfoSize = sizeof(OSVERSIONINFOW);
                 GetVersionExW( &osi );
 
-                int nTcharSize = ( osi.dwPlatformId == VER_PLATFORM_WIN32_NT ) ? sizeof(WCHAR) : sizeof(char);
+                NxI32 nTcharSize = ( osi.dwPlatformId == VER_PLATFORM_WIN32_NT ) ? sizeof(WCHAR) : sizeof(char);
                 p = *(LPBYTE *)((LPBYTE)_ImmLockIMCC( lpIC->hPrivate ) + 1*4 + 1*4 + 6*4);
                 if( !p ) break;
                 dwReadingStrLen = *(DWORD *)(p + 1*4 + (16*2+2*4) + 5*4 + 16 * nTcharSize);
@@ -6515,7 +6515,7 @@ void CDXUTIMEEditBox::PumpMessage()
     {
         if( !GetMessageW( &msg, NULL, 0, 0 ) )
         {
-            PostQuitMessage( (int)msg.wParam );
+            PostQuitMessage( (NxI32)msg.wParam );
             return;
         }
         TranslateMessage( &msg );
@@ -6599,7 +6599,7 @@ bool CDXUTIMEEditBox::StaticMsgProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
 
                         // If this language is already in the list, don't add it again.
                         bool bBreak = false;
-                        for( int e = 0; e < s_Locale.GetSize(); ++e )
+                        for( NxI32 e = 0; e < s_Locale.GetSize(); ++e )
                             if( LOWORD( s_Locale.GetAt( e ).m_hKL ) ==
                                 LOWORD( phKL[i] ) )
                             {
@@ -6698,7 +6698,7 @@ bool CDXUTIMEEditBox::StaticMsgProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
             DXUTTRACE( L"WM_IME_STARTCOMPOSITION\n" );
             ResetCompositionString();
             // Since the composition string has its own caret, we don't render
-            // the edit control's own caret to avoid double carets on screen.
+            // the edit control's own caret to avoid NxF64 carets on screen.
             s_bHideCaret = true;
             return true;
 
@@ -6725,7 +6725,7 @@ bool CDXUTIMEEditBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lP
             DXUTFontNode* pFont = m_pDialog->GetFont( m_Elements.GetAt( 9 )->iFont );
 
             // Check if this click is on top of the composition string
-            int nCompStrWidth;
+            NxI32 nCompStrWidth;
             s_CompString.CPtoX( s_CompString.GetTextSize(), FALSE, &nCompStrWidth );
 
             if( s_ptCompString.x <= pt.x &&
@@ -6733,8 +6733,8 @@ bool CDXUTIMEEditBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lP
                 s_ptCompString.x + nCompStrWidth > pt.x &&
                 s_ptCompString.y + pFont->nHeight > pt.y )
             {
-                int nCharBodyHit, nCharHit;
-                int nTrail;
+                NxI32 nCharBodyHit, nCharHit;
+                NxI32 nTrail;
 
                 // Determine the character clicked on.
                 s_CompString.XtoCP( pt.x - s_ptCompString.x, &nCharBodyHit, &nTrail );
@@ -6763,16 +6763,16 @@ bool CDXUTIMEEditBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lP
 
                         if( s_nFirstTargetConv != -1 )
                         {
-                            int nClauseClicked = 0;
-                            while( (int)s_adwCompStringClause[nClauseClicked + 1] <= nCharBodyHit )
+                            NxI32 nClauseClicked = 0;
+                            while( (NxI32)s_adwCompStringClause[nClauseClicked + 1] <= nCharBodyHit )
                                 ++nClauseClicked;
 
-                            int nClauseSelected = 0;
-                            while( (int)s_adwCompStringClause[nClauseSelected + 1] <= s_nFirstTargetConv )
+                            NxI32 nClauseSelected = 0;
+                            while( (NxI32)s_adwCompStringClause[nClauseSelected + 1] <= s_nFirstTargetConv )
                                 ++nClauseSelected;
 
                             BYTE nVirtKey = nClauseClicked > nClauseSelected ? VK_RIGHT : VK_LEFT;
-                            int nSendCount = abs( nClauseClicked - nClauseSelected );
+                            NxI32 nSendCount = abs( nClauseClicked - nClauseSelected );
                             while( nSendCount-- > 0 )
                                 SendKey( nVirtKey );
 
@@ -6785,7 +6785,7 @@ bool CDXUTIMEEditBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lP
                     {
                         // For Chinese, use s_nCompCaret.
                         BYTE nVirtKey = nCharHit > s_nCompCaret ? VK_RIGHT : VK_LEFT;
-                        int nSendCount = abs( nCharHit - s_nCompCaret );
+                        NxI32 nSendCount = abs( nCharHit - s_nCompCaret );
                         while( nSendCount-- > 0 )
                             SendKey( nVirtKey );
                         break;
@@ -6803,9 +6803,9 @@ bool CDXUTIMEEditBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lP
                     // Vertical candidate window
 
                     // Compute the row the click is on
-                    int nRow = ( pt.y - s_CandList.rcCandidate.top ) / pFont->nHeight;
+                    NxI32 nRow = ( pt.y - s_CandList.rcCandidate.top ) / pFont->nHeight;
 
-                    if( nRow < (int)s_CandList.dwCount )
+                    if( nRow < (NxI32)s_CandList.dwCount )
                     {
                         // nRow is a valid entry.
                         // Now emulate keystrokes to select the candidate at this row.
@@ -6822,12 +6822,12 @@ bool CDXUTIMEEditBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lP
                                 // then send Right, then send Left.
 
                                 BYTE nVirtKey;
-                                if( nRow > (int)s_CandList.dwSelection )
+                                if( nRow > (NxI32)s_CandList.dwSelection )
                                     nVirtKey = VK_DOWN;
                                 else
                                     nVirtKey = VK_UP;
-                                int nNumToHit = abs( int( nRow - s_CandList.dwSelection ) );
-                                for( int nStrike = 0; nStrike < nNumToHit; ++nStrike )
+                                NxI32 nNumToHit = abs( NxI32( nRow - s_CandList.dwSelection ) );
+                                for( NxI32 nStrike = 0; nStrike < nNumToHit; ++nStrike )
                                     SendKey( nVirtKey );
 
                                 // Do this to close the candidate window without ending composition.
@@ -6842,14 +6842,14 @@ bool CDXUTIMEEditBox::HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lP
                     // Horizontal candidate window
 
                     // Determine which the character the click has hit.
-                    int nCharHit;
-                    int nTrail;
+                    NxI32 nCharHit;
+                    NxI32 nTrail;
                     s_CandList.HoriCand.XtoCP( pt.x - s_CandList.rcCandidate.left, &nCharHit, &nTrail );
 
                     // Determine which candidate string the character belongs to.
-                    int nCandidate = s_CandList.dwCount - 1;
+                    NxI32 nCandidate = s_CandList.dwCount - 1;
 
-                    int nEntryStart = 0;
+                    NxI32 nEntryStart = 0;
                     for( UINT i = 0; i < s_CandList.dwCount; ++i )
                     {
                         if( nCharHit >= nEntryStart )
@@ -6952,7 +6952,7 @@ bool CDXUTIMEEditBox::MsgProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
                     {
                         lRet /= sizeof(WCHAR);
                         wszCompStr[lRet] = 0;  // Force terminate
-                        TruncateCompString( false, (int)wcslen( wszCompStr ) );
+                        TruncateCompString( false, (NxI32)wcslen( wszCompStr ) );
                         s_CompString.SetText( wszCompStr );
                         SendCompString();
                         ResetCompositionString();
@@ -6975,7 +6975,7 @@ bool CDXUTIMEEditBox::MsgProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
                         //
                         // Remove the whole of the string
                         //
-                        TruncateCompString( false, (int)wcslen( wszCompStr ) );
+                        TruncateCompString( false, (NxI32)wcslen( wszCompStr ) );
 
                         s_CompString.SetText( wszCompStr );
 
@@ -6988,7 +6988,7 @@ bool CDXUTIMEEditBox::MsgProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
                                 s_CandList.dwSelection = (DWORD)-1; // don't select any candidate
 
                                 // Copy the reading string to the candidate list
-                                for( int i = 3; i >= 0; --i )
+                                for( NxI32 i = 3; i >= 0; --i )
                                 {
                                     if( i > lstrlen( s_CompString.GetBuffer() ) - 1 )
                                         s_CandList.awszCandidate[i][0] = 0;  // Doesn't exist
@@ -7038,9 +7038,9 @@ bool CDXUTIMEEditBox::MsgProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
                             // It's at the end right now, so compute the number
                             // of times left arrow should be pressed to
                             // send it to the original position.
-                            int nCount = lstrlen( s_CompString.GetBuffer() + s_nCompCaret );
+                            NxI32 nCount = lstrlen( s_CompString.GetBuffer() + s_nCompCaret );
                             // Send left keystrokes
-                            for( int i = 0; i < nCount; ++i )
+                            for( NxI32 i = 0; i < nCount; ++i )
                                 SendMessage( DXUTGetHWND(), WM_KEYDOWN, VK_LEFT, 0 );
                             SendMessage( DXUTGetHWND(), WM_KEYUP, VK_LEFT, 0 );
                         }
@@ -7117,7 +7117,7 @@ bool CDXUTIMEEditBox::MsgProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
                         s_CandList.dwSelection = lpCandList->dwSelection;
                         s_CandList.dwCount = lpCandList->dwCount;
 
-                        int nPageTopIndex = 0;
+                        NxI32 nPageTopIndex = 0;
                         s_CandList.dwPageSize = __min( lpCandList->dwPageSize, MAX_CANDLIST );
                         if( GetPrimaryLanguage() == LANG_JAPANESE )
                         {
@@ -7302,12 +7302,12 @@ bool CDXUTIMEEditBox::MsgProc( UINT uMsg, WPARAM wParam, LPARAM lParam )
 
 
 //--------------------------------------------------------------------------------------
-void CDXUTIMEEditBox::RenderCandidateReadingWindow( IDirect3DDevice9* pd3dDevice, float fElapsedTime, bool bReading )
+void CDXUTIMEEditBox::RenderCandidateReadingWindow( IDirect3DDevice9* pd3dDevice, NxF32 fElapsedTime, bool bReading )
 {
     RECT rc;
     UINT nNumEntries = bReading ? 4 : MAX_CANDLIST;
     D3DCOLOR TextColor, TextBkColor, SelTextColor, SelBkColor;
-    int nX, nXFirst, nXComp;
+    NxI32 nX, nXFirst, nXComp;
     m_Buffer.CPtoX( m_nCaret, FALSE, &nX );
     m_Buffer.CPtoX( m_nFirstVisible, FALSE, &nXFirst );
 
@@ -7337,9 +7337,9 @@ void CDXUTIMEEditBox::RenderCandidateReadingWindow( IDirect3DDevice9* pd3dDevice
         s_CompString.CPtoX( s_nCompCaret, FALSE, &nXComp );
 
     // Compute the size of the candidate window
-    int nWidthRequired = 0;
-    int nHeightRequired = 0;
-    int nSingleLineHeight = 0;
+    NxI32 nWidthRequired = 0;
+    NxI32 nHeightRequired = 0;
+    NxI32 nSingleLineHeight = 0;
 
     if( ( s_bVerticalCand && !bReading ) ||
         ( !s_bHorizontalReading && bReading ) )
@@ -7403,7 +7403,7 @@ void CDXUTIMEEditBox::RenderCandidateReadingWindow( IDirect3DDevice9* pd3dDevice
     // Right
     if( !bHasPosition )
     {
-        int nXCompTrail;
+        NxI32 nXCompTrail;
         s_CompString.CPtoX( s_nCompCaret, TRUE, &nXCompTrail );
         SetRect( &rc, s_ptCompString.x + nXCompTrail, 0,
                       s_ptCompString.x + nXCompTrail + nWidthRequired, nHeightRequired );
@@ -7468,7 +7468,7 @@ void CDXUTIMEEditBox::RenderCandidateReadingWindow( IDirect3DDevice9* pd3dDevice
         // Render the selected entry differently
         if( !bReading )
         {
-            int nXLeft, nXRight;
+            NxI32 nXLeft, nXRight;
             s_CandList.HoriCand.CPtoX( s_CandList.nFirstSelected, FALSE, &nXLeft );
             s_CandList.HoriCand.CPtoX( s_CandList.nFirstSelected + s_CandList.nHoriSelectedLen, FALSE, &nXRight );
 
@@ -7484,10 +7484,10 @@ void CDXUTIMEEditBox::RenderCandidateReadingWindow( IDirect3DDevice9* pd3dDevice
 
 
 //--------------------------------------------------------------------------------------
-void CDXUTIMEEditBox::RenderComposition( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
+void CDXUTIMEEditBox::RenderComposition( IDirect3DDevice9* pd3dDevice, NxF32 fElapsedTime )
 {
     RECT rcCaret = { 0, 0, 0, 0 };
-    int nX, nXFirst;
+    NxI32 nX, nXFirst;
     m_Buffer.CPtoX( m_nCaret, FALSE, &nX );
     m_Buffer.CPtoX( m_nFirstVisible, FALSE, &nXFirst );
     CDXUTElement *pElement = m_Elements.GetAt( 1 );
@@ -7514,14 +7514,14 @@ void CDXUTIMEEditBox::RenderComposition( IDirect3DDevice9* pd3dDevice, float fEl
     // If the string is too long, we must wrap the line.
     pElement->FontColor.Current = TextColor;
     const WCHAR *pwszComp = s_CompString.GetBuffer();
-    int nCharLeft = s_CompString.GetTextSize();
+    NxI32 nCharLeft = s_CompString.GetTextSize();
     for( ; ; )
     {
         // Find the last character that can be drawn on the same line.
-        int nLastInLine;
-        int bTrail;
+        NxI32 nLastInLine;
+        NxI32 bTrail;
         s_CompString.XtoCP( m_rcText.right - rc.left, &nLastInLine, &bTrail );
-        int nNumCharToDraw = __min( nCharLeft, nLastInLine );
+        NxI32 nNumCharToDraw = __min( nCharLeft, nLastInLine );
         m_pDialog->CalcTextRect( pwszComp, pElement, &rc, nNumCharToDraw );
 
         // Draw the background
@@ -7566,7 +7566,7 @@ void CDXUTIMEEditBox::RenderComposition( IDirect3DDevice9* pd3dDevice, float fEl
     // Inspect each character in the comp string.
     // For target-converted and target-non-converted characters,
     // we display a different background color so they appear highlighted.
-    int nCharFirst = 0;
+    NxI32 nCharFirst = 0;
     nXFirst = 0;
     s_nFirstTargetConv = -1;
     BYTE *pAttr;
@@ -7577,9 +7577,9 @@ void CDXUTIMEEditBox::RenderComposition( IDirect3DDevice9* pd3dDevice, float fEl
         D3DCOLOR bkColor;
 
         // Render a different background for this character
-        int nXLeft, nXRight;
-        s_CompString.CPtoX( int(pcComp - s_CompString.GetBuffer()), FALSE, &nXLeft );
-        s_CompString.CPtoX( int(pcComp - s_CompString.GetBuffer()), TRUE, &nXRight );
+        NxI32 nXLeft, nXRight;
+        s_CompString.CPtoX( NxI32(pcComp - s_CompString.GetBuffer()), FALSE, &nXLeft );
+        s_CompString.CPtoX( NxI32(pcComp - s_CompString.GetBuffer()), TRUE, &nXRight );
 
         // Check if this character is off the right edge and should
         // be wrapped to the next line.
@@ -7589,13 +7589,13 @@ void CDXUTIMEEditBox::RenderComposition( IDirect3DDevice9* pd3dDevice, float fEl
             OffsetRect( &rc, m_rcText.left - rc.left, rc.bottom - rc.top );
 
             // Update the line's first character information
-            nCharFirst = int(pcComp - s_CompString.GetBuffer());
+            nCharFirst = NxI32(pcComp - s_CompString.GetBuffer());
             s_CompString.CPtoX( nCharFirst, FALSE, &nXFirst );
         }
 
         // If the caret is on this character, save the coordinates
         // for drawing the caret later.
-        if( s_nCompCaret == int(pcComp - s_CompString.GetBuffer()) )
+        if( s_nCompCaret == NxI32(pcComp - s_CompString.GetBuffer()) )
         {
             rcCaret = rc;
             rcCaret.left += nXLeft - nXFirst - 1;
@@ -7625,7 +7625,7 @@ void CDXUTIMEEditBox::RenderComposition( IDirect3DDevice9* pd3dDevice, float fEl
 
         // Record the first target converted character's index
         if( -1 == s_nFirstTargetConv )
-            s_nFirstTargetConv = int(pAttr - s_abCompStringAttr);
+            s_nFirstTargetConv = NxI32(pAttr - s_abCompStringAttr);
     }
 
     // Render the composition caret
@@ -7647,7 +7647,7 @@ void CDXUTIMEEditBox::RenderComposition( IDirect3DDevice9* pd3dDevice, float fEl
 
 
 //--------------------------------------------------------------------------------------
-void CDXUTIMEEditBox::RenderIndicator( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
+void CDXUTIMEEditBox::RenderIndicator( IDirect3DDevice9* pd3dDevice, NxF32 fElapsedTime )
 {
     CDXUTElement *pElement = m_Elements.GetAt( 9 );
     pElement->TextureColor.Blend( DXUT_STATE_NORMAL, fElapsedTime );
@@ -7666,7 +7666,7 @@ void CDXUTIMEEditBox::RenderIndicator( IDirect3DDevice9* pd3dDevice, float fElap
 
 
 //--------------------------------------------------------------------------------------
-void CDXUTIMEEditBox::Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
+void CDXUTIMEEditBox::Render( IDirect3DDevice9* pd3dDevice, NxF32 fElapsedTime )
 {
     if( m_bVisible == false )
         return;
@@ -7675,7 +7675,7 @@ void CDXUTIMEEditBox::Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime )
     // do it.
     if( !m_nIndicatorWidth )
     {
-        for( int i = 0; i < 5; ++i )
+        for( NxI32 i = 0; i < 5; ++i )
         {
             RECT rc = { 0, 0, 0, 0 };
             m_pDialog->CalcTextRect( s_aszIndicator[i], m_Elements.GetAt( 9 ), &rc );
@@ -7733,8 +7733,8 @@ void CUniBuffer::Initialize()
         return;
 
     // Verify whether it is safe to concatenate these strings
-    int len1 = lstrlen(wszPath);
-    int len2 = lstrlen(UNISCRIBE_DLLNAME);
+    NxI32 len1 = lstrlen(wszPath);
+    NxI32 len2 = lstrlen(UNISCRIBE_DLLNAME);
     if (len1 + len2 > MAX_PATH)
     {
         return;
@@ -7779,14 +7779,14 @@ void CUniBuffer::Uninitialize()
 
 
 //--------------------------------------------------------------------------------------
-bool CUniBuffer::SetBufferSize( int nNewSize )
+bool CUniBuffer::SetBufferSize( NxI32 nNewSize )
 {
     // If the current size is already the maximum allowed,
     // we can't possibly allocate more.
     if( m_nBufferSize == DXUT_MAX_EDITBOXLENGTH )
         return false;
 
-    int nAllocateSize = ( nNewSize == -1 || nNewSize < m_nBufferSize * 2 ) ? ( m_nBufferSize ? m_nBufferSize * 2 : 256 ) : nNewSize * 2;
+    NxI32 nAllocateSize = ( nNewSize == -1 || nNewSize < m_nBufferSize * 2 ) ? ( m_nBufferSize ? m_nBufferSize * 2 : 256 ) : nNewSize * 2;
 
     // Cap the buffer size at the maximum allowed.
     if( nAllocateSize > DXUT_MAX_EDITBOXLENGTH )
@@ -7848,7 +7848,7 @@ HRESULT CUniBuffer::Analyse()
 
 
 //--------------------------------------------------------------------------------------
-CUniBuffer::CUniBuffer( int nInitialSize )
+CUniBuffer::CUniBuffer( NxI32 nInitialSize )
 {
     CUniBuffer::Initialize();  // ensure static vars are properly init'ed first
 
@@ -7873,7 +7873,7 @@ CUniBuffer::~CUniBuffer()
 
 
 //--------------------------------------------------------------------------------------
-WCHAR& CUniBuffer::operator[]( int n )  // No param checking
+WCHAR& CUniBuffer::operator[]( NxI32 n )  // No param checking
 {
     // This version of operator[] is called only
     // if we are asking for write access, so
@@ -7895,7 +7895,7 @@ void CUniBuffer::Clear()
 // Inserts the char at specified index.
 // If nIndex == -1, insert to the end.
 //--------------------------------------------------------------------------------------
-bool CUniBuffer::InsertChar( int nIndex, WCHAR wChar )
+bool CUniBuffer::InsertChar( NxI32 nIndex, WCHAR wChar )
 {
     assert( nIndex >= 0 );
 
@@ -7936,7 +7936,7 @@ bool CUniBuffer::InsertChar( int nIndex, WCHAR wChar )
 // Removes the char at specified index.
 // If nIndex == -1, remove the last char.
 //--------------------------------------------------------------------------------------
-bool CUniBuffer::RemoveChar( int nIndex )
+bool CUniBuffer::RemoveChar( NxI32 nIndex )
 {
     if( !lstrlenW( m_pwszBuffer ) || nIndex < 0 || nIndex >= lstrlenW( m_pwszBuffer ) )
         return false;  // Invalid index
@@ -7952,7 +7952,7 @@ bool CUniBuffer::RemoveChar( int nIndex )
 // If nCount == -1, the entire string is inserted.
 // If nIndex == -1, insert to the end.
 //--------------------------------------------------------------------------------------
-bool CUniBuffer::InsertString( int nIndex, const WCHAR *pStr, int nCount )
+bool CUniBuffer::InsertString( NxI32 nIndex, const WCHAR *pStr, NxI32 nCount )
 {
     assert( nIndex >= 0 );
 
@@ -7985,7 +7985,7 @@ bool CUniBuffer::SetText( LPCWSTR wszText )
 {
     assert( wszText != NULL );
 
-    int nRequired = int(wcslen( wszText ) + 1);
+    NxI32 nRequired = NxI32(wcslen( wszText ) + 1);
 
     // Check for maximum length allowed
     if( nRequired >= DXUT_MAX_EDITBOXLENGTH )
@@ -8007,7 +8007,7 @@ bool CUniBuffer::SetText( LPCWSTR wszText )
 
 
 //--------------------------------------------------------------------------------------
-HRESULT CUniBuffer::CPtoX( int nCP, BOOL bTrail, int *pX )
+HRESULT CUniBuffer::CPtoX( NxI32 nCP, BOOL bTrail, NxI32 *pX )
 {
     assert( pX );
     *pX = 0;  // Default
@@ -8024,7 +8024,7 @@ HRESULT CUniBuffer::CPtoX( int nCP, BOOL bTrail, int *pX )
 
 
 //--------------------------------------------------------------------------------------
-HRESULT CUniBuffer::XtoCP( int nX, int *pCP, int *pnTrail )
+HRESULT CUniBuffer::XtoCP( NxI32 nX, NxI32 *pCP, NxI32 *pnTrail )
 {
     assert( pCP && pnTrail );
     *pCP = 0; *pnTrail = FALSE;  // Default
@@ -8053,7 +8053,7 @@ HRESULT CUniBuffer::XtoCP( int nX, int *pCP, int *pnTrail )
 
 
 //--------------------------------------------------------------------------------------
-void CUniBuffer::GetPriorItemPos( int nCP, int *pPrior )
+void CUniBuffer::GetPriorItemPos( NxI32 nCP, NxI32 *pPrior )
 {
     *pPrior = nCP;  // Default is the char itself
 
@@ -8067,10 +8067,10 @@ void CUniBuffer::GetPriorItemPos( int nCP, int *pPrior )
 
     if( !_ScriptString_pcOutChars( m_Analysis ) )
         return;
-    int nInitial = *_ScriptString_pcOutChars( m_Analysis );
+    NxI32 nInitial = *_ScriptString_pcOutChars( m_Analysis );
     if( nCP - 1 < nInitial )
         nInitial = nCP - 1;
-    for( int i = nInitial; i > 0; --i )
+    for( NxI32 i = nInitial; i > 0; --i )
         if( pLogAttr[i].fWordStop ||       // Either the fWordStop flag is set
             ( !pLogAttr[i].fWhiteSpace &&  // Or the previous char is whitespace but this isn't.
                 pLogAttr[i-1].fWhiteSpace ) )
@@ -8084,7 +8084,7 @@ void CUniBuffer::GetPriorItemPos( int nCP, int *pPrior )
     
 
 //--------------------------------------------------------------------------------------
-void CUniBuffer::GetNextItemPos( int nCP, int *pPrior )
+void CUniBuffer::GetNextItemPos( NxI32 nCP, NxI32 *pPrior )
 {
     *pPrior = nCP;  // Default is the char itself
 
@@ -8100,10 +8100,10 @@ void CUniBuffer::GetNextItemPos( int nCP, int *pPrior )
 
     if( !_ScriptString_pcOutChars( m_Analysis ) )
         return;
-    int nInitial = *_ScriptString_pcOutChars( m_Analysis );
+    NxI32 nInitial = *_ScriptString_pcOutChars( m_Analysis );
     if( nCP + 1 < nInitial )
         nInitial = nCP + 1;
-    for( int i = nInitial; i < *_ScriptString_pcOutChars( m_Analysis ) - 1; ++i )
+    for( NxI32 i = nInitial; i < *_ScriptString_pcOutChars( m_Analysis ) - 1; ++i )
     {
         if( pLogAttr[i].fWordStop )      // Either the fWordStop flag is set
         {
@@ -8235,7 +8235,7 @@ void CDXUTIMEEditBox::Uninitialize()
 //--------------------------------------------------------------------------------------
 void DXUTBlendColor::Init( D3DCOLOR defaultColor, D3DCOLOR disabledColor, D3DCOLOR hiddenColor )
 {
-    for( int i=0; i < MAX_CONTROL_STATES; i++ )
+    for( NxI32 i=0; i < MAX_CONTROL_STATES; i++ )
     {
         States[ i ] = defaultColor;
     }
@@ -8247,7 +8247,7 @@ void DXUTBlendColor::Init( D3DCOLOR defaultColor, D3DCOLOR disabledColor, D3DCOL
 
 
 //--------------------------------------------------------------------------------------
-void DXUTBlendColor::Blend( UINT iState, float fElapsedTime, float fRate )
+void DXUTBlendColor::Blend( UINT iState, NxF32 fElapsedTime, NxF32 fRate )
 {
     D3DXCOLOR destColor = States[ iState ];
     D3DXColorLerp( &Current, &Current, &destColor, 1.0f - powf( fRate, 30 * fElapsedTime ) );

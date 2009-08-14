@@ -2,7 +2,7 @@
 
 #define MESH_CONSLIDATE_H
 
-#include "NxSimpleTypes.h"
+#include "UserMemAlloc.h"
 
 class MeshConsolidateOutput
 {
@@ -18,7 +18,7 @@ public:
   }
   NxU32        mVcount;
   NxU32        mTcount;
-  const float  *mVertices;
+  const NxF32  *mVertices;
   const NxU32 *mIndices;
   const NxU32 *mIds;
   const NxU32 *mSubMeshes;
@@ -29,9 +29,9 @@ class MeshConsolidate
 {
 public:
 
-  virtual bool addTriangle(const float *p1,
-                           const float *p2,
-                           const float *p3,
+  virtual bool addTriangle(const NxF32 *p1,
+                           const NxF32 *p2,
+                           const NxF32 *p3,
                            NxU32 id,
                            NxU32 subMesh) = 0;
 
@@ -40,7 +40,7 @@ public:
 
 };
 
-MeshConsolidate * createMeshConsolidate(float epsilon);
+MeshConsolidate * createMeshConsolidate(NxF32 epsilon);
 void              releaseMeshConsolidate(MeshConsolidate *cm);
 
 #endif

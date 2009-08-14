@@ -2,6 +2,8 @@
 
 #define RAND_H
 
+#include "UserMemAlloc.h"
+
 /*!  
 ** 
 ** Copyright (c) 2007 by John W. Ratcliff mailto:jratcliff@infiniplex.net
@@ -79,7 +81,7 @@
 //** You would then pull cards from the deck as follows:
 //**
 //** bool shuffled;
-//** int card = deck.Get(shuffled);
+//** NxI32 card = deck.Get(shuffled);
 //**
 //** This will return a number between 0-51 (representing a card in the deck)
 //** without ever reporting the same card twice until the deck has been

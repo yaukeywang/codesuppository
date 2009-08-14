@@ -17,14 +17,14 @@ namespace BLOB_IO
 
 static char gHexTable[16] = { '0', '1', '2', '3','4','5','6','7','8','9','A','B','C','D','E','F' };
 
-static inline char getHex(unsigned char c)
+static inline char getHex(NxU8 c)
 {
     return gHexTable[c];
 }
 
 #pragma warning(disable:4100)
 
-static inline bool getHex(char c,unsigned char &v)
+static inline bool getHex(char c,NxU8 &v)
 {
     bool ret = true;
     if ( c >= '0' && c <= '9' )
@@ -42,10 +42,10 @@ static inline bool getHex(char c,unsigned char &v)
     return ret;
 }
 
-static inline bool getHexValue(char c1,char c2,unsigned char &v)
+static inline bool getHexValue(char c1,char c2,NxU8 &v)
 {
     bool ret = false;
-    unsigned char v1,v2;
+    NxU8 v1,v2;
     if ( getHex(c1,v1) && getHex(c2,v2) )
     {
         v = v1<<4 | v2;
@@ -57,9 +57,9 @@ static inline bool getHexValue(char c1,char c2,unsigned char &v)
 class Blob
 {
 public:
-  Blob(const char *blobType,unsigned int client,unsigned int blobId,unsigned int olen,const char *data)
+  Blob(const char *blobType,NxU32 client,NxU32 blobId,NxU32 olen,const char *data)
   {
-    unsigned int slen = strlen(blobType);
+    NxU32 slen = strlen(blobType);
     mClient   = client;
     mFinished = false;
     mError    = false;
@@ -67,7 +67,7 @@ public:
     strcpy(mBlobType,blobType);
     mBlobId = blobId;
     mBlobLen  = olen;
-    mBlobData = (unsigned char *)MEMALLOC_MALLOC(olen);
+    mBlobData = (NxU8 *)MEMALLOC_MALLOC(olen);
     mBlobIndex = 0;
     addData(data);
   }
@@ -109,16 +109,16 @@ public:
     assert( mFinished );
   }
 
-  unsigned int getId(void) const { return mBlobId; };
+  NxU32 getId(void) const { return mBlobId; };
 
   bool           mFinished;
   bool           mError;
   char          *mBlobType;
-  unsigned int   mBlobId;
-  unsigned int   mBlobLen;
-  unsigned char *mBlobData;
-  unsigned int   mBlobIndex;
-  unsigned int   mClient;
+  NxU32   mBlobId;
+  NxU32   mBlobLen;
+  NxU8 *mBlobData;
+  NxU32   mBlobIndex;
+  NxU32   mClient;
 };
 
 typedef std::list< Blob * > BlobList;
@@ -147,7 +147,7 @@ public:
   }
 
   // convert a blob of binary data into multiple lines of ascii data
-  virtual bool sendBlob(unsigned int client,const char *blobType,const void *blobData,unsigned int blobLen)
+  virtual bool sendBlob(NxU32 client,const char *blobType,const void *blobData,NxU32 blobLen)
   {
 	bool ret = false;
     if ( mCallback && blobLen > 0 )
@@ -157,11 +157,11 @@ public:
         if ( blobLen <= BLOB_LINE )
         {
             char blobText[BLOB_LINE*2+1];
-            const unsigned char *scan = (const unsigned char *)blobData;
+            const NxU8 *scan = (const NxU8 *)blobData;
             char *dest = blobText;
-            for (unsigned int i=0; i<blobLen; i++)
+            for (NxU32 i=0; i<blobLen; i++)
             {
-                unsigned char c = *scan++;
+                NxU8 c = *scan++;
                 dest[0] = getHex(c>>4);
                 dest[1] = getHex(c&0xF);
                 dest+=2;
@@ -173,11 +173,11 @@ public:
         {
             mBlobId++;
             char blobText[BLOB_LINE*2+1];
-            const unsigned char *scan = (const unsigned char *)blobData;
+            const NxU8 *scan = (const NxU8 *)blobData;
             char *dest = blobText;
-            for (unsigned int i=0; i<BLOB_LINE; i++)
+            for (NxU32 i=0; i<BLOB_LINE; i++)
             {
-                unsigned char c = *scan++;
+                NxU8 c = *scan++;
                 dest[0] = getHex(c>>4);
                 dest[1] = getHex(c&0xF);
                 dest+=2;
@@ -188,9 +188,9 @@ public:
             while ( blobLen > BLOB_LINE )
             {
               char *dest = blobText;
-              for (unsigned int i=0; i<BLOB_LINE; i++)
+              for (NxU32 i=0; i<BLOB_LINE; i++)
               {
-                  unsigned char c = *scan++;
+                  NxU8 c = *scan++;
                   dest[0] = getHex(c>>4);
                   dest[1] = getHex(c&0xF);
                   dest+=2;
@@ -200,9 +200,9 @@ public:
               mCallback->sendBlobText(client,"<telnetBlobData blobId=\"%d\">%s</telnetBlobData>\r\n", mBlobId, blobText );
             }
             dest = blobText;
-            for (unsigned int i=0; i<blobLen; i++)
+            for (NxU32 i=0; i<blobLen; i++)
             {
-                unsigned char c = *scan++;
+                NxU8 c = *scan++;
                 dest[0] = getHex(c>>4);
                 dest[1] = getHex(c&0xF);
                 dest+=2;
@@ -214,7 +214,7 @@ public:
 	return ret;
   }
 
-  virtual const char * receiveBlob(unsigned int &client,const void *&data,unsigned int &dlen)
+  virtual const char * receiveBlob(NxU32 &client,const void *&data,NxU32 &dlen)
   {
     const char *ret  = 0;
 	client = 0;
@@ -246,7 +246,7 @@ public:
     return ret;
   }
 
-  virtual bool processIncomingBlobText(unsigned int client,const char *text)
+  virtual bool processIncomingBlobText(NxU32 client,const char *text)
   {
 	  bool ret = false;
 
@@ -259,7 +259,7 @@ public:
           ret = mFastXml->processXml(text,len,this);
           if ( !ret )
           {
-            int lineno;
+            NxI32 lineno;
             const char *error = mFastXml->getError(lineno);
             printf("Error: %s at line %d\r\n", error, lineno );
           }
@@ -268,10 +268,10 @@ public:
   }
 
   virtual bool processElement(const char *elementName,         // name of the element
-                              int         argc,                // number of attributes
+                              NxI32         argc,                // number of attributes
                               const char **argv,               // list of attributes.
                               const char  *elementData,        // element data, null if none
-                              int         lineno)         // line number in the source XML file
+                              NxI32         lineno)         // line number in the source XML file
   {
     bool ret = true;
 
@@ -281,11 +281,11 @@ public:
     if ( elementData )
     {
 
-      int len = 0;
-      int blobId = 0;
+      NxI32 len = 0;
+      NxI32 blobId = 0;
       const char *blobName=0;
-  	  int acount = argc/2;
-      for (int i=0; i<acount; i++)
+  	  NxI32 acount = argc/2;
+      for (NxI32 i=0; i<acount; i++)
       {
           const char * atr   = argv[i*2];
           const char * value = argv[i*2+1];
@@ -338,7 +338,7 @@ public:
     return ret;
   }
 
-  Blob * locateBlob(unsigned int id,unsigned int client) const
+  Blob * locateBlob(NxU32 id,NxU32 client) const
   {
     Blob *ret = 0;
     if ( id != 0 )
@@ -358,8 +358,8 @@ public:
   }
 
 private:
-  unsigned int    mClient;
-  unsigned int    mBlobId;
+  NxU32    mClient;
+  NxU32    mBlobId;
   BlobIOInterface *mCallback;
   FastXml         *mFastXml;
   Blob            *mLastBlob;

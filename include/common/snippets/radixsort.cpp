@@ -25,7 +25,7 @@
  *	- 12.xx.00: code lifting
  *	- 09.18.01: faster CHECK_PASS_VALIDITY thanks to Mark D. Shattuck (who provided other tips, not included here)
  *	- 10.11.01: added local ram support
- *	- 01.20.02: bugfix! In very particular cases the last pass was skipped in the float code-path, leading to incorrect sorting......
+ *	- 01.20.02: bugfix! In very particular cases the last pass was skipped in the NxF32 code-path, leading to incorrect sorting......
  *	- 01.02.02:	- "mIndices" renamed => "mRanks". That's a rank sorter after all.
  *				- ranks are not "reset" anymore, but implicit on first calls
  *	- 07.05.02:	offsets rewritten with one less indirection.
@@ -33,7 +33,7 @@
  *	- 07.15.04:	stack-based radix added
  *				- we want to use the radix sort but without making it static, and without allocating anything.
  *				- we internally allocate two arrays of ranks. Each of them has N unsigned ints to sort N values.
- *				- 1Mb/2/sizeof(unsigned int) = 131072 values max, at the same time.
+ *				- 1Mb/2/sizeof(NxU32) = 131072 values max, at the same time.
  *	- 09.22.04:	- adapted to MacOS by Chris Lamb
  *
  *	\class		RadixSort
@@ -448,7 +448,7 @@ RadixSort& RadixSort::Sort(const NxF32* input2, NxU32 nb)
 				{
 					for(NxU32 i=0;i<nb;i++)
 					{
-						NxU32 Radix = input[i]>>24;							// Radix byte, same as above. AND is useless here (unsigned int).
+						NxU32 Radix = input[i]>>24;							// Radix byte, same as above. AND is useless here (NxU32).
 						// ### cmp to be killed. Not good. Later.
 						if(Radix<128)		*mLink[Radix]++ = i;		// Number is positive, same as above
 						else				*(--mLink[Radix]) = i;		// Number is negative, flip the sorting order
@@ -459,7 +459,7 @@ RadixSort& RadixSort::Sort(const NxF32* input2, NxU32 nb)
 				{
 					for(NxU32 i=0;i<nb;i++)
 					{
-						NxU32 Radix = input[mRanks[i]]>>24;							// Radix byte, same as above. AND is useless here (unsigned int).
+						NxU32 Radix = input[mRanks[i]]>>24;							// Radix byte, same as above. AND is useless here (NxU32).
                         // ### cmp to be killed. Not good. Later.
 						if(Radix<128)		*mLink[Radix]++ = mRanks[i];		// Number is positive, same as above
 						else				*(--mLink[Radix]) = mRanks[i];		// Number is negative, flip the sorting order

@@ -2,15 +2,15 @@
 
 #define CONSOLIDATE_MESH_H
 
-#include "NxSimpleTypes.h"
+#include "UserMemAlloc.h"
 
 class ConsolidateMeshOutput
 {
 public:
   NxU32        mVcount;
   NxU32        mTcount;
-  const float  *mVerticesFloat;
-  const double *mVerticesDouble;
+  const NxF32  *mVerticesFloat;
+  const NxF64 *mVerticesDouble;
   const NxU32 *mIndices;
 };
 
@@ -18,8 +18,8 @@ class ConsolidateMesh
 {
 public:
 
-  virtual bool addTriangle(const float *p1,const float *p2,const float *p3) = 0;
-  virtual bool addTriangle(const double *p1,const double *p2,const double *p3) = 0;
+  virtual bool addTriangle(const NxF32 *p1,const NxF32 *p2,const NxF32 *p3) = 0;
+  virtual bool addTriangle(const NxF64 *p1,const NxF64 *p2,const NxF64 *p3) = 0;
 
   virtual bool consolidateMesh(ConsolidateMeshOutput &results) = 0;
 

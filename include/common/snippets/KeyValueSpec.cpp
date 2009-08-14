@@ -76,7 +76,7 @@ public:
         add(str,tmax.mMaxValue);
         break;
       case KVT_FLOAT:
-        add(str,"float,");
+        add(str,"NxF32,");
         add(str,t.mValueF);
         add(str,",");
         add(str,tmin.mMinValueF);
@@ -208,17 +208,17 @@ public:
         break;
       case KVT_FLOAT:
         if ( defaultValue )
-          t.mValueF = (float)atof( defaultValue );
+          t.mValueF = (NxF32)atof( defaultValue );
         else
           t.mValueF = 0;
 
         if ( minValue )
-          tmin.mMinValueF = (float)atof( minValue );
+          tmin.mMinValueF = (NxF32)atof( minValue );
         else
           tmin.mMinValueF = NX_MIN_F32;
 
         if ( maxValue )
-          tmax.mMaxValueF = (float)atof(maxValue);
+          tmax.mMaxValueF = (NxF32)atof(maxValue);
         else
           tmax.mMaxValueF = NX_MAX_F32;
 
@@ -231,17 +231,17 @@ public:
         break;
       case KVT_VECTOR3:
         if ( defaultValue )
-          t.mValueF = (float)atof( defaultValue );
+          t.mValueF = (NxF32)atof( defaultValue );
         else
           t.mValueF = 0;
 
         if ( minValue )
-          tmin.mMinValueF = (float)atof( minValue );
+          tmin.mMinValueF = (NxF32)atof( minValue );
         else
           tmin.mMinValueF = t.mValueF;
 
         if ( maxValue )
-          tmax.mMaxValueF = (float)atof(maxValue);
+          tmax.mMaxValueF = (NxF32)atof(maxValue);
         else
           tmax.mMaxValueF = t.mValueF;
 
@@ -638,12 +638,12 @@ public:
   union T
   {
     bool        mState;
-    int         mValue;
-    float       mValueF;
+    NxI32         mValue;
+    NxF32       mValueF;
     char *      mString;
   } t;
-  float mValueY;
-  float mValueZ;
+  NxF32 mValueY;
+  NxF32 mValueZ;
 
 };
 
@@ -735,26 +735,26 @@ public:
               kd->t.mValue = atoi(value);
               break;
             case KVT_FLOAT:
-              kd->t.mValueF = (float)atof(value);
+              kd->t.mValueF = (NxF32)atof(value);
               break;
             case KVT_STRING:
               kd->setString(value);
               break;
             case KVT_VECTOR3:
               {
-                kd->t.mValueF = (float)atof(value);
+                kd->t.mValueF = (NxF32)atof(value);
                 kd->mValueY = kd->t.mValueF;
                 kd->mValueZ = kd->t.mValueF;
                 const char *comma = nextComma(value);
                 if ( comma )
                 {
                   comma++;
-                  kd->mValueY = (float)atof(comma);
+                  kd->mValueY = (NxF32)atof(comma);
                   comma = nextComma(comma);
                   if ( comma )
                   {
                     comma++;
-                    kd->mValueZ = (float)atof(comma);
+                    kd->mValueZ = (NxF32)atof(comma);
                   }
                 }
               }
@@ -1099,9 +1099,9 @@ public:
     mKeyValueTypes.SetCaseSensitive(false);
     mKeyValueTypes.Add("bool",KVT_BOOLEAN);
     mKeyValueTypes.Add("boolean",KVT_BOOLEAN);
-    mKeyValueTypes.Add("int",KVT_INTEGER);
+    mKeyValueTypes.Add("NxI32",KVT_INTEGER);
     mKeyValueTypes.Add("integer",KVT_INTEGER);
-    mKeyValueTypes.Add("float",KVT_FLOAT);
+    mKeyValueTypes.Add("NxF32",KVT_FLOAT);
     mKeyValueTypes.Add("string",KVT_STRING);
     mKeyValueTypes.Add("str",KVT_STRING);
     mKeyValueTypes.Add("vector3",KVT_VECTOR3);

@@ -121,7 +121,7 @@ class NxSphere
 		// If our radius is the smallest, we can't possibly contain the other sphere
 		if(radius < sphere.radius)	return false;
 		// So r is always positive or null now
-		float r = radius - sphere.radius;
+		NxF32 r = radius - sphere.radius;
 		return center.distanceSquared(sphere.center) <= r*r;
 		}
 

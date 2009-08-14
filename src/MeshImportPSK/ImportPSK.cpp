@@ -5,7 +5,6 @@
 #include <math.h>
 
 #include "FloatMath.h"
-#include "NxSimpleTypes.h"
 #include "MeshImport.h"
 #include "UserMemAlloc.h"
 #include "sutil.h"
@@ -137,9 +136,9 @@ public:
   {
   }
 
-  virtual int              getExtensionCount(void) { return 1; }; // most importers support just one file name extension.
-  virtual const char *     getExtension(int index) { return ".psk"; }; // report the default file name extension for this mesh type.
-  virtual const char *     getDescription(int index)
+  virtual NxI32              getExtensionCount(void) { return 1; }; // most importers support just one file name extension.
+  virtual const char *     getExtension(NxI32 index) { return ".psk"; }; // report the default file name extension for this mesh type.
+  virtual const char *     getDescription(NxI32 index)
   {
 	  return "PSK Skeletal Meshes";
   }
@@ -200,7 +199,7 @@ public:
   }
 
   // warning, this code will not work on big endian processors.
-  virtual bool             importMesh(const char *_meshName,const void *_data,unsigned int dlen,MeshImportInterface *callback,const char *options,MeshImportApplicationResource *appResource)
+  virtual bool             importMesh(const char *_meshName,const void *_data,NxU32 dlen,MeshImportInterface *callback,const char *options,MeshImportApplicationResource *appResource)
   {
 	  bool ret = false;
 

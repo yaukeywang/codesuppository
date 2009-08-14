@@ -2,6 +2,8 @@
 
 #define TELNET_H
 
+#include "UserMemAlloc.h"
+
 /*!
 **
 ** Copyright (c) 2009 by John W. Ratcliff mailto:jratcliffscarab@gmail.com
@@ -80,18 +82,18 @@ class Telnet
 public:
   virtual bool          isServer(void) = 0; // returns true if we are a server or a client.  First one created on a machine is a server, additional copies are clients.
   virtual bool          haveConnection(void) = 0; // returns true if we (as a client) successfully connected to the server.
-  virtual bool          sendMessage(unsigned int client,const char *fmt,...) = 0; // send a message to the server, all clients (client=0) or just a specific client.
-  virtual const char *  receiveMessage(unsigned int &client) = 0; // receive an incoming message (client=0) means it came from the server, otherwise it designates a specific client.
-  virtual const char ** getArgs(const char *input,unsigned int &argc) = 0; // parse string into a series of arguments.
+  virtual bool          sendMessage(NxU32 client,const char *fmt,...) = 0; // send a message to the server, all clients (client=0) or just a specific client.
+  virtual const char *  receiveMessage(NxU32 &client) = 0; // receive an incoming message (client=0) means it came from the server, otherwise it designates a specific client.
+  virtual const char ** getArgs(const char *input,NxU32 &argc) = 0; // parse string into a series of arguments.
 
-  virtual bool          sendBlob(unsigned int client,const char *blobType,const void *data,unsigned int dlen) = 0;
-  virtual const char *  receiveBlob(unsigned int &client,const void *&data,unsigned int &dlen) = 0;
+  virtual bool          sendBlob(NxU32 client,const char *blobType,const void *data,NxU32 dlen) = 0;
+  virtual const char *  receiveBlob(NxU32 &client,const void *&data,NxU32 &dlen) = 0;
 
 protected:
   virtual ~Telnet(void) { };
 };
 
-Telnet * createTelnet(const char *address="LOCALHOST",unsigned int port=23);
+Telnet * createTelnet(const char *address="LOCALHOST",NxU32 port=23);
 void     releaseTelnet(Telnet *t);
 
 };

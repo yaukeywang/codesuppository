@@ -857,7 +857,7 @@ using namespace KEYVALUEINI;
 class KeyValue
 {
 public:
-  KeyValue(const char *key,const char *value,unsigned int lineno)
+  KeyValue(const char *key,const char *value,NxU32 lineno)
   {
     mKey = key;
     mValue = value;
@@ -866,7 +866,7 @@ public:
 
   const char * getKey(void) const { return mKey; };
   const char * getValue(void) const { return mValue; };
-  unsigned int getLineNo(void) const { return mLineNo; };
+  NxU32 getLineNo(void) const { return mLineNo; };
 
   void save(FILE_INTERFACE *fph) const
   {
@@ -879,7 +879,7 @@ public:
   }
 
 private:
-  unsigned int mLineNo;
+  NxU32 mLineNo;
   const char *mKey;
   const char *mValue;
 };
@@ -889,21 +889,21 @@ typedef USER_STL::vector< KeyValue > KeyValueVector;
 class KeyValueSection
 {
 public:
-  KeyValueSection(const char *section,unsigned int lineno)
+  KeyValueSection(const char *section,NxU32 lineno)
   {
     mSection = section;
     mLineNo  = lineno;
   }
 
-  unsigned int getKeyCount(void) const { return mKeys.size(); };
+  NxU32 getKeyCount(void) const { return mKeys.size(); };
   const char * getSection(void) const { return mSection; };
-  unsigned int getLineNo(void) const { return mLineNo; };
+  NxU32 getLineNo(void) const { return mLineNo; };
 
-  const char * locateValue(const char *key,unsigned int lineno) const
+  const char * locateValue(const char *key,NxU32 lineno) const
   {
     const char *ret = 0;
 
-    for (unsigned int i=0; i<mKeys.size(); i++)
+    for (NxU32 i=0; i<mKeys.size(); i++)
     {
       const KeyValue &v = mKeys[i];
       if ( stricmp(key,v.getKey()) == 0 )
@@ -916,7 +916,7 @@ public:
     return ret;
   }
 
-  const char *getKey(unsigned int index,unsigned int &lineno) const
+  const char *getKey(NxU32 index,NxU32 &lineno) const
   {
     const char * ret  = 0;
     if ( index >= 0 && index < mKeys.size() )
@@ -928,7 +928,7 @@ public:
     return ret;
   }
 
-  const char *getValue(unsigned int index,unsigned int &lineno) const
+  const char *getValue(NxU32 index,NxU32 &lineno) const
   {
     const char * ret  = 0;
     if ( index >= 0 && index < mKeys.size() )
@@ -940,7 +940,7 @@ public:
     return ret;
   }
 
-  void addKeyValue(const char *key,const char *value,unsigned int lineno)
+  void addKeyValue(const char *key,const char *value,NxU32 lineno)
   {
     KeyValue kv(key,value,lineno);
     mKeys.push_back(kv);
@@ -957,7 +957,7 @@ public:
       fi_fprintf(fph,"\r\n");
       fi_fprintf(fph,"[%s]\r\n", mSection );
     }
-    for (unsigned int i=0; i<mKeys.size(); i++)
+    for (NxU32 i=0; i<mKeys.size(); i++)
     {
       mKeys[i].save(fph);
     }
@@ -968,7 +968,7 @@ public:
   {
     bool ret = false;
 
-    for (unsigned int i=0; i<mKeys.size(); i++)
+    for (NxU32 i=0; i<mKeys.size(); i++)
     {
       KeyValue &kv = mKeys[i];
       if ( strcmp(kv.getKey(),key) == 0 )
@@ -995,7 +995,7 @@ public:
   }
 
 private:
-  unsigned int mLineNo;
+  NxU32 mLineNo;
   const char *mSection;
   KeyValueVector mKeys;
 };
@@ -1018,7 +1018,7 @@ public:
     mData.Parse(this);
   }
 
-  KeyValueIni(const char *mem,unsigned int len)
+  KeyValueIni(const char *mem,NxU32 len)
   {
     if ( len )
     {
@@ -1059,7 +1059,7 @@ public:
     mCurrentSection = 0;
   }
 
-  unsigned int getSectionCount(void) const { return mSections.size(); };
+  NxU32 getSectionCount(void) const { return mSections.size(); };
 
 	NxI32 ParseLine(NxI32 lineno,NxI32 argc,const char **argv)  // return TRUE to continue parsing, return FALSE to abort parsing process
   {
@@ -1081,7 +1081,7 @@ public:
           scan++;
         }
         mCurrentSection = -1;
-        for (unsigned int i=0; i<mSections.size(); i++)
+        for (NxU32 i=0; i<mSections.size(); i++)
         {
           KeyValueSection &kvs = *mSections[i];
           if ( stricmp(kvs.getSection(),key) == 0 )
@@ -1111,10 +1111,10 @@ public:
     return 0;
   }
 
-  KeyValueSection * locateSection(const char *section,unsigned int &keys,unsigned int &lineno) const
+  KeyValueSection * locateSection(const char *section,NxU32 &keys,NxU32 &lineno) const
   {
     KeyValueSection *ret = 0;
-    for (unsigned int i=0; i<mSections.size(); i++)
+    for (NxU32 i=0; i<mSections.size(); i++)
     {
       KeyValueSection *s = mSections[i];
       if ( stricmp(section,s->getSection()) == 0 )
@@ -1128,7 +1128,7 @@ public:
     return ret;
   }
 
-  const KeyValueSection * getSection(unsigned int index,unsigned int &keys,unsigned int &lineno) const
+  const KeyValueSection * getSection(NxU32 index,NxU32 &keys,NxU32 &lineno) const
   {
     const KeyValueSection *ret=0;
     if ( index >= 0 && index < mSections.size() )
@@ -1147,7 +1147,7 @@ public:
     FILE_INTERFACE *fph = fi_fopen(fname,"wb");
     if ( fph )
     {
-      for (unsigned int i=0; i<mSections.size(); i++)
+      for (NxU32 i=0; i<mSections.size(); i++)
       {
         mSections[i]->save(fph);
       }
@@ -1157,13 +1157,13 @@ public:
     return ret;
   }
 
-  void * saveMem(unsigned int &len) const
+  void * saveMem(NxU32 &len) const
   {
     void *ret = 0;
     FILE_INTERFACE *fph = fi_fopen("mem","wmem");
     if ( fph )
     {
-      for (unsigned int i=0; i<mSections.size(); i++)
+      for (NxU32 i=0; i<mSections.size(); i++)
       {
         mSections[i]->save(fph);
       }
@@ -1185,7 +1185,7 @@ public:
   {
     KeyValueSection *ret = 0;
 
-    for (unsigned int i=0; i<mSections.size(); i++)
+    for (NxU32 i=0; i<mSections.size(); i++)
     {
       KeyValueSection *kvs = mSections[i];
       if ( strcmp(kvs->getSection(),section_name) == 0 )
@@ -1215,7 +1215,7 @@ private:
 
 
 
-KeyValueIni *loadKeyValueIni(const char *fname,unsigned int &sections)
+KeyValueIni *loadKeyValueIni(const char *fname,NxU32 &sections)
 {
   KeyValueIni *ret = 0;
 
@@ -1230,7 +1230,7 @@ KeyValueIni *loadKeyValueIni(const char *fname,unsigned int &sections)
   return ret;
 }
 
-KeyValueIni *     loadKeyValueIni(const char *mem,unsigned int len,unsigned int &sections)
+KeyValueIni *     loadKeyValueIni(const char *mem,NxU32 len,NxU32 &sections)
 {
   KeyValueIni *ret = 0;
 
@@ -1245,7 +1245,7 @@ KeyValueIni *     loadKeyValueIni(const char *mem,unsigned int len,unsigned int 
   return ret;
 }
 
-const KeyValueSection * locateSection(const KeyValueIni *ini,const char *section,unsigned int &keys,unsigned int &lineno)
+const KeyValueSection * locateSection(const KeyValueIni *ini,const char *section,NxU32 &keys,NxU32 &lineno)
 {
   KeyValueSection *ret = 0;
 
@@ -1257,7 +1257,7 @@ const KeyValueSection * locateSection(const KeyValueIni *ini,const char *section
   return ret;
 }
 
-const KeyValueSection * getSection(const KeyValueIni *ini,unsigned int index,unsigned int &keycount,unsigned int &lineno)
+const KeyValueSection * getSection(const KeyValueIni *ini,NxU32 index,NxU32 &keycount,NxU32 &lineno)
 {
   const KeyValueSection *ret = 0;
 
@@ -1269,7 +1269,7 @@ const KeyValueSection * getSection(const KeyValueIni *ini,unsigned int index,uns
   return ret;
 }
 
-const char *      locateValue(const KeyValueSection *section,const char *key,unsigned int &lineno)
+const char *      locateValue(const KeyValueSection *section,const char *key,NxU32 &lineno)
 {
   const char *ret = 0;
 
@@ -1281,7 +1281,7 @@ const char *      locateValue(const KeyValueSection *section,const char *key,uns
   return ret;
 }
 
-const char *      getKey(const KeyValueSection *section,unsigned int keyindex,unsigned int &lineno)
+const char *      getKey(const KeyValueSection *section,NxU32 keyindex,NxU32 &lineno)
 {
   const char *ret = 0;
 
@@ -1293,7 +1293,7 @@ const char *      getKey(const KeyValueSection *section,unsigned int keyindex,un
   return ret;
 }
 
-const char *      getValue(const KeyValueSection *section,unsigned int keyindex,unsigned int &lineno)
+const char *      getValue(const KeyValueSection *section,NxU32 keyindex,NxU32 &lineno)
 {
   const char *ret = 0;
 
@@ -1333,7 +1333,7 @@ bool  saveKeyValueIni(const KeyValueIni *ini,const char *fname)
   return ret;
 }
 
-void *  saveKeyValueIniMem(const KeyValueIni *ini,unsigned int &len)
+void *  saveKeyValueIniMem(const KeyValueIni *ini,NxU32 &len)
 {
   void *ret = 0;
 
@@ -1391,23 +1391,23 @@ bool              releaseIniMem(void *mem)
 void main(NxI32 argc,const char **argv) // test to see if INI files work.
 {
   const char *fname = "test.ini";
-  unsigned int sections;
+  NxU32 sections;
   const KeyValueIni *ini = loadKeyValueIni(fname,sections);
   if ( ini )
   {
     printf("INI file '%s' has %d sections.\r\n", fname, sections);
-    for (unsigned int i=0; i<sections; i++)
+    for (NxU32 i=0; i<sections; i++)
     {
-      unsigned int lineno;
-      unsigned int keycount;
+      NxU32 lineno;
+      NxU32 keycount;
       const KeyValueSection *s = getSection(ini,i,keycount,lineno);
       assert(s);
       const char *sname  = getSectionName(s);
       assert(sname);
       printf("Section %d=%s starts at line number %d and contains %d keyvalue pairs\r\n", i+1, sname, lineno, keycount );
-      for (unsigned int j=0; j<keycount; j++)
+      for (NxU32 j=0; j<keycount; j++)
       {
-        unsigned int lineno;
+        NxU32 lineno;
         const char *key = getKey(s,j,lineno);
         const char *value = getValue(s,j,lineno);
         if ( key && value )

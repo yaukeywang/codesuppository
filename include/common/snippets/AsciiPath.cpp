@@ -54,11 +54,11 @@ public:
         data = nextData(data);
         if ( data )
         {
-          NxF32 x = (float)atof(data);
+          NxF32 x = (NxF32)atof(data);
           data = nextData(data);
           if ( data )
           {
-            NxF32 y = (float)atof(data);
+            NxF32 y = (NxF32)atof(data);
             mPoints.push_back(x);
             mPoints.push_back(y);
           }

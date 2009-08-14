@@ -54,7 +54,7 @@ typedef struct _Nx3F32
 This is a vector class with public data members.
 This is not nice but it has become such a standard that hiding the xyz data members
 makes it difficult to reuse external code that assumes that these are public in the library.
-The vector class can be made to use float or double precision by appropriately defining NxReal.
+The vector class can be made to use NxF32 or NxF64 precision by appropriately defining NxReal.
 This has been chosen as a cleaner alternative to a template class.
 */
 class NxVec3
@@ -140,8 +140,8 @@ class NxVec3
 	*/
 	NX_INLINE void get(NxF64 * dest) const;
 
-	NX_INLINE NxReal& operator[](int index);
-	NX_INLINE NxReal  operator[](int index) const;
+	NX_INLINE NxReal& operator[](NxI32 index);
+	NX_INLINE NxReal  operator[](NxI32 index) const;
 
 	//Operators
 	/**
@@ -459,14 +459,14 @@ NX_INLINE void  NxVec3::get(NxF64 * v) const
 	}
 
 
-NX_INLINE NxReal& NxVec3::operator[](int index)
+NX_INLINE NxReal& NxVec3::operator[](NxI32 index)
 	{
 	NX_ASSERT(index>=0 && index<=2);
 	return (&x)[index];
 	}
 
 
-NX_INLINE NxReal  NxVec3::operator[](int index) const
+NX_INLINE NxReal  NxVec3::operator[](NxI32 index) const
 	{
 	NX_ASSERT(index>=0 && index<=2);
 	return (&x)[index];
@@ -577,13 +577,13 @@ NX_INLINE void  NxVec3::zero()
  
 NX_INLINE void  NxVec3::setPlusInfinity()
 	{
-	x = y = z = NX_MAX_F32; //TODO: this may be double too, but here we can't tell!
+	x = y = z = NX_MAX_F32; //TODO: this may be NxF64 too, but here we can't tell!
 	}
 
  
 NX_INLINE void  NxVec3::setMinusInfinity()
 	{
-	x = y = z = NX_MIN_F32; //TODO: this may be double too, but here we can't tell!
+	x = y = z = NX_MIN_F32; //TODO: this may be NxF64 too, but here we can't tell!
 	}
 
  

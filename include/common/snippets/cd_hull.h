@@ -2,6 +2,7 @@
 
 #define HULL_LIB_H
 
+#include "UserMemAlloc.h"
 
 /*!  
 ** 
@@ -75,11 +76,11 @@ public:
 		mIndices = 0;
 	}
 	bool                    mPolygons;                  // true if indices represents polygons, false indices are triangles
-	unsigned int            mNumOutputVertices;         // number of vertices in the output hull
-	double                  *mOutputVertices;            // array of vertices, 3 doubles each x,y,z
-	unsigned int            mNumFaces;                  // the number of faces produced
-	unsigned int            mNumIndices;                // the total number of indices
-	unsigned int           *mIndices;                   // pointer to indices.
+	NxU32            mNumOutputVertices;         // number of vertices in the output hull
+	NxF64                  *mOutputVertices;            // array of vertices, 3 doubles each x,y,z
+	NxU32            mNumFaces;                  // the number of faces produced
+	NxU32            mNumIndices;                // the total number of indices
+	NxU32           *mIndices;                   // pointer to indices.
 
 // If triangles, then indices are array indexes into the vertex list.
 // If polygons, indices are in the form (number of points in face) (p1, p2, p3, ..) etc..
@@ -98,19 +99,19 @@ public:
     mOutputVertices    = 0;
     if ( mNumIndices )
     {
-      mIndices = new unsigned int[mNumIndices];
-      memcpy(mIndices,r.mIndices,sizeof(unsigned int)*mNumIndices);
+      mIndices = new NxU32[mNumIndices];
+      memcpy(mIndices,r.mIndices,sizeof(NxU32)*mNumIndices);
     }
     if ( mNumOutputVertices )
     {
-      mOutputVertices = new float[mNumOutputVertices*3];
-      const double *src = r.mOutputVertices;
-      float        *dst = mOutputVertices;
-      for (unsigned int i=0; i<mNumOutputVertices; i++)
+      mOutputVertices = new NxF32[mNumOutputVertices*3];
+      const NxF64 *src = r.mOutputVertices;
+      NxF32        *dst = mOutputVertices;
+      for (NxU32 i=0; i<mNumOutputVertices; i++)
       {
-        dst[0] = (float) src[0];
-        dst[1] = (float) src[1];
-        dst[2] = (float) src[2];
+        dst[0] = (NxF32) src[0];
+        dst[1] = (NxF32) src[1];
+        dst[2] = (NxF32) src[2];
         dst+=3;
         src+=3;
       }
@@ -122,11 +123,11 @@ public:
     delete mOutputVertices;
   }
 	bool                    mPolygons;                  // true if indices represents polygons, false indices are triangles
-	unsigned int            mNumOutputVertices;         // number of vertices in the output hull
-	float                  *mOutputVertices;            // array of vertices, 3 doubles each x,y,z
-	unsigned int            mNumFaces;                  // the number of faces produced
-	unsigned int            mNumIndices;                // the total number of indices
-	unsigned int           *mIndices;                   // pointer to indices.
+	NxU32            mNumOutputVertices;         // number of vertices in the output hull
+	NxF32                  *mOutputVertices;            // array of vertices, 3 doubles each x,y,z
+	NxU32            mNumFaces;                  // the number of faces produced
+	NxU32            mNumIndices;                // the total number of indices
+	NxU32           *mIndices;                   // pointer to indices.
 
 // If triangles, then indices are array indexes into the vertex list.
 // If polygons, indices are in the form (number of points in face) (p1, p2, p3, ..) etc..
@@ -156,9 +157,9 @@ public:
 	};
 
 	HullDesc(HullFlag flag,
-						 unsigned int vcount,
-						 const double *vertices,
-						 unsigned int stride)
+						 NxU32 vcount,
+						 const NxF64 *vertices,
+						 NxU32 stride)
 	{
 		mFlags          = flag;
 		mVcount         = vcount;
@@ -185,13 +186,13 @@ public:
 		mFlags&=~flag;
 	}
 
-	unsigned int      mFlags;           // flags to use when generating the convex hull.
-	unsigned int      mVcount;          // number of vertices in the input point cloud
-	const double      *mVertices;        // the array of vertices.
-	unsigned int      mVertexStride;    // the stride of each vertex, in bytes.
-	double             mNormalEpsilon;   // the epsilon for removing duplicates.  This is a normalized value, if normalized bit is on.
-	double             mSkinWidth;
-	unsigned int      mMaxVertices;               // maximum number of vertices to be considered for the hull!
+	NxU32      mFlags;           // flags to use when generating the convex hull.
+	NxU32      mVcount;          // number of vertices in the input point cloud
+	const NxF64      *mVertices;        // the array of vertices.
+	NxU32      mVertexStride;    // the stride of each vertex, in bytes.
+	NxF64             mNormalEpsilon;   // the epsilon for removing duplicates.  This is a normalized value, if normalized bit is on.
+	NxF64             mSkinWidth;
+	NxU32      mMaxVertices;               // maximum number of vertices to be considered for the hull!
 };
 
 enum HullError
@@ -205,9 +206,9 @@ enum HullError
 class ConvexHullVertex
 {
 public:
-	double         mPos[3];
-	double         mNormal[3];
-	double         mTexel[2];
+	NxF64         mPos[3];
+	NxF64         mNormal[3];
+	NxF64         mTexel[2];
 };
 
 // A virtual interface to receive the triangles from the convex hull.
@@ -232,18 +233,18 @@ public:
 	// individual triangles, compute the vertex normals, and projects some texture co-ordinates.
 	HullError CreateTriangleMesh(HullResult &answer,ConvexHullTriangleInterface *iface);
 private:
-	double ComputeNormal(double *n,const double *A,const double *B,const double *C);
-	void AddConvexTriangle(ConvexHullTriangleInterface *callback,const double *p1,const double *p2,const double *p3);
+	NxF64 ComputeNormal(NxF64 *n,const NxF64 *A,const NxF64 *B,const NxF64 *C);
+	void AddConvexTriangle(ConvexHullTriangleInterface *callback,const NxF64 *p1,const NxF64 *p2,const NxF64 *p3);
 
-	void BringOutYourDead(const double *verts,unsigned int vcount, double *overts,unsigned int &ocount,unsigned int *indices,unsigned int indexcount);
+	void BringOutYourDead(const NxF64 *verts,NxU32 vcount, NxF64 *overts,NxU32 &ocount,NxU32 *indices,NxU32 indexcount);
 
-	bool    CleanupVertices(unsigned int svcount,
-													const double *svertices,
-													unsigned int stride,
-													unsigned int &vcount,       // output number of vertices
-													double *vertices,                 // location to store the results.
-													double  normalepsilon,
-													double *scale);
+	bool    CleanupVertices(NxU32 svcount,
+													const NxF64 *svertices,
+													NxU32 stride,
+													NxU32 &vcount,       // output number of vertices
+													NxF64 *vertices,                 // location to store the results.
+													NxF64  normalepsilon,
+													NxF64 *scale);
 };
 
 };

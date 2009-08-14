@@ -2,6 +2,8 @@
 
 #define MEMORY_GUARD_H
 
+#include "UserMemAlloc.h"
+
 #include <assert.h>
 
 #pragma warning(disable:4702)

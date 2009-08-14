@@ -13,8 +13,8 @@ class MeshBuilder : public MeshSystem, public MeshImportInterface
 {
 public:
   virtual void gather(void) = 0;
-  virtual void scale(float s) = 0;
-  virtual void rotate(float rotX,float rotY,float rotZ) = 0;
+  virtual void scale(NxF32 s) = 0;
+  virtual void rotate(NxF32 rotX,NxF32 rotY,NxF32 rotZ) = 0;
 
 
 };
@@ -23,7 +23,7 @@ public:
 MeshBuilder * createMeshBuilder(KeyValueIni *ini,
                                 const char *meshName,
                                 const void *data,
-                                unsigned int dlen,
+                                NxU32 dlen,
                                 MeshImporter *mi,
                                 const char *options,
                                 MeshImportApplicationResource *appResource);

@@ -2,6 +2,8 @@
 
 #define BOUNDINGVOLUME_H
 
+#include "UserMemAlloc.h"
+
 /*----------------------------------------------------------------------
 		Copyright (c) 2004 Open Dynamics Framework Group
 					www.physicstools.org
@@ -56,19 +58,19 @@ class BRect3d
 public:
 
 	bool Intersect(const BRect3d &test) const;
-	void GetCenter(float *center) const;
+	void GetCenter(NxF32 *center) const;
 
 	void InitMinMax(void);
 	void MinMax(const BRect3d &b);
-	void SetMin(const float *m);
-	void SetMax(const float *m);
-	void SetMin(float x,float y,float z);
-	void SetMax(float x,float y,float z);
-	float GetDistance2(void) const;
+	void SetMin(const NxF32 *m);
+	void SetMax(const NxF32 *m);
+	void SetMin(NxF32 x,NxF32 y,NxF32 z);
+	void SetMax(NxF32 x,NxF32 y,NxF32 z);
+	NxF32 GetDistance2(void) const;
 
 
-	float mMin[3];
-	float mMax[3];
+	NxF32 mMin[3];
+	NxF32 mMax[3];
 };
 
 
@@ -86,11 +88,11 @@ public:
   {
   }
 
-	unsigned int GetVolumeFrameNo(void) const { return mVolumeFrameNo; };
-	void SetVolumeFrameNo(unsigned int fno) { mVolumeFrameNo = fno; };
+	NxU32 GetVolumeFrameNo(void) const { return mVolumeFrameNo; };
+	void SetVolumeFrameNo(NxU32 fno) { mVolumeFrameNo = fno; };
 
 private:
-	unsigned int          mVolumeFrameNo;
+	NxU32          mVolumeFrameNo;
 };
 
 
@@ -129,7 +131,7 @@ public:
 		return false;
 	};
 
-	void Split(BoundingVolumeSystem *system,unsigned int depth);
+	void Split(BoundingVolumeSystem *system,NxU32 depth);
 
 
 	bool Intersect(const BRect3d &bound) const
@@ -137,7 +139,7 @@ public:
 		return mBound.Intersect(bound);
 	};
 
-	void Render(ViewTest state,FrustumInterface *iface,unsigned int fno);
+	void Render(ViewTest state,FrustumInterface *iface,NxU32 fno);
 
 	void AddBoundingVolume(BoundingVolume *bv)
 	{
@@ -149,15 +151,15 @@ public:
 
 private:
 
-	void BuildTwo(BoundingVolumeSystem *aabv,unsigned int axis,const float *midpoint);
+	void BuildTwo(BoundingVolumeSystem *aabv,NxU32 axis,const NxF32 *midpoint);
 
-	void SplitRect(unsigned int axis,
+	void SplitRect(NxU32 axis,
 								 const BRect3d &source,
 								 BRect3d       &b1,
 								 BRect3d       &b2,
-								 const float *midpoint);
+								 const NxF32 *midpoint);
 
-	unsigned int             mFlags;
+	NxU32             mFlags;
 	BRect3d                   mBound;
 	BoundingVolumeVector     mList;
 	BoundingVolumeAABV      *mLeft;
@@ -169,9 +171,9 @@ class BoundingVolumeSystem
 {
 public:
 
-	BoundingVolumeSystem(unsigned int minleaf=2,         // if less than 2 items in a leaf node, stop splitting.
-											 unsigned int maxdepth=12,       // don't recurse more than 12 ply deep
-											 float minaxis=0.01f);      // if the bounding volume is less than 2 meters, don't recurse any further.
+	BoundingVolumeSystem(NxU32 minleaf=2,         // if less than 2 items in a leaf node, stop splitting.
+											 NxU32 maxdepth=12,       // don't recurse more than 12 ply deep
+											 NxF32 minaxis=0.01f);      // if the bounding volume is less than 2 meters, don't recurse any further.
 
 	~BoundingVolumeSystem(void);
 
@@ -187,11 +189,11 @@ public:
 	void Build(void);
 
 private:
-	unsigned int                  mMinLeaf;
-	unsigned int                  mMaxDepth;
-	float                         mMinAxis;
+	NxU32                  mMinLeaf;
+	NxU32                  mMaxDepth;
+	NxF32                         mMinAxis;
 	bool                          mBuilt;
-	unsigned int                  mVolumeFrameNo;
+	NxU32                  mVolumeFrameNo;
 	BoundingVolumeAABV           *mRoot;
 };
 

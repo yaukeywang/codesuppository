@@ -2,6 +2,7 @@
 
 #define STAN_HULL_H
 
+#include "UserMemAlloc.h"
 
 /*----------------------------------------------------------------------
 		Copyright (c) 2004 Open Dynamics Framework Group
@@ -46,11 +47,11 @@ public:
 		mIndices = 0;
 	}
 	bool                    mPolygons;                  // true if indices represents polygons, false indices are triangles
-	unsigned int            mNumOutputVertices;         // number of vertices in the output hull
-	float                  *mOutputVertices;            // array of vertices, 3 floats each x,y,z
-	unsigned int            mNumFaces;                  // the number of faces produced
-	unsigned int            mNumIndices;                // the total number of indices
-	unsigned int           *mIndices;                   // pointer to indices.
+	NxU32            mNumOutputVertices;         // number of vertices in the output hull
+	NxF32                  *mOutputVertices;            // array of vertices, 3 floats each x,y,z
+	NxU32            mNumFaces;                  // the number of faces produced
+	NxU32            mNumIndices;                // the total number of indices
+	NxU32           *mIndices;                   // pointer to indices.
 
 // If triangles, then indices are array indexes into the vertex list.
 // If polygons, indices are in the form (number of points in face) (p1, p2, p3, ..) etc..
@@ -80,9 +81,9 @@ public:
 	};
 
 	HullDesc(HullFlag flag,
-						 unsigned int vcount,
-						 const float *vertices,
-						 unsigned int stride)
+						 NxU32 vcount,
+						 const NxF32 *vertices,
+						 NxU32 stride)
 	{
 		mFlags          = flag;
 		mVcount         = vcount;
@@ -109,13 +110,13 @@ public:
 		mFlags&=~flag;
 	}
 
-	unsigned int      mFlags;           // flags to use when generating the convex hull.
-	unsigned int      mVcount;          // number of vertices in the input point cloud
-	const float      *mVertices;        // the array of vertices.
-	unsigned int      mVertexStride;    // the stride of each vertex, in bytes.
-	float             mNormalEpsilon;   // the epsilon for removing duplicates.  This is a normalized value, if normalized bit is on.
-	float             mSkinWidth;
-	unsigned int      mMaxVertices;               // maximum number of vertices to be considered for the hull!
+	NxU32      mFlags;           // flags to use when generating the convex hull.
+	NxU32      mVcount;          // number of vertices in the input point cloud
+	const NxF32      *mVertices;        // the array of vertices.
+	NxU32      mVertexStride;    // the stride of each vertex, in bytes.
+	NxF32             mNormalEpsilon;   // the epsilon for removing duplicates.  This is a normalized value, if normalized bit is on.
+	NxF32             mSkinWidth;
+	NxU32      mMaxVertices;               // maximum number of vertices to be considered for the hull!
 };
 
 enum HullError
@@ -129,9 +130,9 @@ enum HullError
 class ConvexHullVertex
 {
 public:
-	float         mPos[3];
-	float         mNormal[3];
-	float         mTexel[2];
+	NxF32         mPos[3];
+	NxF32         mNormal[3];
+	NxF32         mTexel[2];
 };
 
 // A virtual interface to receive the triangles from the convex hull.
@@ -153,18 +154,18 @@ public:
 
 	HullError CreateTriangleMesh(HullResult &answer,ConvexHullTriangleInterface *iface);
 private:
-	float ComputeNormal(float *n,const float *A,const float *B,const float *C);
-	void AddConvexTriangle(ConvexHullTriangleInterface *callback,const float *p1,const float *p2,const float *p3);
+	NxF32 ComputeNormal(NxF32 *n,const NxF32 *A,const NxF32 *B,const NxF32 *C);
+	void AddConvexTriangle(ConvexHullTriangleInterface *callback,const NxF32 *p1,const NxF32 *p2,const NxF32 *p3);
 
-	void BringOutYourDead(const float *verts,unsigned int vcount, float *overts,unsigned int &ocount,unsigned int *indices,unsigned int indexcount);
+	void BringOutYourDead(const NxF32 *verts,NxU32 vcount, NxF32 *overts,NxU32 &ocount,NxU32 *indices,NxU32 indexcount);
 
-	bool    CleanupVertices(unsigned int svcount,
-													const float *svertices,
-													unsigned int stride,
-													unsigned int &vcount,       // output number of vertices
-													float *vertices,                 // location to store the results.
-													float  normalepsilon,
-													float *scale);
+	bool    CleanupVertices(NxU32 svcount,
+													const NxF32 *svertices,
+													NxU32 stride,
+													NxU32 &vcount,       // output number of vertices
+													NxF32 *vertices,                 // location to store the results.
+													NxF32  normalepsilon,
+													NxF32 *scale);
 };
 
 }; // end of STAN_HULL namespace

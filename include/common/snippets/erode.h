@@ -2,7 +2,7 @@
 
 #define ERODE_H
 
-#include "NxSimpleTypes.h"
+#include "UserMemAlloc.h"
 
 namespace ERODE
 {

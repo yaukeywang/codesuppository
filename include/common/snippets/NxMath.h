@@ -32,7 +32,7 @@ static const NxF64 NxPiF64		= 3.141592653589793;
 static const NxF64 NxHalfPiF64	= 1.57079632679489661923;
 static const NxF64 NxTwoPiF64	= 6.28318530717958647692;
 static const NxF64 NxInvPiF64	= 0.31830988618379067154;
-//we can get bad range checks if we use double prec consts to check single prec results.
+//we can get bad range checks if we use NxF64 prec consts to check single prec results.
 static const NxF32 NxPiF32		= 3.141592653589793f;
 static const NxF32 NxHalfPiF32	= 1.57079632679489661923f;
 static const NxF32 NxTwoPiF32	= 6.28318530717958647692f;
@@ -75,16 +75,16 @@ class NxMath
 		*/
 		NX_INLINE static NxF32 ceil(NxF32);
 		/**
-		\brief The ceil function returns a double value representing the smallest integer that is greater than or equal to x. 
+		\brief The ceil function returns a NxF64 value representing the smallest integer that is greater than or equal to x. 
 		*/
 		NX_INLINE static NxF64 ceil(NxF64);
 
 		/**
-		\brief Truncates the float to an integer.
+		\brief Truncates the NxF32 to an integer.
 		*/
 		NX_INLINE static NxI32 trunc(NxF32);
 		/**
-		\brief Truncates the double precision float to an integer.
+		\brief Truncates the NxF64 precision NxF32 to an integer.
 		*/
 		NX_INLINE static NxI32 trunc(NxF64);
 
@@ -419,7 +419,7 @@ class NxMath
 		/**
 		\brief hash32
 		*/
-		NX_INLINE static int hash32(int);
+		NX_INLINE static NxI32 hash32(NxI32);
 
 		/**
 		\brief returns true if the passed number is a finite floating point number as opposed to INF, NAN, etc.
@@ -939,7 +939,7 @@ NX_INLINE NxU32 NxMath::hash(const NxU32 *k, NxU32 length)
 	}
 #undef NX_HASH_MIX
 
-NX_INLINE int NxMath::hash32(int key)
+NX_INLINE NxI32 NxMath::hash32(NxI32 key)
 	{
 	key += ~(key << 15);
 	key ^=  (key >> 10);

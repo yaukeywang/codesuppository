@@ -2,12 +2,13 @@
 
 #define PERLIN4_H
 
+#include "UserMemAlloc.h"
 
 class Perlin4
 {
 public:
 
-  virtual float get(float x,float y) = 0;
+  virtual NxF32 get(NxF32 x,NxF32 y) = 0;
 
 };
 

@@ -2,6 +2,8 @@
 
 #define THREAD_CONFIG_H
 
+#include "UserMemAlloc.h"
+
 //* This project is now officially hosted at source forge at the location:
 //  http://sourceforge.net/projects/jobswarm/
 //
@@ -60,13 +62,13 @@ typedef __int64 int64_t;
 namespace THREAD_CONFIG
 {
 
-unsigned int tc_timeGetTime(void);
-void     tc_sleep(unsigned int ms);
+NxU32 tc_timeGetTime(void);
+void     tc_sleep(NxU32 ms);
 
 void     tc_spinloop();
 void     tc_interlockedExchange(void *dest, const int64_t exchange);
-int      tc_interlockedCompareExchange(void *dest, int exchange, int compare);
-int      tc_interlockedCompareExchange(void *dest, const int exchange1, const int exchange2, const int compare1, const int compare2);
+NxI32      tc_interlockedCompareExchange(void *dest, NxI32 exchange, NxI32 compare);
+NxI32      tc_interlockedCompareExchange(void *dest, const NxI32 exchange1, const NxI32 exchange2, const NxI32 compare1, const NxI32 compare2);
 
 class ThreadMutex
 {
@@ -99,7 +101,7 @@ class ThreadEvent
 public:
   virtual void setEvent(void) = 0; // signal the event
   virtual void resetEvent(void) = 0;
-  virtual void waitForSingleObject(unsigned int ms) = 0;
+  virtual void waitForSingleObject(NxU32 ms) = 0;
 };
 
 ThreadEvent * tc_createThreadEvent(void);

@@ -12,7 +12,7 @@ class MyCommLayer : public CommLayer
 {
 public:
 
-  MyCommLayer(const char *address,unsigned int port)
+  MyCommLayer(const char *address,NxU32 port)
   {
     mTelnet = TELNET::createTelnet(address,port);
     mWinMsg = 0;
@@ -22,7 +22,7 @@ public:
   MyCommLayer(const char *appName,const char *destName)
   {
     mTelnet = 0;
-    unsigned int slen = strlen(destName);
+    NxU32 slen = strlen(destName);
     mWindowName = (char *)MEMALLOC_MALLOC(slen+1);
     memcpy(mWindowName,destName,slen+1);
     mWinMsg = createWinMsg(appName);
@@ -36,7 +36,7 @@ public:
         MEMALLOC_FREE(mWindowName);
   }
 
-  virtual bool          sendMessage(unsigned int client,const char *fmt,...) // send a message to the server, all clients (client=0) or just a specific client.
+  virtual bool          sendMessage(NxU32 client,const char *fmt,...) // send a message to the server, all clients (client=0) or just a specific client.
   {
 	  bool ret = false;
 
@@ -56,7 +56,7 @@ public:
 	  return ret;
   }
 
-  virtual const char *  receiveMessage(unsigned int &client) // receive an incoming message (client=0) means it came from the server, otherwise it designates a specific client.
+  virtual const char *  receiveMessage(NxU32 &client) // receive an incoming message (client=0) means it came from the server, otherwise it designates a specific client.
   {
     const char *ret = 0;
     client = 0;
@@ -73,7 +73,7 @@ public:
     return ret;
   }
 
-  virtual const char ** getArgs(const char *input,unsigned int &argc) // parse string into a series of arguments.
+  virtual const char ** getArgs(const char *input,NxU32 &argc) // parse string into a series of arguments.
   {
     const char **ret = 0;
     argc = 0;
@@ -90,7 +90,7 @@ public:
     return ret;
   }
 
-  virtual bool          sendBlob(unsigned int client,const char *blobType,const void *data,unsigned int dlen)
+  virtual bool          sendBlob(NxU32 client,const char *blobType,const void *data,NxU32 dlen)
   {
     bool ret = false;
 
@@ -106,7 +106,7 @@ public:
     return ret;
   }
 
-  virtual const char *  receiveBlob(unsigned int &client,const void *&data,unsigned int &dlen)
+  virtual const char *  receiveBlob(NxU32 &client,const void *&data,NxU32 &dlen)
   {
     const char *ret = 0;
     client = 0;
@@ -131,7 +131,7 @@ private:
   WinMsg            *mWinMsg;
 };
 
-CommLayer *      CreateCommLayerTelent(const char *address,unsigned int port)
+CommLayer *      CreateCommLayerTelent(const char *address,NxU32 port)
 {
     MyCommLayer *mc = MEMALLOC_NEW(MyCommLayer)(address,port);
     return static_cast< CommLayer *>(mc);

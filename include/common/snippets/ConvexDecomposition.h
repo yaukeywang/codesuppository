@@ -2,6 +2,7 @@
 
 #define CONVEX_DECOMPOSITION_H
 
+#include "UserMemAlloc.h"
 
 namespace ConvexDecomposition
 {
@@ -73,13 +74,13 @@ public:
     mHullIndices = 0;
   }
 
-  ConvexResult(unsigned int hvcount,const double *hvertices,unsigned int htcount,const unsigned int *hindices)
+  ConvexResult(NxU32 hvcount,const NxF64 *hvertices,NxU32 htcount,const NxU32 *hindices)
   {
     mHullVcount = hvcount;
     if ( mHullVcount )
     {
-      mHullVertices = new double[mHullVcount*sizeof(double)*3];
-      memcpy(mHullVertices, hvertices, sizeof(double)*3*mHullVcount );
+      mHullVertices = new NxF64[mHullVcount*sizeof(NxF64)*3];
+      memcpy(mHullVertices, hvertices, sizeof(NxF64)*3*mHullVcount );
     }
     else
     {
@@ -90,8 +91,8 @@ public:
 
     if ( mHullTcount )
     {
-      mHullIndices = new unsigned int[sizeof(unsigned int)*mHullTcount*3];
-      memcpy(mHullIndices,hindices, sizeof(unsigned int)*mHullTcount*3 );
+      mHullIndices = new NxU32[sizeof(NxU32)*mHullTcount*3];
+      memcpy(mHullIndices,hindices, sizeof(NxU32)*mHullTcount*3 );
     }
     else
     {
@@ -105,8 +106,8 @@ public:
     mHullVcount = r.mHullVcount;
     if ( mHullVcount )
     {
-      mHullVertices = new double[mHullVcount*sizeof(double)*3];
-      memcpy(mHullVertices, r.mHullVertices, sizeof(double)*3*mHullVcount );
+      mHullVertices = new NxF64[mHullVcount*sizeof(NxF64)*3];
+      memcpy(mHullVertices, r.mHullVertices, sizeof(NxF64)*3*mHullVcount );
     }
     else
     {
@@ -115,8 +116,8 @@ public:
     mHullTcount = r.mHullTcount;
     if ( mHullTcount )
     {
-      mHullIndices = new unsigned int[sizeof(unsigned int)*mHullTcount*3];
-      memcpy(mHullIndices, r.mHullIndices, sizeof(unsigned int)*mHullTcount*3 );
+      mHullIndices = new NxU32[sizeof(NxU32)*mHullTcount*3];
+      memcpy(mHullIndices, r.mHullIndices, sizeof(NxU32)*mHullTcount*3 );
     }
     else
     {
@@ -131,12 +132,12 @@ public:
   }
 
 // the convex hull.
-  unsigned int		    mHullVcount;
-  double *						  mHullVertices;
-  unsigned int       mHullTcount;
-  unsigned int			 *mHullIndices;
+  NxU32		    mHullVcount;
+  NxF64 *						  mHullVertices;
+  NxU32       mHullTcount;
+  NxU32			 *mHullIndices;
 
-  double               mHullVolume;		    // the volume of the convex hull.
+  NxF64               mHullVolume;		    // the volume of the convex hull.
 
 };
 
@@ -150,15 +151,15 @@ public:
     mHullVertices = 0;
     if ( mHullVcount )
     {
-      mHullVertices = new float[mHullVcount*3];
+      mHullVertices = new NxF32[mHullVcount*3];
 
-      const double *src = r.mHullVertices;
-      float *     dest  = mHullVertices;
-      for (unsigned int i=0; i<mHullVcount; i++)
+      const NxF64 *src = r.mHullVertices;
+      NxF32 *     dest  = mHullVertices;
+      for (NxU32 i=0; i<mHullVcount; i++)
       {
-        dest[0] = (float) src[0];
-        dest[1] = (float) src[1];
-        dest[2] = (float) src[2];
+        dest[0] = (NxF32) src[0];
+        dest[1] = (NxF32) src[1];
+        dest[2] = (NxF32) src[2];
         src+=3;
         dest+=3;
       }
@@ -166,14 +167,14 @@ public:
     mHullTcount = r.mHullTcount;
     if ( mHullTcount )
     {
-      mHullIndices = new unsigned int[mHullTcount*3];
-      memcpy(mHullIndices,r.mHullIndices,sizeof(unsigned int)*mHullTcount*3);
+      mHullIndices = new NxU32[mHullTcount*3];
+      memcpy(mHullIndices,r.mHullIndices,sizeof(NxU32)*mHullTcount*3);
     }
     else
     {
       mHullIndices = 0;
     }
-    mHullVolume = (float)r.mHullVolume;
+    mHullVolume = (NxF32)r.mHullVolume;
   }
 
   ~FConvexResult(void)
@@ -182,11 +183,11 @@ public:
     delete mHullIndices;
   }
 
-  unsigned int		    mHullVcount;
-  float  *						  mHullVertices;
-  unsigned int       mHullTcount;
-  unsigned int			 *mHullIndices;
-  float                mHullVolume;		    // the volume of the convex hull.
+  NxU32		    mHullVcount;
+  NxF32  *						  mHullVertices;
+  NxU32       mHullTcount;
+  NxU32			 *mHullIndices;
+  NxF32                mHullVolume;		    // the volume of the convex hull.
 };
 
 #pragma warning(push)
@@ -194,10 +195,10 @@ public:
 class ConvexDecompInterface
 {
 public:
-	virtual void ConvexDebugTri(const double *p1,const double *p2,const double *p3,unsigned int color) { };
-	virtual void ConvexDebugPoint(const double *p,double dist,unsigned int color) { };
-  virtual void ConvexDebugBound(const double *bmin,const double *bmax,unsigned int color) { };
-  virtual void ConvexDebugOBB(const double *sides, const double *matrix,unsigned int color) { };
+	virtual void ConvexDebugTri(const NxF64 *p1,const NxF64 *p2,const NxF64 *p3,NxU32 color) { };
+	virtual void ConvexDebugPoint(const NxF64 *p,NxF64 dist,NxU32 color) { };
+  virtual void ConvexDebugBound(const NxF64 *bmin,const NxF64 *bmax,NxU32 color) { };
+  virtual void ConvexDebugOBB(const NxF64 *sides, const NxF64 *matrix,NxU32 color) { };
 
   virtual void ConvexDecompResult(ConvexResult &result) = 0;
 };
@@ -227,30 +228,30 @@ public:
   }
 
 // describes the input triangle.
-  unsigned int	mVcount;   // the number of vertices in the source mesh.
-  const double  *mVertices; // start of the vertex position array.  Assumes a stride of 3 doubles.
-  unsigned int  mTcount;   // the number of triangles in the source mesh.
-  unsigned int *mIndices;  // the indexed triangle list array (zero index based)
+  NxU32	mVcount;   // the number of vertices in the source mesh.
+  const NxF64  *mVertices; // start of the vertex position array.  Assumes a stride of 3 doubles.
+  NxU32  mTcount;   // the number of triangles in the source mesh.
+  NxU32 *mIndices;  // the indexed triangle list array (zero index based)
 
 // options
-  unsigned int  mDepth;    // depth to split, a maximum of 10, generally not over 7.
-  double         mCpercent; // the concavity threshold percentage.  0=20 is reasonable.
-	double         mPpercent; // the percentage volume conservation threshold to collapse hulls. 0-30 is reasonable.
-  double         mVpercent; // the pecentage of total mesh volume before we stop splitting.
+  NxU32  mDepth;    // depth to split, a maximum of 10, generally not over 7.
+  NxF64         mCpercent; // the concavity threshold percentage.  0=20 is reasonable.
+	NxF64         mPpercent; // the percentage volume conservation threshold to collapse hulls. 0-30 is reasonable.
+  NxF64         mVpercent; // the pecentage of total mesh volume before we stop splitting.
 
   bool           mInitialIslandGeneration; // true if the initial mesh should be subjected to island generation.
   bool           mUseIslandGeneration; // true if the decomposition code should break the input mesh and split meshes into discrete 'islands/pieces'
   bool           mRemoveTjunctions; // whether or not to initially remove tjunctions found in the original mesh.
 // hull output limits.
-  unsigned int  mMaxVertices; // maximum number of vertices in the output hull. Recommended 32 or less.
-  double         mSkinWidth;   // a skin width to apply to the output hulls.
+  NxU32  mMaxVertices; // maximum number of vertices in the output hull. Recommended 32 or less.
+  NxF64         mSkinWidth;   // a skin width to apply to the output hulls.
 
 	ConvexDecompInterface *mCallback; // the interface to receive back the results.
 
 };
 
 // perform approximate convex decomposition on a mesh.
-unsigned int performConvexDecomposition(const DecompDesc &desc); // returns the number of hulls produced.
+NxU32 performConvexDecomposition(const DecompDesc &desc); // returns the number of hulls produced.
 
 };
 

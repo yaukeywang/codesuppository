@@ -77,7 +77,7 @@ namespace RENDER_DEBUG
 
 #define FONT_VERSION 1
 
-unsigned char g_font[6350] = {
+NxU8 g_font[6350] = {
   0x46,0x4F,0x4E,0x54,0x01,0x00,0x00,0x00,0x43,0x01,0x00,0x00,0x5E,0x00,0x00,0x00,0xC4,0x06,0x00,0x00,0x0A,0xD7,0x23,0x3C,0x3D,0x0A,0x57,0x3E,0x0A,0xD7,0x23,0x3C,
   0x28,0x5C,0x8F,0x3D,0x0A,0xD7,0x23,0x3C,0x08,0xD7,0xA3,0x3C,0x00,0x00,0x00,0x00,0x08,0xD7,0x23,0x3C,0x0A,0xD7,0x23,0x3C,0x00,0x00,0x00,0x00,0x0A,0xD7,0xA3,0x3C,
   0x08,0xD7,0x23,0x3C,0x00,0x00,0x00,0x00,0x3D,0x0A,0x57,0x3E,0x00,0x00,0x00,0x00,0x28,0x5C,0x0F,0x3E,0x0A,0xD7,0xA3,0x3D,0x3D,0x0A,0x57,0x3E,0x0A,0xD7,0xA3,0x3D,
@@ -279,37 +279,37 @@ unsigned char g_font[6350] = {
   0x3F,0x01,0x3F,0x01,0x40,0x01,0x40,0x01,0x3B,0x01,0x3B,0x01,0xBB,0x00
 };
 
-static inline float Dot(const float *A,const float *B)
+static inline NxF32 Dot(const NxF32 *A,const NxF32 *B)
 {
 	return A[0]*B[0] + A[1]*B[1] + A[2]*B[2];
 }
 
-static inline void Cross(float *result,const float *A,const float *B)
+static inline void Cross(NxF32 *result,const NxF32 *A,const NxF32 *B)
 {
 	result[0] = A[1]*B[2] - A[2]*B[1];
 	result[1] = A[2]*B[0] - A[0]*B[2];
 	result[2] = A[0]*B[1] - A[1]*B[0];
 }
 
-static inline float Normalize(float *r)
+static inline NxF32 Normalize(NxF32 *r)
 {
-	float d = sqrtf(r[0]*r[0] + r[1]*r[1] + r[2]*r[2]);
-	float recip = 1.0f / d;
+	NxF32 d = sqrtf(r[0]*r[0] + r[1]*r[1] + r[2]*r[2]);
+	NxF32 recip = 1.0f / d;
 	r[0]*=recip;
 	r[1]*=recip;
 	r[2]*=recip;
 	return d;
 }
 
-static inline float Magnitude(const float *v)
+static inline NxF32 Magnitude(const NxF32 *v)
 {
 	return sqrtf( v[0]*v[0] + v[1]*v[1] + v[2]*v[2] );
 }
 
-void computeLookAt(const float *eye,const float *look,const float *upVector,float *matrix)
+void computeLookAt(const NxF32 *eye,const NxF32 *look,const NxF32 *upVector,NxF32 *matrix)
 {
 
-	float row2[3];
+	NxF32 row2[3];
 
 	row2[0] = look[0] - eye[0];
 	row2[1] = look[1] - eye[1];
@@ -317,8 +317,8 @@ void computeLookAt(const float *eye,const float *look,const float *upVector,floa
 
 	Normalize(row2);
 
-	float row0[3];
-	float	row1[3];
+	NxF32 row0[3];
+	NxF32	row1[3];
 
 	Cross(row0, upVector, row2 );
 	Cross(row1, row2, row0 );
@@ -349,7 +349,7 @@ void computeLookAt(const float *eye,const float *look,const float *upVector,floa
 }
 
 
-static inline const unsigned char * getUShort(const unsigned char *data,unsigned short &v)
+static inline const NxU8 * getUShort(const NxU8 *data,unsigned short &v)
 {
     const unsigned short *src = (const unsigned short *)data;
     v = src[0];
@@ -357,11 +357,11 @@ static inline const unsigned char * getUShort(const unsigned char *data,unsigned
 	return data;
 }
 
-static inline const unsigned char * getUint(const unsigned char *data,unsigned int &v)
+static inline const NxU8 * getUint(const NxU8 *data,NxU32 &v)
 {
-    const unsigned int *src = (const unsigned int *)data;
+    const NxU32 *src = (const NxU32 *)data;
     v = src[0];
-    data+=sizeof(unsigned int);
+    data+=sizeof(NxU32);
 	return data;
 }
 
@@ -375,15 +375,15 @@ public:
     mX1 = mY1 = mX2 = mY2 = 0;
   }
 
-  const unsigned char * init(const unsigned char *data,const float *vertices)
+  const NxU8 * init(const NxU8 *data,const NxF32 *vertices)
   {
     data = getUShort(data,mIndexCount);
     mIndices = (const unsigned short *)data;
     data+=(mIndexCount*sizeof(unsigned short));
-    for (unsigned int i=0; i<mIndexCount; i++)
+    for (NxU32 i=0; i<mIndexCount; i++)
     {
-        unsigned int index = mIndices[i];
-        const float *vertex = &vertices[index*2];
+        NxU32 index = mIndices[i];
+        const NxF32 *vertex = &vertices[index*2];
 		assert( _finite(vertex[0]));
 		assert( _finite(vertex[1]));
         if ( i == 0 )
@@ -410,19 +410,19 @@ public:
     return data;
   }
 
-  void vputc(const float *vertices,RenderDebug *debug,const NxMat34 &pose,NxF32 textScale,NxF32 &x,NxF32 &y)
+  void vputc(const NxF32 *vertices,RenderDebug *debug,const NxMat34 &pose,NxF32 textScale,NxF32 &x,NxF32 &y)
   {
     if ( mIndices )
     {
-        unsigned int lineCount = mIndexCount/2;
-		float spacing = (mX2-mX1)+0.05f;
-        for (unsigned int i=0; i<lineCount; i++)
+        NxU32 lineCount = mIndexCount/2;
+		NxF32 spacing = (mX2-mX1)+0.05f;
+        for (NxU32 i=0; i<lineCount; i++)
         {
             unsigned short i1 = mIndices[i*2+0];
             unsigned short i2 = mIndices[i*2+1];
 
-            const float *v1 = &vertices[i1*2];
-            const float *v2 = &vertices[i2*2];
+            const NxF32 *v1 = &vertices[i1*2];
+            const NxF32 *v2 = &vertices[i2*2];
 
 			NxVec3 p1(v1[0]+x,v1[1]+y,0);
 			NxVec3 p2(v2[0]+x,v2[1]+y,0);
@@ -453,10 +453,10 @@ public:
   }
 
 
-  float          mX1;
-  float          mX2;
-  float          mY1;
-  float          mY2;
+  NxF32          mX1;
+  NxF32          mX2;
+  NxF32          mY1;
+  NxF32          mY2;
   unsigned short mIndexCount;
   const unsigned short *mIndices;
 };
@@ -486,7 +486,7 @@ public:
     mVertices = 0;
   }
 
-  void initFont(const unsigned char *font)
+  void initFont(const NxU8 *font)
   {
     release();
     if ( font[0] == 'F' && font[1] == 'O' && font[2] == 'N' && font[3] == 'T' )
@@ -498,12 +498,12 @@ public:
             font = getUint(font,mVcount);
             font = getUint(font,mCount);
             font = getUint(font,mIcount);
-            unsigned int vsize = sizeof(float)*mVcount*2;
-            mVertices = (float *)font;
+            NxU32 vsize = sizeof(NxF32)*mVcount*2;
+            mVertices = (NxF32 *)font;
 			font+=vsize;
-            for (unsigned int i=0; i<mCount; i++)
+            for (NxU32 i=0; i<mCount; i++)
             {
-                unsigned char c = *font++;
+                NxU8 c = *font++;
                 font = mCharacters[c].init(font,mVertices);
             }
         }
@@ -534,11 +534,11 @@ public:
   }
 
 private:
-  unsigned int    mVersion;
-  unsigned int    mVcount;
-  unsigned int    mCount;
-  float          *mVertices;
-  unsigned int    mIcount;
+  NxU32    mVersion;
+  NxU32    mVcount;
+  NxU32    mCount;
+  NxF32          *mVertices;
+  NxU32    mIcount;
   FontChar        mCharacters[256];
 };
 
@@ -779,7 +779,7 @@ inline void fm_rotationArc(const NxF32 *v0,const NxF32 *v1,NxF32 *quat)
 class MPoolExtra 
 {
 public:
-	MPoolExtra(size_t mlen,const char *poolType,const char *file,int lineno)
+	MPoolExtra(size_t mlen,const char *poolType,const char *file,NxI32 lineno)
 	{
 		mPoolType = poolType;
 		mNext = 0;
@@ -850,7 +850,7 @@ public:
 		mInitialized = false;
 	};
 
-	void Set(int startcount,int growcount,int maxitems,const char *poolType,const char *file,int lineno)
+	void Set(NxI32 startcount,NxI32 growcount,NxI32 maxitems,const char *poolType,const char *file,NxI32 lineno)
 	{
 		mPoolType = poolType;
 		mFile     = file;
@@ -869,7 +869,7 @@ public:
 			Type *data = (Type *) mData->mData;
 			{
 				Type *t = (Type *)mData->mData;
-				for (int i=0; i<mStartCount; i++)
+				for (NxI32 i=0; i<mStartCount; i++)
 				{
 					new ( t ) Type;
 					t++;
@@ -878,7 +878,7 @@ public:
 			mFree = data;
 			mHead = 0;
 			mTail = 0;
-			int i;
+			NxI32 i;
 			for (i=0; i<(startcount-1); i++)
 			{
 				data[i].SetNext( &data[i+1] );
@@ -929,14 +929,14 @@ public:
 		return false;
 	};
 
-	int Begin(void)
+	NxI32 Begin(void)
 	{
 		mCurrent = mHead;
 		return mUsedCount;
 	};
 
-	int GetUsedCount(void) const { return mUsedCount; };
-	int GetFreeCount(void) const { return mFreeCount; };
+	NxI32 GetUsedCount(void) const { return mUsedCount; };
+	NxI32 GetFreeCount(void) const { return mFreeCount; };
 
 	Type * GetNext(void)
 	{
@@ -1044,7 +1044,7 @@ public:
 			mData  = new MPoolExtra(sizeof(Type)*mGrowCount,mPoolType,mFile,mLineNo);
 			{
 				Type *t = (Type *)mData->mData;
-				for (int i=0; i<mGrowCount; i++)
+				for (NxI32 i=0; i<mGrowCount; i++)
 				{
 					new ( t ) Type;
 					t++;
@@ -1055,7 +1055,7 @@ public:
 
 			Type *data = (Type *) mData->mData;
 			mFree = data;     // new head of free list.
-			int i;
+			NxI32 i;
 			for (i=0; i<(mGrowCount-1); i++)
 			{
 				data[i].SetNext( &data[i+1] );
@@ -1078,22 +1078,22 @@ public:
 
 //private:
 	bool         mInitialized;
-	int        mMaxItems;
-	int        mGrowCount;
-	int        mStartCount;
-	int        mCurrentCount; // this is total allocated, not free/used
+	NxI32        mMaxItems;
+	NxI32        mGrowCount;
+	NxI32        mStartCount;
+	NxI32        mCurrentCount; // this is total allocated, not free/used
 
 	Type       *mCurrent;
 	MPoolExtra *mData;
 	Type        *mHead;
 	Type        *mTail;
 	Type        *mFree;
-	int        mUsedCount;
-	int        mFreeCount;
-	int        mMaxUsed;
+	NxI32        mUsedCount;
+	NxI32        mFreeCount;
+	NxI32        mMaxUsed;
 	const char *mPoolType;
 	const char *mFile;
-	int         mLineNo;
+	NxI32         mLineNo;
 };
 
 
@@ -1406,14 +1406,14 @@ public:
 	inline SolidTri * GetNext(void) { return mNext; };
 	inline SolidTri * GetPrevious(void) { return mPrevious; };
 
-	inline void transform(const NxMat34 &mat,float *pos)
+	inline void transform(const NxMat34 &mat,NxF32 *pos)
 	{
 		NxVec3 *p = (NxVec3 *)pos;
 		NxVec3 *t = (NxVec3 *)pos;
 		mat.multiply(*p,*t);
 	}
 
-	inline void rtransform(const NxMat34 &mat,float *pos)
+	inline void rtransform(const NxMat34 &mat,NxF32 *pos)
 	{
 		NxVec3 *p = (NxVec3 *)pos;
 		NxVec3 *t = (NxVec3 *)pos;
@@ -1575,7 +1575,7 @@ public:
 	LineTri * GetNext(void) { return mNext; };
 	LineTri * GetPrevious(void) { return mPrevious; };
 
-	void transform(const NxMat34 &mat,float *pos)
+	void transform(const NxMat34 &mat,NxF32 *pos)
 	{
 		NxVec3 *p = (NxVec3 *)pos;
 		NxVec3 *t = (NxVec3 *)pos;
@@ -1843,7 +1843,7 @@ public:
 		assert( mCurrentBlock == 0 );
 
 
-		int tricount = mDebugTris.Begin();
+		NxI32 tricount = mDebugTris.Begin();
 		mSolidCount  = 0;
         mSolidScreenCount = 0;
 		mLineCount   = 0;
@@ -1870,7 +1870,7 @@ public:
 			s_stop    = &spoints[MAX_BUFFER_STACK-3];
 			s_start = s_current = spoints;
 
-			for (int i=0; i<tricount; i++)
+			for (NxI32 i=0; i<tricount; i++)
 			{
 				SolidTri *tri = mDebugTris.GetNext();
 
@@ -1978,9 +1978,9 @@ public:
 
 				if ( mCurrentState.isCameraFacing() )
 				{
-					//void computeLookAt(const float *eye,const float *look,const float *upVector,float *matrix)
+					//void computeLookAt(const NxF32 *eye,const NxF32 *look,const NxF32 *upVector,NxF32 *matrix)
 					NxVec3 upVector(0,1,0);
-					float matrix[16];
+					NxF32 matrix[16];
 					computeLookAt(&pose.t.x,&mEyePos.x,&upVector.x,matrix);
 					pose.M.setColumnMajorStride4(matrix);
 				}
@@ -2031,7 +2031,7 @@ public:
 			mScreenCount   = 0;
 
 
-			for (int i=0; i<tricount; i++)
+			for (NxI32 i=0; i<tricount; i++)
 			{
 				LineTri *tri = mDebugLines.GetNext();
                 if ( tri->isScreen() )
@@ -2128,7 +2128,7 @@ public:
 	virtual void DebugTri(const NxF32 *p1,const NxF32 *p2,const NxF32 *p3,const NxF32 *n1,const NxF32 *n2,const NxF32 *n3)
 	{
         bool wireframe = true;
-        unsigned int wireColor = mCurrentState.mColor;
+        NxU32 wireColor = mCurrentState.mColor;
 
         if ( mCurrentState.isSolid() )
         {
@@ -2482,7 +2482,7 @@ public:
 	{
 		const NxF32 *source = debug_sphere;
 
-		for (int i=0; i<32; i++)
+		for (NxI32 i=0; i<32; i++)
 		{
 			NxVec3 p1( source );
 			source+=3;
@@ -2511,7 +2511,7 @@ public:
 	{
 		const NxF32 *source = debug_halfsphere;
 
-		for (int i=0; i<16; i++)
+		for (NxI32 i=0; i<16; i++)
 		{
 			NxVec3 p1( source );
 			source+=3;
@@ -2540,7 +2540,7 @@ public:
 	{
 		const NxF32 *source = debug_point;
 
-		for (int i=0; i<3; i++)
+		for (NxI32 i=0; i<3; i++)
 		{
 			NxVec3 p1( source );
 			source+=3;
@@ -2566,7 +2566,7 @@ public:
 		NxMat34 m;
 		m.setColumnMajor44(transform);
 
-		for (int i=0; i<32; i++)
+		for (NxI32 i=0; i<32; i++)
 		{
 			NxVec3 p1( source );
 			source+=3;
@@ -2587,7 +2587,7 @@ public:
 		}
 	}
 
-	int ClampColor(int c)
+	NxI32 ClampColor(NxI32 c)
 	{
 		if ( c < 0 )
 			c = 0;
@@ -2598,9 +2598,9 @@ public:
 
 	NxU32 GetColor(NxF32 r,NxF32 g,NxF32 b,NxF32 brightness)
 	{
-		int red   = int(r*brightness*255.0f);
-		int green = int(g*brightness*255.0f);
-		int blue  = int(b*brightness*255.0f);
+		NxI32 red   = NxI32(r*brightness*255.0f);
+		NxI32 green = NxI32(g*brightness*255.0f);
+		NxI32 blue  = NxI32(b*brightness*255.0f);
 		red   = ClampColor(red);
 		green = ClampColor(green);
 		blue  = ClampColor(blue);
@@ -2678,22 +2678,22 @@ public:
         }
         else
         {
-     		int count = mDebugTris.Begin();
-     		for (int i=0; i<count; i++)
+     		NxI32 count = mDebugTris.Begin();
+     		for (NxI32 i=0; i<count; i++)
      		{
      			SolidTri *wt = mDebugTris.GetNext();
      			if ( wt->getBlock() == blockIndex || blockIndex == -1 )
      			  mDebugTris.Release(wt);
      		}
      		count = mDebugLines.Begin();
-     		for (int i=0; i<count; i++)
+     		for (NxI32 i=0; i<count; i++)
      		{
      			LineTri *wt = mDebugLines.GetNext();
      			if ( wt->getBlock() == blockIndex || blockIndex == -1 )
      			  mDebugLines.Release(wt);
      		}
 			count = mPrintText.Begin();
-			for (int i=0; i<count; i++)
+			for (NxI32 i=0; i<count; i++)
 			{
 				PrintText *pt = mPrintText.GetNext();
      			if ( pt->mBlock == NULL )
@@ -2729,7 +2729,7 @@ public:
 		top.y+=(height*0.5f)+radius;
 		bottom.y-=(height*0.5f)+radius;
 
-		for (int a=0; a<=360; a+=15)
+		for (NxI32 a=0; a<=360; a+=15)
 		{
 			NxF32 r = (NxF32)a*FM_DEG_TO_RAD;
 
@@ -3072,7 +3072,7 @@ public:
 
 	void drawGrid(bool zup,NxU32 gridSize) // draw a grid.
 	{
-		int  GRIDSIZE = gridSize;
+		NxI32  GRIDSIZE = gridSize;
 
 		NxU32 c1 = getColor(133,153,181,0.1f);
 		NxU32 c2 = getColor(133,153,181,0.3f);
@@ -3083,7 +3083,7 @@ public:
 		NxF32 BASELOC = 0-0.05f;
 		pushRenderState();
 
-		for (int x=-GRIDSIZE; x<=GRIDSIZE; x++)
+		for (NxI32 x=-GRIDSIZE; x<=GRIDSIZE; x++)
 		{
 			NxU32 c = c1;
 			if ( (x%10) == 0 ) c = c2;
@@ -3103,7 +3103,7 @@ public:
 
 		}
 
-		for (int y=-GRIDSIZE; y<=GRIDSIZE; y++)
+		for (NxI32 y=-GRIDSIZE; y<=GRIDSIZE; y++)
 		{
 			NxU32 c = c1;
 
@@ -3172,13 +3172,13 @@ public:
 		return mProjectionMatrix44;
 	}
 
-	bool         screenToWorld(int sx,int sy,NxF32 *world,NxF32 *direction)
+	bool         screenToWorld(NxI32 sx,NxI32 sy,NxF32 *world,NxF32 *direction)
 	{
 		bool ret = false;
 
 	#if 0
-		int wid = (int) mScreenWidth;
-		int hit = (int) mScrenHeight;
+		NxI32 wid = (NxI32) mScreenWidth;
+		NxI32 hit = (NxI32) mScrenHeight;
 
 		if ( sx >= 0 && sx <= wid && sy >= 0 && sy <= hit )
 		{
@@ -3358,7 +3358,7 @@ public:
 		return mRenderBounds;
 	}
 
-	virtual void  setFrameTime(float dtime)
+	virtual void  setFrameTime(NxF32 dtime)
 	{
 		mFrameTime = dtime;
 	}
@@ -3530,7 +3530,7 @@ public:
         NxF32 d1 = v1.normalize();
         NxVec3 v2 = p2-center;
         NxF32 d2 = v2.normalize();
-        float quat[4];
+        NxF32 quat[4];
 
         fm_rotationArc(&v1.x,&v2.x,quat);
 
@@ -3541,8 +3541,8 @@ public:
 
         NxVec3 prev;
 
-		int count = 0;
-		for (float st=0; st<=(1.01f); st+=0.05f)
+		NxI32 count = 0;
+		for (NxF32 st=0; st<=(1.01f); st+=0.05f)
 		{
 			NxF32 d = ((d2-d1)*st)+d1;
 			NxQuat q;
@@ -3586,7 +3586,7 @@ public:
         NxF32 d1 = v1.normalize();
         NxVec3 v2 = p2-center;
         NxF32 d2 = v2.normalize();
-        float quat[4];
+        NxF32 quat[4];
 
         fm_rotationArc(&v1.x,&v2.x,quat);
 
@@ -3599,8 +3599,8 @@ public:
         NxVec3 prev;
 
 
-		int count = 0;
-		for (float st=0; st<=(1.01f); st+=0.05f)
+		NxI32 count = 0;
+		for (NxF32 st=0; st<=(1.01f); st+=0.05f)
 		{
 			NxF32 d = ((d2-d1)*st)+d1;
 			NxQuat q;
@@ -3643,13 +3643,13 @@ public:
 		removeFromCurrentState(DebugRenderState::SolidShaded);
 
 
-		float lastX = graphXPos;
-		float lastY = graphYPos;
+		NxF32 lastX = graphXPos;
+		NxF32 lastY = graphYPos;
 		for (NxU32 i = 0; i < numPoints; i++)
 		{
-			float pointY = points[i];
+			NxF32 pointY = points[i];
 			pointY = graphYPos + pointY * graphHeight / graphMax;	//scale to screen
-			float x = graphXPos + graphWidth * i / numPoints;
+			NxF32 x = graphXPos + graphWidth * i / numPoints;
 
 			if (colorSwitchIndex == i)
 				setCurrentColor(mCurrentState.mArrowColor, mCurrentState.mColor);	//swap the colors

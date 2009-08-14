@@ -2,6 +2,8 @@
 
 #define VECTOR_FONT_H
 
+#include "UserMemAlloc.h"
+
 /*!
 **
 ** Copyright (c) 2009 by John W. Ratcliff mailto:jratcliffscarab@gmail.com
@@ -55,7 +57,7 @@
 // class MyLineDraw : public VectorFontInterfac
 // {
 //     public:
-//      virtual void drawLine(float x1,float y1,float x2,float y2)
+//      virtual void drawLine(NxF32 x1,NxF32 y1,NxF32 x2,NxF32 y2)
 //      {
 //        // Right here, in this callback, draw the line using your own line draw interface, OpenGL, D3D, or whatever works for you.
 //      }
@@ -72,14 +74,14 @@
 class VectorFontInterface
 {
 public:
-  virtual void drawLine(float x1,float y1,float x2,float y2) = 0;
+  virtual void drawLine(NxF32 x1,NxF32 y1,NxF32 x2,NxF32 y2) = 0;
 };
 
 class VectorFont
 {
 public:
-  virtual void vprintf(const float *transform, // an *optional* 4x4 matrix transform to apply to each point as the font is rendered.
-                       float textScale,        // A scaling value to apply to the vertices of the font.
+  virtual void vprintf(const NxF32 *transform, // an *optional* 4x4 matrix transform to apply to each point as the font is rendered.
+                       NxF32 textScale,        // A scaling value to apply to the vertices of the font.
                        bool centered,          // True if you want the text centered relative to its 3space position, specified in the translation component of 'transform' or 0,0,0 if no transform provided.
                        const char *fmt,        // A printf style format string
                        ...) = 0;               // Optional additional parameters based on the format spec.

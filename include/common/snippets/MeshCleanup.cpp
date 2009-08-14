@@ -371,7 +371,7 @@ bool meshCleanup(MeshCleanupDesc &desc,NxF32 weldDistance,NxF32 projectDistance,
 {
   bool ret = false;
 
-  NxF32 *vertices = MEMALLOC_NEW_ARRAY(float,desc.inputVcount*3)[desc.inputVcount*3];
+  NxF32 *vertices = MEMALLOC_NEW_ARRAY(NxF32,desc.inputVcount*3)[desc.inputVcount*3];
   const char *scan = (const char *) desc.inputVertices;
   NxF32 *dest = vertices;
 
@@ -481,13 +481,13 @@ bool meshCleanup(MeshCleanupDesc &desc,NxF32 weldDistance,NxF32 projectDistance,
     }
 
     NxU32 icount = indices.size();
-    desc.outputIndices = MEMALLOC_NEW_ARRAY(unsigned int,icount)[icount];
+    desc.outputIndices = MEMALLOC_NEW_ARRAY(NxU32,icount)[icount];
     memcpy(desc.outputIndices,&indices[0],sizeof(NxU32)*icount);
     desc.outputTcount = indices.size()/3;
 
 
     desc.outputVcount   = vlook->getVcount();
-    desc.outputVertices = MEMALLOC_NEW_ARRAY(float,desc.outputVcount*3)[desc.outputVcount*3];
+    desc.outputVertices = MEMALLOC_NEW_ARRAY(NxF32,desc.outputVcount*3)[desc.outputVcount*3];
     memcpy(desc.outputVertices,vlook->getVerticesFloat(),sizeof(NxF32)*desc.outputVcount*3);
 
     fm_releaseVertexIndex(vlook);

@@ -85,26 +85,26 @@ public:
     mIndex = 0;
   }
 
-  void copy(const float *p,float *t,float offsetx,float offsety,float offsetz)
+  void copy(const NxF32 *p,NxF32 *t,NxF32 offsetx,NxF32 offsety,NxF32 offsetz)
   {
-    t[0] = (float)(p[0]+offsetx);
-    t[1] = (float)(p[1]+offsety);
-    t[2] = (float)(p[2]+offsetz);
+    t[0] = (NxF32)(p[0]+offsetx);
+    t[1] = (NxF32)(p[1]+offsety);
+    t[2] = (NxF32)(p[2]+offsetz);
   }
 
-  void debug(float offset,fm_VertexIndex *vindex)
+  void debug(NxF32 offset,fm_VertexIndex *vindex)
   {
 
-    static float offsetx = 0;
+    static NxF32 offsetx = 0;
     //offsetx+=10;
 
     Edge *e = mRoot;
     while ( e )
     {
-      const float *p1 = vindex->getVertexFloat(e->mI1);
-      const float *p2 = vindex->getVertexFloat(e->mI2);
-      float _p1[3];
-      float _p2[3];
+      const NxF32 *p1 = vindex->getVertexFloat(e->mI1);
+      const NxF32 *p2 = vindex->getVertexFloat(e->mI2);
+      NxF32 _p1[3];
+      NxF32 _p2[3];
       copy(p1,_p1,offsetx,offset,0);
       copy(p2,_p2,offsetx,offset,0);
 #if DEBUG_SHOW
@@ -492,7 +492,7 @@ public:
   NxU32  mEcount;
   Edge   *mRoot;
   Edge   *mTail;
-  float  mNormal[3];
+  NxF32  mNormal[3];
   NxU32 mIndex; // polygon index (used for debugging)
 
   Polygon *mNextPolygonEdge;
@@ -644,13 +644,13 @@ public:
     mOutputIndices.clear();
   }
 
-  virtual bool addTriangle(const float *p1,const float *p2,const float *p3)
+  virtual bool addTriangle(const NxF32 *p1,const NxF32 *p2,const NxF32 *p3)
   {
     bool ret = true;
 
     if ( mVertexIndex == 0 )
     {
-      mVertexIndex = fm_createVertexIndex((float)SPLIT_EPSILON,false);
+      mVertexIndex = fm_createVertexIndex((NxF32)SPLIT_EPSILON,false);
       mUseDouble = false;
     }
 
@@ -681,14 +681,14 @@ public:
     return ret;
   }
 
-  virtual bool addTriangle(const double *p1,const double *p2,const double *p3)
+  virtual bool addTriangle(const NxF64 *p1,const NxF64 *p2,const NxF64 *p3)
   {
     bool ret = true;
 
 
     if ( mVertexIndex == 0 )
     {
-      mVertexIndex = fm_createVertexIndex((double)SPLIT_EPSILON,false);
+      mVertexIndex = fm_createVertexIndex((NxF64)SPLIT_EPSILON,false);
       mUseDouble = true;
     }
 
@@ -771,9 +771,9 @@ public:
       {
 
         if ( mUseDouble )
-          mVertexOutput = fm_createVertexIndex((double)SPLIT_EPSILON,false);
+          mVertexOutput = fm_createVertexIndex((NxF64)SPLIT_EPSILON,false);
         else
-          mVertexOutput = fm_createVertexIndex((float)SPLIT_EPSILON,false);
+          mVertexOutput = fm_createVertexIndex((NxF32)SPLIT_EPSILON,false);
 
         NxU32 vcount = mVertexIndex->getVcount();
         mPolyPoints = new Edge*[vcount];
@@ -797,18 +797,18 @@ public:
 
           if ( mUseDouble )
           {
-            const double *p1 = mVertexIndex->getVertexDouble(i1);
-            const double *p2 = mVertexIndex->getVertexDouble(i2);
-            const double *p3 = mVertexIndex->getVertexDouble(i3);
-            double normal[3];
+            const NxF64 *p1 = mVertexIndex->getVertexDouble(i1);
+            const NxF64 *p2 = mVertexIndex->getVertexDouble(i2);
+            const NxF64 *p3 = mVertexIndex->getVertexDouble(i3);
+            NxF64 normal[3];
             fm_computePlane(p1,p2,p3,normal);
             fm_doubleToFloat3(normal,p->mNormal);
           }
           else
           {
-            const float *p1 = mVertexIndex->getVertexFloat(i1);
-            const float *p2 = mVertexIndex->getVertexFloat(i2);
-            const float *p3 = mVertexIndex->getVertexFloat(i3);
+            const NxF32 *p1 = mVertexIndex->getVertexFloat(i1);
+            const NxF32 *p2 = mVertexIndex->getVertexFloat(i2);
+            const NxF32 *p3 = mVertexIndex->getVertexFloat(i3);
             fm_computePlane(p1,p2,p3,p->mNormal);
           }
 
@@ -847,34 +847,34 @@ public:
               if ( p->mEcount < MAX_VERTS )
               {
 
-                double vertices[MAX_VERTS*3];
-                double _vertices[MAX_VERTS*3];
+                NxF64 vertices[MAX_VERTS*3];
+                NxF64 _vertices[MAX_VERTS*3];
 
                 Edge *e = p->mRoot;
                 NxU32 pcount = 0;
-                double *dest = _vertices;
+                NxF64 *dest = _vertices;
                 while ( e )
                 {
                   if ( mUseDouble )
                   {
-                    const double *p = mVertexIndex->getVertexDouble(e->mI2);
+                    const NxF64 *p = mVertexIndex->getVertexDouble(e->mI2);
                     dest[0] = p[0];
                     dest[1] = p[1];
                     dest[2] = p[2];
                   }
                   else
                   {
-                    const float *p = mVertexIndex->getVertexFloat(e->mI2);
-                    dest[0] = (double)p[0];
-                    dest[1] = (double)p[1];
-                    dest[2] = (double)p[2];
+                    const NxF32 *p = mVertexIndex->getVertexFloat(e->mI2);
+                    dest[0] = (NxF64)p[0];
+                    dest[1] = (NxF64)p[1];
+                    dest[2] = (NxF64)p[2];
                   }
                   dest+=3;
                   pcount++;
                   e = e->mNext;
                 }
 
-                pcount = fm_consolidatePolygon(pcount,_vertices,sizeof(double)*3,vertices);
+                pcount = fm_consolidatePolygon(pcount,_vertices,sizeof(NxF64)*3,vertices);
 
                 switch ( pcount )
                 {
@@ -890,9 +890,9 @@ public:
                     }
                     else
                     {
-                      float p1[3];
-                      float p2[3];
-                      float p3[3];
+                      NxF32 p1[3];
+                      NxF32 p2[3];
+                      NxF32 p3[3];
                       fm_doubleToFloat3(vertices,p1);
                       fm_doubleToFloat3(vertices+3,p2);
                       fm_doubleToFloat3(vertices+6,p3);
@@ -902,19 +902,19 @@ public:
                   case 4:
                     if ( mUseDouble )
                     {
-                      const double *p1 = vertices;
-                      const double *p2 = vertices+3;
-                      const double *p3 = vertices+6;
-                      const double *p4 = vertices+9;
+                      const NxF64 *p1 = vertices;
+                      const NxF64 *p2 = vertices+3;
+                      const NxF64 *p3 = vertices+6;
+                      const NxF64 *p4 = vertices+9;
                       addTriangleOutput(p1,p2,p3);
                       addTriangleOutput(p1,p3,p4);
                     }
                     else
                     {
-                      float p1[3];
-                      float p2[3];
-                      float p3[3];
-                      float p4[3];
+                      NxF32 p1[3];
+                      NxF32 p2[3];
+                      NxF32 p3[3];
+                      NxF32 p4[3];
                       fm_doubleToFloat3(vertices,p1);
                       fm_doubleToFloat3(vertices+3,p2);
                       fm_doubleToFloat3(vertices+6,p3);
@@ -926,24 +926,24 @@ public:
                   default:
                     {
                       NxU32 tcount;
-                      const double *triangles = t->triangulate3d(pcount,vertices,sizeof(double)*3,tcount,false,SPLIT_EPSILON);
+                      const NxF64 *triangles = t->triangulate3d(pcount,vertices,sizeof(NxF64)*3,tcount,false,SPLIT_EPSILON);
 
                       if ( triangles )
                       {
                         for (NxU32 i=0; i<tcount; i++)
                         {
-                          const double *p1 = triangles;
-                          const double *p2 = triangles+3;
-                          const double *p3 = triangles+6;
+                          const NxF64 *p1 = triangles;
+                          const NxF64 *p2 = triangles+3;
+                          const NxF64 *p3 = triangles+6;
                           if ( mUseDouble )
                           {
                             addTriangleOutput(p3,p2,p1);
                           }
                           else
                           {
-                            float _p1[3];
-                            float _p2[3];
-                            float _p3[3];
+                            NxF32 _p1[3];
+                            NxF32 _p2[3];
+                            NxF32 _p3[3];
                             fm_doubleToFloat3(p1,_p1);
                             fm_doubleToFloat3(p2,_p2);
                             fm_doubleToFloat3(p3,_p3);
@@ -959,8 +959,8 @@ public:
 //
 //                        for (NxU32 i=0; i<pcount; i++)
 //                        {
-//                          const double *p = &vertices[i*3];
-//                          SEND_TEXT_MESSAGE(0,"Point%d : %0.9f, %0.9f, %0.9f \r\n", i+1, (float)p[0],(float)p[1],(float)p[2]);
+//                          const NxF64 *p = &vertices[i*3];
+//                          SEND_TEXT_MESSAGE(0,"Point%d : %0.9f, %0.9f, %0.9f \r\n", i+1, (NxF32)p[0],(NxF32)p[1],(NxF32)p[2]);
 //                        }
                       }
                     }
@@ -1002,9 +1002,9 @@ public:
   }
 
 
-  bool normalMatch(const float *n1,const float *n2) const
+  bool normalMatch(const NxF32 *n1,const NxF32 *n2) const
   {
-    float dot = fm_dot(n1,n2);
+    NxF32 dot = fm_dot(n1,n2);
     return dot >= 0.9999f && dot <= 1.0001f ? true : false;
   }
 
@@ -1147,7 +1147,7 @@ public:
 
 #pragma warning(push)
 #pragma warning(disable:4100)
-  int getIndex(int x,int y,int wid,int hit) const
+  NxI32 getIndex(NxI32 x,NxI32 y,NxI32 wid,NxI32 hit) const
   {
     assert( x >= 0 && x < wid );
     assert( y >= 0 && y < hit );
@@ -1155,7 +1155,7 @@ public:
   }
 #pragma warning(pop)
 
-  void addTriangleOutput(const float *p1,const float *p2,const float *p3)
+  void addTriangleOutput(const NxF32 *p1,const NxF32 *p2,const NxF32 *p3)
   {
 #if DEBUG_SHOW
     gRenderDebug->DebugSolidTri(p1,p2,p3,0x00FFFF,30.0f);
@@ -1171,7 +1171,7 @@ public:
     mOutputIndices.push_back(i3);
   }
 
-  void addTriangleOutput(const double *p1,const double *p2,const double *p3)
+  void addTriangleOutput(const NxF64 *p1,const NxF64 *p2,const NxF64 *p3)
   {
 #if DEBUG_SHOW
     gRenderDebug->DebugSolidTri(p1,p2,p3,0x00FFFF,30.0f);

@@ -416,9 +416,9 @@ HRESULT CDXUTMesh::SetVertexDecl( LPDIRECT3DDEVICE9 pd3dDevice, const D3DVERTEXE
                 return E_OUTOFMEMORY;
             V( m_pMesh->GenerateAdjacency(1e-6f,rgdwAdjacency) );
 
-            float fPartialEdgeThreshold;
-            float fSingularPointThreshold;
-            float fNormalEdgeThreshold;
+            NxF32 fPartialEdgeThreshold;
+            NxF32 fSingularPointThreshold;
+            NxF32 fNormalEdgeThreshold;
             if( bSplitVertexForOptimalTangents )
             {
                 fPartialEdgeThreshold = 0.01f;

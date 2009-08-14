@@ -2,6 +2,7 @@
 
 #define POOL_H
 
+#include "UserMemAlloc.h"
 /*!
 **
 ** Copyright (c) 2007 by John W. Ratcliff mailto:jratcliff@infiniplex.net
@@ -77,7 +78,7 @@
 class MPoolExtra
 {
 public:
-  MPoolExtra(size_t mlen,const char *poolType,const char *file,int lineno)
+  MPoolExtra(size_t mlen,const char *poolType,const char *file,NxI32 lineno)
   {
     mPoolType = poolType;
     mNext = 0;
@@ -148,7 +149,7 @@ public:
     mInitialized = false;
 	};
 
-	void Set(NxI32 startcount,NxI32 growcount,NxI32 maxitems,const char *poolType,const char *file,int lineno)
+	void Set(NxI32 startcount,NxI32 growcount,NxI32 maxitems,const char *poolType,const char *file,NxI32 lineno)
 	{
     mPoolType = poolType;
     mFile     = file;
@@ -390,7 +391,7 @@ public:
 	NxI32        mMaxUsed;
   const char *mPoolType;
   const char *mFile;
-  int         mLineNo;
+  NxI32         mLineNo;
 };
 
 

@@ -30,7 +30,7 @@ public:
 
   virtual void ConvexDecompResult(ConvexDecomposition::ConvexResult &result)
   {
-    unsigned int color = gRenderDebug->getDebugColor();
+    NxU32 color = gRenderDebug->getDebugColor();
 
 	gRenderDebug->pushRenderState();
 	gRenderDebug->setCurrentDisplayTime(15.0f);
@@ -38,18 +38,18 @@ public:
 
     if ( mFitObb )
     {
-      float *vertices = (float *)MEMALLOC_MALLOC(sizeof(float)*result.mHullVcount*3);
+      NxF32 *vertices = (NxF32 *)MEMALLOC_MALLOC(sizeof(NxF32)*result.mHullVcount*3);
       for (NxU32 i=0; i<result.mHullVcount*3; i++)
       {
-        vertices[i] = (float)result.mHullVertices[i];
+        vertices[i] = (NxF32)result.mHullVertices[i];
       }
 
-      float matrix[16];
-      float sides[3];
-      fm_computeBestFitOBB(result.mHullVcount,vertices,sizeof(float)*3,sides,matrix,true);
+      NxF32 matrix[16];
+      NxF32 sides[3];
+      fm_computeBestFitOBB(result.mHullVcount,vertices,sizeof(NxF32)*3,sides,matrix,true);
 
-      float bmin[3];
-      float bmax[3];
+      NxF32 bmin[3];
+      NxF32 bmax[3];
 
       bmin[0] = -sides[0]*0.5f;
       bmin[1] = -sides[1]*0.5f;
@@ -69,30 +69,30 @@ public:
     {
 	  gRenderDebug->setCurrentState(DebugRenderState::SolidShaded);
 	  gRenderDebug->setCurrentColor(color,0xFFFFFF);
-      for (unsigned int i=0; i<result.mHullTcount; i++)
+      for (NxU32 i=0; i<result.mHullTcount; i++)
       {
-        unsigned int i1 = result.mHullIndices[i*3+0];
-        unsigned int i2 = result.mHullIndices[i*3+1];
-        unsigned int i3 = result.mHullIndices[i*3+2];
-        const double *p1 = &result.mHullVertices[i1*3];
-        const double *p2 = &result.mHullVertices[i2*3];
-        const double *p3 = &result.mHullVertices[i3*3];
+        NxU32 i1 = result.mHullIndices[i*3+0];
+        NxU32 i2 = result.mHullIndices[i*3+1];
+        NxU32 i3 = result.mHullIndices[i*3+2];
+        const NxF64 *p1 = &result.mHullVertices[i1*3];
+        const NxF64 *p2 = &result.mHullVertices[i2*3];
+        const NxF64 *p3 = &result.mHullVertices[i3*3];
         gRenderDebug->DebugTri(p1,p2,p3);
       }
     }
 	gRenderDebug->popRenderState();
   }
   bool mFitObb;
-  int mCount;
+  NxI32 mCount;
 };
 
 void testConvexDecomposition(MeshSystemHelper *ms,
-                             unsigned int depth,
-                             float mergePercentage,
-                             float concavityPercentage,
-                             float volumePercentage,
-                             unsigned int maxVertices,
-                             float skinWidth,
+                             NxU32 depth,
+                             NxF32 mergePercentage,
+                             NxF32 concavityPercentage,
+                             NxF32 volumePercentage,
+                             NxU32 maxVertices,
+                             NxF32 skinWidth,
                              bool fitObb,
                              bool removeTjunctions,
                              bool initialIslandGeneration,
@@ -112,15 +112,15 @@ void testConvexDecomposition(MeshSystemHelper *ms,
     {
       ConvexDecomposition::DecompDesc desc;
       desc.mVcount = mr->mVcount;
-      double *dest = (double *)MEMALLOC_MALLOC( sizeof(double)*mr->mVcount*3);
+      NxF64 *dest = (NxF64 *)MEMALLOC_MALLOC( sizeof(NxF64)*mr->mVcount*3);
       for (NxU32 i=0; i<(NxU32)(mr->mVcount*3); i++)
       {
-        float f = mr->mVertices[i];
-        dest[i] = (double) f;
+        NxF32 f = mr->mVertices[i];
+        dest[i] = (NxF64) f;
       }
       desc.mVertices = dest;
       desc.mTcount = mr->mTcount;
-      desc.mIndices = (unsigned int *)mr->mIndices;
+      desc.mIndices = (NxU32 *)mr->mIndices;
       desc.mDepth = depth;
       desc.mCpercent = concavityPercentage;
       desc.mPpercent = mergePercentage;

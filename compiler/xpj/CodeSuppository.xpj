@@ -99,7 +99,6 @@
 				../../ext/DirectX_October2006
 			</SearchPaths>
 			<Files name="DirectX Header Files" root="../../ext/DirectX_October2006" type="header">
-         *.h
 			</Files>
 			<Files name="resources" root="../../app/CodeSuppository">
 			  *.rc

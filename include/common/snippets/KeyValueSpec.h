@@ -2,7 +2,7 @@
 
 #define KEY_VALUE_SPEC_H
 
-
+#include "UserMemAlloc.h"
 #include "NxFoundation.h"
 
 // This snippets is used to convert key/value pairs rapidly to their binary versions based on a pre-defined specification.
@@ -12,23 +12,23 @@
 //
 // Here is the format for a specification:  <key>=<data_type>,<default_value>,<min>,<max>
 //
-// step_value      = float,0.05,0.01,0.4       # Distance between smoothed data points
-// tightness       = float,1.0,0.1,100         # Distance between control points
-// check_above     = float,4.0,0.01,100        # Height above to start grounding
-// walk_slope      = float,45,1,85             # Walk slope for the character
-// char_width      = float,0.03,0.01,1         # The character width
-// char_height     = float,0.165,0.01,1        # The character height
+// step_value      = NxF32,0.05,0.01,0.4       # Distance between smoothed data points
+// tightness       = NxF32,1.0,0.1,100         # Distance between control points
+// check_above     = NxF32,4.0,0.01,100        # Height above to start grounding
+// walk_slope      = NxF32,45,1,85             # Walk slope for the character
+// char_width      = NxF32,0.03,0.01,1         # The character width
+// char_height     = NxF32,0.165,0.01,1        # The character height
 // collision_group = string,CGF_PATH_COLLISION #
 // ----------------------------------------------------------
 // Example HSL usage:
 // ----------------------------------------------------------
 // createKeyValueSpec("GroundedPath");
-// addKeyValueSpec("GroundedPath","step_value      = float,0.05,0.01,0.4       # Distance between smoothed data points");
-// addKeyValueSpec("GroundedPath","tightness       = float,1.0,0.1,100         # Distance between control points");
-// addKeyValueSpec("GroundedPath","check_above     = float,4.0,0.01,100        # Height above to start grounding");
-// addKeyValueSpec("GroundedPath","walk_slope      = float,45,1,85             # Walk slope for the character");
-// addKeyValueSpec("GroundedPath","char_width      = float,0.03,0.01,1         # The character width");
-// addKeyValueSpec("GroundedPath","char_height     = float,0.165,0.01,1        # The character height");
+// addKeyValueSpec("GroundedPath","step_value      = NxF32,0.05,0.01,0.4       # Distance between smoothed data points");
+// addKeyValueSpec("GroundedPath","tightness       = NxF32,1.0,0.1,100         # Distance between control points");
+// addKeyValueSpec("GroundedPath","check_above     = NxF32,4.0,0.01,100        # Height above to start grounding");
+// addKeyValueSpec("GroundedPath","walk_slope      = NxF32,45,1,85             # Walk slope for the character");
+// addKeyValueSpec("GroundedPath","char_width      = NxF32,0.03,0.01,1         # The character width");
+// addKeyValueSpec("GroundedPath","char_height     = NxF32,0.165,0.01,1        # The character height");
 // addKeyValueSpec("GroundedPath","collision_group = string,CGF_PATH_COLLISION # Specifies the collision group flags to use.");
 // releaseKeyValueSpec("GroundedPath");
 //
@@ -68,21 +68,21 @@ public:
   union T
   {
     bool        mState;
-    int         mValue;
-    float       mValueF;
+    NxI32         mValue;
+    NxF32       mValueF;
     char *      mString;
   } t;
 
   union TMIN
   {
-    int mMinValue;
-    float mMinValueF;
+    NxI32 mMinValue;
+    NxF32 mMinValueF;
   } tmin;
 
   union TMAX
   {
-    int mMaxValue;
-    float mMaxValueF;
+    NxI32 mMaxValue;
+    NxF32 mMaxValueF;
   } tmax;
 
 };

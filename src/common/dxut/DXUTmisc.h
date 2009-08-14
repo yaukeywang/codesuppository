@@ -42,10 +42,10 @@ struct DXUT_GAMEPAD
     bool    bRemoved;   // If the controller was removed this frame
 
     // Thumb stick values converted to range [-1,+1]
-    float   fThumbRX;
-    float   fThumbRY;
-    float   fThumbLX;
-    float   fThumbLY;
+    NxF32   fThumbRX;
+    NxF32   fThumbRY;
+    NxF32   fThumbLX;
+    NxF32   fThumbLY;
 
     // Records which buttons were pressed this frame.
     // These are only set on the first frame that the button is pressed
@@ -72,40 +72,40 @@ class CGrowableArray
 {
 public:
     CGrowableArray()  { m_pData = NULL; m_nSize = 0; m_nMaxSize = 0; }
-    CGrowableArray( const CGrowableArray<TYPE>& a ) { for( int i=0; i < a.m_nSize; i++ ) Add( a.m_pData[i] ); }
+    CGrowableArray( const CGrowableArray<TYPE>& a ) { for( NxI32 i=0; i < a.m_nSize; i++ ) Add( a.m_pData[i] ); }
     ~CGrowableArray() { RemoveAll(); }
 
-    const TYPE& operator[]( int nIndex ) const { return GetAt( nIndex ); }
-    TYPE& operator[]( int nIndex ) { return GetAt( nIndex ); }
+    const TYPE& operator[]( NxI32 nIndex ) const { return GetAt( nIndex ); }
+    TYPE& operator[]( NxI32 nIndex ) { return GetAt( nIndex ); }
    
-    CGrowableArray& operator=( const CGrowableArray<TYPE>& a ) { if( this == &a ) return *this; RemoveAll(); for( int i=0; i < a.m_nSize; i++ ) Add( a.m_pData[i] ); return *this; }
+    CGrowableArray& operator=( const CGrowableArray<TYPE>& a ) { if( this == &a ) return *this; RemoveAll(); for( NxI32 i=0; i < a.m_nSize; i++ ) Add( a.m_pData[i] ); return *this; }
 
-    HRESULT SetSize( int nNewMaxSize );
+    HRESULT SetSize( NxI32 nNewMaxSize );
     HRESULT Add( const TYPE& value );
-    HRESULT Insert( int nIndex, const TYPE& value );
-    HRESULT SetAt( int nIndex, const TYPE& value );
-    TYPE&   GetAt( int nIndex ) { assert( nIndex >= 0 && nIndex < m_nSize ); return m_pData[nIndex]; }
-    int     GetSize() const { return m_nSize; }
+    HRESULT Insert( NxI32 nIndex, const TYPE& value );
+    HRESULT SetAt( NxI32 nIndex, const TYPE& value );
+    TYPE&   GetAt( NxI32 nIndex ) { assert( nIndex >= 0 && nIndex < m_nSize ); return m_pData[nIndex]; }
+    NxI32     GetSize() const { return m_nSize; }
     TYPE*   GetData() { return m_pData; }
     bool    Contains( const TYPE& value ){ return ( -1 != IndexOf( value ) ); }
 
-    int     IndexOf( const TYPE& value ) { return ( m_nSize > 0 ) ? IndexOf( value, 0, m_nSize ) : -1; }
-    int     IndexOf( const TYPE& value, int iStart ) { return IndexOf( value, iStart, m_nSize - iStart ); }
-    int     IndexOf( const TYPE& value, int nIndex, int nNumElements );
+    NxI32     IndexOf( const TYPE& value ) { return ( m_nSize > 0 ) ? IndexOf( value, 0, m_nSize ) : -1; }
+    NxI32     IndexOf( const TYPE& value, NxI32 iStart ) { return IndexOf( value, iStart, m_nSize - iStart ); }
+    NxI32     IndexOf( const TYPE& value, NxI32 nIndex, NxI32 nNumElements );
 
-    int     LastIndexOf( const TYPE& value ) { return ( m_nSize > 0 ) ? LastIndexOf( value, m_nSize-1, m_nSize ) : -1; }
-    int     LastIndexOf( const TYPE& value, int nIndex ) { return LastIndexOf( value, nIndex, nIndex+1 ); }
-    int     LastIndexOf( const TYPE& value, int nIndex, int nNumElements );
+    NxI32     LastIndexOf( const TYPE& value ) { return ( m_nSize > 0 ) ? LastIndexOf( value, m_nSize-1, m_nSize ) : -1; }
+    NxI32     LastIndexOf( const TYPE& value, NxI32 nIndex ) { return LastIndexOf( value, nIndex, nIndex+1 ); }
+    NxI32     LastIndexOf( const TYPE& value, NxI32 nIndex, NxI32 nNumElements );
 
-    HRESULT Remove( int nIndex );
+    HRESULT Remove( NxI32 nIndex );
     void    RemoveAll() { SetSize(0); }
 
 protected:
     TYPE* m_pData;      // the actual array of data
-    int m_nSize;        // # of elements (upperBound - 1)
-    int m_nMaxSize;     // max allocated
+    NxI32 m_nSize;        // # of elements (upperBound - 1)
+    NxI32 m_nMaxSize;     // max allocated
 
-    HRESULT SetSizeInternal( int nNewMaxSize );  // This version doesn't call ctor or dtor.
+    HRESULT SetSizeInternal( NxI32 nNewMaxSize );  // This version doesn't call ctor or dtor.
 };
 
 
@@ -122,10 +122,10 @@ public:
     void Start(); // starts the timer
     void Stop();  // stop (or pause) the timer
     void Advance(); // advance the timer by 0.1 seconds
-    double GetAbsoluteTime(); // get the absolute system time
-    double GetTime(); // get the current time
-    double GetElapsedTime(); // get the time that elapsed between Get*ElapsedTime() calls
-    void GetTimeValues( double* pfTime, double* pfAbsoluteTime, float* pfElapsedTime ); // get all time values at once
+    NxF64 GetAbsoluteTime(); // get the absolute system time
+    NxF64 GetTime(); // get the current time
+    NxF64 GetElapsedTime(); // get the time that elapsed between Get*ElapsedTime() calls
+    void GetTimeValues( NxF64* pfTime, NxF64* pfAbsoluteTime, NxF32* pfElapsedTime ); // get all time values at once
     bool IsStopped(); // returns true if timer stopped
 
     // Limit the current thread to one processor (the current one). This ensures that timing code runs
@@ -241,8 +241,8 @@ public:
     void SetOffset( INT nX, INT nY ) { m_Offset.x = nX; m_Offset.y = nY; }
 
     // Call these from client and use GetRotationMatrix() to read new rotation matrix
-    void OnBegin( int nX, int nY );  // start the rotation (pass current mouse position)
-    void OnMove( int nX, int nY );   // continue the rotation (pass current mouse position)
+    void OnBegin( NxI32 nX, NxI32 nY );  // start the rotation (pass current mouse position)
+    void OnMove( NxI32 nX, NxI32 nY );   // continue the rotation (pass current mouse position)
     void OnEnd();                    // end the rotation 
 
     // Or call this to automatically handle left, middle, right buttons
@@ -279,7 +279,7 @@ protected:
     D3DXVECTOR3    m_vDownPt;           // starting point of rotation arc
     D3DXVECTOR3    m_vCurrentPt;        // current point of rotation arc
 
-    D3DXVECTOR3    ScreenToVector( float fScreenPtX, float fScreenPtY );
+    D3DXVECTOR3    ScreenToVector( NxF32 fScreenPtX, NxF32 fScreenPtY );
 };
 
 
@@ -336,15 +336,15 @@ public:
     void SetEnablePositionMovement( bool bEnablePositionMovement ) { m_bEnablePositionMovement = bEnablePositionMovement; }
     void SetClipToBoundary( bool bClipToBoundary, D3DXVECTOR3* pvMinBoundary, D3DXVECTOR3* pvMaxBoundary ) { m_bClipToBoundary = bClipToBoundary; if( pvMinBoundary ) m_vMinBoundary = *pvMinBoundary; if( pvMaxBoundary ) m_vMaxBoundary = *pvMaxBoundary; }
     void SetScalers( FLOAT fRotationScaler = 0.01f, FLOAT fMoveScaler = 5.0f )  { m_fRotationScaler = fRotationScaler; m_fMoveScaler = fMoveScaler; }
-    void SetNumberOfFramesToSmoothMouseData( int nFrames ) { if( nFrames > 0 ) m_fFramesToSmoothMouseData = (float)nFrames; }
+    void SetNumberOfFramesToSmoothMouseData( NxI32 nFrames ) { if( nFrames > 0 ) m_fFramesToSmoothMouseData = (NxF32)nFrames; }
 
     // Functions to get state
     const D3DXMATRIX*  GetViewMatrix() const { return &m_mView; }
     const D3DXMATRIX*  GetProjMatrix() const { return &m_mProj; }
     const D3DXVECTOR3* GetEyePt() const      { return &m_vEye; }
     const D3DXVECTOR3* GetLookAtPt() const   { return &m_vLookAt; }
-    float GetNearClip() const { return m_fNearPlane; }
-    float GetFarClip() const { return m_fFarPlane; }
+    NxF32 GetNearClip() const { return m_fNearPlane; }
+    NxF32 GetFarClip() const { return m_fFarPlane; }
 
     bool IsBeingDragged() const         { return (m_bMouseLButtonDown || m_bMouseMButtonDown || m_bMouseRButtonDown); }
     bool IsMouseLButtonDown() const     { return m_bMouseLButtonDown; } 
@@ -361,7 +361,7 @@ protected:
     bool WasKeyDown( BYTE key ) const { return( (key & KEY_WAS_DOWN_MASK) == KEY_WAS_DOWN_MASK ); }
 
     void ConstrainToBoundary( D3DXVECTOR3* pV );
-    void UpdateVelocity( float fElapsedTime );
+    void UpdateVelocity( NxF32 fElapsedTime );
     void GetInput( bool bGetKeyboardInput, bool bGetMouseInput, bool bGetGamepadInput, bool bResetCursorAfterMove );
 
     D3DXMATRIX            m_mView;              // View matrix 
@@ -370,26 +370,26 @@ protected:
     DXUT_GAMEPAD          m_GamePad[DXUT_MAX_CONTROLLERS]; // XInput controller state
     D3DXVECTOR3           m_vGamePadLeftThumb;
     D3DXVECTOR3           m_vGamePadRightThumb;
-    double                m_GamePadLastActive[DXUT_MAX_CONTROLLERS];
+    NxF64                m_GamePadLastActive[DXUT_MAX_CONTROLLERS];
 
-    int                   m_cKeysDown;            // Number of camera keys that are down.
+    NxI32                   m_cKeysDown;            // Number of camera keys that are down.
     BYTE                  m_aKeys[CAM_MAX_KEYS];  // State of input - KEY_WAS_DOWN_MASK|KEY_IS_DOWN_MASK
     D3DXVECTOR3           m_vKeyboardDirection;   // Direction vector of keyboard input
     POINT                 m_ptLastMousePosition;  // Last absolute position of mouse cursor
     bool                  m_bMouseLButtonDown;    // True if left button is down 
     bool                  m_bMouseMButtonDown;    // True if middle button is down 
     bool                  m_bMouseRButtonDown;    // True if right button is down 
-    int                   m_nCurrentButtonMask;   // mask of which buttons are down
-    int                   m_nMouseWheelDelta;     // Amount of middle wheel scroll (+/-) 
+    NxI32                   m_nCurrentButtonMask;   // mask of which buttons are down
+    NxI32                   m_nMouseWheelDelta;     // Amount of middle wheel scroll (+/-) 
     D3DXVECTOR2           m_vMouseDelta;          // Mouse relative delta smoothed over a few frames
-    float                 m_fFramesToSmoothMouseData; // Number of frames to smooth mouse data over
+    NxF32                 m_fFramesToSmoothMouseData; // Number of frames to smooth mouse data over
 
     D3DXVECTOR3           m_vDefaultEye;          // Default camera eye position
     D3DXVECTOR3           m_vDefaultLookAt;       // Default LookAt position
     D3DXVECTOR3           m_vEye;                 // Camera eye position
     D3DXVECTOR3           m_vLookAt;              // LookAt position
-    float                 m_fCameraYawAngle;      // Yaw angle of camera
-    float                 m_fCameraPitchAngle;    // Pitch angle of camera
+    NxF32                 m_fCameraYawAngle;      // Yaw angle of camera
+    NxF32                 m_fCameraPitchAngle;    // Pitch angle of camera
 
     RECT                  m_rcDrag;               // Rectangle within which a drag can be initiated.
     D3DXVECTOR3           m_vVelocity;            // Velocity of camera
@@ -399,13 +399,13 @@ protected:
     FLOAT                 m_fTotalDragTimeToZero; // Time it takes for velocity to go from full to 0
     D3DXVECTOR2           m_vRotVelocity;         // Velocity of camera
 
-    float                 m_fFOV;                 // Field of view
-    float                 m_fAspect;              // Aspect ratio
-    float                 m_fNearPlane;           // Near plane
-    float                 m_fFarPlane;            // Far plane
+    NxF32                 m_fFOV;                 // Field of view
+    NxF32                 m_fAspect;              // Aspect ratio
+    NxF32                 m_fNearPlane;           // Near plane
+    NxF32                 m_fFarPlane;            // Far plane
 
-    float                 m_fRotationScaler;      // Scaler for rotation
-    float                 m_fMoveScaler;          // Scaler for movement
+    NxF32                 m_fRotationScaler;      // Scaler for rotation
+    NxF32                 m_fMoveScaler;          // Scaler for movement
 
     bool                  m_bInvertPitch;         // Invert the pitch axis
     bool                  m_bEnablePositionMovement; // If true, then the user can translate the camera/model 
@@ -449,7 +449,7 @@ public:
 protected:
     D3DXMATRIX m_mCameraWorld;       // World matrix of the camera (inverse of the view matrix)
 
-    int        m_nActiveButtonMask;  // Mask to determine which button to enable for rotation
+    NxI32        m_nActiveButtonMask;  // Mask to determine which button to enable for rotation
     bool       m_bRotateWithoutButtonDown;
 
     bool       m_bResetCursorAfterMove;// If true, the class will reset the cursor position so that the cursor always has space to move 
@@ -473,11 +473,11 @@ public:
     virtual void SetDragRect( RECT &rc );
     void Reset(); 
     void SetViewParams( D3DXVECTOR3* pvEyePt, D3DXVECTOR3* pvLookatPt );
-    void SetButtonMasks( int nRotateModelButtonMask = MOUSE_LEFT_BUTTON, int nZoomButtonMask = MOUSE_WHEEL, int nRotateCameraButtonMask = MOUSE_RIGHT_BUTTON ) { m_nRotateModelButtonMask = nRotateModelButtonMask, m_nZoomButtonMask = nZoomButtonMask; m_nRotateCameraButtonMask = nRotateCameraButtonMask; }
+    void SetButtonMasks( NxI32 nRotateModelButtonMask = MOUSE_LEFT_BUTTON, NxI32 nZoomButtonMask = MOUSE_WHEEL, NxI32 nRotateCameraButtonMask = MOUSE_RIGHT_BUTTON ) { m_nRotateModelButtonMask = nRotateModelButtonMask, m_nZoomButtonMask = nZoomButtonMask; m_nRotateCameraButtonMask = nRotateCameraButtonMask; }
     
     void SetAttachCameraToModel( bool bEnable = false ) { m_bAttachCameraToModel = bEnable; }
-    void SetWindow( int nWidth, int nHeight, float fArcballRadius=0.9f ) { m_WorldArcBall.SetWindow( nWidth, nHeight, fArcballRadius ); m_ViewArcBall.SetWindow( nWidth, nHeight, fArcballRadius ); }
-    void SetRadius( float fDefaultRadius=5.0f, float fMinRadius=1.0f, float fMaxRadius=FLT_MAX  ) { m_fDefaultRadius = m_fRadius = fDefaultRadius; m_fMinRadius = fMinRadius; m_fMaxRadius = fMaxRadius; m_bDragSinceLastUpdate = true; }
+    void SetWindow( NxI32 nWidth, NxI32 nHeight, NxF32 fArcballRadius=0.9f ) { m_WorldArcBall.SetWindow( nWidth, nHeight, fArcballRadius ); m_ViewArcBall.SetWindow( nWidth, nHeight, fArcballRadius ); }
+    void SetRadius( NxF32 fDefaultRadius=5.0f, NxF32 fMinRadius=1.0f, NxF32 fMaxRadius=FLT_MAX  ) { m_fDefaultRadius = m_fRadius = fDefaultRadius; m_fMinRadius = fMinRadius; m_fMaxRadius = fMaxRadius; m_bDragSinceLastUpdate = true; }
     void SetModelCenter( D3DXVECTOR3 vModelCenter ) { m_vModelCenter = vModelCenter; }
     void SetLimitPitch( bool bLimitPitch ) { m_bLimitPitch = bLimitPitch; }
     void SetViewQuat( D3DXQUATERNION q ) { m_ViewArcBall.SetQuatNow( q ); m_bDragSinceLastUpdate = true; }
@@ -495,16 +495,16 @@ protected:
     D3DXMATRIX   m_mModelRot;            // Rotation matrix of model
     D3DXMATRIX   m_mWorld;               // World matrix of model
 
-    int          m_nRotateModelButtonMask;
-    int          m_nZoomButtonMask;
-    int          m_nRotateCameraButtonMask;
+    NxI32          m_nRotateModelButtonMask;
+    NxI32          m_nZoomButtonMask;
+    NxI32          m_nRotateCameraButtonMask;
 
     bool         m_bAttachCameraToModel;
     bool         m_bLimitPitch;
-    float        m_fRadius;              // Distance from the camera to model 
-    float        m_fDefaultRadius;       // Distance from the camera to model 
-    float        m_fMinRadius;           // Min radius
-    float        m_fMaxRadius;           // Max radius
+    NxF32        m_fRadius;              // Distance from the camera to model 
+    NxF32        m_fDefaultRadius;       // Distance from the camera to model 
+    NxF32        m_fMinRadius;           // Min radius
+    NxF32        m_fMaxRadius;           // Max radius
     bool         m_bDragSinceLastUpdate; // True if mouse drag has happened since last time FrameMove is called.
 
     D3DXMATRIX   m_mCameraRotLast;
@@ -518,9 +518,9 @@ protected:
 class CDXUTTextHelper
 {
 public:
-    CDXUTTextHelper( ID3DXFont* pFont, ID3DXSprite* pSprite, int nLineHeight );
+    CDXUTTextHelper( ID3DXFont* pFont, ID3DXSprite* pSprite, NxI32 nLineHeight );
 
-    void SetInsertionPos( int x, int y ) { m_pt.x = x; m_pt.y = y; }
+    void SetInsertionPos( NxI32 x, NxI32 y ) { m_pt.x = x; m_pt.y = y; }
     void SetForegroundColor( D3DXCOLOR clr ) { m_clr = clr; }
 
     void Begin();
@@ -529,16 +529,16 @@ public:
     HRESULT DrawFormattedTextLine( RECT &rc, DWORD dwFlags, const WCHAR* strMsg, ... );
     HRESULT DrawTextLine( RECT &rc, DWORD dwFlags, const WCHAR* strMsg );
     void End();
-		int GetFontWidth( void );
-		int GetFontHeight( void );
-		int GetAvgFontWidth( void );
+		NxI32 GetFontWidth( void );
+		NxI32 GetFontHeight( void );
+		NxI32 GetAvgFontWidth( void );
 
 protected:
     ID3DXFont*   m_pFont;
     ID3DXSprite* m_pSprite;
     D3DXCOLOR    m_clr;
     POINT        m_pt;
-    int          m_nLineHeight;
+    NxI32          m_nLineHeight;
 };
 
 
@@ -557,19 +557,19 @@ public:
     HRESULT OnLostDevice();
     HRESULT OnDeletedDevice();
 
-    HRESULT AddLine( int* pnLineID, D3DXVECTOR2* pVertexList, DWORD dwVertexListCount, D3DCOLOR Color, float fWidth, float fScaleRatio, bool bAntiAlias );
-    HRESULT AddRect( int* pnLineID, RECT rc, D3DCOLOR Color, float fWidth, float fScaleRatio, bool bAntiAlias );
-    HRESULT RemoveLine( int nLineID );
+    HRESULT AddLine( NxI32* pnLineID, D3DXVECTOR2* pVertexList, DWORD dwVertexListCount, D3DCOLOR Color, NxF32 fWidth, NxF32 fScaleRatio, bool bAntiAlias );
+    HRESULT AddRect( NxI32* pnLineID, RECT rc, D3DCOLOR Color, NxF32 fWidth, NxF32 fScaleRatio, bool bAntiAlias );
+    HRESULT RemoveLine( NxI32 nLineID );
     HRESULT RemoveAllLines();
 
 protected:
     struct LINE_NODE
     {
-        int      nLineID;
+        NxI32      nLineID;
         D3DCOLOR Color;
-        float    fWidth;
+        NxF32    fWidth;
         bool     bAntiAlias;
-        float    fScaleRatio;
+        NxF32    fScaleRatio;
         D3DXVECTOR2* pVertexList;
         DWORD    dwVertexListCount;
     };
@@ -598,10 +598,10 @@ public:
 
     D3DXVECTOR3 GetLightDirection()         { return m_vCurrentDir; };
     void        SetLightDirection( D3DXVECTOR3 vDir ) { m_vDefaultDir = m_vCurrentDir = vDir; };
-    void        SetButtonMask( int nRotate = MOUSE_RIGHT_BUTTON ) { m_nRotateMask = nRotate; }
+    void        SetButtonMask( NxI32 nRotate = MOUSE_RIGHT_BUTTON ) { m_nRotateMask = nRotate; }
 
-    float GetRadius()                 { return m_fRadius; };
-    void  SetRadius( float fRadius )  { m_fRadius = fRadius; };
+    NxF32 GetRadius()                 { return m_fRadius; };
+    void  SetRadius( NxF32 fRadius )  { m_fRadius = fRadius; };
 
     bool  IsBeingDragged() { return m_ArcBall.IsBeingDragged(); };
 
@@ -614,8 +614,8 @@ protected:
     static ID3DXEffect* s_pEffect;       
     static ID3DXMesh*   s_pMesh;    
 
-    float          m_fRadius;
-    int            m_nRotateMask;
+    NxF32          m_fRadius;
+    NxI32            m_nRotateMask;
     CD3DArcBall    m_ArcBall;
     D3DXVECTOR3    m_vDefaultDir;
     D3DXVECTOR3    m_vCurrentDir;
@@ -631,7 +631,7 @@ void DXUTDisplaySwitchingToREFWarning();
 //--------------------------------------------------------------------------------------
 // Tries to finds a media file by searching in common locations
 //--------------------------------------------------------------------------------------
-HRESULT DXUTFindDXSDKMediaFileCch( WCHAR* strDestPath, int cchDest, LPCWSTR strFilename );
+HRESULT DXUTFindDXSDKMediaFileCch( WCHAR* strDestPath, NxI32 cchDest, LPCWSTR strFilename );
 HRESULT DXUTSetMediaSearchPath( LPCWSTR strPath );
 LPCWSTR DXUTGetMediaSearchPath();
 
@@ -692,8 +692,8 @@ WCHAR* DXUTTraceD3DDECLTYPEtoString( BYTE t );
 //--------------------------------------------------------------------------------------
 
 IDirect3D9 * WINAPI DXUT_Dynamic_Direct3DCreate9(UINT SDKVersion);
-int WINAPI DXUT_Dynamic_D3DPERF_BeginEvent( D3DCOLOR col, LPCWSTR wszName );
-int WINAPI DXUT_Dynamic_D3DPERF_EndEvent( void );
+NxI32 WINAPI DXUT_Dynamic_D3DPERF_BeginEvent( D3DCOLOR col, LPCWSTR wszName );
+NxI32 WINAPI DXUT_Dynamic_D3DPERF_EndEvent( void );
 void WINAPI DXUT_Dynamic_D3DPERF_SetMarker( D3DCOLOR col, LPCWSTR wszName );
 void WINAPI DXUT_Dynamic_D3DPERF_SetRegion( D3DCOLOR col, LPCWSTR wszName );
 BOOL WINAPI DXUT_Dynamic_D3DPERF_QueryRepeatFrame( void );
@@ -787,7 +787,7 @@ void     DXUTGetDesktopResolution( UINT AdapterOrdinal, UINT* pWidth, UINT* pHei
 
 // This version doesn't call ctor or dtor.
 template< typename TYPE >
-HRESULT CGrowableArray<TYPE>::SetSizeInternal( int nNewMaxSize )
+HRESULT CGrowableArray<TYPE>::SetSizeInternal( NxI32 nNewMaxSize )
 {
     if( nNewMaxSize < 0 )
     {
@@ -810,7 +810,7 @@ HRESULT CGrowableArray<TYPE>::SetSizeInternal( int nNewMaxSize )
     else if( m_pData == NULL || nNewMaxSize > m_nMaxSize )
     {
         // Grow array
-        int nGrowBy = ( m_nMaxSize == 0 ) ? 16 : m_nMaxSize;
+        NxI32 nGrowBy = ( m_nMaxSize == 0 ) ? 16 : m_nMaxSize;
         nNewMaxSize = __max( nNewMaxSize, m_nMaxSize + nGrowBy );
 
         TYPE* pDataNew = (TYPE*) MEMALLOC_REALLOC( m_pData, nNewMaxSize * sizeof(TYPE) );
@@ -827,15 +827,15 @@ HRESULT CGrowableArray<TYPE>::SetSizeInternal( int nNewMaxSize )
 
 //--------------------------------------------------------------------------------------
 template< typename TYPE >
-HRESULT CGrowableArray<TYPE>::SetSize( int nNewMaxSize )
+HRESULT CGrowableArray<TYPE>::SetSize( NxI32 nNewMaxSize )
 {
-    int nOldSize = m_nSize;
+    NxI32 nOldSize = m_nSize;
 
     if( nOldSize > nNewMaxSize )
     {
         // Removing elements. Call dtor.
 
-        for( int i = nNewMaxSize; i < nOldSize; ++i )
+        for( NxI32 i = nNewMaxSize; i < nOldSize; ++i )
             m_pData[i].~TYPE();
     }
 
@@ -847,7 +847,7 @@ HRESULT CGrowableArray<TYPE>::SetSize( int nNewMaxSize )
     {
         // Adding elements. Call ctor.
 
-        for( int i = nOldSize; i < nNewMaxSize; ++i )
+        for( NxI32 i = nOldSize; i < nNewMaxSize; ++i )
             ::new (&m_pData[i]) TYPE;
     }
 
@@ -876,7 +876,7 @@ HRESULT CGrowableArray<TYPE>::Add( const TYPE& value )
 
 //--------------------------------------------------------------------------------------
 template< typename TYPE >
-HRESULT CGrowableArray<TYPE>::Insert( int nIndex, const TYPE& value )
+HRESULT CGrowableArray<TYPE>::Insert( NxI32 nIndex, const TYPE& value )
 {
     HRESULT hr;
 
@@ -908,7 +908,7 @@ HRESULT CGrowableArray<TYPE>::Insert( int nIndex, const TYPE& value )
 
 //--------------------------------------------------------------------------------------
 template< typename TYPE >
-HRESULT CGrowableArray<TYPE>::SetAt( int nIndex, const TYPE& value )
+HRESULT CGrowableArray<TYPE>::SetAt( NxI32 nIndex, const TYPE& value )
 {
     // Validate arguments
     if( nIndex < 0 ||
@@ -930,7 +930,7 @@ HRESULT CGrowableArray<TYPE>::SetAt( int nIndex, const TYPE& value )
 // section.
 //--------------------------------------------------------------------------------------
 template< typename TYPE >
-int CGrowableArray<TYPE>::IndexOf( const TYPE& value, int iStart, int nNumElements )
+NxI32 CGrowableArray<TYPE>::IndexOf( const TYPE& value, NxI32 iStart, NxI32 nNumElements )
 {
     // Validate arguments
     if( iStart < 0 || 
@@ -943,7 +943,7 @@ int CGrowableArray<TYPE>::IndexOf( const TYPE& value, int iStart, int nNumElemen
     }
 
     // Search
-    for( int i = iStart; i < (iStart + nNumElements); i++ )
+    for( NxI32 i = iStart; i < (iStart + nNumElements); i++ )
     {
         if( value == m_pData[i] )
             return i;
@@ -960,7 +960,7 @@ int CGrowableArray<TYPE>::IndexOf( const TYPE& value, int iStart, int nNumElemen
 // and ends at iEnd. Returns -1 if value is not found within the given section.
 //--------------------------------------------------------------------------------------
 template< typename TYPE >
-int CGrowableArray<TYPE>::LastIndexOf( const TYPE& value, int iEnd, int nNumElements )
+NxI32 CGrowableArray<TYPE>::LastIndexOf( const TYPE& value, NxI32 iEnd, NxI32 nNumElements )
 {
     // Validate arguments
     if( iEnd < 0 || 
@@ -973,7 +973,7 @@ int CGrowableArray<TYPE>::LastIndexOf( const TYPE& value, int iEnd, int nNumElem
     }
 
     // Search
-    for( int i = iEnd; i > (iEnd - nNumElements); i-- )
+    for( NxI32 i = iEnd; i > (iEnd - nNumElements); i-- )
     {
         if( value == m_pData[i] )
             return i;
@@ -987,7 +987,7 @@ int CGrowableArray<TYPE>::LastIndexOf( const TYPE& value, int iEnd, int nNumElem
 
 //--------------------------------------------------------------------------------------
 template< typename TYPE >
-HRESULT CGrowableArray<TYPE>::Remove( int nIndex )
+HRESULT CGrowableArray<TYPE>::Remove( NxI32 nIndex )
 {
     if( nIndex < 0 || 
         nIndex >= m_nSize )

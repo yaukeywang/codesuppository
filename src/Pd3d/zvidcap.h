@@ -5,6 +5,8 @@
 #ifndef ZVIDCAP_H
 #define ZVIDCAP_H
 
+#include "UserMemAlloc.h"
+
 // This is a fascade around the incredibly poorly designed
 // DirectShow API for Video Capture.
 //

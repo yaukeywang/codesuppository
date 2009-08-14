@@ -18,7 +18,7 @@ template <class T>
 class SortedSet
 {
 public:
-	static const int SET_DEFAULT_SIZE = 4;
+	static const NxI32 SET_DEFAULT_SIZE = 4;
 
 	/*!
 	Default Set constructor.
@@ -248,9 +248,9 @@ public:
 	*/
 	inline bool insert(const T &a, NxU32* index = NULL)
 	{
-		int l=0;
-		int r=mSize-1;
-		int i;
+		NxI32 l=0;
+		NxI32 r=mSize-1;
+		NxI32 i;
 		for(;r>=l;)
 		{
 			i=(l+r)/2;
@@ -297,9 +297,9 @@ public:
 	*/
 	inline bool remove(const T &a) 
 	{
-		int l=0;
-		int r=mSize-1;
-		int i;
+		NxI32 l=0;
+		NxI32 r=mSize-1;
+		NxI32 i;
 		for(;r>=l;) 
 		{
 			i=(l+r)/2;

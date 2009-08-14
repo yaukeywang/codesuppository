@@ -129,18 +129,18 @@ public:
 
   // return true to continue processing the XML document, false to skip.
   virtual bool processElement(const char *elementName,         // name of the element
-                              int         argc,                // number of attributes
+                              NxI32         argc,                // number of attributes
                               const char **argv,               // list of attributes.
                               const char  *elementData,        // element data, null if none
-                              int         lineno) = 0;         // line number in the source XML file
+                              NxI32         lineno) = 0;         // line number in the source XML file
 
 };
 
 class FastXml
 {
 public:
-  virtual bool processXml(const char *inputData,unsigned int dataLen,FastXmlInterface *iface) = 0;
-  virtual const char * getError(int &lineno) = 0; // report the reason for a parsing error, and the line number where it occurred.
+  virtual bool processXml(const char *inputData,NxU32 dataLen,FastXmlInterface *iface) = 0;
+  virtual const char * getError(NxI32 &lineno) = 0; // report the reason for a parsing error, and the line number where it occurred.
 };
 
 FastXml * createFastXml(void);
@@ -217,7 +217,7 @@ public:
     return scan;
   }
 
-  char * processClose(char c,const char *element,char *scan,int argc,const char **argv,FastXmlInterface *iface)
+  char * processClose(char c,const char *element,char *scan,NxI32 argc,const char **argv,FastXmlInterface *iface)
   {
     if ( c == '/' || c == '?' )
     {
@@ -298,7 +298,7 @@ public:
     return scan;
   }
 
-  virtual bool processXml(const char *inputData,unsigned int dataLen,FastXmlInterface *iface)
+  virtual bool processXml(const char *inputData,NxU32 dataLen,FastXmlInterface *iface)
   {
     bool ret = true;
 
@@ -333,7 +333,7 @@ public:
         else
         {
           element = scan;
-          int argc = 0;
+          NxI32 argc = 0;
           const char *argv[MAX_ATTRIBUTE];
           bool close;
           scan = nextSoftOrClose(scan,close);
@@ -432,7 +432,7 @@ public:
     return ret;
   }
 
-  const char * getError(int &lineno)
+  const char * getError(NxI32 &lineno)
   {
     const char *ret = mError;
     lineno = mLineNo;
@@ -443,7 +443,7 @@ public:
 private:
   char         mTypes[256];
   char        *mInputData;
-  int          mLineNo;
+  NxI32          mLineNo;
   const char  *mError;
 };
 
@@ -466,15 +466,15 @@ void      releaseFastXml(FastXml *f)
 class BlobIOInterface
 {
 public:
-  virtual void sendBlobText(unsigned int client,const char *fmt,...) = 0;
+  virtual void sendBlobText(NxU32 client,const char *fmt,...) = 0;
 };
 
 class BlobIO
 {
 public:
-  virtual bool sendBlob(unsigned int client,const char *blobType,const void *blobData,unsigned int blobLen) = 0;
-  virtual const char * receiveBlob(unsigned int &client,const void *&data,unsigned int &dlen) = 0;
-  virtual bool processIncomingBlobText(unsigned int client,const char *text) = 0;
+  virtual bool sendBlob(NxU32 client,const char *blobType,const void *blobData,NxU32 blobLen) = 0;
+  virtual const char * receiveBlob(NxU32 &client,const void *&data,NxU32 &dlen) = 0;
+  virtual bool processIncomingBlobText(NxU32 client,const char *text) = 0;
 protected:
   BlobIO(void) { };
 };
@@ -487,14 +487,14 @@ void     releaseBlobIO(BlobIO *b);
 
 static char gHexTable[16] = { '0', '1', '2', '3','4','5','6','7','8','9','A','B','C','D','E','F' };
 
-static inline char getHex(unsigned char c)
+static inline char getHex(NxU8 c)
 {
     return gHexTable[c];
 }
 
 #pragma warning(disable:4100)
 
-static inline bool getHex(char c,unsigned char &v)
+static inline bool getHex(char c,NxU8 &v)
 {
     bool ret = true;
     if ( c >= '0' && c <= '9' )
@@ -512,10 +512,10 @@ static inline bool getHex(char c,unsigned char &v)
     return ret;
 }
 
-static inline bool getHexValue(char c1,char c2,unsigned char &v)
+static inline bool getHexValue(char c1,char c2,NxU8 &v)
 {
     bool ret = false;
-    unsigned char v1,v2;
+    NxU8 v1,v2;
     if ( getHex(c1,v1) && getHex(c2,v2) )
     {
         v = v1<<4 | v2;
@@ -527,9 +527,9 @@ static inline bool getHexValue(char c1,char c2,unsigned char &v)
 class Blob
 {
 public:
-  Blob(const char *blobType,unsigned int client,unsigned int blobId,unsigned int olen,const char *data)
+  Blob(const char *blobType,NxU32 client,NxU32 blobId,NxU32 olen,const char *data)
   {
-    unsigned int slen = strlen(blobType);
+    NxU32 slen = strlen(blobType);
     mClient   = client;
     mFinished = false;
     mError    = false;
@@ -537,7 +537,7 @@ public:
     strcpy(mBlobType,blobType);
     mBlobId = blobId;
     mBlobLen  = olen;
-    mBlobData = (unsigned char *)MEMALLOC_MALLOC(olen);
+    mBlobData = (NxU8 *)MEMALLOC_MALLOC(olen);
     mBlobIndex = 0;
     addData(data);
   }
@@ -579,16 +579,16 @@ public:
     assert( mFinished );
   }
 
-  unsigned int getId(void) const { return mBlobId; };
+  NxU32 getId(void) const { return mBlobId; };
 
   bool           mFinished;
   bool           mError;
   char          *mBlobType;
-  unsigned int   mBlobId;
-  unsigned int   mBlobLen;
-  unsigned char *mBlobData;
-  unsigned int   mBlobIndex;
-  unsigned int   mClient;
+  NxU32   mBlobId;
+  NxU32   mBlobLen;
+  NxU8 *mBlobData;
+  NxU32   mBlobIndex;
+  NxU32   mClient;
 };
 
 typedef std::list< Blob * > BlobList;
@@ -617,7 +617,7 @@ public:
   }
 
   // convert a blob of binary data into multiple lines of ascii data
-  virtual bool sendBlob(unsigned int client,const char *blobType,const void *blobData,unsigned int blobLen)
+  virtual bool sendBlob(NxU32 client,const char *blobType,const void *blobData,NxU32 blobLen)
   {
 	bool ret = false;
     if ( mCallback && blobLen > 0 )
@@ -627,11 +627,11 @@ public:
         if ( blobLen <= BLOB_LINE )
         {
             char blobText[BLOB_LINE*2+1];
-            const unsigned char *scan = (const unsigned char *)blobData;
+            const NxU8 *scan = (const NxU8 *)blobData;
             char *dest = blobText;
-            for (unsigned int i=0; i<blobLen; i++)
+            for (NxU32 i=0; i<blobLen; i++)
             {
-                unsigned char c = *scan++;
+                NxU8 c = *scan++;
                 dest[0] = getHex(c>>4);
                 dest[1] = getHex(c&0xF);
                 dest+=2;
@@ -643,11 +643,11 @@ public:
         {
             mBlobId++;
             char blobText[BLOB_LINE*2+1];
-            const unsigned char *scan = (const unsigned char *)blobData;
+            const NxU8 *scan = (const NxU8 *)blobData;
             char *dest = blobText;
-            for (unsigned int i=0; i<BLOB_LINE; i++)
+            for (NxU32 i=0; i<BLOB_LINE; i++)
             {
-                unsigned char c = *scan++;
+                NxU8 c = *scan++;
                 dest[0] = getHex(c>>4);
                 dest[1] = getHex(c&0xF);
                 dest+=2;
@@ -658,9 +658,9 @@ public:
             while ( blobLen > BLOB_LINE )
             {
               char *dest = blobText;
-              for (unsigned int i=0; i<BLOB_LINE; i++)
+              for (NxU32 i=0; i<BLOB_LINE; i++)
               {
-                  unsigned char c = *scan++;
+                  NxU8 c = *scan++;
                   dest[0] = getHex(c>>4);
                   dest[1] = getHex(c&0xF);
                   dest+=2;
@@ -670,9 +670,9 @@ public:
               mCallback->sendBlobText(client,"<telnetBlobData blobId=\"%d\">%s</telnetBlobData>\r\n", mBlobId, blobText );
             }
             dest = blobText;
-            for (unsigned int i=0; i<blobLen; i++)
+            for (NxU32 i=0; i<blobLen; i++)
             {
-                unsigned char c = *scan++;
+                NxU8 c = *scan++;
                 dest[0] = getHex(c>>4);
                 dest[1] = getHex(c&0xF);
                 dest+=2;
@@ -684,7 +684,7 @@ public:
 	return ret;
   }
 
-  virtual const char * receiveBlob(unsigned int &client,const void *&data,unsigned int &dlen)
+  virtual const char * receiveBlob(NxU32 &client,const void *&data,NxU32 &dlen)
   {
     const char *ret  = 0;
 	client = 0;
@@ -716,7 +716,7 @@ public:
     return ret;
   }
 
-  virtual bool processIncomingBlobText(unsigned int client,const char *text)
+  virtual bool processIncomingBlobText(NxU32 client,const char *text)
   {
 	  bool ret = false;
 
@@ -729,7 +729,7 @@ public:
           ret = mFastXml->processXml(text,len,this);
           if ( !ret )
           {
-            int lineno;
+            NxI32 lineno;
             const char *error = mFastXml->getError(lineno);
             printf("Error: %s at line %d\r\n", error, lineno );
           }
@@ -738,10 +738,10 @@ public:
   }
 
   virtual bool processElement(const char *elementName,         // name of the element
-                              int         argc,                // number of attributes
+                              NxI32         argc,                // number of attributes
                               const char **argv,               // list of attributes.
                               const char  *elementData,        // element data, null if none
-                              int         lineno)         // line number in the source XML file
+                              NxI32         lineno)         // line number in the source XML file
   {
     bool ret = true;
 
@@ -751,11 +751,11 @@ public:
     if ( elementData )
     {
 
-      int len = 0;
-      int blobId = 0;
+      NxI32 len = 0;
+      NxI32 blobId = 0;
       const char *blobName=0;
-  	  int acount = argc/2;
-      for (int i=0; i<acount; i++)
+  	  NxI32 acount = argc/2;
+      for (NxI32 i=0; i<acount; i++)
       {
           const char * atr   = argv[i*2];
           const char * value = argv[i*2+1];
@@ -808,7 +808,7 @@ public:
     return ret;
   }
 
-  Blob * locateBlob(unsigned int id,unsigned int client) const
+  Blob * locateBlob(NxU32 id,NxU32 client) const
   {
     Blob *ret = 0;
     if ( id != 0 )
@@ -828,8 +828,8 @@ public:
   }
 
 private:
-  unsigned int    mClient;
-  unsigned int    mBlobId;
+  NxU32    mClient;
+  NxU32    mBlobId;
   BlobIOInterface *mCallback;
   FastXml         *mFastXml;
   Blob            *mLastBlob;
@@ -1056,7 +1056,7 @@ class TelnetInterface
 {
 	public:
 		// Called when a connection has been established.
-		virtual void OnConnect(unsigned int uiClient)
+		virtual void OnConnect(NxU32 uiClient)
 		{
       PushLine("NewConnection", uiClient );
 		}
@@ -1064,7 +1064,7 @@ class TelnetInterface
 	public:
 		// Sends text across the telnet connection.
 		// returns false on failure.
-		virtual bool SendText(unsigned int uiClient, const char *pcLine, ...)=0;
+		virtual bool SendText(NxU32 uiClient, const char *pcLine, ...)=0;
 
 	public:
 		// Waits until there is a block ready to be read.
@@ -1072,11 +1072,11 @@ class TelnetInterface
 
 		// Pops the last line off the local queue.
 		// returns 0 if no lines available.
-		const char *GetLine(unsigned int &uiClient);
+		const char *GetLine(NxU32 &uiClient);
 
 	protected:
 		// Add a Line to the Local Queue.
-		void PushLine(const char *pcLine, unsigned int uiClient);
+		void PushLine(const char *pcLine, NxU32 uiClient);
 
 	protected:
 		TelnetInterface(void);
@@ -1106,12 +1106,12 @@ class TelnetLineNode
 {
 	public:
 		char         *pcLine;
-		unsigned int  uiClient;
+		NxU32  uiClient;
 };
 
 // Pops the last line off the local queue.
 // returns 0 if no lines available.
-const char *TelnetInterface::GetLine(unsigned int &uiClient)
+const char *TelnetInterface::GetLine(NxU32 &uiClient)
 {
 	const char *pRet = 0;
 	
@@ -1141,7 +1141,7 @@ const char *TelnetInterface::GetLine(unsigned int &uiClient)
 
 
 // Add a Line to the Local Queue.
-void TelnetInterface::PushLine(const char *pcLine, unsigned int uiClient)
+void TelnetInterface::PushLine(const char *pcLine, NxU32 uiClient)
 {
 	m_LineMutex.Lock();
 	TelnetLineNode *node = new TelnetLineNode;
@@ -1188,7 +1188,7 @@ class _Block
 {
 	public:
 		void         *m_pData;
-		unsigned int  m_uiDataSize;
+		NxU32  m_uiDataSize;
 };
 
 typedef std::queue<_Block> BlockQueue;
@@ -1250,12 +1250,12 @@ class TelnetParser
 		}
 	 
 	public:
-		void AddBuffer(const char *pcBuffer, unsigned int uiLen)
+		void AddBuffer(const char *pcBuffer, NxU32 uiLen)
 		{
-			unsigned int uiNewSize = uiLen + m_uiBufferUsed;
+			NxU32 uiNewSize = uiLen + m_uiBufferUsed;
 			if(uiNewSize >= m_uiBufferSize) Resize(uiNewSize);
 			
-			for(unsigned int i=0; i<uiLen; i++)
+			for(NxU32 i=0; i<uiLen; i++)
 			{
 				if(m_bBlockMode)
 					BlockChar(pcBuffer[i]);
@@ -1282,7 +1282,7 @@ class TelnetParser
 			return pRet;
 		}
 		
-		const void *GetBlock(unsigned int &uiSize)
+		const void *GetBlock(NxU32 &uiSize)
 		{
 			void *pRet = 0;
 			if(!m_Blocks.empty())
@@ -1334,7 +1334,7 @@ class TelnetParser
 					if(equals && equals < end)
 					{
 						char *name = equals+1;
-						unsigned int len = (unsigned int)(end - name) + 1;
+						NxU32 len = (NxU32)(end - name) + 1;
 					}
 					m_bBlockMode = true;
 				}
@@ -1346,7 +1346,7 @@ class TelnetParser
 		{
 			if(m_uiCurrBlockUsed+1 >=  m_uiCurrBlockSize)
 			{
-				unsigned int uiNewSize = m_uiCurrBlockSize * 2;
+				NxU32 uiNewSize = m_uiCurrBlockSize * 2;
 				char *pBlock = (char*)::malloc(sizeof(char)*uiNewSize);
 				memcpy(pBlock, m_pCurrBlock, m_uiCurrBlockUsed);
 				if(m_pCurrBlock)
@@ -1364,7 +1364,7 @@ class TelnetParser
 			if(pcEnd)
 			{
 				m_bBlockMode = false;
-				unsigned int uiSize = (unsigned int)(pcEnd - m_pCurrBlock);
+				NxU32 uiSize = (NxU32)(pcEnd - m_pCurrBlock);
 				
 				_Block block;
 				block.m_uiDataSize  = uiSize;
@@ -1372,7 +1372,7 @@ class TelnetParser
 				memcpy(block.m_pData, m_pCurrBlock, uiSize);
 				m_Blocks.push(block);
 				
-				for(unsigned int i=uiSize+9; i<m_uiCurrBlockUsed; i++)
+				for(NxU32 i=uiSize+9; i<m_uiCurrBlockUsed; i++)
 				{
 					ParseChar(m_pCurrBlock[i]);
 				}
@@ -1381,7 +1381,7 @@ class TelnetParser
 			}
 		}
 
-		void Resize(unsigned int uiNewSize)
+		void Resize(NxU32 uiNewSize)
 		{
 			char *pNewBuffer = (char*)::malloc(sizeof(char)*uiNewSize);
 			if(m_uiBufferUsed)
@@ -1398,16 +1398,16 @@ class TelnetParser
 	
 	private:
 		char             *m_pBuffer;
-		unsigned int      m_uiBufferSize;
-		unsigned int      m_uiBufferUsed;
+		NxU32      m_uiBufferSize;
+		NxU32      m_uiBufferUsed;
 		
 		char             *m_pcLastLine;
 		StringQueue       m_Lines;
 		
 		bool              m_bBlockMode;
 		char             *m_pCurrBlock;
-		unsigned int      m_uiCurrBlockSize;
-		unsigned int      m_uiCurrBlockUsed;
+		NxU32      m_uiCurrBlockSize;
+		NxU32      m_uiCurrBlockUsed;
 		BlockQueue        m_Blocks;
 };
 
@@ -1436,7 +1436,7 @@ class TelnetClient : public TelnetInterface
 	public:
 		// Sends text across the telnet connection.
 		// returns false on failure.
-		virtual bool SendText(unsigned int uiClient, const char *pcLine, ...);
+		virtual bool SendText(NxU32 uiClient, const char *pcLine, ...);
 
 	private:
 		void ThreadFunc(void);
@@ -1479,7 +1479,7 @@ void TelnetClient::ThreadFunc(void)
 	
 	while(!bDone)
 	{
-		int iBytesRead = 0;
+		NxI32 iBytesRead = 0;
 		iBytesRead = recv(clientSocket, vcBuffer, BUFFER_SIZE, 0);
 
 		if(iBytesRead <= 0)
@@ -1568,7 +1568,7 @@ bool TelnetClient::Connect(const char *pcAddress, unsigned short uiPort)
 		
 		if(!m_Thread)
 		{
-			int error = WSAGetLastError();
+			NxI32 error = WSAGetLastError();
 			closesocket(m_Socket);
 			m_Socket = INVALID_SOCKET;
 		}
@@ -1602,11 +1602,11 @@ void TelnetClient::Close(void)
 
 // Sends text across the telnet connection.
 // returns false on failure.
-bool TelnetClient::SendText(unsigned int uiClient, const char *pcLine, ...)
+bool TelnetClient::SendText(NxU32 uiClient, const char *pcLine, ...)
 {
 	char vcBuffer[8192];
 	_vsnprintf(vcBuffer,8191, pcLine, (va_list)(&pcLine+1));
-	unsigned int uiLen = (unsigned int)strlen(vcBuffer);
+	NxU32 uiLen = (NxU32)strlen(vcBuffer);
 	
 	send(m_Socket, vcBuffer, uiLen, 0);
 	
@@ -1620,7 +1620,7 @@ bool TelnetClient::SendText(unsigned int uiClient, const char *pcLine, ...)
 
 
 class TelnetServer_Client;
-typedef std::map<unsigned int, TelnetServer_Client*> TelnetServer_ClientMap;
+typedef std::map<NxU32, TelnetServer_Client*> TelnetServer_ClientMap;
 
 // Simple Telnet Server.
 class TelnetServer : public TelnetInterface
@@ -1643,7 +1643,7 @@ class TelnetServer : public TelnetInterface
 	public:
 		// Sends text across the telnet connection.
 		// returns false on failure.
-		virtual bool SendText(unsigned int uiClient, const char *pcLine, ...);
+		virtual bool SendText(NxU32 uiClient, const char *pcLine, ...);
 
 	private:
 		void ThreadFunc(void);
@@ -1653,7 +1653,7 @@ class TelnetServer : public TelnetInterface
 		TelnetServer(const TelnetServer &){}
 
 	private:
-		unsigned int            m_uiLastClient;
+		NxU32            m_uiLastClient;
 
 		OdfMutex                m_ListenMutex;
 		SOCKET                  m_ListenSocket;
@@ -1670,7 +1670,7 @@ class TelnetServer_Client
 {
 	public:
 		TelnetServer *m_pParent;
-		unsigned int  m_uiClient;
+		NxU32  m_uiClient;
 		OdfMutex      m_Mutex;
 		SOCKET        m_Socket;
 		HANDLE        m_Thread;
@@ -1731,7 +1731,7 @@ void TelnetServer_Client::ThreadFunc(void)
 	
 	while(!bDone)
 	{
-	int iBytesRead=0;
+	NxI32 iBytesRead=0;
 
 	#if !defined(_XBOX)
 	iBytesRead = recv(clientSocket, vcBuffer, BUFFER_SIZE, 0);
@@ -1867,26 +1867,26 @@ bool TelnetServer::Listen(unsigned short uiPort)
 			}
 			else
 			{
-				int error = WSAGetLastError();
+				NxI32 error = WSAGetLastError();
 				assert(0);
 			}
 		}
 		else // if(bind(m_ListenSocket, (sockaddr*)&addr, sizeof(addr)) == 0)
 		{
-			int error = WSAGetLastError();
+			NxI32 error = WSAGetLastError();
 //			assert(0);
 		}
 		
 		if(!m_ListenThread)
 		{
-			int error = WSAGetLastError();
+			NxI32 error = WSAGetLastError();
 			closesocket(m_ListenSocket);
 			m_ListenSocket = INVALID_SOCKET;
 		}
 	}
 	else // if(m_ListenSocket != INVALID_SOCKET)
 	{
-		int error = WSAGetLastError();
+		NxI32 error = WSAGetLastError();
 		assert(0);
 	}
 	
@@ -1921,7 +1921,7 @@ void TelnetServer::Close(void)
 
 // Sends text across the telnet connection.
 // returns false on failure.
-bool TelnetServer::SendText(unsigned int uiClient, const char *pcLine, ...)
+bool TelnetServer::SendText(NxU32 uiClient, const char *pcLine, ...)
 {
 	bool bRet = false;
 
@@ -1929,7 +1929,7 @@ bool TelnetServer::SendText(unsigned int uiClient, const char *pcLine, ...)
 
 	char vcBuffer[8192];
 	_vsnprintf(vcBuffer, 8191, pcLine, (va_list)(&pcLine+1));
-	unsigned int uiLen = (unsigned int)strlen(vcBuffer);
+	NxU32 uiLen = (NxU32)strlen(vcBuffer);
 
 	if(!uiClient)
 	{
@@ -1972,7 +1972,7 @@ bool TelnetServer::SendText(unsigned int uiClient, const char *pcLine, ...)
 class InPlaceParserInterface
 {
 public:
-	virtual int ParseLine(int lineno,int argc,const char **argv) =0;  // return TRUE to continue parsing, return FALSE to abort parsing process
+	virtual NxI32 ParseLine(NxI32 lineno,NxI32 argc,const char **argv) =0;  // return TRUE to continue parsing, return FALSE to abort parsing process
 };
 
 enum SeparatorType
@@ -1991,7 +1991,7 @@ public:
 		Init();
 	}
 
-	InPlaceParser(char *data,int len)
+	InPlaceParser(char *data,NxI32 len)
 	{
 		Init();
 		SetSourceData(data,len);
@@ -2011,7 +2011,7 @@ public:
 		mData = 0;
 		mLen  = 0;
 		mMyAlloc = false;
-		for (int i=0; i<256; i++)
+		for (NxI32 i=0; i<256; i++)
 		{
 			mHard[i] = ST_DATA;
 			mHardString[i*2] = (char)i;
@@ -2026,18 +2026,18 @@ public:
 
 	void SetFile(const char *fname); // use this file as source data to parse.
 
-	void SetSourceData(char *data,int len)
+	void SetSourceData(char *data,NxI32 len)
 	{
 		mData = data;
 		mLen  = len;
 		mMyAlloc = false;
 	};
 
-	int  Parse(InPlaceParserInterface *callback); // returns true if entire file was parsed, false if it aborted for some reason
+	NxI32  Parse(InPlaceParserInterface *callback); // returns true if entire file was parsed, false if it aborted for some reason
 
-	int ProcessLine(int lineno,char *line,InPlaceParserInterface *callback);
+	NxI32 ProcessLine(NxI32 lineno,char *line,InPlaceParserInterface *callback);
 
-	const char ** GetArglist(char *source,int &count); // convert source string into an arg list, this is a destructive parse.
+	const char ** GetArglist(char *source,NxI32 &count); // convert source string into an arg list, this is a destructive parse.
 
 	void SetHardSeparator(char c) // add a hard separator
 	{
@@ -2080,7 +2080,7 @@ public:
 private:
 
 
-	inline char * AddHard(int &argc,const char **argv,char *foo);
+	inline char * AddHard(NxI32 &argc,const char **argv,char *foo);
 	inline bool   IsHard(char c);
 	inline char * SkipSpaces(char *foo);
 	inline bool   IsWhiteSpace(char c);
@@ -2088,7 +2088,7 @@ private:
 
 	bool   mMyAlloc; // whether or not *I* allocated the buffer and am responsible for deleting it.
 	char  *mData;  // ascii data to parse.
-	int    mLen;   // length of data
+	NxI32    mLen;   // length of data
 	SeparatorType  mHard[256];
 	char   mHardString[256*2];
 	char           mQuoteChar;
@@ -2116,7 +2116,7 @@ void InPlaceParser::SetFile(const char *fname)
 		if ( mLen )
 		{
 			mData = (char *) ::malloc(sizeof(char)*(mLen+1));
-			int ok = (int)fread(mData, mLen, 1, fph);
+			NxI32 ok = (NxI32)fread(mData, mLen, 1, fph);
 			if ( !ok )
 			{
 				::free(mData);
@@ -2147,7 +2147,7 @@ bool InPlaceParser::IsHard(char c)
 	return mHard[c] == ST_HARD;
 }
 
-char * InPlaceParser::AddHard(int &argc,const char **argv,char *foo)
+char * InPlaceParser::AddHard(NxI32 &argc,const char **argv,char *foo)
 {
 	while ( IsHard(*foo) )
 	{
@@ -2179,12 +2179,12 @@ bool InPlaceParser::IsNonSeparator(char c)
 }
 
 
-int InPlaceParser::ProcessLine(int lineno,char *line,InPlaceParserInterface *callback)
+NxI32 InPlaceParser::ProcessLine(NxI32 lineno,char *line,InPlaceParserInterface *callback)
 {
-	int ret = 0;
+	NxI32 ret = 0;
 
 	const char *argv[MAXARGS];
-	int argc = 0;
+	NxI32 argc = 0;
 
 	char *foo = line;
 
@@ -2268,14 +2268,14 @@ int InPlaceParser::ProcessLine(int lineno,char *line,InPlaceParserInterface *cal
 	return ret;
 }
 
-int  InPlaceParser::Parse(InPlaceParserInterface *callback) // returns true if entire file was parsed, false if it aborted for some reason
+NxI32  InPlaceParser::Parse(InPlaceParserInterface *callback) // returns true if entire file was parsed, false if it aborted for some reason
 {
 	assert( callback );
 	if ( !mData ) return 0;
 
-	int ret = 0;
+	NxI32 ret = 0;
 
-	int lineno = 0;
+	NxI32 lineno = 0;
 
 	char *foo   = mData;
 	char *begin = foo;
@@ -2290,7 +2290,7 @@ int  InPlaceParser::Parse(InPlaceParserInterface *callback) // returns true if e
 
 			if ( *begin ) // if there is any data to parse at all...
 			{
-				int v = ProcessLine(lineno,begin,callback);
+				NxI32 v = ProcessLine(lineno,begin,callback);
 				if ( v ) ret = v;
 			}
 
@@ -2306,7 +2306,7 @@ int  InPlaceParser::Parse(InPlaceParserInterface *callback) // returns true if e
 
 	lineno++; // lasst line.
 
-	int v = ProcessLine(lineno,begin,callback);
+	NxI32 v = ProcessLine(lineno,begin,callback);
 	if ( v ) ret = v;
 	return ret;
 }
@@ -2329,12 +2329,12 @@ void InPlaceParser::DefaultSymbols(void)
 }
 
 
-const char ** InPlaceParser::GetArglist(char *line,int &count) // convert source string into an arg list, this is a destructive parse.
+const char ** InPlaceParser::GetArglist(char *line,NxI32 &count) // convert source string into an arg list, this is a destructive parse.
 {
 	const char **ret = 0;
 
 	static const char *argv[MAXARGS];
-	int argc = 0;
+	NxI32 argc = 0;
 
 	char *foo = line;
 
@@ -2424,7 +2424,7 @@ const char ** InPlaceParser::GetArglist(char *line,int &count) // convert source
 class BlobLine
 {
 public:
-  BlobLine(unsigned int client,const char *msg)
+  BlobLine(NxU32 client,const char *msg)
   {
     mClient = client;
     size_t l = strlen(msg);
@@ -2444,7 +2444,7 @@ public:
     memcpy(mBlobText,b.mBlobText,l+1);
   }
 
-  unsigned int mClient;
+  NxU32 mClient;
   char        *mBlobText;
 };
 
@@ -2453,7 +2453,7 @@ typedef std::queue< BlobLine > BlobLineQueue;
 class MyTelnet : public Telnet, public BlobIOInterface
 {
 public:
-  MyTelnet(const char *address,unsigned int port)
+  MyTelnet(const char *address,NxU32 port)
   {
     mBlobIO = createBlobIO(this);
     mParser.DefaultSymbols();
@@ -2494,7 +2494,7 @@ public:
     return mHaveConnection;
   }
 
-  virtual bool         sendMessage(unsigned int client,const char *fmt,...)
+  virtual bool         sendMessage(NxU32 client,const char *fmt,...)
   {
     bool ret = false;
     if ( mInterface )
@@ -2507,7 +2507,7 @@ public:
     return ret;
   }
 
-  virtual const char *  receiveMessage(unsigned int &client)
+  virtual const char *  receiveMessage(NxU32 &client)
   {
     const char *ret = 0;
     client = 0;
@@ -2535,13 +2535,13 @@ public:
     return ret;
   }
 
-  virtual const char ** getArgs(const char *input,unsigned int &argc) // parse string into a series of arguments.
+  virtual const char ** getArgs(const char *input,NxU32 &argc) // parse string into a series of arguments.
   {
     strncpy(mParseBuffer,input,MAXPARSEBUFFER);
     mParseBuffer[MAXPARSEBUFFER-1] = 0;
-	int ac;
+	NxI32 ac;
     const char **ret = mParser.GetArglist(mParseBuffer,ac);
-	argc = (unsigned int)ac;
+	argc = (NxU32)ac;
 	return ret;
   }
 
@@ -2552,7 +2552,7 @@ public:
     releaseBlobIO(mBlobIO);
   }
 
-  virtual bool          sendBlob(unsigned int client,const char *blobType,const void *data,unsigned int dlen)
+  virtual bool          sendBlob(NxU32 client,const char *blobType,const void *data,NxU32 dlen)
   {
     bool ret = false;
 
@@ -2565,7 +2565,7 @@ public:
     return ret;
   }
 
-  virtual const char *  receiveBlob(unsigned int &client,const void *&data,unsigned int &dlen)
+  virtual const char *  receiveBlob(NxU32 &client,const void *&data,NxU32 &dlen)
   {
     const char *ret = 0;
 
@@ -2582,7 +2582,7 @@ public:
     return ret;
   }
 
-  virtual void sendBlobText(unsigned int client,const char *fmt,...)
+  virtual void sendBlobText(NxU32 client,const char *fmt,...)
   {
     if ( mInterface )
     {
@@ -2610,7 +2610,7 @@ private:
   BlobLineQueue mBlobLines;
 };
 
-Telnet * createTelnet(const char *address,unsigned int port)
+Telnet * createTelnet(const char *address,NxU32 port)
 {
   MyTelnet *m = new MyTelnet(address,port);
   return static_cast< Telnet *>(m);

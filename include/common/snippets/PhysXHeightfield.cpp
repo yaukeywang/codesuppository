@@ -17,13 +17,13 @@
 struct Hsample
 {
   short  height         : 16;
-  unsigned char   materialIndex0 :  7;
-  unsigned char   tessFlag       :  1;
-  unsigned char   materialIndex1 :  7;
-  unsigned char   unused         :  1;
+  NxU8   materialIndex0 :  7;
+  NxU8   tessFlag       :  1;
+  NxU8   materialIndex1 :  7;
+  NxU8   unused         :  1;
 };
 
-static  inline unsigned int getIndex(int dx,int dy,int x,int y,int wid,int hit)
+static  inline NxU32 getIndex(NxI32 dx,NxI32 dy,NxI32 x,NxI32 y,NxI32 wid,NxI32 hit)
 {
   x+=dx;
   y+=dy;
@@ -31,45 +31,45 @@ static  inline unsigned int getIndex(int dx,int dy,int x,int y,int wid,int hit)
   if ( x >= wid ) x = wid-1;
   if ( y < 0 ) y = 0;
   if ( y >= hit ) y =hit-1;
-  return (unsigned int)((y*wid)+x);
+  return (NxU32)((y*wid)+x);
 }
 
 
-static inline void getV(int x,int z,int wid,int hit,float rowScale,float columnScale,float heightScale,Hsample *scan,float *vertices,unsigned int &vcount)
+static inline void getV(NxI32 x,NxI32 z,NxI32 wid,NxI32 hit,NxF32 rowScale,NxF32 columnScale,NxF32 heightScale,Hsample *scan,NxF32 *vertices,NxU32 &vcount)
 {
-  float *v = &vertices[vcount*3];
+  NxF32 *v = &vertices[vcount*3];
 
-  v[0] = (float) z * columnScale;
-  v[2] = (float) x * rowScale;
+  v[0] = (NxF32) z * columnScale;
+  v[2] = (NxF32) x * rowScale;
 
-  unsigned int index = getIndex(0,0,x,z,wid,hit);
+  NxU32 index = getIndex(0,0,x,z,wid,hit);
 
-  v[1] = (float) scan[index].height * heightScale;
+  v[1] = (NxF32) scan[index].height * heightScale;
 
   vcount++;
 }
 
-static inline void pushTri(unsigned int i1,unsigned int i2,unsigned int i3,unsigned int *indices,unsigned int &tcount)
+static inline void pushTri(NxU32 i1,NxU32 i2,NxU32 i3,NxU32 *indices,NxU32 &tcount)
 {
-  unsigned int *dest = &indices[tcount*3];
+  NxU32 *dest = &indices[tcount*3];
   dest[0] = i1;
   dest[1] = i2;
   dest[2] = i3;
   tcount++;
 }
 
-void physXHeightFieldToMesh(int wid,                           // the width of the source heightfield
-                            int hit,                           // the height of the source heightfield
-                            const unsigned int *heightField,            // the raw 32 bit heightfield data.
-                            float verticalExtent,                // the vertical extent of the heightfield
-                            float columnScale,                   // the column scale
-                            float rowScale,                      // the row scale
-                            float heightScale,                   // the heightscale
-                            float gameScale,                     // optional scale to change from game/graphics units into physics units.  Default should be 1 to 1
+void physXHeightFieldToMesh(NxI32 wid,                           // the width of the source heightfield
+                            NxI32 hit,                           // the height of the source heightfield
+                            const NxU32 *heightField,            // the raw 32 bit heightfield data.
+                            NxF32 verticalExtent,                // the vertical extent of the heightfield
+                            NxF32 columnScale,                   // the column scale
+                            NxF32 rowScale,                      // the row scale
+                            NxF32 heightScale,                   // the heightscale
+                            NxF32 gameScale,                     // optional scale to change from game/graphics units into physics units.  Default should be 1 to 1
                             PhysXHeightFieldInterface *callback)// your interface to receive the mesh data an an indexed triangle mesh.
 {
-  int stepx = (wid+(HF_STEP_SIZE-1))/HF_STEP_SIZE;
-  int stepy = (hit+(HF_STEP_SIZE-1))/HF_STEP_SIZE;
+  NxI32 stepx = (wid+(HF_STEP_SIZE-1))/HF_STEP_SIZE;
+  NxI32 stepy = (hit+(HF_STEP_SIZE-1))/HF_STEP_SIZE;
 
   Hsample *scan = (Hsample *)heightField;
 
@@ -86,40 +86,40 @@ void physXHeightFieldToMesh(int wid,                           // the width of t
   #define MAX_VERTICES ((HF_STEP_SIZE+1)*(HF_STEP_SIZE+1))
 
 
-  for (int iy=0; iy<stepy; iy++)
+  for (NxI32 iy=0; iy<stepy; iy++)
   {
-    for (int ix=0; ix<stepx; ix++)
+    for (NxI32 ix=0; ix<stepx; ix++)
     {
       // ok..first build the points....
-      int swid = wid-(ix*HF_STEP_SIZE);
-      int shit = hit-(iy*HF_STEP_SIZE);
+      NxI32 swid = wid-(ix*HF_STEP_SIZE);
+      NxI32 shit = hit-(iy*HF_STEP_SIZE);
       if ( swid > HF_STEP_SIZE ) swid = HF_STEP_SIZE;
       if ( shit > HF_STEP_SIZE ) shit = HF_STEP_SIZE;
 
-      unsigned int vcount = 0;
-      unsigned int tcount = 0;
-      float vertices[MAX_VERTICES*3];
-      unsigned int indices[MAX_TRIANGLES*3];
+      NxU32 vcount = 0;
+      NxU32 tcount = 0;
+      NxF32 vertices[MAX_VERTICES*3];
+      NxU32 indices[MAX_TRIANGLES*3];
 
-      for (int ry=0; ry<=shit; ry++)
+      for (NxI32 ry=0; ry<=shit; ry++)
       {
-        for (int rx=0; rx<=swid; rx++)
+        for (NxI32 rx=0; rx<=swid; rx++)
         {
-          int x = rx+(ix*HF_STEP_SIZE);
-          int y = ry+(iy*HF_STEP_SIZE);
+          NxI32 x = rx+(ix*HF_STEP_SIZE);
+          NxI32 y = ry+(iy*HF_STEP_SIZE);
           getV(x,y,wid,hit,rowScale,columnScale,heightScale,scan,vertices,vcount);
         }
       }
 
-      for (int ry=0; ry<shit; ry++)
+      for (NxI32 ry=0; ry<shit; ry++)
       {
-        for (int rx=0; rx<swid; rx++)
+        for (NxI32 rx=0; rx<swid; rx++)
         {
-          int x = rx+(ix*HF_STEP_SIZE);
-          int y = ry+(iy*HF_STEP_SIZE);
+          NxI32 x = rx+(ix*HF_STEP_SIZE);
+          NxI32 y = ry+(iy*HF_STEP_SIZE);
           if ( x < (wid-1) && y < (hit-1) )
           {
-            unsigned int index = (y*wid)+x;
+            NxU32 index = (y*wid)+x;
             const Hsample *sample = (const Hsample *) &heightField[index];
             bool ok1 = true;
             bool ok2 = true;
@@ -136,7 +136,7 @@ void physXHeightFieldToMesh(int wid,                           // the width of t
 
             bool flip = reverse;
 
-            unsigned int i1,i2,i3,i4;
+            NxU32 i1,i2,i3,i4;
 
             if ( sample->tessFlag )
             {
@@ -176,16 +176,16 @@ void physXHeightFieldToMesh(int wid,                           // the width of t
         #if CONSOLIDATE
         ConsolidateMesh *cm = createConsolidateMesh();
 
-        const unsigned int *idx = indices;
+        const NxU32 *idx = indices;
 
-        for (unsigned int i=0; i<tcount; i++)
+        for (NxU32 i=0; i<tcount; i++)
         {
-          unsigned int i1 = *idx++;
-          unsigned int i2 = *idx++;
-          unsigned int i3 = *idx++;
-          const float *p1 = &vertices[i1*3];
-          const float *p2 = &vertices[i2*3];
-          const float *p3 = &vertices[i3*3];
+          NxU32 i1 = *idx++;
+          NxU32 i2 = *idx++;
+          NxU32 i3 = *idx++;
+          const NxF32 *p1 = &vertices[i1*3];
+          const NxF32 *p2 = &vertices[i2*3];
+          const NxF32 *p3 = &vertices[i3*3];
           cm->addTriangle(p1,p2,p3);
         }
 
@@ -194,30 +194,30 @@ void physXHeightFieldToMesh(int wid,                           // the width of t
         bool ok = cm->consolidateMesh(results);
         if ( ok )
         {
-          callback->receiveHeightFieldMesh(results.mVcount,results.mVerticesFloat,results.mTcount,(const unsigned int *)results.mIndices);
+          callback->receiveHeightFieldMesh(results.mVcount,results.mVerticesFloat,results.mTcount,(const NxU32 *)results.mIndices);
         }
         else
         {
-          static int fcount = 0;
+          static NxI32 fcount = 0;
           fcount++;
           char scratch[512];
           sprintf(scratch,"BadMesh%d.obj", fcount );
           FILE *fph = fopen(scratch,"wb");
           if ( fph )
           {
-            const unsigned int *idx = indices;
+            const NxU32 *idx = indices;
 
-            for (unsigned int i=0; i<vcount; i++)
+            for (NxU32 i=0; i<vcount; i++)
             {
-              const float *p = &vertices[i*3];
+              const NxF32 *p = &vertices[i*3];
               fprintf(fph,"v %0.9f %0.9f %0.9f\r\n", p[0], p[1], p[2] );
             }
 
-            for (unsigned int i=0; i<tcount; i++)
+            for (NxU32 i=0; i<tcount; i++)
             {
-              unsigned int i1 = *idx++;
-              unsigned int i2 = *idx++;
-              unsigned int i3 = *idx++;
+              NxU32 i1 = *idx++;
+              NxU32 i2 = *idx++;
+              NxU32 i3 = *idx++;
               fprintf(fph,"f %d %d %d\r\n", i1+1, i2+1, i3+1 );
             }
             fclose(fph);

@@ -2,6 +2,7 @@
 
 #define REMOVE_TJUNCTIONS_H
 
+#include "UserMemAlloc.h"
 
 class RemoveTjunctionsDesc
 {
@@ -21,8 +22,8 @@ public:
 
 // input
   size_t        mVcount;  // input vertice count.
-  const float  *mVerticesF; // input vertices as floats or...
-  const double *mVerticesD; // input vertices as doubles
+  const NxF32  *mVerticesF; // input vertices as floats or...
+  const NxF64 *mVerticesD; // input vertices as doubles
   size_t        mTcount;    // number of input triangles.
   const size_t *mIndices;   // triangle indices.
   const size_t *mIds;       // optional triangle Id numbers.

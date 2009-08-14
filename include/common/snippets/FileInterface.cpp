@@ -108,7 +108,7 @@ public:
     }
     else
     {
-      unsigned int slen = mSize-mLen;
+      NxU32 slen = mSize-mLen;
       if ( slen )
       {
         char *dest = &mMemory[mLen];
@@ -131,8 +131,8 @@ public:
 
   MemoryBlock    *mNextBlock;
   char           *mMemory;
-  unsigned int    mLen;
-  unsigned int    mSize;
+  NxU32    mLen;
+  NxU32    mSize;
 
 };
 
@@ -208,7 +208,7 @@ public:
   {
     if ( mHeadBlock )
     {
-      unsigned int slen = 0;
+      NxU32 slen = 0;
 
       MemoryBlock *mb = mHeadBlock;
       while ( mb )
@@ -229,7 +229,7 @@ public:
 #ifdef _DEBUG
       validateLen();
 #endif
-      unsigned int remaining;
+      NxU32 remaining;
       data = mTailBlock->write(data,size,remaining);
       while ( data )
       {

@@ -2,6 +2,8 @@
 
 #define VFX_WELD_H
 
+#include "UserMemAlloc.h"
+
 /*!
 **
 ** Copyright (c) 2007 by John W. Ratcliff mailto:jratcliff@infiniplex.net
@@ -115,7 +117,7 @@ public:
 		return idx;
 	};
 
-	void GetPos(NxI32 idx,float pos[3]) const
+	void GetPos(NxI32 idx,NxF32 pos[3]) const
 	{
 		pos[0] = mVtxs[idx].mPos[0];
     pos[1] = mVtxs[idx].mPos[1];
@@ -151,7 +153,7 @@ public:
 		return (NxI32)mVtxs.size();
 	};
 
-	bool GetVertex(NxI32 i,float vect[3]) const
+	bool GetVertex(NxI32 i,NxF32 vect[3]) const
 	{
 		vect[0] = mVtxs[i].mPos[0];
     vect[1] = mVtxs[i].mPos[1];

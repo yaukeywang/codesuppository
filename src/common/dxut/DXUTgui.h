@@ -12,6 +12,7 @@
 #include <usp10.h>
 #include <dimm.h>
 
+#include "UserMemAlloc.h"
 
 //--------------------------------------------------------------------------------------
 // Defines and macros 
@@ -51,7 +52,7 @@ class CDXUTElement;
 struct DXUTElementHolder;
 struct DXUTTextureNode;
 struct DXUTFontNode;
-typedef VOID (CALLBACK *PCALLBACKDXUTGUIEVENT) ( UINT nEvent, int nControlID, CDXUTControl* pControl, void* pUserContext );
+typedef VOID (CALLBACK *PCALLBACKDXUTGUIEVENT) ( UINT nEvent, NxI32 nControlID, CDXUTControl* pControl, void* pUserContext );
 
 
 //--------------------------------------------------------------------------------------
@@ -86,7 +87,7 @@ enum DXUT_CONTROL_STATE
 struct DXUTBlendColor
 {
     void Init( D3DCOLOR defaultColor, D3DCOLOR disabledColor = D3DCOLOR_ARGB(200, 128, 128, 128), D3DCOLOR hiddenColor = 0 );
-    void Blend( UINT iState, float fElapsedTime, float fRate = 0.7f );
+    void Blend( UINT iState, NxF32 fElapsedTime, NxF32 fRate = 0.7f );
     
     D3DCOLOR  States[ MAX_CONTROL_STATES ]; // Modulate colors for all possible control states
     D3DXCOLOR Current;
@@ -136,38 +137,38 @@ public:
     bool MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 
     // Control creation
-    HRESULT AddStatic( int ID, LPCWSTR strText, int x, int y, int width, int height, bool bIsDefault=false, CDXUTStatic** ppCreated=NULL );
-    HRESULT AddButton( int ID, LPCWSTR strText, int x, int y, int width, int height, UINT nHotkey=0, bool bIsDefault=false, CDXUTButton** ppCreated=NULL );
-    HRESULT AddCheckBox( int ID, LPCWSTR strText, int x, int y, int width, int height, bool bChecked=false, UINT nHotkey=0, bool bIsDefault=false, CDXUTCheckBox** ppCreated=NULL );
-    HRESULT AddRadioButton( int ID, UINT nButtonGroup, LPCWSTR strText, int x, int y, int width, int height, bool bChecked=false, UINT nHotkey=0, bool bIsDefault=false, CDXUTRadioButton** ppCreated=NULL );
-    HRESULT AddComboBox( int ID, int x, int y, int width, int height, UINT nHotKey=0, bool bIsDefault=false, CDXUTComboBox** ppCreated=NULL );
-    HRESULT AddSlider( int ID, int x, int y, int width, int height, int min=0, int max=100, int value=50, bool bIsDefault=false, CDXUTSlider** ppCreated=NULL );
-    HRESULT AddEditBox( int ID, LPCWSTR strText, int x, int y, int width, int height, bool bIsDefault=false, CDXUTEditBox** ppCreated=NULL );
-    HRESULT AddIMEEditBox( int ID, LPCWSTR strText, int x, int y, int width, int height, bool bIsDefault=false, CDXUTIMEEditBox** ppCreated=NULL );
-    HRESULT AddListBox( int ID, int x, int y, int width, int height, DWORD dwStyle=0, CDXUTListBox** ppCreated=NULL );
+    HRESULT AddStatic( NxI32 ID, LPCWSTR strText, NxI32 x, NxI32 y, NxI32 width, NxI32 height, bool bIsDefault=false, CDXUTStatic** ppCreated=NULL );
+    HRESULT AddButton( NxI32 ID, LPCWSTR strText, NxI32 x, NxI32 y, NxI32 width, NxI32 height, UINT nHotkey=0, bool bIsDefault=false, CDXUTButton** ppCreated=NULL );
+    HRESULT AddCheckBox( NxI32 ID, LPCWSTR strText, NxI32 x, NxI32 y, NxI32 width, NxI32 height, bool bChecked=false, UINT nHotkey=0, bool bIsDefault=false, CDXUTCheckBox** ppCreated=NULL );
+    HRESULT AddRadioButton( NxI32 ID, UINT nButtonGroup, LPCWSTR strText, NxI32 x, NxI32 y, NxI32 width, NxI32 height, bool bChecked=false, UINT nHotkey=0, bool bIsDefault=false, CDXUTRadioButton** ppCreated=NULL );
+    HRESULT AddComboBox( NxI32 ID, NxI32 x, NxI32 y, NxI32 width, NxI32 height, UINT nHotKey=0, bool bIsDefault=false, CDXUTComboBox** ppCreated=NULL );
+    HRESULT AddSlider( NxI32 ID, NxI32 x, NxI32 y, NxI32 width, NxI32 height, NxI32 min=0, NxI32 max=100, NxI32 value=50, bool bIsDefault=false, CDXUTSlider** ppCreated=NULL );
+    HRESULT AddEditBox( NxI32 ID, LPCWSTR strText, NxI32 x, NxI32 y, NxI32 width, NxI32 height, bool bIsDefault=false, CDXUTEditBox** ppCreated=NULL );
+    HRESULT AddIMEEditBox( NxI32 ID, LPCWSTR strText, NxI32 x, NxI32 y, NxI32 width, NxI32 height, bool bIsDefault=false, CDXUTIMEEditBox** ppCreated=NULL );
+    HRESULT AddListBox( NxI32 ID, NxI32 x, NxI32 y, NxI32 width, NxI32 height, DWORD dwStyle=0, CDXUTListBox** ppCreated=NULL );
     HRESULT AddControl( CDXUTControl* pControl );
     HRESULT InitControl( CDXUTControl* pControl );
 
     // Control retrieval
-    CDXUTStatic*      GetStatic( int ID ) { return (CDXUTStatic*) GetControl( ID, DXUT_CONTROL_STATIC ); }
-    CDXUTButton*      GetButton( int ID ) { return (CDXUTButton*) GetControl( ID, DXUT_CONTROL_BUTTON ); }
-    CDXUTCheckBox*    GetCheckBox( int ID ) { return (CDXUTCheckBox*) GetControl( ID, DXUT_CONTROL_CHECKBOX ); }
-    CDXUTRadioButton* GetRadioButton( int ID ) { return (CDXUTRadioButton*) GetControl( ID, DXUT_CONTROL_RADIOBUTTON ); }
-    CDXUTComboBox*    GetComboBox( int ID ) { return (CDXUTComboBox*) GetControl( ID, DXUT_CONTROL_COMBOBOX ); }
-    CDXUTSlider*      GetSlider( int ID ) { return (CDXUTSlider*) GetControl( ID, DXUT_CONTROL_SLIDER ); }
-    CDXUTEditBox*     GetEditBox( int ID ) { return (CDXUTEditBox*) GetControl( ID, DXUT_CONTROL_EDITBOX ); }
-    CDXUTIMEEditBox*  GetIMEEditBox( int ID ) { return (CDXUTIMEEditBox*) GetControl( ID, DXUT_CONTROL_IMEEDITBOX ); }
-    CDXUTListBox*     GetListBox( int ID ) { return (CDXUTListBox*) GetControl( ID, DXUT_CONTROL_LISTBOX ); }
+    CDXUTStatic*      GetStatic( NxI32 ID ) { return (CDXUTStatic*) GetControl( ID, DXUT_CONTROL_STATIC ); }
+    CDXUTButton*      GetButton( NxI32 ID ) { return (CDXUTButton*) GetControl( ID, DXUT_CONTROL_BUTTON ); }
+    CDXUTCheckBox*    GetCheckBox( NxI32 ID ) { return (CDXUTCheckBox*) GetControl( ID, DXUT_CONTROL_CHECKBOX ); }
+    CDXUTRadioButton* GetRadioButton( NxI32 ID ) { return (CDXUTRadioButton*) GetControl( ID, DXUT_CONTROL_RADIOBUTTON ); }
+    CDXUTComboBox*    GetComboBox( NxI32 ID ) { return (CDXUTComboBox*) GetControl( ID, DXUT_CONTROL_COMBOBOX ); }
+    CDXUTSlider*      GetSlider( NxI32 ID ) { return (CDXUTSlider*) GetControl( ID, DXUT_CONTROL_SLIDER ); }
+    CDXUTEditBox*     GetEditBox( NxI32 ID ) { return (CDXUTEditBox*) GetControl( ID, DXUT_CONTROL_EDITBOX ); }
+    CDXUTIMEEditBox*  GetIMEEditBox( NxI32 ID ) { return (CDXUTIMEEditBox*) GetControl( ID, DXUT_CONTROL_IMEEDITBOX ); }
+    CDXUTListBox*     GetListBox( NxI32 ID ) { return (CDXUTListBox*) GetControl( ID, DXUT_CONTROL_LISTBOX ); }
 
-    CDXUTControl* GetControl( int ID );
-    CDXUTControl* GetControl( int ID, UINT nControlType );
+    CDXUTControl* GetControl( NxI32 ID );
+    CDXUTControl* GetControl( NxI32 ID, UINT nControlType );
     CDXUTControl* GetControlAtPoint( POINT pt );
 
-    bool GetControlEnabled( int ID );
-    void SetControlEnabled( int ID, bool bEnabled );
+    bool GetControlEnabled( NxI32 ID );
+    void SetControlEnabled( NxI32 ID, bool bEnabled );
 
     void ClearRadioButtonGroup( UINT nGroup );
-    void ClearComboBox( int ID );
+    void ClearComboBox( NxI32 ID );
 
     // Access the default display Elements used when adding new controls
     HRESULT       SetDefaultElement( UINT nControlType, UINT iElement, CDXUTElement* pElement );
@@ -181,8 +182,8 @@ public:
     HRESULT DrawRect( RECT* pRect, D3DCOLOR color );
     HRESULT DrawPolyLine( POINT* apPoints, UINT nNumPoints, D3DCOLOR color );
     HRESULT DrawSprite( CDXUTElement* pElement, RECT* prcDest );
-    HRESULT CalcTextRect( LPCWSTR strText, CDXUTElement* pElement, RECT* prcDest, int nCount = -1 );
-    HRESULT DrawText( LPCWSTR strText, CDXUTElement* pElement, RECT* prcDest, bool bShadow = false, int nCount = -1 );
+    HRESULT CalcTextRect( LPCWSTR strText, CDXUTElement* pElement, RECT* prcDest, NxI32 nCount = -1 );
+    HRESULT DrawText( LPCWSTR strText, CDXUTElement* pElement, RECT* prcDest, bool bShadow = false, NxI32 nCount = -1 );
 
     // Attributes
     bool GetVisible() { return m_bVisible; }
@@ -192,21 +193,21 @@ public:
     void SetBackgroundColors( D3DCOLOR colorAllCorners ) { SetBackgroundColors( colorAllCorners, colorAllCorners, colorAllCorners, colorAllCorners ); }
     void SetBackgroundColors( D3DCOLOR colorTopLeft, D3DCOLOR colorTopRight, D3DCOLOR colorBottomLeft, D3DCOLOR colorBottomRight );
     void EnableCaption( bool bEnable ) { m_bCaption = bEnable; }
-    int GetCaptionHeight() const { return m_nCaptionHeight; }
-    void SetCaptionHeight( int nHeight ) { m_nCaptionHeight = nHeight; }
+    NxI32 GetCaptionHeight() const { return m_nCaptionHeight; }
+    void SetCaptionHeight( NxI32 nHeight ) { m_nCaptionHeight = nHeight; }
     void SetCaptionText( const WCHAR *pwszText ) { StringCchCopy( m_wszCaption, sizeof(m_wszCaption)/sizeof(m_wszCaption[0]), pwszText); }
     void GetLocation( POINT &Pt ) const { Pt.x = m_x; Pt.y = m_y; }
-    void SetLocation( int x, int y ) { m_x = x; m_y = y; }
-    void SetSize( int width, int height ) { m_width = width; m_height = height;  }
-    int GetWidth() { return m_width; }
-    int GetHeight() { return m_height; }
+    void SetLocation( NxI32 x, NxI32 y ) { m_x = x; m_y = y; }
+    void SetSize( NxI32 width, NxI32 height ) { m_width = width; m_height = height;  }
+    NxI32 GetWidth() { return m_width; }
+    NxI32 GetHeight() { return m_height; }
 
-    static void SetRefreshTime( float fTime ){ s_fTimeRefresh = fTime; }
+    static void SetRefreshTime( NxF32 fTime ){ s_fTimeRefresh = fTime; }
 
     static CDXUTControl* GetNextControl( CDXUTControl* pControl );
     static CDXUTControl* GetPrevControl( CDXUTControl* pControl );
 
-    void RemoveControl( int ID );
+    void RemoveControl( NxI32 ID );
     void RemoveAllControls();
 
     // Sets the callback used to notify the app of control events
@@ -218,7 +219,7 @@ public:
 
     // Device state notification
     void Refresh();
-    HRESULT OnRender( float fElapsedTime );
+    HRESULT OnRender( NxF32 fElapsedTime );
 
     // Shared resource access. Indexed fonts and textures are shared among
     // all the controls.
@@ -246,10 +247,10 @@ public:
 private:
     void *mUserData;
 
-    int m_nDefaultControlID;
+    NxI32 m_nDefaultControlID;
 
-    static double s_fTimeRefresh;
-    double m_fTimeLastRefresh;
+    static NxF64 s_fTimeRefresh;
+    NxF64 m_fTimeLastRefresh;
 
     // Initialize default Elements
     void InitDefaultElements();
@@ -274,11 +275,11 @@ private:
     bool m_bDrag;
     WCHAR m_wszCaption[256];
 
-    int m_x;
-    int m_y;
-    int m_width;
-    int m_height;
-    int m_nCaptionHeight;
+    NxI32 m_x;
+    NxI32 m_y;
+    NxI32 m_width;
+    NxI32 m_height;
+    NxI32 m_nCaptionHeight;
 
     D3DCOLOR m_colorTopLeft;
     D3DCOLOR m_colorTopRight;
@@ -289,8 +290,8 @@ private:
     PCALLBACKDXUTGUIEVENT m_pCallbackEvent;
     void* m_pCallbackEventUserContext;
 
-    CGrowableArray< int > m_Textures;   // Index into m_TextureCache;
-    CGrowableArray< int > m_Fonts;      // Index into m_FontCache;
+    CGrowableArray< NxI32 > m_Textures;   // Index into m_TextureCache;
+    CGrowableArray< NxI32 > m_Fonts;      // Index into m_FontCache;
 
     CGrowableArray< CDXUTControl* > m_Controls;
     CGrowableArray< DXUTElementHolder* > m_DefaultElements;
@@ -309,7 +310,7 @@ struct DXUTTextureNode
 {
     bool bFileSource;  // True if this texture is loaded from a file. False if from resource.
     HMODULE hResourceModule;
-    int nResourceID;   // Resource ID. If 0, string-based ID is used and stored in strFilename.
+    NxI32 nResourceID;   // Resource ID. If 0, string-based ID is used and stored in strFilename.
     WCHAR strFilename[MAX_PATH];
     IDirect3DTexture9* pTexture;
     DWORD dwWidth;
@@ -340,12 +341,12 @@ public:
     void        OnDestroyDevice();
     bool        MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
     
-    int AddFont( LPCWSTR strFaceName, LONG height, LONG weight );
-    int AddTexture( LPCWSTR strFilename );
-    int AddTexture( LPCWSTR strResourceName, HMODULE hResourceModule );
+    NxI32 AddFont( LPCWSTR strFaceName, LONG height, LONG weight );
+    NxI32 AddTexture( LPCWSTR strFilename );
+    NxI32 AddTexture( LPCWSTR strResourceName, HMODULE hResourceModule );
 
-    DXUTFontNode*     GetFontNode( int iIndex )     { return m_FontCache.GetAt( iIndex ); };
-    DXUTTextureNode*  GetTextureNode( int iIndex )  { return m_TextureCache.GetAt( iIndex ); };
+    DXUTFontNode*     GetFontNode( NxI32 iIndex )     { return m_FontCache.GetAt( iIndex ); };
+    DXUTTextureNode*  GetTextureNode( NxI32 iIndex )  { return m_TextureCache.GetAt( iIndex ); };
     IDirect3DDevice9* GetD3DDevice()                { return m_pd3dDevice; }
 
     bool RegisterDialog( CDXUTDialog *pDialog );
@@ -381,7 +382,7 @@ public:
 
     virtual HRESULT OnInit() { return S_OK; }
     virtual void Refresh();
-    virtual void Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime ) { };
+    virtual void Render( IDirect3DDevice9* pd3dDevice, NxF32 fElapsedTime ) { };
 
     // Windows message handler
     virtual bool MsgProc( UINT uMsg, WPARAM wParam, LPARAM lParam ) { return false; }
@@ -405,11 +406,11 @@ public:
 
     UINT GetType() const { return m_Type; }
 
-    int  GetID() const { return m_ID; }
-    void SetID( int ID ) { m_ID = ID; }
+    NxI32  GetID() const { return m_ID; }
+    void SetID( NxI32 ID ) { m_ID = ID; }
 
-    void SetLocation( int x, int y ) { m_x = x; m_y = y; UpdateRects(); }
-    void SetSize( int width, int height ) { m_width = width; m_height = height; UpdateRects(); }
+    void SetLocation( NxI32 x, NxI32 y ) { m_x = x; m_y = y; UpdateRects(); }
+    void SetSize( NxI32 width, NxI32 height ) { m_width = width; m_height = height; UpdateRects(); }
 
     void SetHotkey( UINT nHotkey ) { m_nHotkey = nHotkey; }
     UINT GetHotkey() { return m_nHotkey; }
@@ -427,8 +428,8 @@ public:
     bool m_bIsDefault;              // Is the default control
 
     // Size, scale, and positioning members
-    int m_x, m_y;
-    int m_width, m_height;
+    NxI32 m_x, m_y;
+    NxI32 m_width, m_height;
 
     // These members are set by the container
     CDXUTDialog* m_pDialog;    // Parent container
@@ -439,7 +440,7 @@ public:
 protected:
     virtual void UpdateRects();
 
-    int  m_ID;                 // ID number
+    NxI32  m_ID;                 // ID number
     DXUT_CONTROL_TYPE m_Type;  // Control type, set once in constructor
     UINT m_nHotkey;            // Virtual key code for this control's hotkey
     void *m_pUserData;         // Data associated with this control that is set by user.
@@ -470,7 +471,7 @@ class CDXUTStatic : public CDXUTControl
 public:
     CDXUTStatic( CDXUTDialog *pDialog = NULL );
 
-    virtual void Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime );
+    virtual void Render( IDirect3DDevice9* pd3dDevice, NxF32 fElapsedTime );
     virtual BOOL ContainsPoint( POINT pt ) { return false; }
 
     HRESULT GetTextCopy( LPWSTR strDest, UINT bufferCount );
@@ -498,7 +499,7 @@ public:
     virtual BOOL ContainsPoint( POINT pt ) { return PtInRect( &m_rcBoundingBox, pt ); }
     virtual bool CanHaveFocus() { return (m_bVisible && m_bEnabled); }
 
-    virtual void Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime );
+    virtual void Render( IDirect3DDevice9* pd3dDevice, NxF32 fElapsedTime );
 
 protected:
     bool m_bPressed;
@@ -520,7 +521,7 @@ public:
     virtual BOOL ContainsPoint( POINT pt ); 
     virtual void UpdateRects(); 
 
-    virtual void Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime );
+    virtual void Render( IDirect3DDevice9* pd3dDevice, NxF32 fElapsedTime );
 
     bool GetChecked() { return m_bChecked; }
     void SetChecked( bool bChecked ) { SetCheckedInternal( bChecked, false ); }
@@ -569,17 +570,17 @@ public:
     virtual bool    HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lParam );
     virtual bool    MsgProc( UINT uMsg, WPARAM wParam, LPARAM lParam );
 
-    virtual void    Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime );
+    virtual void    Render( IDirect3DDevice9* pd3dDevice, NxF32 fElapsedTime );
     virtual void    UpdateRects();
 
-    void SetTrackRange( int nStart, int nEnd );
-    int GetTrackPos() { return m_nPosition; }
-    void SetTrackPos( int nPosition ) { m_nPosition = nPosition; Cap(); UpdateThumbRect(); }
-    int GetPageSize() { return m_nPageSize; }
-    void SetPageSize( int nPageSize ) { m_nPageSize = nPageSize; Cap(); UpdateThumbRect(); }
+    void SetTrackRange( NxI32 nStart, NxI32 nEnd );
+    NxI32 GetTrackPos() { return m_nPosition; }
+    void SetTrackPos( NxI32 nPosition ) { m_nPosition = nPosition; Cap(); UpdateThumbRect(); }
+    NxI32 GetPageSize() { return m_nPageSize; }
+    void SetPageSize( NxI32 nPageSize ) { m_nPageSize = nPageSize; Cap(); UpdateThumbRect(); }
 
-    void Scroll( int nDelta );    // Scroll by nDelta items (plus or minus)
-    void ShowItem( int nIndex );  // Ensure that item nIndex is displayed, scroll if necessary
+    void Scroll( NxI32 nDelta );    // Scroll by nDelta items (plus or minus)
+    void ShowItem( NxI32 nIndex );  // Ensure that item nIndex is displayed, scroll if necessary
 
 protected:
     // ARROWSTATE indicates the state of the arrow buttons.
@@ -599,13 +600,13 @@ protected:
     RECT m_rcDownButton;
     RECT m_rcTrack;
     RECT m_rcThumb;
-    int m_nPosition;  // Position of the first displayed item
-    int m_nPageSize;  // How many items are displayable in one page
-    int m_nStart;     // First item
-    int m_nEnd;       // The index after the last item
+    NxI32 m_nPosition;  // Position of the first displayed item
+    NxI32 m_nPageSize;  // How many items are displayable in one page
+    NxI32 m_nStart;     // First item
+    NxI32 m_nEnd;       // The index after the last item
     POINT m_LastMouse;// Last mouse position
     ARROWSTATE m_Arrow; // State of the arrows
-    double m_dArrowTS;  // Timestamp of last arrow event.
+    NxF64 m_dArrowTS;  // Timestamp of last arrow event.
 };
 
 
@@ -633,26 +634,26 @@ public:
     virtual bool    HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lParam );
     virtual bool    MsgProc( UINT uMsg, WPARAM wParam, LPARAM lParam );
 
-    virtual void    Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime );
+    virtual void    Render( IDirect3DDevice9* pd3dDevice, NxF32 fElapsedTime );
     virtual void    UpdateRects();
 
     DWORD GetStyle() const { return m_dwStyle; }
-    int GetSize() const { return m_Items.GetSize(); }
+    NxI32 GetSize() const { return m_Items.GetSize(); }
     void SetStyle( DWORD dwStyle ) { m_dwStyle = dwStyle; }
-    int  GetScrollBarWidth() const { return m_nSBWidth; }
-    void SetScrollBarWidth( int nWidth ) { m_nSBWidth = nWidth; UpdateRects(); }
-    void SetBorder( int nBorder, int nMargin ) { m_nBorder = nBorder; m_nMargin = nMargin; }
+    NxI32  GetScrollBarWidth() const { return m_nSBWidth; }
+    void SetScrollBarWidth( NxI32 nWidth ) { m_nSBWidth = nWidth; UpdateRects(); }
+    void SetBorder( NxI32 nBorder, NxI32 nMargin ) { m_nBorder = nBorder; m_nMargin = nMargin; }
     HRESULT AddItem( const WCHAR *wszText, void *pData );
-    HRESULT InsertItem( int nIndex, const WCHAR *wszText, void *pData );
-    void RemoveItem( int nIndex );
+    HRESULT InsertItem( NxI32 nIndex, const WCHAR *wszText, void *pData );
+    void RemoveItem( NxI32 nIndex );
     void RemoveItemByText( WCHAR *wszText );
     void RemoveItemByData( void *pData );
     void RemoveAllItems();
 
-    DXUTListBoxItem *GetItem( int nIndex );
-    int GetSelectedIndex( int nPreviousSelected = -1 );
-    DXUTListBoxItem *GetSelectedItem( int nPreviousSelected = -1 ) { return GetItem( GetSelectedIndex( nPreviousSelected ) ); }
-    void SelectItem( int nNewIndex );
+    DXUTListBoxItem *GetItem( NxI32 nIndex );
+    NxI32 GetSelectedIndex( NxI32 nPreviousSelected = -1 );
+    DXUTListBoxItem *GetSelectedItem( NxI32 nPreviousSelected = -1 ) { return GetItem( GetSelectedIndex( nPreviousSelected ) ); }
+    void SelectItem( NxI32 nNewIndex );
 
     enum STYLE { MULTISELECTION = 1 };
 
@@ -660,13 +661,13 @@ protected:
     RECT m_rcText;      // Text rendering bound
     RECT m_rcSelection; // Selection box bound
     CDXUTScrollBar m_ScrollBar;
-    int m_nSBWidth;
-    int m_nBorder;
-    int m_nMargin;
-    int m_nTextHeight;  // Height of a single line of text
+    NxI32 m_nSBWidth;
+    NxI32 m_nBorder;
+    NxI32 m_nMargin;
+    NxI32 m_nTextHeight;  // Height of a single line of text
     DWORD m_dwStyle;    // List box style
-    int m_nSelected;    // Index of the selected item for single selection list box
-    int m_nSelStart;    // Index of the item where selection starts (for handling multi-selection)
+    NxI32 m_nSelected;    // Index of the selected item for single selection list box
+    NxI32 m_nSelStart;    // Index of the item where selection starts (for handling multi-selection)
     bool m_bDrag;       // Whether the user is dragging the mouse to select
 
     CGrowableArray< DXUTListBoxItem* > m_Items;
@@ -701,7 +702,7 @@ public:
 
     virtual bool CanHaveFocus() { return (m_bVisible && m_bEnabled); }
     virtual void OnFocusOut();
-    virtual void Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime );
+    virtual void Render( IDirect3DDevice9* pd3dDevice, NxF32 fElapsedTime );
 
     virtual void UpdateRects();
 
@@ -709,12 +710,12 @@ public:
     void    RemoveAllItems();
     void    RemoveItem( UINT index );
     bool    ContainsItem( const WCHAR* strText, UINT iStart=0 );
-    int     FindItem( const WCHAR* strText, UINT iStart=0 );
+    NxI32     FindItem( const WCHAR* strText, UINT iStart=0 );
     void*   GetItemData( const WCHAR* strText );
-    void*   GetItemData( int nIndex );
+    void*   GetItemData( NxI32 nIndex );
     void    SetDropHeight( UINT nHeight ) { m_nDropHeight = nHeight; UpdateRects(); }
-    int     GetScrollBarWidth() const { return m_nSBWidth; }
-    void    SetScrollBarWidth( int nWidth ) { m_nSBWidth = nWidth; UpdateRects(); }
+    NxI32     GetScrollBarWidth() const { return m_nSBWidth; }
+    void    SetScrollBarWidth( NxI32 nWidth ) { m_nSBWidth = nWidth; UpdateRects(); }
 
     void*   GetSelectedData();
     DXUTComboBoxItem* GetSelectedItem();
@@ -729,11 +730,11 @@ public:
 		bool IsOpened(void) { return m_bOpened; }
 
 protected:
-    int     m_iSelected;
-    int     m_iFocused;
-    int     m_nDropHeight;
+    NxI32     m_iSelected;
+    NxI32     m_iFocused;
+    NxI32     m_nDropHeight;
     CDXUTScrollBar m_ScrollBar;
-    int     m_nSBWidth;
+    NxI32     m_nSBWidth;
 
     bool    m_bOpened;
 
@@ -762,26 +763,26 @@ public:
     
     virtual void UpdateRects(); 
 
-    virtual void Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime );
+    virtual void Render( IDirect3DDevice9* pd3dDevice, NxF32 fElapsedTime );
 
-    void SetValue( int nValue ) { SetValueInternal( nValue, false ); }
-    int  GetValue() const { return m_nValue; };
+    void SetValue( NxI32 nValue ) { SetValueInternal( nValue, false ); }
+    NxI32  GetValue() const { return m_nValue; };
 
-    void GetRange( int &nMin, int &nMax ) const { nMin = m_nMin; nMax = m_nMax; }
-    void SetRange( int nMin, int nMax );
+    void GetRange( NxI32 &nMin, NxI32 &nMax ) const { nMin = m_nMin; nMax = m_nMax; }
+    void SetRange( NxI32 nMin, NxI32 nMax );
 
 protected:
-    void SetValueInternal( int nValue, bool bFromInput );
-    int  ValueFromPos( int x ); 
+    void SetValueInternal( NxI32 nValue, bool bFromInput );
+    NxI32  ValueFromPos( NxI32 x ); 
 
-    int m_nValue;
+    NxI32 m_nValue;
 
-    int m_nMin;
-    int m_nMax;
+    NxI32 m_nMin;
+    NxI32 m_nMax;
 
-    int m_nDragX;      // Mouse position at start of drag
-    int m_nDragOffset; // Drag offset from the center of the button
-    int m_nButtonX;
+    NxI32 m_nDragX;      // Mouse position at start of drag
+    NxI32 m_nDragOffset; // Drag offset from the center of the button
+    NxI32 m_nButtonX;
 
     bool m_bPressed;
     RECT m_rcButton;
@@ -794,38 +795,38 @@ protected:
 class CUniBuffer
 {
 public:
-    CUniBuffer( int nInitialSize = 1 );
+    CUniBuffer( NxI32 nInitialSize = 1 );
     ~CUniBuffer();
 
     static void Initialize();
     static void Uninitialize();
 
-    int  GetBufferSize() { return m_nBufferSize; }
-    bool SetBufferSize( int nSize );
-    int  GetTextSize()  { return lstrlenW( m_pwszBuffer ); }
+    NxI32  GetBufferSize() { return m_nBufferSize; }
+    bool SetBufferSize( NxI32 nSize );
+    NxI32  GetTextSize()  { return lstrlenW( m_pwszBuffer ); }
     const WCHAR* GetBuffer() { return m_pwszBuffer; }
-    const WCHAR& operator[]( int n ) const { return m_pwszBuffer[n]; }
-    WCHAR& operator[]( int n );
+    const WCHAR& operator[]( NxI32 n ) const { return m_pwszBuffer[n]; }
+    WCHAR& operator[]( NxI32 n );
     DXUTFontNode* GetFontNode() { return m_pFontNode; }
     void SetFontNode( DXUTFontNode *pFontNode ) { m_pFontNode = pFontNode; }
     void Clear();
 
-    bool InsertChar( int nIndex, WCHAR wChar ); // Inserts the char at specified index. If nIndex == -1, insert to the end.
-    bool RemoveChar( int nIndex );  // Removes the char at specified index. If nIndex == -1, remove the last char.
-    bool InsertString( int nIndex, const WCHAR *pStr, int nCount = -1 );  // Inserts the first nCount characters of the string pStr at specified index.  If nCount == -1, the entire string is inserted. If nIndex == -1, insert to the end.
+    bool InsertChar( NxI32 nIndex, WCHAR wChar ); // Inserts the char at specified index. If nIndex == -1, insert to the end.
+    bool RemoveChar( NxI32 nIndex );  // Removes the char at specified index. If nIndex == -1, remove the last char.
+    bool InsertString( NxI32 nIndex, const WCHAR *pStr, NxI32 nCount = -1 );  // Inserts the first nCount characters of the string pStr at specified index.  If nCount == -1, the entire string is inserted. If nIndex == -1, insert to the end.
     bool SetText( LPCWSTR wszText );
 
     // Uniscribe
-    HRESULT CPtoX( int nCP, BOOL bTrail, int *pX );
-    HRESULT XtoCP( int nX, int *pCP, int *pnTrail );
-    void GetPriorItemPos( int nCP, int *pPrior );
-    void GetNextItemPos( int nCP, int *pPrior );
+    HRESULT CPtoX( NxI32 nCP, BOOL bTrail, NxI32 *pX );
+    HRESULT XtoCP( NxI32 nX, NxI32 *pCP, NxI32 *pnTrail );
+    void GetPriorItemPos( NxI32 nCP, NxI32 *pPrior );
+    void GetNextItemPos( NxI32 nCP, NxI32 *pPrior );
 
 private:
     HRESULT Analyse();      // Uniscribe -- Analyse() analyses the string in the buffer
 
     WCHAR* m_pwszBuffer;    // Buffer to hold text
-    int    m_nBufferSize;   // Size of the buffer allocated, in characters
+    NxI32    m_nBufferSize;   // Size of the buffer allocated, in characters
 
     // Uniscribe-specific
     DXUTFontNode* m_pFontNode;          // Font node for the font that this buffer uses
@@ -835,21 +836,21 @@ private:
 private:
     // Empty implementation of the Uniscribe API
     static HRESULT WINAPI Dummy_ScriptApplyDigitSubstitution( const SCRIPT_DIGITSUBSTITUTE*, SCRIPT_CONTROL*, SCRIPT_STATE* ) { return E_NOTIMPL; }
-    static HRESULT WINAPI Dummy_ScriptStringAnalyse( HDC, const void *, int, int, int, DWORD, int, SCRIPT_CONTROL*, SCRIPT_STATE*, const int*, SCRIPT_TABDEF*, const BYTE*, SCRIPT_STRING_ANALYSIS* ) { return E_NOTIMPL; }
-    static HRESULT WINAPI Dummy_ScriptStringCPtoX( SCRIPT_STRING_ANALYSIS, int, BOOL, int* ) { return E_NOTIMPL; }
-    static HRESULT WINAPI Dummy_ScriptStringXtoCP( SCRIPT_STRING_ANALYSIS, int, int*, int* ) { return E_NOTIMPL; }
+    static HRESULT WINAPI Dummy_ScriptStringAnalyse( HDC, const void *, NxI32, NxI32, NxI32, DWORD, NxI32, SCRIPT_CONTROL*, SCRIPT_STATE*, const NxI32*, SCRIPT_TABDEF*, const BYTE*, SCRIPT_STRING_ANALYSIS* ) { return E_NOTIMPL; }
+    static HRESULT WINAPI Dummy_ScriptStringCPtoX( SCRIPT_STRING_ANALYSIS, NxI32, BOOL, NxI32* ) { return E_NOTIMPL; }
+    static HRESULT WINAPI Dummy_ScriptStringXtoCP( SCRIPT_STRING_ANALYSIS, NxI32, NxI32*, NxI32* ) { return E_NOTIMPL; }
     static HRESULT WINAPI Dummy_ScriptStringFree( SCRIPT_STRING_ANALYSIS* ) { return E_NOTIMPL; }
     static const SCRIPT_LOGATTR* WINAPI Dummy_ScriptString_pLogAttr( SCRIPT_STRING_ANALYSIS ) { return NULL; }
-    static const int* WINAPI Dummy_ScriptString_pcOutChars( SCRIPT_STRING_ANALYSIS ) { return NULL; }
+    static const NxI32* WINAPI Dummy_ScriptString_pcOutChars( SCRIPT_STRING_ANALYSIS ) { return NULL; }
 
     // Function pointers
     static HRESULT (WINAPI *_ScriptApplyDigitSubstitution)( const SCRIPT_DIGITSUBSTITUTE*, SCRIPT_CONTROL*, SCRIPT_STATE* );
-    static HRESULT (WINAPI *_ScriptStringAnalyse)( HDC, const void *, int, int, int, DWORD, int, SCRIPT_CONTROL*, SCRIPT_STATE*, const int*, SCRIPT_TABDEF*, const BYTE*, SCRIPT_STRING_ANALYSIS* );
-    static HRESULT (WINAPI *_ScriptStringCPtoX)( SCRIPT_STRING_ANALYSIS, int, BOOL, int* );
-    static HRESULT (WINAPI *_ScriptStringXtoCP)( SCRIPT_STRING_ANALYSIS, int, int*, int* );
+    static HRESULT (WINAPI *_ScriptStringAnalyse)( HDC, const void *, NxI32, NxI32, NxI32, DWORD, NxI32, SCRIPT_CONTROL*, SCRIPT_STATE*, const NxI32*, SCRIPT_TABDEF*, const BYTE*, SCRIPT_STRING_ANALYSIS* );
+    static HRESULT (WINAPI *_ScriptStringCPtoX)( SCRIPT_STRING_ANALYSIS, NxI32, BOOL, NxI32* );
+    static HRESULT (WINAPI *_ScriptStringXtoCP)( SCRIPT_STRING_ANALYSIS, NxI32, NxI32*, NxI32* );
     static HRESULT (WINAPI *_ScriptStringFree)( SCRIPT_STRING_ANALYSIS* );
     static const SCRIPT_LOGATTR* (WINAPI *_ScriptString_pLogAttr)( SCRIPT_STRING_ANALYSIS );
-    static const int* (WINAPI *_ScriptString_pcOutChars)( SCRIPT_STRING_ANALYSIS );
+    static const NxI32* (WINAPI *_ScriptString_pcOutChars)( SCRIPT_STRING_ANALYSIS );
 
     static HINSTANCE s_hDll;  // Uniscribe DLL handle
 
@@ -869,22 +870,22 @@ public:
     virtual bool MsgProc( UINT uMsg, WPARAM wParam, LPARAM lParam );
     virtual void UpdateRects();
     virtual bool CanHaveFocus() { return (m_bVisible && m_bEnabled); }
-    virtual void Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime );
+    virtual void Render( IDirect3DDevice9* pd3dDevice, NxF32 fElapsedTime );
     virtual void OnFocusIn();
 
     void SetText( LPCWSTR wszText, bool bSelected = false );
     LPCWSTR GetText() { return m_Buffer.GetBuffer(); }
-    int GetTextLength() { return m_Buffer.GetTextSize(); }  // Returns text length in chars excluding NULL.
+    NxI32 GetTextLength() { return m_Buffer.GetTextSize(); }  // Returns text length in chars excluding NULL.
     HRESULT GetTextCopy( LPWSTR strDest, UINT bufferCount );
     void ClearText();
     virtual void SetTextColor( D3DCOLOR Color ) { m_TextColor = Color; }  // Text color
     void SetSelectedTextColor( D3DCOLOR Color ) { m_SelTextColor = Color; }  // Selected text color
     void SetSelectedBackColor( D3DCOLOR Color ) { m_SelBkColor = Color; }  // Selected background color
     void SetCaretColor( D3DCOLOR Color ) { m_CaretColor = Color; }  // Caret color
-    void SetBorderWidth( int nBorder ) { m_nBorder = nBorder; UpdateRects(); }  // Border of the window
-    void SetSpacing( int nSpacing ) { m_nSpacing = nSpacing; UpdateRects(); }
-    void ParseFloatArray( float *pNumbers, int nCount );
-    void SetTextFloatArray( const float *pNumbers, int nCount );
+    void SetBorderWidth( NxI32 nBorder ) { m_nBorder = nBorder; UpdateRects(); }  // Border of the window
+    void SetSpacing( NxI32 nSpacing ) { m_nSpacing = nSpacing; UpdateRects(); }
+    void ParseFloatArray( NxF32 *pNumbers, NxI32 nCount );
+    void SetTextFloatArray( const NxF32 *pNumbers, NxI32 nCount );
 		void SetFocused(void)
 		{
 		  if( !m_bHasFocus )
@@ -892,24 +893,24 @@ public:
 		}
 
 protected:
-    void PlaceCaret( int nCP );
+    void PlaceCaret( NxI32 nCP );
     void DeleteSelectionText();
     void ResetCaretBlink();
     void CopyToClipboard();
     void PasteFromClipboard();
 
     CUniBuffer m_Buffer;     // Buffer to hold text
-    int      m_nBorder;      // Border of the window
-    int      m_nSpacing;     // Spacing between the text and the edge of border
+    NxI32      m_nBorder;      // Border of the window
+    NxI32      m_nSpacing;     // Spacing between the text and the edge of border
     RECT     m_rcText;       // Bounding rectangle for the text
     RECT     m_rcRender[9];  // Convenient rectangles for rendering elements
-    double   m_dfBlink;      // Caret blink time in milliseconds
-    double   m_dfLastBlink;  // Last timestamp of caret blink
+    NxF64   m_dfBlink;      // Caret blink time in milliseconds
+    NxF64   m_dfLastBlink;  // Last timestamp of caret blink
     bool     m_bCaretOn;     // Flag to indicate whether caret is currently visible
-    int      m_nCaret;       // Caret position, in characters
+    NxI32      m_nCaret;       // Caret position, in characters
     bool     m_bInsertMode;  // If true, control is in insert mode. Else, overwrite mode.
-    int      m_nSelStart;    // Starting position of the selection. The caret marks the end.
-    int      m_nFirstVisible;// First visible character in the edit control
+    NxI32      m_nSelStart;    // Starting position of the selection. The caret marks the end.
+    NxI32      m_nFirstVisible;// First visible character in the edit control
     D3DCOLOR m_TextColor;    // Text color
     D3DCOLOR m_SelTextColor; // Selected text color
     D3DCOLOR m_SelBkColor;   // Selected background color
@@ -1006,7 +1007,7 @@ public:
 
     static  void EnableImeSystem( bool bEnable );
 
-    virtual void Render( IDirect3DDevice9* pd3dDevice, float fElapsedTime );
+    virtual void Render( IDirect3DDevice9* pd3dDevice, NxF32 fElapsedTime );
     virtual bool MsgProc( UINT uMsg, WPARAM wParam, LPARAM lParam );
     virtual bool HandleMouse( UINT uMsg, POINT pt, WPARAM wParam, LPARAM lParam );
     virtual void UpdateRects();
@@ -1015,9 +1016,9 @@ public:
 
     void PumpMessage();
 
-    virtual void RenderCandidateReadingWindow( IDirect3DDevice9* pd3dDevice, float fElapsedTime, bool bReading );
-    virtual void RenderComposition( IDirect3DDevice9* pd3dDevice, float fElapsedTime );
-    virtual void RenderIndicator( IDirect3DDevice9* pd3dDevice, float fElapsedTime );
+    virtual void RenderCandidateReadingWindow( IDirect3DDevice9* pd3dDevice, NxF32 fElapsedTime, bool bReading );
+    virtual void RenderComposition( IDirect3DDevice9* pd3dDevice, NxF32 fElapsedTime );
+    virtual void RenderIndicator( IDirect3DDevice9* pd3dDevice, NxF32 fElapsedTime );
 
 protected:
     static WORD GetLanguage() { return LOWORD( s_hklCurrent ); }
@@ -1029,7 +1030,7 @@ protected:
     static void CheckToggleState();
     static void SetupImeApi();
     static void ResetCompositionString();
-    void TruncateCompString( bool bUseBackSpace = true, int iNewStrLen = 0 );
+    void TruncateCompString( bool bUseBackSpace = true, NxI32 iNewStrLen = 0 );
     void FinalizeString( bool bSend );
     static void GetReadingWindowOrientation( DWORD dwId );
     static void GetPrivateReadingString();
@@ -1044,12 +1045,12 @@ protected:
     {
         WCHAR awszCandidate[MAX_CANDLIST][256];
         CUniBuffer HoriCand; // Candidate list string (for horizontal candidate window)
-        int   nFirstSelected; // First character position of the selected string in HoriCand
-        int   nHoriSelectedLen; // Length of the selected string in HoriCand
+        NxI32   nFirstSelected; // First character position of the selected string in HoriCand
+        NxI32   nHoriSelectedLen; // Length of the selected string in HoriCand
         DWORD dwCount;       // Number of valid entries in the candidate list
         DWORD dwSelection;   // Currently selected candidate entry relative to page top
         DWORD dwPageSize;
-        int   nReadingError; // Index of the error character
+        NxI32   nReadingError; // Index of the error character
         bool  bShowWindow;   // Whether the candidate list window is visible
         RECT  rcCandidate;   // Candidate rectangle computed and filled each time before rendered
     };
@@ -1075,8 +1076,8 @@ protected:
     static IMESTATE  s_ImeState;          // IME global state
     static bool    s_bEnableImeSystem;    // Whether the IME system is active
     static POINT   s_ptCompString;        // Composition string position. Updated every frame.
-    static int     s_nCompCaret;          // Caret position of the composition string
-    static int     s_nFirstTargetConv;    // Index of the first target converted char in comp string.  If none, -1.
+    static NxI32     s_nCompCaret;          // Caret position of the composition string
+    static NxI32     s_nFirstTargetConv;    // Index of the first target converted char in comp string.  If none, -1.
     static CUniBuffer s_CompString;       // Buffer to hold the composition string (we fix its length)
     static BYTE    s_abCompStringAttr[MAX_COMPSTRING_SIZE];
     static DWORD   s_adwCompStringClause[MAX_COMPSTRING_SIZE];
@@ -1108,7 +1109,7 @@ protected:
     D3DCOLOR       m_IndicatorBkColor;    // Indicator text background color
 
     // Edit-control-specific data
-    int            m_nIndicatorWidth;     // Width of the indicator symbol
+    NxI32            m_nIndicatorWidth;     // Width of the indicator symbol
     RECT           m_rcIndicator;         // Rectangle for drawing the indicator button
 
 #if defined(DEBUG) || defined(_DEBUG)

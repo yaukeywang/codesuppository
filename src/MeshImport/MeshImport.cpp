@@ -120,7 +120,7 @@ struct ScaleKey
 
 extern "C"
 {
-  MESHIMPORT_API MESHIMPORT::MeshImport * getInterface(int version_number,SYSTEM_SERVICES::SystemServices *services);
+  MESHIMPORT_API MESHIMPORT::MeshImport * getInterface(NxI32 version_number,SYSTEM_SERVICES::SystemServices *services);
 };
 
 namespace MESHIMPORT
@@ -129,7 +129,7 @@ namespace MESHIMPORT
 class MyVertexIndex : public VertexIndex
 {
 public:
-  MyVertexIndex(float granularity)
+  MyVertexIndex(NxF32 granularity)
   {
     mVertexIndex = fm_createVertexIndex(granularity,false);
   }
@@ -139,22 +139,22 @@ public:
     fm_releaseVertexIndex(mVertexIndex);
   }
 
-  virtual unsigned int    getIndex(const float pos[3],bool &newPos)  // get welded index for this float vector[3]
+  virtual NxU32    getIndex(const NxF32 pos[3],bool &newPos)  // get welded index for this NxF32 vector[3]
   {
     return mVertexIndex->getIndex(pos,newPos);
   }
 
-  virtual const float *   getVertices(void) const
+  virtual const NxF32 *   getVertices(void) const
   {
     return mVertexIndex->getVerticesFloat();
   }
 
-  virtual const float *   getVertex(unsigned int index) const
+  virtual const NxF32 *   getVertex(NxU32 index) const
   {
     return mVertexIndex->getVertexFloat(index);
   }
 
-  virtual unsigned int    getVcount(void) const
+  virtual NxU32    getVcount(void) const
   {
     return mVertexIndex->getVcount();
   }
@@ -166,7 +166,7 @@ private:
 class MyMeshImportApplicationResource : public MeshImportApplicationResource
 {
 public:
-  virtual void * getApplicationResource(const char *base_name,const char *resource_name,unsigned int &len)
+  virtual void * getApplicationResource(const char *base_name,const char *resource_name,NxU32 &len)
   {
     void * ret = 0;
     len = 0;
@@ -202,7 +202,7 @@ public:
   MyMeshImport(void)
   {
     mApplicationResource = this;
-    unsigned int sections;
+    NxU32 sections;
     mINI = loadKeyValueIni("MeshImportMaterialTranslate.ini",sections);
   }
 
@@ -211,7 +211,7 @@ public:
     releaseKeyValueIni(mINI);
   }
 
-  VertexIndex *            createVertexIndex(float granularity)  // create an indexed vertext system for floats
+  VertexIndex *            createVertexIndex(NxF32 granularity)  // create an indexed vertext system for floats
   {
     MyVertexIndex *m = MEMALLOC_NEW(MyVertexIndex)(granularity);
     return static_cast< VertexIndex *>(m);
@@ -236,8 +236,8 @@ public:
       for (i=mImporters.begin(); i!=mImporters.end(); ++i)
       {
         MeshImporter *mi = (*i);
-        int count = mi->getExtensionCount();
-        for (int j=0; j<count; j++)
+        NxI32 count = mi->getExtensionCount();
+        for (NxI32 j=0; j<count; j++)
         {
           const char *ext = mi->getExtension(j);
           if ( stricmp(ext,scratch) == 0 )
@@ -264,7 +264,7 @@ public:
     }
   }
 
-  bool importMesh(const char *meshName,const void *data,unsigned int dlen,MeshImportInterface *callback,const char *options)
+  bool importMesh(const char *meshName,const void *data,NxU32 dlen,MeshImportInterface *callback,const char *options)
   {
     bool ret = false;
 
@@ -296,7 +296,7 @@ public:
     return ret;
   }
 
-  virtual MeshSystemContainer *     createMeshSystemContainer(const char *meshName,const void *data,unsigned int dlen,const char *options) // imports and converts to a single MeshSystem data structure
+  virtual MeshSystemContainer *     createMeshSystemContainer(const char *meshName,const void *data,NxU32 dlen,const char *options) // imports and converts to a single MeshSystem data structure
   {
     MeshSystemContainer *ret = 0;
 
@@ -319,16 +319,16 @@ public:
     releaseMeshBuilder(b);
   }
 
-  virtual int              getImporterCount(void)
+  virtual NxI32              getImporterCount(void)
   {
     return mImporters.size();
   }
 
-  virtual MeshImporter    *getImporter(int index)
+  virtual MeshImporter    *getImporter(NxI32 index)
   {
     MeshImporter *ret = 0;
-    assert( index >=0 && index < (int)mImporters.size() );
-    if ( index >= 0 && index < (int)mImporters.size() )
+    assert( index >=0 && index < (NxI32)mImporters.size() );
+    if ( index >= 0 && index < (NxI32)mImporters.size() )
     {
       ret = mImporters[index];
     }
@@ -404,7 +404,7 @@ public:
   void print(FILE_INTERFACE *fph,MeshSkeleton *s)
   {
     fi_fprintf(fph,"      <Skeleton name=\"%s\" count=\"%d\">\r\n", s->mName, s->mBoneCount);
-    for (unsigned int i=0; i<(unsigned int)s->mBoneCount; i++)
+    for (NxU32 i=0; i<(NxU32)s->mBoneCount; i++)
     {
       print(fph,s->mBones[i],s);
     }
@@ -429,7 +429,7 @@ public:
   void print(FILE_INTERFACE *fph,MeshAnimTrack *track)
   {
     fi_fprintf(fph,"        <AnimTrack name=\"%s\" count=\"%d\" has_scale=\"true\">\r\n", track->mName, track->mFrameCount);
-    for (int i=0; i<track->mFrameCount; i++)
+    for (NxI32 i=0; i<track->mFrameCount; i++)
     {
       print(fph,track->mPose[i]);
     }
@@ -441,7 +441,7 @@ public:
   {
     fi_fprintf(fph,"      <Animation name=\"%s\" trackcount=\"%d\" framecount=\"%d\" duration=\"%s\" dtime=\"%s\">\r\n", a->mName, a->mTrackCount, a->mFrameCount, FloatString( a->mDuration ), FloatString( a->mDtime) );
 
-    for (int i=0; i<a->mTrackCount; i++)
+    for (NxI32 i=0; i<a->mTrackCount; i++)
     {
       print(fph,a->mTracks[i]);
     }
@@ -463,7 +463,7 @@ public:
   {
   }
 
-  const char * getCtype(unsigned int flags)
+  const char * getCtype(NxU32 flags)
   {
     mCtype.clear();
 
@@ -482,7 +482,7 @@ public:
     if ( !mCtype.empty() )
     {
       char *foo = (char *)mCtype.c_str();
-      int len =  strlen(foo);
+      NxI32 len =  strlen(foo);
       if ( foo[len-1] == ' ' )
       {
         foo[len-1] = 0;
@@ -492,7 +492,7 @@ public:
     return mCtype.c_str();
   }
 
-  const char * getSemantics(unsigned int flags)
+  const char * getSemantics(NxU32 flags)
   {
     mSemantic.clear();
 
@@ -511,7 +511,7 @@ public:
     if ( !mSemantic.empty() )
     {
       char *foo = (char *)mSemantic.c_str();
-      int len =  strlen(foo);
+      NxI32 len =  strlen(foo);
       if ( foo[len-1] == ' ' )
       {
         foo[len-1] = 0;
@@ -522,7 +522,7 @@ public:
     return mSemantic.c_str();
   }
 
-  void printVertex(FILE_INTERFACE *fph,unsigned int flags,const MeshVertex &v,unsigned int &column,bool &newRow)
+  void printVertex(FILE_INTERFACE *fph,NxU32 flags,const MeshVertex &v,NxU32 &column,bool &newRow)
   {
     if ( newRow )
     {
@@ -597,14 +597,14 @@ public:
       strcat(scratch,temp);
     }
     strcat(scratch,",    ");
-    unsigned int slen = strlen(scratch);
+    NxU32 slen = strlen(scratch);
     fi_fprintf(fph,"%s", scratch );
     column+=slen;
     if ( column >= 160 )
       newRow = true;
   }
 
-    void printIndex(FILE_INTERFACE *fph,const unsigned int *idx,unsigned int &column,bool &newRow)
+    void printIndex(FILE_INTERFACE *fph,const NxU32 *idx,NxU32 &column,bool &newRow)
   {
     if ( newRow )
     {
@@ -619,7 +619,7 @@ public:
     char temp[1024];
     sprintf(temp,"%d %d %d,  ", idx[0], idx[1], idx[2] );
     fi_fprintf(fph,"%s",temp);
-    unsigned int slen = strlen(temp);
+    NxU32 slen = strlen(temp);
     column+=slen;
     if ( column >= 160 )
       newRow = true;
@@ -632,10 +632,10 @@ public:
     printAABB(fph,m->mAABB);
 
     fi_fprintf(fph,"        <indexbuffer triangle_count=\"%d\">\r\n", m->mTriCount );
-    const unsigned int *scan = m->mIndices;
+    const NxU32 *scan = m->mIndices;
     bool newRow = true;
-    unsigned int column = 0;
-    for (unsigned int i=0; i<m->mTriCount; i++)
+    NxU32 column = 0;
+    for (NxU32 i=0; i<m->mTriCount; i++)
     {
       printIndex(fph,scan,column,newRow);
       scan+=3;
@@ -654,9 +654,9 @@ public:
     fi_fprintf(fph,"        <vertexbuffer count=\"%d\" ctype=\"%s\" semantic=\"%s\">\r\n", m->mVertexCount, getCtype(m->mVertexFlags), getSemantics(m->mVertexFlags) );
 
     bool newRow=true;
-    unsigned int column=0;
+    NxU32 column=0;
 
-    for (unsigned int i=0; i<m->mVertexCount; i++)
+    for (NxU32 i=0; i<m->mVertexCount; i++)
     {
       printVertex(fph, m->mVertexFlags, m->mVertices[i], column, newRow );
 
@@ -665,7 +665,7 @@ public:
     fi_fprintf(fph,"        </vertexbuffer>\r\n");
 
 
-    for (unsigned int i=0; i<m->mSubMeshCount; i++)
+    for (NxU32 i=0; i<m->mSubMeshCount; i++)
     {
       print(fph,m->mSubMeshes[i]);
     }
@@ -727,9 +727,9 @@ public:
     {
       bool newRow = true;
       fi_fprintf(fph,"         <vertexbuffer count=\"%d\" ctype=\"fff\" semantic=\"position\">\r\n", m->mVertexCount );
-      for (unsigned int i=0; i<m->mVertexCount; i++)
+      for (NxU32 i=0; i<m->mVertexCount; i++)
       {
-        const float *p = &m->mVertices[i*3];
+        const NxF32 *p = &m->mVertices[i*3];
         if ( newRow )
         {
           fi_fprintf(fph,"          ");
@@ -750,10 +750,10 @@ public:
 
     {
       fi_fprintf(fph,"         <indexbuffer triangle_count=\"%d\">\r\n", m->mTriCount );
-      const unsigned int *scan = m->mIndices;
+      const NxU32 *scan = m->mIndices;
       bool newRow = true;
-      unsigned int column = 0;
-      for (unsigned int i=0; i<m->mTriCount; i++)
+      NxU32 column = 0;
+      for (NxU32 i=0; i<m->mTriCount; i++)
       {
         printIndex(fph,scan,column,newRow);
         scan+=3;
@@ -820,7 +820,7 @@ public:
   void print(FILE_INTERFACE *fph,MeshCollisionRepresentation *m)
   {
     fi_fprintf(fph,"      <MeshCollisionRepresentation name=\"%s\" info=\"%s\" count=\"%d\">\r\n", m->mName, m->mInfo, m->mCollisionCount );
-    for (unsigned int i=0; i<m->mCollisionCount; i++)
+    for (NxU32 i=0; i<m->mCollisionCount; i++)
     {
       print(fph,m->mCollisionGeometry[i]);
     }
@@ -857,7 +857,7 @@ public:
 	  MaterialVector _materials;
 	  BoneVector _bones;
 	  BoneInfluenceVector _boneInfluences;
-	  const float POSITION_SCALE=50.0f;
+	  const NxF32 POSITION_SCALE=50.0f;
 
 	  for (NxU32 i=0; i<mesh->mVertexCount; i++)
 	  {
@@ -1249,7 +1249,7 @@ public:
     if ( mesh->mTextureCount )
     {
       fi_fprintf(fph,"    <Textures count=\"%d\">\r\n", mesh->mTextureCount );
-      for (unsigned int i=0; i<mesh->mTextureCount; i++)
+      for (NxU32 i=0; i<mesh->mTextureCount; i++)
       {
         print(fph,mesh->mTextures[i]);
       }
@@ -1265,7 +1265,7 @@ public:
     if ( mesh->mTetraMeshCount )
     {
       fi_fprintf(fph,"    <TetraMeshes count=\"%d\">\r\n", mesh->mTetraMeshCount );
-      for (unsigned int i=0; i<mesh->mTetraMeshCount; i++)
+      for (NxU32 i=0; i<mesh->mTetraMeshCount; i++)
       {
         print(fph,mesh->mTetraMeshes[i]);
       }
@@ -1280,7 +1280,7 @@ public:
     if ( mesh->mSkeletonCount )
     {
       fi_fprintf(fph,"    <Skeletons count=\"%d\">\r\n", mesh->mSkeletonCount);
-      for (unsigned int i=0; i<mesh->mSkeletonCount; i++)
+      for (NxU32 i=0; i<mesh->mSkeletonCount; i++)
       {
         print(fph,mesh->mSkeletons[i]);
       }
@@ -1295,7 +1295,7 @@ public:
     if ( mesh->mAnimationCount )
     {
       fi_fprintf(fph,"    <Animations count=\"%d\">\r\n", mesh->mAnimationCount );
-      for (unsigned int i=0; i<mesh->mAnimationCount; i++)
+      for (NxU32 i=0; i<mesh->mAnimationCount; i++)
       {
         print(fph,mesh->mAnimations[i]);
       }
@@ -1310,7 +1310,7 @@ public:
     if ( mesh->mMaterialCount )
     {
       fi_fprintf(fph,"    <Materials count=\"%d\">\r\n", mesh->mMaterialCount );
-      for (unsigned int i=0; i<mesh->mMaterialCount; i++)
+      for (NxU32 i=0; i<mesh->mMaterialCount; i++)
       {
         print(fph,mesh->mMaterials[i]);
       }
@@ -1327,7 +1327,7 @@ public:
     if ( mesh->mUserDataCount )
     {
       fi_fprintf(fph,"    <UserData count=\"%d\">\r\n", mesh->mUserDataCount );
-      for (unsigned int i=0; i<mesh->mUserDataCount; i++)
+      for (NxU32 i=0; i<mesh->mUserDataCount; i++)
       {
         print(fph,mesh->mUserData[i]);
       }
@@ -1343,7 +1343,7 @@ public:
     if ( mesh->mUserBinaryDataCount )
     {
       fi_fprintf(fph,"    <UserBinaryData count=\"%d\">\r\n", mesh->mUserBinaryDataCount );
-      for (unsigned int i=0; i<mesh->mUserBinaryDataCount; i++)
+      for (NxU32 i=0; i<mesh->mUserBinaryDataCount; i++)
       {
         print(fph,mesh->mUserBinaryData[i]);
       }
@@ -1359,7 +1359,7 @@ public:
     if ( mesh->mMeshCount )
     {
       fi_fprintf(fph,"    <Meshes count=\"%d\">\r\n", mesh->mMeshCount );
-      for (unsigned int i=0; i<mesh->mMeshCount; i++)
+      for (NxU32 i=0; i<mesh->mMeshCount; i++)
       {
         print(fph,mesh->mMeshes[i]);
       }
@@ -1374,7 +1374,7 @@ public:
     if ( mesh->mMeshInstanceCount )
     {
       fi_fprintf(fph,"    <MeshInstances count=\"%d\">\r\n", mesh->mMeshInstanceCount );
-      for (unsigned int i=0; i<mesh->mMeshInstanceCount; i++)
+      for (NxU32 i=0; i<mesh->mMeshInstanceCount; i++)
       {
         print(fph,mesh->mMeshInstances[i]);
       }
@@ -1389,7 +1389,7 @@ public:
     if ( mesh->mMeshCollisionCount )
     {
       fi_fprintf(fph,"    <MeshCollisionRepresentations count=\"%d\">\r\n", mesh->mMeshCollisionCount );
-      for (unsigned int i=0; i<mesh->mMeshCollisionCount; i++)
+      for (NxU32 i=0; i<mesh->mMeshCollisionCount; i++)
       {
         print(fph,mesh->mMeshCollisionRepresentations[i]);
       }
@@ -1405,12 +1405,12 @@ public:
     // ogre wants all the vertices in one big buffer..
     VertexPool< MeshVertex > bigPool;
 
-    unsigned int vertexFlags = 0;
-    for (unsigned int i=0; i<mesh->mMeshCount; i++)
+    NxU32 vertexFlags = 0;
+    for (NxU32 i=0; i<mesh->mMeshCount; i++)
     {
       Mesh *m = mesh->mMeshes[i];
       vertexFlags|=m->mVertexFlags;
-      for (unsigned int k=0; k<m->mVertexCount; k++)
+      for (NxU32 k=0; k<m->mVertexCount; k++)
       {
         const MeshVertex &v = m->mVertices[k];
         bigPool.GetVertex(v);
@@ -1421,11 +1421,11 @@ public:
     fi_fprintf(fph,"  <sharedgeometry vertexcount=\"%d\">\r\n", bigPool.GetSize() );
 
     fi_fprintf(fph,"    <vertexbuffer positions=\"%s\" normals=\"%s\">\r\n", (vertexFlags & MIVF_POSITION) ? "true" : "false", (vertexFlags & MIVF_NORMAL) ? "true" : "false" );
-    int vcount = bigPool.GetSize();
+    NxI32 vcount = bigPool.GetSize();
     if ( vcount )
     {
       MeshVertex *data = bigPool.GetBuffer();
-      for (int i=0; i<vcount; i++)
+      for (NxI32 i=0; i<vcount; i++)
       {
         fi_fprintf(fph,"      <vertex>\r\n");
         fi_fprintf(fph,"        <position x=\"%s\" y=\"%s\" z=\"%s\" />\r\n", FloatString(data->mPos[0]), FloatString(data->mPos[1]), FloatString(data->mPos[2]) );
@@ -1439,20 +1439,20 @@ public:
     if ( vertexFlags & MIVF_COLOR )
     {
       fi_fprintf(fph,"    <vertexbuffer colours_diffuse=\"true\">\r\n");
-      int vcount = bigPool.GetSize();
+      NxI32 vcount = bigPool.GetSize();
       MeshVertex *data = bigPool.GetBuffer();
-      for (int i=0; i<vcount; i++)
+      for (NxI32 i=0; i<vcount; i++)
       {
         fi_fprintf(fph,"      <vertex>\r\n");
 
-        unsigned int a = data->mColor>>24;
-        unsigned int r = (data->mColor>>16)&0xFF;
-        unsigned int g = (data->mColor>>8)&0xFF;
-        unsigned int b = (data->mColor&0xFF);
-        float fa = (float)a*(1.0f/255.0f);
-        float fr = (float)r*(1.0f/255.0f);
-        float fg = (float)g*(1.0f/255.0f);
-        float fb = (float)b*(1.0f/255.0f);
+        NxU32 a = data->mColor>>24;
+        NxU32 r = (data->mColor>>16)&0xFF;
+        NxU32 g = (data->mColor>>8)&0xFF;
+        NxU32 b = (data->mColor&0xFF);
+        NxF32 fa = (NxF32)a*(1.0f/255.0f);
+        NxF32 fr = (NxF32)r*(1.0f/255.0f);
+        NxF32 fg = (NxF32)g*(1.0f/255.0f);
+        NxF32 fb = (NxF32)b*(1.0f/255.0f);
         fi_fprintf(fph,"        <colour_diffuse value=\"%s %s %s %s\" />\r\n",
           FloatString(fa),
           FloatString(fr),
@@ -1469,9 +1469,9 @@ public:
     {
 
       fi_fprintf(fph,"    <vertexbuffer texture_coord_dimensions_0=\"2\" texture_coords=\"1\">\r\n");
-      int vcount = bigPool.GetSize();
+      NxI32 vcount = bigPool.GetSize();
       MeshVertex *data = bigPool.GetBuffer();
-      for (int i=0; i<vcount; i++)
+      for (NxI32 i=0; i<vcount; i++)
       {
         fi_fprintf(fph,"      <vertex>\r\n");
         fi_fprintf(fph,"        <texcoord u=\"%s\" v=\"%s\" />\r\n", FloatString(data->mTexel1[0]), FloatString(data->mTexel1[1]) );
@@ -1484,19 +1484,19 @@ public:
     fi_fprintf(fph,"   </sharedgeometry>\r\n");
     fi_fprintf(fph,"   <submeshes>\r\n");
 
-    for (unsigned int i=0; i<mesh->mMeshCount; i++)
+    for (NxU32 i=0; i<mesh->mMeshCount; i++)
     {
       Mesh *m = mesh->mMeshes[i];
-      for (unsigned int j=0; j<m->mSubMeshCount; j++)
+      for (NxU32 j=0; j<m->mSubMeshCount; j++)
       {
         SubMesh *sm = m->mSubMeshes[j];
         fi_fprintf(fph,"      <submesh material=\"%s\" usesharedvertices=\"true\" operationtype=\"triangle_list\">\r\n", sm->mMaterialName );
         fi_fprintf(fph,"        <faces count=\"%d\">\r\n", sm->mTriCount );
-        for (unsigned int k=0; k<sm->mTriCount; k++)
+        for (NxU32 k=0; k<sm->mTriCount; k++)
         {
-          unsigned int i1 = sm->mIndices[k*3+0];
-          unsigned int i2 = sm->mIndices[k*3+1];
-          unsigned int i3 = sm->mIndices[k*3+2];
+          NxU32 i1 = sm->mIndices[k*3+0];
+          NxU32 i2 = sm->mIndices[k*3+1];
+          NxU32 i3 = sm->mIndices[k*3+2];
           const MeshVertex &v1 = m->mVertices[i1];
           const MeshVertex &v2 = m->mVertices[i2];
           const MeshVertex &v3 = m->mVertices[i3];
@@ -1539,11 +1539,11 @@ public:
     if ( vertexFlags & MIVF_BONE_WEIGHTING )
     {
       fi_fprintf(fph,"   <boneassignments>\r\n");
-      int vcount = bigPool.GetSize();
+      NxI32 vcount = bigPool.GetSize();
       MeshVertex *data = bigPool.GetBuffer();
-      for (int i=0; i<vcount; i++)
+      for (NxI32 i=0; i<vcount; i++)
       {
-        for (int j=0; j<4; j++)
+        for (NxI32 j=0; j<4; j++)
         {
           if ( data->mWeight[j] == 0 ) break;
           fi_fprintf(fph,"       <vertexboneassignment vertexindex=\"%d\" boneindex=\"%d\" weight=\"%s\" />\r\n", i, data->mBone[j], FloatString(data->mWeight[j] ) );
@@ -1560,13 +1560,13 @@ public:
     {
       MeshSkeleton *skeleton = mesh->mSkeletons[0]; // only serialize one skeleton!
       fi_fprintf(exfph,"  <bones>\r\n");
-      for (int i=0; i<skeleton->mBoneCount; i++)
+      for (NxI32 i=0; i<skeleton->mBoneCount; i++)
       {
         MeshBone &b = skeleton->mBones[i];
         fi_fprintf(exfph,"    <bone id=\"%d\" name=\"%s\">\r\n", i, b.mName );
         fi_fprintf(exfph,"      <position x=\"%s\" y=\"%s\" z=\"%s\" />\r\n", FloatString( b.mPosition[0] ), FloatString( b.mPosition[1] ), FloatString( b.mPosition[2] ) );
-        float angle = 0;
-        float axis[3] = { 0, 0, 0 };
+        NxF32 angle = 0;
+        NxF32 axis[3] = { 0, 0, 0 };
         b.getAngleAxis(angle,axis);
         fi_fprintf(exfph,"      <rotation angle=\"%s\">\r\n", FloatString(angle) );
         fi_fprintf(exfph,"         <axis x=\"%s\" y=\"%s\" z=\"%s\" />\r\n", FloatString( axis[0] ), FloatString( axis[1] ), FloatString( axis[2] ) );
@@ -1576,7 +1576,7 @@ public:
       }
       fi_fprintf(exfph,"  </bones>\r\n");
       fi_fprintf(exfph,"  <bonehierarchy>\r\n");
-      for (int i=0; i<skeleton->mBoneCount; i++)
+      for (NxI32 i=0; i<skeleton->mBoneCount; i++)
       {
         MeshBone &b = skeleton->mBones[i];
         if ( b.mParentIndex != -1 )
@@ -1591,32 +1591,32 @@ public:
     {
       fi_fprintf(exfph,"   <animations>\r\n");
 
-      for (int i=0; i<(int)mesh->mAnimationCount; i++)
+      for (NxI32 i=0; i<(NxI32)mesh->mAnimationCount; i++)
       {
         MeshAnimation *anim = mesh->mAnimations[i]; // only serialize one animation
         fi_fprintf(exfph,"   <animation name=\"%s\" length=\"%d\">\r\n", anim->mName, anim->mFrameCount );
         fi_fprintf(exfph,"     <tracks>\r\n");
-        for (int j=0; j<anim->mTrackCount; j++)
+        for (NxI32 j=0; j<anim->mTrackCount; j++)
         {
           MeshAnimTrack *track = anim->mTracks[j];
 
           fi_fprintf(exfph,"  <track bone=\"%s\">\r\n", track->mName );
           fi_fprintf(exfph,"     <keyframes>\r\n");
 
-          float tm = 0;
+          NxF32 tm = 0;
 
-          float base_inverse[16];
+          NxF32 base_inverse[16];
           fmi_identity(base_inverse);
           if ( mesh->mSkeletonCount )
           {
             MeshSkeleton *sk = mesh->mSkeletons[i];
-            for (int i=0; i<sk->mBoneCount; i++)
+            for (NxI32 i=0; i<sk->mBoneCount; i++)
             {
               MeshBone &b = sk->mBones[i];
               if ( strcmp(b.mName,track->mName) == 0 )
               {
                 // ok..compose the local space transform..
-                float local_matrix[16];
+                NxF32 local_matrix[16];
                 fmi_composeTransform( b.mPosition, b.mOrientation, b.mScale, local_matrix );
                 fmi_inverseTransform(local_matrix,base_inverse);
               }
@@ -1624,22 +1624,22 @@ public:
           }
 
 
-          for (int k=0; k<track->mFrameCount; k++)
+          for (NxI32 k=0; k<track->mFrameCount; k++)
           {
             MeshAnimPose &p = track->mPose[k];
 
-            float local_matrix[16];
+            NxF32 local_matrix[16];
             fmi_composeTransform(p.mPos,p.mQuat,p.mScale,local_matrix);
             fmi_multiply(local_matrix,base_inverse,local_matrix);
 
-            float trans[3] = { 0, 0, 0 };
-            float scale[3] = { 0, 0, 0 };
-            float rot[4];
+            NxF32 trans[3] = { 0, 0, 0 };
+            NxF32 scale[3] = { 0, 0, 0 };
+            NxF32 rot[4];
 
             fmi_decomposeTransform(local_matrix,trans,rot,scale);
 
-            float angle = 0;
-            float axis[3] = { 0, 0, 0 };
+            NxF32 angle = 0;
+            NxF32 axis[3] = { 0, 0, 0 };
 
             fmi_getAngleAxis(angle,axis,rot);
 
@@ -1676,7 +1676,7 @@ public:
 
   typedef USER_STL::vector< Msave > MsaveVector;
 
-  void serializeWavefront(FILE_INTERFACE *fph,FILE_INTERFACE *exfph,MeshSystem *mesh,const char *saveName,const float *exportTransform)
+  void serializeWavefront(FILE_INTERFACE *fph,FILE_INTERFACE *exfph,MeshSystem *mesh,const char *saveName,const NxF32 *exportTransform)
   {
     fi_fprintf(fph,"# Asset '%s'\r\n", mesh->mAssetName );
     char scratch[512];
@@ -1708,31 +1708,31 @@ public:
       MsaveVector meshes;
       VertexPool< MeshVertex > bigPool;
 
-      for (unsigned int i=0; i<mesh->mMeshInstanceCount; i++)
+      for (NxU32 i=0; i<mesh->mMeshInstanceCount; i++)
       {
         MeshInstance &inst =  mesh->mMeshInstances[i];
-        for (unsigned int j=0; j<mesh->mMeshCount; j++)
+        for (NxU32 j=0; j<mesh->mMeshCount; j++)
         {
           Mesh *m = mesh->mMeshes[j];
           if ( strcmp(m->mName,inst.mMeshName) == 0 )
           {
-            float matrix[16];
+            NxF32 matrix[16];
             fmi_composeTransform(inst.mPosition,inst.mRotation,inst.mScale,matrix);
-            float rotate[16];
+            NxF32 rotate[16];
             fmi_quatToMatrix(inst.mRotation,rotate);
 
             bool compute_normal = false;
 
-            for (unsigned int k=0; k<m->mSubMeshCount; k++)
+            for (NxU32 k=0; k<m->mSubMeshCount; k++)
             {
               SubMesh *sm = m->mSubMeshes[k];
               Msave ms;
               ms.mMaterialName = sm->mMaterialName;
-              for (unsigned int l=0; l<sm->mTriCount; l++)
+              for (NxU32 l=0; l<sm->mTriCount; l++)
               {
-                unsigned int i1 = sm->mIndices[l*3+0];
-                unsigned int i2 = sm->mIndices[l*3+1];
-                unsigned int i3 = sm->mIndices[l*3+2];
+                NxU32 i1 = sm->mIndices[l*3+0];
+                NxU32 i2 = sm->mIndices[l*3+1];
+                NxU32 i3 = sm->mIndices[l*3+2];
 
                 MeshVertex v1 = m->mVertices[i1];
                 MeshVertex v2 = m->mVertices[i2];
@@ -1761,7 +1761,7 @@ public:
                   v2.mRadius = 1;
                   v3.mRadius = 1;
 
-                  float n[3];
+                  NxF32 n[3];
                   fmi_computePlane(v3.mPos,v2.mPos,v1.mPos,n);
 
                   v1.mNormal[0]+=n[0];
@@ -1849,20 +1849,20 @@ public:
       MsaveVector meshes;
       VertexPool< MeshVertex > bigPool;
 
-      for (unsigned int j=0; j<mesh->mMeshCount; j++)
+      for (NxU32 j=0; j<mesh->mMeshCount; j++)
       {
         Mesh *mm = mesh->mMeshes[j];
         bool compute_normal = false;
-        for (unsigned int k=0; k<mm->mSubMeshCount; k++)
+        for (NxU32 k=0; k<mm->mSubMeshCount; k++)
         {
           SubMesh *sm = mm->mSubMeshes[k];
           Msave ms;
           ms.mMaterialName = sm->mMaterialName;
-          for (unsigned int l=0; l<sm->mTriCount; l++)
+          for (NxU32 l=0; l<sm->mTriCount; l++)
           {
-            unsigned int i1 = sm->mIndices[l*3+0];
-            unsigned int i2 = sm->mIndices[l*3+1];
-            unsigned int i3 = sm->mIndices[l*3+2];
+            NxU32 i1 = sm->mIndices[l*3+0];
+            NxU32 i2 = sm->mIndices[l*3+1];
+            NxU32 i3 = sm->mIndices[l*3+2];
 
             MeshVertex v1 = mm->mVertices[i1];
             MeshVertex v2 = mm->mVertices[i2];
@@ -1888,7 +1888,7 @@ public:
               v2.mRadius = 1;
               v3.mRadius = 1;
 
-              float n[3];
+              NxF32 n[3];
               fmi_computePlane(v3.mPos,v2.mPos,v1.mPos,n);
 
               v1.mNormal[0]+=n[0];
@@ -1979,7 +1979,7 @@ public:
         void *temp = fi_getMemBuffer(exfph,&olen);
         if ( temp )
         {
-          data.mExtendedData = (unsigned char *)MEMALLOC_MALLOC(olen);
+          data.mExtendedData = (NxU8 *)MEMALLOC_MALLOC(olen);
           memcpy(data.mExtendedData,temp,olen);
           data.mExtendedLen = olen;
         }
@@ -1997,7 +1997,7 @@ public:
         void *temp = fi_getMemBuffer(exfph,&olen);
         if ( temp )
         {
-          data.mExtendedData = (unsigned char *)MEMALLOC_MALLOC(olen);
+          data.mExtendedData = (NxU8 *)MEMALLOC_MALLOC(olen);
           memcpy(data.mExtendedData,temp,olen);
           data.mExtendedLen = olen;
         }
@@ -2011,7 +2011,7 @@ public:
         void *temp = fi_getMemBuffer(exfph,&olen);
         if ( temp )
         {
-          data.mExtendedData = (unsigned char *)MEMALLOC_MALLOC(olen);
+          data.mExtendedData = (NxU8 *)MEMALLOC_MALLOC(olen);
           memcpy(data.mExtendedData,temp,olen);
           data.mExtendedLen = olen;
         }
@@ -2022,7 +2022,7 @@ public:
       void *temp = fi_getMemBuffer(fph,&olen);
       if ( temp )
       {
-        data.mBaseData = (unsigned char *)MEMALLOC_MALLOC(olen);
+        data.mBaseData = (NxU8 *)MEMALLOC_MALLOC(olen);
         memcpy(data.mBaseData,temp,olen);
         data.mBaseLen = olen;
         ret = true;
@@ -2050,12 +2050,12 @@ public:
     StringVector descriptions;
     StringVector extensions;
 
-    unsigned int count = getImporterCount();
+    NxU32 count = getImporterCount();
     for (unsigned i=0; i<count; i++)
     {
       MESHIMPORT::MeshImporter *imp = getImporter(i);
-      unsigned int ecount = imp->getExtensionCount();
-      for (unsigned int j=0; j<ecount; j++)
+      NxU32 ecount = imp->getExtensionCount();
+      for (NxU32 j=0; j<ecount; j++)
       {
         const char *description = imp->getDescription(j);
         const char *itype = imp->getExtension(j);
@@ -2068,7 +2068,7 @@ public:
     mFileRequest.clear();
     mFileRequest+="All (";
     count = descriptions.size();
-    for (unsigned int i=0; i<count; i++)
+    for (NxU32 i=0; i<count; i++)
     {
       mFileRequest+="*";
       mFileRequest+=extensions[i];
@@ -2076,7 +2076,7 @@ public:
         mFileRequest+=";";
     }
     mFileRequest+=")|";
-    for (unsigned int i=0; i<count; i++)
+    for (NxU32 i=0; i<count; i++)
     {
       mFileRequest+="*";
       mFileRequest+=extensions[i];
@@ -2084,7 +2084,7 @@ public:
         mFileRequest+=";";
     }
     mFileRequest+="|";
-    for (unsigned int i=0; i<count; i++)
+    for (NxU32 i=0; i<count; i++)
     {
       mFileRequest+=descriptions[i];
       mFileRequest+=" (*";
@@ -2113,7 +2113,7 @@ public:
       ret->mName = sk.mName;
       ret->mBoneCount = sk.mBoneCount;
       ret->mBones = MEMALLOC_NEW_ARRAY(MeshBoneInstance,sk.mBoneCount)[sk.mBoneCount];
-      for (int i=0; i<ret->mBoneCount; i++)
+      for (NxI32 i=0; i<ret->mBoneCount; i++)
       {
         const MeshBone &src   = sk.mBones[i];
         MeshBoneInstance &dst = ret->mBones[i];
@@ -2127,7 +2127,7 @@ public:
         }
         else
         {
-          memcpy(dst.mTransform,dst.mLocalTransform,sizeof(float)*16);
+          memcpy(dst.mTransform,dst.mLocalTransform,sizeof(NxF32)*16);
         }
         dst.composeInverse(); // compose the inverse transform.
       }
@@ -2144,21 +2144,21 @@ public:
     }
   }
 
-  virtual bool  sampleAnimationTrack(int trackIndex,const MeshSystem *msystem,MeshSkeletonInstance *skeleton)
+  virtual bool  sampleAnimationTrack(NxI32 trackIndex,const MeshSystem *msystem,MeshSkeletonInstance *skeleton)
   {
     bool ret = false;
 
     if ( msystem && skeleton && msystem->mAnimationCount )
     {
       MeshAnimation *anim = msystem->mAnimations[0]; // got the animation.
-      for (int i=0; i<skeleton->mBoneCount; i++)
+      for (NxI32 i=0; i<skeleton->mBoneCount; i++)
       {
         MeshBoneInstance &b = skeleton->mBones[i];
         // ok..look for this track in the animation...
-        float transform[16];
+        NxF32 transform[16];
 
         MeshAnimTrack *track = 0;
-        for (int j=0; j<anim->mTrackCount; j++)
+        for (NxI32 j=0; j<anim->mTrackCount; j++)
         {
           MeshAnimTrack *t = anim->mTracks[j];
           if ( strcmp(t->mName,b.mBoneName) == 0 ) // if the names match
@@ -2169,13 +2169,13 @@ public:
         }
         if ( track && track->mFrameCount )
         {
-          int tindex = trackIndex% track->mFrameCount;
+          NxI32 tindex = trackIndex% track->mFrameCount;
           MeshAnimPose &p = track->mPose[tindex];
           fmi_composeTransform(p.mPos,p.mQuat,p.mScale,transform);
         }
         else
         {
-          memcpy(transform,b.mLocalTransform,sizeof(float)*16);
+          memcpy(transform,b.mLocalTransform,sizeof(NxF32)*16);
         }
         if ( b.mParentIndex != -1 )
         {
@@ -2184,7 +2184,7 @@ public:
         }
         else
         {
-          memcpy(b.mAnimTransform,transform,sizeof(float)*16);
+          memcpy(b.mAnimTransform,transform,sizeof(NxF32)*16);
 //          fmi_identity(b.mAnimTransform);
         }
         fmi_multiply(b.mInverseTransform,b.mAnimTransform,b.mCompositeAnimTransform);
@@ -2195,11 +2195,11 @@ public:
     return ret;
   }
 
-  void transformPoint(const float v[3],float t[3],const float matrix[16])
+  void transformPoint(const NxF32 v[3],NxF32 t[3],const NxF32 matrix[16])
   {
-    float tx = (matrix[0*4+0] * v[0]) +  (matrix[1*4+0] * v[1]) + (matrix[2*4+0] * v[2]) + matrix[3*4+0];
-    float ty = (matrix[0*4+1] * v[0]) +  (matrix[1*4+1] * v[1]) + (matrix[2*4+1] * v[2]) + matrix[3*4+1];
-    float tz = (matrix[0*4+2] * v[0]) +  (matrix[1*4+2] * v[1]) + (matrix[2*4+2] * v[2]) + matrix[3*4+2];
+    NxF32 tx = (matrix[0*4+0] * v[0]) +  (matrix[1*4+0] * v[1]) + (matrix[2*4+0] * v[2]) + matrix[3*4+0];
+    NxF32 ty = (matrix[0*4+1] * v[0]) +  (matrix[1*4+1] * v[1]) + (matrix[2*4+1] * v[2]) + matrix[3*4+1];
+    NxF32 tz = (matrix[0*4+2] * v[0]) +  (matrix[1*4+2] * v[1]) + (matrix[2*4+2] * v[2]) + matrix[3*4+2];
     t[0] = tx;
     t[1] = ty;
     t[2] = tz;
@@ -2207,17 +2207,17 @@ public:
 
   void transformVertex(const MeshVertex &src,MeshVertex &dst,MeshSkeletonInstance *skeleton)
   {
-    int bone = src.mBone[0];
-    float weight = src.mWeight[0];
+    NxI32 bone = src.mBone[0];
+    NxF32 weight = src.mWeight[0];
     assert (bone >= 0 && bone < skeleton->mBoneCount );
 
     if ( weight > 0 && bone >= 0 && bone < skeleton->mBoneCount )
     {
-      float result[3];
+      NxF32 result[3];
       dst.mPos[0] = 0;
       dst.mPos[1] = 0;
       dst.mPos[2] = 0;
-      for (int i=0; i<4; i++)
+      for (NxI32 i=0; i<4; i++)
       {
         bone = src.mBone[i];
         weight = src.mWeight[i];
@@ -2235,12 +2235,12 @@ public:
     }
   }
 
-  virtual void transformVertices(unsigned int vcount,
+  virtual void transformVertices(NxU32 vcount,
                                  const MeshVertex *source_vertices,
                                  MeshVertex *dest_vertices,
                                  MeshSkeletonInstance *skeleton)
   {
-    for (unsigned int i=0; i<vcount; i++)
+    for (NxU32 i=0; i<vcount; i++)
     {
       transformVertex(*source_vertices,*dest_vertices,skeleton);
       source_vertices++;
@@ -2248,7 +2248,7 @@ public:
     }
   }
 
-  virtual void rotate(MeshSystemContainer *msc,float rotX,float rotY,float rotZ)  // rotate mesh system using these euler angles expressed as degrees.
+  virtual void rotate(MeshSystemContainer *msc,NxF32 rotX,NxF32 rotY,NxF32 rotZ)  // rotate mesh system using these euler angles expressed as degrees.
   {
     MeshBuilder *b = (MeshBuilder *)msc;
     if ( b )
@@ -2257,7 +2257,7 @@ public:
     }
   }
 
-  virtual void scale(MeshSystemContainer *msc,float s)
+  virtual void scale(MeshSystemContainer *msc,NxF32 s)
   {
     MeshBuilder *b = (MeshBuilder *)msc;
     if ( b )
@@ -2287,7 +2287,7 @@ public:
     }
   }
 
-  virtual CommLayer *      createCommLayerTelent(const char *address,unsigned int port)
+  virtual CommLayer *      createCommLayerTelent(const char *address,NxU32 port)
   {
     return CreateCommLayerTelent(address,port);
   }
@@ -2322,9 +2322,9 @@ static MyMeshImport *gInterface=0;
 extern "C"
 {
 #ifdef PLUGINS_EMBEDDED
-  MeshImport * getInterfaceMeshImport(int version_number,SYSTEM_SERVICES::SystemServices *services)
+  MeshImport * getInterfaceMeshImport(NxI32 version_number,SYSTEM_SERVICES::SystemServices *services)
 #else
-  MESHIMPORT_API MeshImport * getInterface(int version_number,SYSTEM_SERVICES::SystemServices *services)
+  MESHIMPORT_API MeshImport * getInterface(NxI32 version_number,SYSTEM_SERVICES::SystemServices *services)
 #endif
 {
 
@@ -2357,7 +2357,7 @@ BOOL APIENTRY DllMain( HANDLE ,
                        DWORD  ul_reason_for_call,
                        LPVOID )
 {
-  int ret = 0;
+  NxI32 ret = 0;
 
   switch (ul_reason_for_call)
 	{

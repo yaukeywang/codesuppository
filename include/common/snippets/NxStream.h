@@ -73,7 +73,7 @@ class NxStream
 	virtual		NxF32			readFloat()								const	= 0;
 	
 	/**
-	\brief Called to read a double precision floating point value(64 bits)
+	\brief Called to read a NxF64 precision floating point value(64 bits)
 
 	\return Floating point value read.
 	*/
@@ -122,7 +122,7 @@ class NxStream
 	virtual		NxStream&		storeFloat(NxF32 f)								= 0;
 	
 	/**
-	\brief Called to write a double precision floating point value to the stream(64 bits).
+	\brief Called to write a NxF64 precision floating point value to the stream(64 bits).
 
 	\param f floating point value to store.
 	\return Reference to the current NxStream object.

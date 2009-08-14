@@ -389,13 +389,13 @@ public:
 	}
 
 
-  void add(wchar_t *dest,const wchar_t *src,unsigned int &index)
+  void add(wchar_t *dest,const wchar_t *src,NxU32 &index)
   {
     if ( src )
     {
       size_t len;
       StringCchLength(src,512,&len);
-      for (unsigned int i=0; i<len; i++)
+      for (NxU32 i=0; i<len; i++)
       {
         wchar_t c = *src++;
         dest[index++] = c;
@@ -414,7 +414,7 @@ public:
   {
   	const char *ret = initial;
 
-  	static int sWhichFileType = 1;
+  	static NxI32 sWhichFileType = 1;
   	char curdir[512];
   	getcwd(curdir,512);
   	wchar_t buffer[257] = L"";
@@ -458,7 +458,7 @@ public:
 
   	mbstowcs(buffer,exportName,512);
 
-    int ok = 0;
+    NxI32 ok = 0;
     if ( saveMode )
       ok = GetSaveFileName(&f);
     else
@@ -519,7 +519,7 @@ public:
   	else
   		mtype = MB_OK | MB_ICONEXCLAMATION;
 
-  	int ok = MessageBox(0,wbuff,L"Error",mtype);
+  	NxI32 ok = MessageBox(0,wbuff,L"Error",mtype);
   	if ( ok == IDYES) ret = true;
 
   	return ret;
@@ -533,7 +533,7 @@ public:
     v.z = (NxF32)z;
   }
 
-  bool processMenu(HWND hwnd,unsigned int cmd,float *bmin,float *bmax)
+  bool processMenu(HWND hwnd,NxU32 cmd,NxF32 *bmin,NxF32 *bmax)
   {
 
   	bool ret = false;
@@ -587,20 +587,20 @@ public:
   	return ret;
   }
 
-  int CommandCallback(int token,int count,const char **arglist)
+  NxI32 CommandCallback(NxI32 token,NxI32 count,const char **arglist)
   {
-  	int ret = 0;
+  	NxI32 ret = 0;
 
     bool state = true;
-    float v=0;
+    NxF32 v=0;
 
-    const float *data = 0;
+    const NxF32 *data = 0;
     data = &v;
 
     if ( count == 2 )
     {
       state = getBool(arglist[1]);
-      v = (float) atof(arglist[1]);
+      v = (NxF32) atof(arglist[1]);
     }
 
 		switch ( token )
@@ -756,16 +756,16 @@ public:
 				// Usage: PsLookAt <eyex> <eyey> <eyez> <lookx> <looky> <lookz>
 				if ( count == 7 )
 				{
-					float eye[3];
-					float look[3];
+					NxF32 eye[3];
+					NxF32 look[3];
 
-					eye[0] = (float) atof( arglist[1] );
-					eye[1] = (float) atof( arglist[2] );
-					eye[2] = (float) atof( arglist[3] );
+					eye[0] = (NxF32) atof( arglist[1] );
+					eye[1] = (NxF32) atof( arglist[2] );
+					eye[2] = (NxF32) atof( arglist[3] );
 
-					look[0] = (float) atof(arglist[4] );
-					look[1] = (float) atof(arglist[5] );
-					look[2] = (float) atof(arglist[6] );
+					look[0] = (NxF32) atof(arglist[4] );
+					look[1] = (NxF32) atof(arglist[5] );
+					look[2] = (NxF32) atof(arglist[6] );
 
 					lookAt(eye,look);
 
@@ -798,7 +798,7 @@ public:
   }
 
 
-  void createSlider(const char *title,int token,const char *cmd,float smin,float smax,float sdefault,bool isint)
+  void createSlider(const char *title,NxI32 token,const char *cmd,NxF32 smin,NxF32 smax,NxF32 sdefault,bool isint)
   {
   	AddToken(cmd,token);
   	CPARSER.Parse("TuiSliderBegin %s", cmd);
@@ -813,7 +813,7 @@ public:
   	CPARSER.Parse("TuiSliderEnd");
   }
 
-  void createCheckbox(const char *title,int token,const char *cmd,bool state)
+  void createCheckbox(const char *title,NxI32 token,const char *cmd,bool state)
   {
   	AddToken(cmd,token);
   	CPARSER.Parse("TuiCheckboxBegin %s", cmd);
@@ -826,7 +826,7 @@ public:
   	CPARSER.Parse("TuiCheckboxEnd");
   }
 
-  void createButton(const char *title,int token,const char *cmd)
+  void createButton(const char *title,NxI32 token,const char *cmd)
   {
     char scratch[512];
     strcpy(scratch,cmd);
@@ -860,7 +860,7 @@ HMENU createMyMenu(void)
 
 
 
-bool  processMenu(HWND hwnd,unsigned int cmd,float *bmin,float *bmax)
+bool  processMenu(HWND hwnd,NxU32 cmd,NxF32 *bmin,NxF32 *bmax)
 {
 	bool ret = false;
 
@@ -874,7 +874,7 @@ bool  processMenu(HWND hwnd,unsigned int cmd,float *bmin,float *bmax)
 
 
 //==================================================================================
-void CALLBACK gOnUIPageEvent( UINT nEvent, int nControlID, CDXUTControl* pControl )
+void CALLBACK gOnUIPageEvent( UINT nEvent, NxI32 nControlID, CDXUTControl* pControl )
 {
 	CDXUTDialog *dialog = pControl->m_pDialog;
 
@@ -902,8 +902,8 @@ void CALLBACK gOnUIPageEvent( UINT nEvent, int nControlID, CDXUTControl* pContro
 							{
 								CDXUTListBox *pListBox = (CDXUTListBox *)pControl;
 								TuiChoiceVector &choices = ret->GetChoices();
-								int count = (int)choices.size();
-								for (int i=0; i<count; i++)
+								NxI32 count = (NxI32)choices.size();
+								for (NxI32 i=0; i<count; i++)
 								{
 									DXUTListBoxItem *item = pListBox->GetItem(i);
 									TuiChoice  &choice = choices[i];
@@ -933,8 +933,8 @@ void CALLBACK gOnUIPageEvent( UINT nEvent, int nControlID, CDXUTControl* pContro
 				case TT_SLIDER:
 					{
 						CDXUTSlider *slider = (CDXUTSlider *) pControl;
-						int v = slider->GetValue();
-						float fv = ret->GetSliderValue(v);
+						NxI32 v = slider->GetValue();
+						NxF32 fv = ret->GetSliderValue(v);
 						char scratch[512];
   						sprintf(scratch,"%0.3f", fv );
 

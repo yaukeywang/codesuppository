@@ -1,9 +1,10 @@
 #ifndef HASHSET_H
 #define HASHSET_H
 
+#include "UserMemAlloc.h"
 #include "HashFunction.h"
 #include "SimplePool.h"
-#include "UserMemAlloc.h"
+
 #include <string.h>
 #include <assert.h>
 

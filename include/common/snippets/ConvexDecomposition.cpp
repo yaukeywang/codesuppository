@@ -28,12 +28,12 @@
 #include "RenderDebug/RenderDebug.h"
 #endif
 
-static const double EPSILON=0.0001;
+static const NxF64 EPSILON=0.0001;
 
 
 using namespace ConvexDecomposition;
 
-typedef USER_STL::vector< unsigned int > UintVector;
+typedef USER_STL::vector< NxU32 > UintVector;
 
 
 namespace ConvexDecomposition
@@ -43,13 +43,13 @@ class Cdesc
 {
 public:
   ConvexDecompInterface *mCallback;
-  double                 mMasterVolume;
+  NxF64                 mMasterVolume;
   bool                   mUseIslandGeneration;
-  double                 mMasterMeshVolume;
-  unsigned int           mMaxDepth;
-  double                 mConcavePercent;
-  double                 mMergePercent;
-  double                 mMeshVolumePercent;
+  NxF64                 mMasterMeshVolume;
+  NxU32           mMaxDepth;
+  NxF64                 mConcavePercent;
+  NxF64                 mMergePercent;
+  NxF64                 mMeshVolumePercent;
 };
 
 template <class Type> class Vector3d
@@ -71,28 +71,28 @@ public:
 		z = c;
 	};
 
-	Vector3d(const double *t)
+	Vector3d(const NxF64 *t)
 	{
 		x = t[0];
 		y = t[1];
 		z = t[2];
 	};
 
-	Vector3d(const int *t)
+	Vector3d(const NxI32 *t)
 	{
 		x = t[0];
 		y = t[1];
 		z = t[2];
 	};
 
-  void Set(const float *p)
+  void Set(const NxF32 *p)
   {
     x = (Type)p[0];
     y = (Type)p[1];
     z = (Type)p[2];
   }
 
-  void Set(const double *p)
+  void Set(const NxF64 *p)
   {
     x = (Type)p[0];
     y = (Type)p[1];
@@ -116,9 +116,9 @@ public:
 #define CONCAVE_THRESH 0.05f
 
 
-unsigned int getDebugColor(void)
+NxU32 getDebugColor(void)
 {
-	static unsigned int colors[8] =
+	static NxU32 colors[8] =
 	{
 		0xFF0000,
 	  0x00FF00,
@@ -130,7 +130,7 @@ unsigned int getDebugColor(void)
 		0xFF8040
 	};
 
-	static int count = 0;
+	static NxI32 count = 0;
 
 	count++;
 
@@ -138,7 +138,7 @@ unsigned int getDebugColor(void)
 
 	assert( count >= 0 && count < 8 );
 
-	unsigned int color = colors[count];
+	NxU32 color = colors[count];
 
   return color;
 
@@ -147,14 +147,14 @@ unsigned int getDebugColor(void)
 class Wpoint
 {
 public:
-  Wpoint(const Vector3d<double> &p,double w)
+  Wpoint(const Vector3d<NxF64> &p,NxF64 w)
   {
     mPoint = p;
     mWeight = w;
   }
 
-  Vector3d<double> mPoint;
-  double           mWeight;
+  Vector3d<NxF64> mPoint;
+  NxF64           mWeight;
 };
 
 typedef USER_STL::vector< Wpoint > WpointVector;
@@ -165,7 +165,7 @@ class CTri
 public:
 	CTri(void) { };
 
-  CTri(const double *p1,const double *p2,const double *p3,unsigned int i1,unsigned int i2,unsigned int i3)
+  CTri(const NxF64 *p1,const NxF64 *p2,const NxF64 *p3,NxU32 i1,NxU32 i2,NxU32 i3)
   {
     mProcessed = 0;
     mI1 = i1;
@@ -178,16 +178,16 @@ public:
   	mPlaneD = fm_computePlane(mP1.Ptr(),mP2.Ptr(),mP3.Ptr(),mNormal.Ptr());
 	}
 
-  double Facing(const CTri &t)
+  NxF64 Facing(const CTri &t)
   {
-		double d = fm_dot(mNormal.Ptr(),t.mNormal.Ptr());
+		NxF64 d = fm_dot(mNormal.Ptr(),t.mNormal.Ptr());
 		return d;
   }
 
   // clip this line segment against this triangle.
-  bool clip(const Vector3d<double> &start,Vector3d<double> &end) const
+  bool clip(const Vector3d<NxF64> &start,Vector3d<NxF64> &end) const
   {
-    Vector3d<double> sect;
+    Vector3d<NxF64> sect;
 
     bool hit = fm_lineIntersectsTriangle(start.Ptr(), end.Ptr(), mP1.Ptr(), mP2.Ptr(), mP3.Ptr(), sect.Ptr() );
 
@@ -198,14 +198,14 @@ public:
     return hit;
   }
 
-	bool Concave(const Vector3d<double> &p,double &distance,Vector3d<double> &n) const
+	bool Concave(const Vector3d<NxF64> &p,NxF64 &distance,Vector3d<NxF64> &n) const
 	{
     fm_nearestPointInTriangle(p.Ptr(),mP1.Ptr(),mP2.Ptr(),mP3.Ptr(),n.Ptr());
     distance = fm_distance(p.Ptr(),n.Ptr());
 		return true;
 	}
 
-	void addTri(unsigned int *indices,unsigned int i1,unsigned int i2,unsigned int i3,unsigned int &tcount) const
+	void addTri(NxU32 *indices,NxU32 i1,NxU32 i2,NxU32 i3,NxU32 &tcount) const
 	{
 		indices[tcount*3+0] = i1;
 		indices[tcount*3+1] = i2;
@@ -213,12 +213,12 @@ public:
 		tcount++;
 	}
 
-	double getVolume(ConvexDecompInterface *callback) const
+	NxF64 getVolume(ConvexDecompInterface *callback) const
 	{
-		unsigned int indices[8*3];
+		NxU32 indices[8*3];
 
 
-    unsigned int tcount = 0;
+    NxU32 tcount = 0;
 
     addTri(indices,0,1,2,tcount);
     addTri(indices,3,4,5,tcount);
@@ -232,43 +232,43 @@ public:
     addTri(indices,0,3,5,tcount);
     addTri(indices,0,5,2,tcount);
 
-    const double *vertices = mP1.Ptr();
+    const NxF64 *vertices = mP1.Ptr();
 
 		if ( callback )
 		{
-			unsigned int color = getDebugColor();
+			NxU32 color = getDebugColor();
 
-			for (unsigned int i=0; i<tcount; i++)
+			for (NxU32 i=0; i<tcount; i++)
 			{
-				unsigned int i1 = indices[i*3+0];
-				unsigned int i2 = indices[i*3+1];
-				unsigned int i3 = indices[i*3+2];
+				NxU32 i1 = indices[i*3+0];
+				NxU32 i2 = indices[i*3+1];
+				NxU32 i3 = indices[i*3+2];
 
-				const double *p1 = &vertices[ i1*3 ];
-				const double *p2 = &vertices[ i2*3 ];
-				const double *p3 = &vertices[ i3*3 ];
+				const NxF64 *p1 = &vertices[ i1*3 ];
+				const NxF64 *p2 = &vertices[ i2*3 ];
+				const NxF64 *p3 = &vertices[ i3*3 ];
 
 				callback->ConvexDebugTri(p1,p2,p3,color);
 
 			}
 		}
 
-		double v = fm_computeMeshVolume(mP1.Ptr(), tcount, indices );
+		NxF64 v = fm_computeMeshVolume(mP1.Ptr(), tcount, indices );
 
 		return v;
 
 	}
 
-	double raySect(const Vector3d<double> &p,const Vector3d<double> &dir,Vector3d<double> &sect) const
+	NxF64 raySect(const Vector3d<NxF64> &p,const Vector3d<NxF64> &dir,Vector3d<NxF64> &sect) const
 	{
-		double plane[4];
+		NxF64 plane[4];
 
     plane[0] = mNormal.x;
     plane[1] = mNormal.y;
     plane[2] = mNormal.z;
     plane[3] = mPlaneD;
 
-		Vector3d<double> dest;
+		Vector3d<NxF64> dest;
 
     dest.x = p.x+dir.x*10000;
     dest.y = p.y+dir.y*10000;
@@ -281,9 +281,9 @@ public:
 
 	}
 
-  double planeDistance(const Vector3d<double> &p) const
+  NxF64 planeDistance(const Vector3d<NxF64> &p) const
   {
-		double plane[4];
+		NxF64 plane[4];
 
     plane[0] = mNormal.x;
     plane[1] = mNormal.y;
@@ -296,8 +296,8 @@ public:
 
 	bool samePlane(const CTri &t) const
 	{
-		const double THRESH = 0.001f;
-    double dd = fabs( t.mPlaneD - mPlaneD );
+		const NxF64 THRESH = 0.001f;
+    NxF64 dd = fabs( t.mPlaneD - mPlaneD );
     if ( dd > THRESH ) return false;
     dd = fabs( t.mNormal.x - mNormal.x );
     if ( dd > THRESH ) return false;
@@ -308,7 +308,7 @@ public:
     return true;
 	}
 
-	bool hasIndex(unsigned int i) const
+	bool hasIndex(NxU32 i) const
 	{
 		if ( i == mI1 || i == mI2 || i == mI3 ) return true;
 		return false;
@@ -317,7 +317,7 @@ public:
   bool sharesEdge(const CTri &t) const
   {
     bool ret = false;
-    unsigned int count = 0;
+    NxU32 count = 0;
 
 		if ( t.hasIndex(mI1) ) count++;
 	  if ( t.hasIndex(mI2) ) count++;
@@ -328,7 +328,7 @@ public:
     return ret;
   }
 
-  void debug(unsigned int color,ConvexDecompInterface *callback)
+  void debug(NxU32 color,ConvexDecompInterface *callback)
   {
     callback->ConvexDebugTri( mP1.Ptr(), mP2.Ptr(), mP3.Ptr(), color );
     callback->ConvexDebugTri( mP1.Ptr(), mP1.Ptr(), mNear1.Ptr(), 0xFF0000 );
@@ -339,9 +339,9 @@ public:
     callback->ConvexDebugPoint( mNear3.Ptr(), 0.01f, 0xFF0000 );
   }
 
-  double area(void)
+  NxF64 area(void)
   {
-		double a = mConcavity * fm_areaTriangle(mP1.Ptr(),mP2.Ptr(),mP3.Ptr());
+		NxF64 a = mConcavity * fm_areaTriangle(mP1.Ptr(),mP2.Ptr(),mP3.Ptr());
     return a;
   }
 
@@ -352,7 +352,7 @@ public:
     Wpoint p2(mP2,mC2);
     Wpoint p3(mP3,mC3);
 
-    Vector3d<double> d1,d2,d3;
+    Vector3d<NxF64> d1,d2,d3;
 
     fm_subtract(mNear1.Ptr(),mP1.Ptr(),d1.Ptr());
     fm_subtract(mNear2.Ptr(),mP2.Ptr(),d2.Ptr());
@@ -380,22 +380,22 @@ public:
 
   }
 
-  Vector3d<double>	mP1;
-  Vector3d<double>	mP2;
-  Vector3d<double>	mP3;
-  Vector3d<double> mNear1;
-  Vector3d<double> mNear2;
-  Vector3d<double> mNear3;
-  Vector3d<double> mNormal;
-  double           mPlaneD;
-  double           mConcavity;
-  double           mC1;
-  double           mC2;
-  double           mC3;
-  unsigned int    mI1;
-  unsigned int    mI2;
-  unsigned int    mI3;
-  int             mProcessed; // already been added...
+  Vector3d<NxF64>	mP1;
+  Vector3d<NxF64>	mP2;
+  Vector3d<NxF64>	mP3;
+  Vector3d<NxF64> mNear1;
+  Vector3d<NxF64> mNear2;
+  Vector3d<NxF64> mNear3;
+  Vector3d<NxF64> mNormal;
+  NxF64           mPlaneD;
+  NxF64           mConcavity;
+  NxF64           mC1;
+  NxF64           mC2;
+  NxF64           mC3;
+  NxU32    mI1;
+  NxU32    mI2;
+  NxU32    mI3;
+  NxI32             mProcessed; // already been added...
 };
 
 typedef USER_STL::vector< CTri > CTriVector;
@@ -405,7 +405,7 @@ bool featureMatch(CTri &m,const CTriVector &tris,ConvexDecompInterface * /* call
 
   bool ret = false;
 
-  double neardot = 0.707f;
+  NxF64 neardot = 0.707f;
 
   m.mConcavity = 0;
 
@@ -431,21 +431,21 @@ bool featureMatch(CTri &m,const CTriVector &tris,ConvexDecompInterface * /* call
 			break;
 		}
 
-	  double dot = fm_dot(t.mNormal.Ptr(),m.mNormal.Ptr());
+	  NxF64 dot = fm_dot(t.mNormal.Ptr(),m.mNormal.Ptr());
 
 	  if ( dot > neardot )
 	  {
 
-      double d1 = t.planeDistance( m.mP1 );
-      double d2 = t.planeDistance( m.mP2 );
-      double d3 = t.planeDistance( m.mP3 );
+      NxF64 d1 = t.planeDistance( m.mP1 );
+      NxF64 d2 = t.planeDistance( m.mP2 );
+      NxF64 d3 = t.planeDistance( m.mP3 );
 
       if ( d1 > 0.001f || d2 > 0.001f || d3 > 0.001f ) // can't be near coplaner!
       {
 
   	  	neardot = dot;
 
-        Vector3d<double> n1,n2,n3;
+        Vector3d<NxF64> n1,n2,n3;
 
         t.raySect( m.mP1, m.mNormal, m.mNear1 );
         t.raySect( m.mP2, m.mNormal, m.mNear2 );
@@ -492,14 +492,14 @@ bool featureMatch(CTri &m,const CTriVector &tris,ConvexDecompInterface * /* call
 	return ret;
 }
 
-bool isFeatureTri(CTri &t,CTriVector &flist,double fc,ConvexDecompInterface * /* callback */,unsigned int /* color */)
+bool isFeatureTri(CTri &t,CTriVector &flist,NxF64 fc,ConvexDecompInterface * /* callback */,NxU32 /* color */)
 {
   bool ret = false;
 
   if ( t.mProcessed == 0 ) // if not already processed
   {
 
-    double c = t.mConcavity / fc; // must be within 80% of the concavity of the parent.
+    NxF64 c = t.mConcavity / fc; // must be within 80% of the concavity of the parent.
 
     if ( c > 0.85f )
     {
@@ -539,17 +539,17 @@ bool isFeatureTri(CTri &t,CTriVector &flist,double fc,ConvexDecompInterface * /*
   return ret;
 }
 
-double computeConcavity(unsigned int vcount,
-                       const double *vertices,
-                       unsigned int tcount,
-                       const unsigned int *indices,
+NxF64 computeConcavity(NxU32 vcount,
+                       const NxF64 *vertices,
+                       NxU32 tcount,
+                       const NxU32 *indices,
                        ConvexDecompInterface *callback,
-                       double *plane,      // plane equation to split on
-                       double &volume)
+                       NxF64 *plane,      // plane equation to split on
+                       NxF64 &volume)
 {
 
 
-	double cret = 0;
+	NxF64 cret = 0;
 	volume = 1;
 
 	HullResult  result;
@@ -562,23 +562,23 @@ double computeConcavity(unsigned int vcount,
 
   desc.mVcount       = vcount;
   desc.mVertices     = vertices;
-  desc.mVertexStride = sizeof(double)*3;
+  desc.mVertexStride = sizeof(NxF64)*3;
 
   HullError ret = hl.CreateConvexHull(desc,result);
 
   if ( ret == QE_OK )
   {
 
-		double bmin[3];
-		double bmax[3];
+		NxF64 bmin[3];
+		NxF64 bmax[3];
 
-    fm_computeBestFitAABB( result.mNumOutputVertices, result.mOutputVertices, sizeof(double)*3, bmin, bmax );
+    fm_computeBestFitAABB( result.mNumOutputVertices, result.mOutputVertices, sizeof(NxF64)*3, bmin, bmax );
 
-		double dx = bmax[0] - bmin[0];
-		double dy = bmax[1] - bmin[1];
-		double dz = bmax[2] - bmin[2];
+		NxF64 dx = bmax[0] - bmin[0];
+		NxF64 dy = bmax[1] - bmin[1];
+		NxF64 dz = bmax[2] - bmin[2];
 
-		Vector3d<double> center;
+		Vector3d<NxF64> center;
 
 		center.x = bmin[0] + dx*0.5f;
 		center.y = bmin[1] + dy*0.5f;
@@ -589,19 +589,19 @@ double computeConcavity(unsigned int vcount,
 #if 1
 		// ok..now..for each triangle on the original mesh..
 		// we extrude the points to the nearest point on the hull.
-		const unsigned int *source = result.mIndices;
+		const NxU32 *source = result.mIndices;
 
 		CTriVector tris;
 
-    for (unsigned int i=0; i<result.mNumFaces; i++)
+    for (NxU32 i=0; i<result.mNumFaces; i++)
     {
-    	unsigned int i1 = *source++;
-    	unsigned int i2 = *source++;
-    	unsigned int i3 = *source++;
+    	NxU32 i1 = *source++;
+    	NxU32 i2 = *source++;
+    	NxU32 i3 = *source++;
 
-    	const double *p1 = &result.mOutputVertices[i1*3];
-    	const double *p2 = &result.mOutputVertices[i2*3];
-    	const double *p3 = &result.mOutputVertices[i3*3];
+    	const NxF64 *p1 = &result.mOutputVertices[i1*3];
+    	const NxF64 *p2 = &result.mOutputVertices[i2*3];
+    	const NxF64 *p3 = &result.mOutputVertices[i3*3];
 
 //			callback->ConvexDebugTri(p1,p2,p3,0xFFFFFF);
 
@@ -611,30 +611,30 @@ double computeConcavity(unsigned int vcount,
 
     // we have not pre-computed the plane equation for each triangle in the convex hull..
 
-		double totalVolume = 0;
+		NxF64 totalVolume = 0;
 
 		CTriVector ftris; // 'feature' triangles.
 
-		const unsigned int *src = indices;
+		const NxU32 *src = indices;
 
 
-    double maxc=0;
+    NxF64 maxc=0;
 
 
 		{
       CTriVector input_mesh;
       {
-		    const unsigned int *src = indices;
-  			for (unsigned int i=0; i<tcount; i++)
+		    const NxU32 *src = indices;
+  			for (NxU32 i=0; i<tcount; i++)
   			{
 
-      		unsigned int i1 = *src++;
-      		unsigned int i2 = *src++;
-      		unsigned int i3 = *src++;
+      		NxU32 i1 = *src++;
+      		NxU32 i2 = *src++;
+      		NxU32 i3 = *src++;
 
-      		const double *p1 = &vertices[i1*3];
-      		const double *p2 = &vertices[i2*3];
-      		const double *p3 = &vertices[i3*3];
+      		const NxF64 *p1 = &vertices[i1*3];
+      		const NxF64 *p2 = &vertices[i2*3];
+      		const NxF64 *p3 = &vertices[i3*3];
 
    				CTri t(p1,p2,p3,i1,i2,i3);
           input_mesh.push_back(t);
@@ -643,16 +643,16 @@ double computeConcavity(unsigned int vcount,
 
       CTri  maxctri;
 
-			for (unsigned int i=0; i<tcount; i++)
+			for (NxU32 i=0; i<tcount; i++)
 			{
 
-    		unsigned int i1 = *src++;
-    		unsigned int i2 = *src++;
-    		unsigned int i3 = *src++;
+    		NxU32 i1 = *src++;
+    		NxU32 i2 = *src++;
+    		NxU32 i3 = *src++;
 
-    		const double *p1 = &vertices[i1*3];
-    		const double *p2 = &vertices[i2*3];
-    		const double *p3 = &vertices[i3*3];
+    		const NxF64 *p1 = &vertices[i1*3];
+    		const NxF64 *p2 = &vertices[i2*3];
+    		const NxF64 *p3 = &vertices[i3*3];
 
  				CTri t(p1,p2,p3,i1,i2,i3);
 
@@ -667,7 +667,7 @@ double computeConcavity(unsigned int vcount,
             maxctri = t;
           }
 
-  				double v = t.getVolume(0);
+  				NxF64 v = t.getVolume(0);
   				totalVolume+=v;
    				ftris.push_back(t);
    			}
@@ -695,17 +695,17 @@ class FaceTri
 public:
 	FaceTri(void) { };
 
-  FaceTri(const double *vertices,unsigned int i1,unsigned int i2,unsigned int i3)
+  FaceTri(const NxF64 *vertices,NxU32 i1,NxU32 i2,NxU32 i3)
   {
   	fm_copy3(&vertices[i1*3],mP1 );
   	fm_copy3(&vertices[i2*3],mP2 );
   	fm_copy3(&vertices[i3*3],mP3 );
   }
 
-  double	mP1[3];
-  double	mP2[3];
-  double 	mP3[3];
-  double  mNormal[3];
+  NxF64	mP1[3];
+  NxF64	mP2[3];
+  NxF64 	mP3[3];
+  NxF64  mNormal[3];
 
 };
 
@@ -721,11 +721,11 @@ public:
     mResult = new ConvexResult(result);
     mVolume = fm_computeMeshVolume( result.mHullVertices, result.mHullTcount, result.mHullIndices );
 
-    mDiagonal = fm_computeBestFitAABB( result.mHullVcount, result.mHullVertices, sizeof(double)*3, mMin, mMax );
+    mDiagonal = fm_computeBestFitAABB( result.mHullVcount, result.mHullVertices, sizeof(NxF64)*3, mMin, mMax );
 
-    double dx = mMax[0] - mMin[0];
-    double dy = mMax[1] - mMin[1];
-    double dz = mMax[2] - mMin[2];
+    NxF64 dx = mMax[0] - mMin[0];
+    NxF64 dy = mMax[1] - mMin[1];
+    NxF64 dz = mMax[2] - mMin[2];
 
     dx*=0.1f; // inflate 1/10th on each edge
     dy*=0.1f; // inflate 1/10th on each edge
@@ -752,10 +752,10 @@ public:
     return fm_intersectAABB(mMin,mMax, h.mMin, h.mMax );
   }
 
-  double          mMin[3];
-  double          mMax[3];
-	double          mVolume;
-  double          mDiagonal; // long edge..
+  NxF64          mMin[3];
+  NxF64          mMax[3];
+	NxF64          mVolume;
+  NxF64          mDiagonal; // long edge..
   ConvexResult  *mResult;
 };
 
@@ -792,10 +792,10 @@ public:
     }
   }
 
-	bool isDuplicate(unsigned int i1,unsigned int i2,unsigned int i3,
-		               unsigned int ci1,unsigned int ci2,unsigned int ci3)
+	bool isDuplicate(NxU32 i1,NxU32 i2,NxU32 i3,
+		               NxU32 ci1,NxU32 ci2,NxU32 ci3)
 	{
-		unsigned int dcount = 0;
+		NxU32 dcount = 0;
 
 		assert( i1 != i2 && i1 != i3 && i2 != i3 );
 		assert( ci1 != ci2 && ci1 != ci3 && ci2 != ci3 );
@@ -809,17 +809,17 @@ public:
 
 	void getMesh(const ConvexResult &cr,fm_VertexIndex *vc)
 	{
-		unsigned int *src = cr.mHullIndices;
+		NxU32 *src = cr.mHullIndices;
 
-		for (unsigned int i=0; i<cr.mHullTcount; i++)
+		for (NxU32 i=0; i<cr.mHullTcount; i++)
 		{
 			size_t i1 = *src++;
 			size_t i2 = *src++;
 			size_t i3 = *src++;
 
-			const double *p1 = &cr.mHullVertices[i1*3];
-			const double *p2 = &cr.mHullVertices[i2*3];
-			const double *p3 = &cr.mHullVertices[i3*3];
+			const NxF64 *p1 = &cr.mHullVertices[i1*3];
+			const NxF64 *p2 = &cr.mHullVertices[i2*3];
+			const NxF64 *p3 = &cr.mHullVertices[i3*3];
       bool newPos;
 			i1 = vc->getIndex(p1,newPos);
 			i2 = vc->getIndex(p2,newPos);
@@ -846,13 +846,13 @@ public:
 		// ok..we are going to combine both meshes into a single mesh
 		// and then we are going to compute the concavity...
 
-    fm_VertexIndex *vc = fm_createVertexIndex((double)EPSILON,false);
+    fm_VertexIndex *vc = fm_createVertexIndex((NxF64)EPSILON,false);
 
     getMesh( *a->mResult, vc);
     getMesh( *b->mResult, vc);
 
 		size_t vcount = vc->getVcount();
-		const double *vertices = vc->getVerticesDouble();
+		const NxF64 *vertices = vc->getVerticesDouble();
 
     HullResult hresult;
     HullLibrary hl;
@@ -860,19 +860,19 @@ public:
 
   	desc.SetHullFlag(QF_TRIANGLES);
 
-    desc.mVcount       = (unsigned int)vcount;
+    desc.mVcount       = (NxU32)vcount;
     desc.mVertices     = vertices;
-    desc.mVertexStride = sizeof(double)*3;
+    desc.mVertexStride = sizeof(NxF64)*3;
 
     HullError hret = hl.CreateConvexHull(desc,hresult);
 
     if ( hret == QE_OK )
     {
 
-      double combineVolume  = fm_computeMeshVolume( hresult.mOutputVertices, hresult.mNumFaces, hresult.mIndices );
-			double sumVolume      = a->mVolume + b->mVolume;
+      NxF64 combineVolume  = fm_computeMeshVolume( hresult.mOutputVertices, hresult.mNumFaces, hresult.mIndices );
+			NxF64 sumVolume      = a->mVolume + b->mVolume;
 
-      double percent = (sumVolume*100) / combineVolume;
+      NxF64 percent = (sumVolume*100) / combineVolume;
 
       if ( percent >= (100.0f-mMergePercent)  )
       {
@@ -961,10 +961,10 @@ public:
     return combine;
   }
 
-  unsigned int process(const DecompDesc &desc)
+  NxU32 process(const DecompDesc &desc)
   {
 
-  	unsigned int ret = 0;
+  	NxU32 ret = 0;
 
 
     Cdesc cdesc;
@@ -982,7 +982,7 @@ public:
   	hdesc.SetHullFlag(QF_TRIANGLES);
     hdesc.mVcount       = desc.mVcount;
     hdesc.mVertices     = desc.mVertices;
-    hdesc.mVertexStride = sizeof(double)*3;
+    hdesc.mVertexStride = sizeof(NxF64)*3;
     hdesc.mMaxVertices  = desc.mMaxVertices; // maximum number of vertices allowed in the output
     HullError eret = hl.CreateConvexHull(hdesc,result);
 
@@ -992,7 +992,7 @@ public:
       cdesc.mMasterMeshVolume = fm_computeMeshVolume( desc.mVertices, desc.mTcount, desc.mIndices );
 
 
-      const unsigned int *indices = desc.mIndices;
+      const NxU32 *indices = desc.mIndices;
       size_t tcount               = desc.mTcount;
 
       RemoveTjunctions *rt = 0;
@@ -1017,7 +1017,7 @@ public:
 
         size_t icount = mig->islandGenerate(tcount, indices, desc.mVertices );
 
-        double *scratch_vertices = new double[desc.mVcount*3];
+        NxF64 *scratch_vertices = new NxF64[desc.mVcount*3];
 
         for (size_t i=0; i<icount; i++)
         {
@@ -1064,7 +1064,7 @@ public:
 
         hdesc.mVcount       = c.mHullVcount;
         hdesc.mVertices     = c.mHullVertices;
-        hdesc.mVertexStride = sizeof(double)*3;
+        hdesc.mVertexStride = sizeof(NxF64)*3;
         hdesc.mMaxVertices  = desc.mMaxVertices; // maximum number of vertices allowed in the output
 
         if ( desc.mSkinWidth > 0 )
@@ -1087,9 +1087,9 @@ public:
 #if SHOW_DEBUG
           else
           {
-            static float offset = 0;
+            static NxF32 offset = 0;
 
-            unsigned int colors[8] =
+            NxU32 colors[8] =
             {
               0xFF0000,
               0x00FF00,
@@ -1101,24 +1101,24 @@ public:
               0x808080
             };
 
-            static unsigned int cindex = 0;
+            static NxU32 cindex = 0;
 
-            unsigned int color = colors[cindex];
+            NxU32 color = colors[cindex];
             cindex++;
             if ( cindex == 8 ) cindex = 0;
 
 
             for (size_t i=0; i<r.mHullTcount; i++)
             {
-              unsigned int i1 = r.mHullIndices[i*3+0];
-              unsigned int i2 = r.mHullIndices[i*3+1];
-              unsigned int i3 = r.mHullIndices[i*3+2];
-              const double *_p1 = &r.mHullVertices[i1*3];
-              const double *_p2 = &r.mHullVertices[i2*3];
-              const double *_p3 = &r.mHullVertices[i3*3];
-              float p1[3];
-              float p2[3];
-              float p3[3];
+              NxU32 i1 = r.mHullIndices[i*3+0];
+              NxU32 i2 = r.mHullIndices[i*3+1];
+              NxU32 i3 = r.mHullIndices[i*3+2];
+              const NxF64 *_p1 = &r.mHullVertices[i1*3];
+              const NxF64 *_p2 = &r.mHullVertices[i2*3];
+              const NxF64 *_p3 = &r.mHullVertices[i3*3];
+              NxF32 p1[3];
+              NxF32 p2[3];
+              NxF32 p3[3];
               fm_doubleToFloat3(_p1,p1);
               fm_doubleToFloat3(_p2,p2);
               fm_doubleToFloat3(_p3,p3);
@@ -1149,21 +1149,21 @@ public:
   }
 
 
-	virtual void ConvexDebugTri(const double *p1,const double *p2,const double *p3,unsigned int color)
+	virtual void ConvexDebugTri(const NxF64 *p1,const NxF64 *p2,const NxF64 *p3,NxU32 color)
   {
     mCallback->ConvexDebugTri(p1,p2,p3,color);
   }
 
-  virtual void ConvexDebugOBB(const double *sides, const double *matrix,unsigned int color)
+  virtual void ConvexDebugOBB(const NxF64 *sides, const NxF64 *matrix,NxU32 color)
   {
     mCallback->ConvexDebugOBB(sides,matrix,color);
   }
-	virtual void ConvexDebugPoint(const double *p,double dist,unsigned int color)
+	virtual void ConvexDebugPoint(const NxF64 *p,NxF64 dist,NxU32 color)
   {
     mCallback->ConvexDebugPoint(p,dist,color);
   }
 
-  virtual void ConvexDebugBound(const double *bmin,const double *bmax,unsigned int color)
+  virtual void ConvexDebugBound(const NxF64 *bmin,const NxF64 *bmax,NxU32 color)
   {
     mCallback->ConvexDebugBound(bmin,bmax,color);
   }
@@ -1188,16 +1188,16 @@ public:
 
   bool addTri(fm_VertexIndex *vl,
               UintVector &list,
-              const double *p1,
-              const double *p2,
-              const double *p3)
+              const NxF64 *p1,
+              const NxF64 *p2,
+              const NxF64 *p3)
   {
     bool ret = false;
 
     bool newPos;
-    unsigned int i1 = vl->getIndex(p1,newPos );
-    unsigned int i2 = vl->getIndex(p2,newPos );
-    unsigned int i3 = vl->getIndex(p3,newPos );
+    NxU32 i1 = vl->getIndex(p1,newPos );
+    NxU32 i2 = vl->getIndex(p2,newPos );
+    NxU32 i3 = vl->getIndex(p3,newPos );
 
     // do *not* process degenerate triangles!
 
@@ -1213,38 +1213,38 @@ public:
   }
 
 #if SHOW_DEBUG
-  void debugMesh(const SPLIT_MESH::SimpleMeshDouble &mesh,unsigned int color,double offset,const double *plane,double poffset)
+  void debugMesh(const SPLIT_MESH::SimpleMeshDouble &mesh,NxU32 color,NxF64 offset,const NxF64 *plane,NxF64 poffset)
   {
     for (size_t i=0; i<mesh.mTcount; i++)
     {
       size_t i1 = mesh.mIndices[i*3+0];
       size_t i2 = mesh.mIndices[i*3+1];
       size_t i3 = mesh.mIndices[i*3+2];
-      const double *p1 = &mesh.mVertices[i1*3];
-      const double *p2 = &mesh.mVertices[i2*3];
-      const double *p3 = &mesh.mVertices[i3*3];
-      float fp1[3];
-      float fp2[3];
-      float fp3[3];
+      const NxF64 *p1 = &mesh.mVertices[i1*3];
+      const NxF64 *p2 = &mesh.mVertices[i2*3];
+      const NxF64 *p3 = &mesh.mVertices[i3*3];
+      NxF32 fp1[3];
+      NxF32 fp2[3];
+      NxF32 fp3[3];
       fm_doubleToFloat3(p1,fp1);
       fm_doubleToFloat3(p2,fp2);
       fm_doubleToFloat3(p3,fp3);
 
-      fp1[0]+=(float)offset;
-      fp2[0]+=(float)offset;
-      fp3[0]+=(float)offset;
+      fp1[0]+=(NxF32)offset;
+      fp2[0]+=(NxF32)offset;
+      fp3[0]+=(NxF32)offset;
 
-      fp1[0]+=(float)(plane[0]*poffset);
-      fp1[1]+=(float)(plane[1]*poffset);
-      fp1[2]+=(float)(plane[2]*poffset);
+      fp1[0]+=(NxF32)(plane[0]*poffset);
+      fp1[1]+=(NxF32)(plane[1]*poffset);
+      fp1[2]+=(NxF32)(plane[2]*poffset);
 
-      fp2[0]+=(float)(plane[0]*poffset);
-      fp2[1]+=(float)(plane[1]*poffset);
-      fp2[2]+=(float)(plane[2]*poffset);
+      fp2[0]+=(NxF32)(plane[0]*poffset);
+      fp2[1]+=(NxF32)(plane[1]*poffset);
+      fp2[2]+=(NxF32)(plane[2]*poffset);
 
-      fp3[0]+=(float)(plane[0]*poffset);
-      fp3[1]+=(float)(plane[1]*poffset);
-      fp3[2]+=(float)(plane[2]*poffset);
+      fp3[0]+=(NxF32)(plane[0]*poffset);
+      fp3[1]+=(NxF32)(plane[1]*poffset);
+      fp3[2]+=(NxF32)(plane[2]*poffset);
 
       gRenderDebug->DebugSolidTri(fp1,fp2,fp3,color,30.0f);
       gRenderDebug->DebugTri(fp1,fp2,fp3,0xFFFFFF,30.0f);
@@ -1256,16 +1256,16 @@ public:
 
 
 
-  void doConvexDecomposition(unsigned int           vcount,
-                             const double           *vertices,
-                             unsigned int           tcount,
-                             const unsigned int    *indices,
+  void doConvexDecomposition(NxU32           vcount,
+                             const NxF64           *vertices,
+                             NxU32           tcount,
+                             const NxU32    *indices,
                              const Cdesc            &cdesc,
-                             unsigned int           depth)
+                             NxU32           depth)
 
   {
 
-    double plane[4];
+    NxF64 plane[4];
 
     bool split = false;
 
@@ -1281,9 +1281,9 @@ public:
       {
         if ( cdesc.mConcavePercent >= 0 )
         {
-      		double volume;
-      		double c = computeConcavity( vcount, vertices, tcount, indices, cdesc.mCallback, plane, volume );
-      		double percent = (c*100.0f)/cdesc.mMasterVolume;
+      		NxF64 volume;
+      		NxF64 c = computeConcavity( vcount, vertices, tcount, indices, cdesc.mCallback, plane, volume );
+      		NxF64 percent = (c*100.0f)/cdesc.mMasterVolume;
       		if ( percent > cdesc.mConcavePercent ) // if great than 5% of the total volume is concave, go ahead and keep splitting.
       		{
             split = true;
@@ -1291,8 +1291,8 @@ public:
         }
 
 
-        double mvolume = fm_computeMeshVolume(vertices, tcount, indices );
-        double mpercent = (mvolume*100.0f)/cdesc.mMasterMeshVolume;
+        NxF64 mvolume = fm_computeMeshVolume(vertices, tcount, indices );
+        NxF64 mpercent = (mvolume*100.0f)/cdesc.mMasterMeshVolume;
         if ( mpercent < cdesc.mMeshVolumePercent )
         {
           split = false; // it's too tiny to bother with!
@@ -1316,7 +1316,7 @@ public:
 
         desc.mVcount       = vcount;
         desc.mVertices     = vertices;
-        desc.mVertexStride = sizeof(double)*3;
+        desc.mVertexStride = sizeof(NxF64)*3;
 
         HullError ret = hl.CreateConvexHull(desc,result);
 
@@ -1325,19 +1325,19 @@ public:
     			ConvexResult r(result.mNumOutputVertices, result.mOutputVertices, result.mNumFaces, result.mIndices);
 #if SHOW_DEBUG
 
-          static float offset = 2;
+          static NxF32 offset = 2;
 
           for (size_t i=0; i<tcount; i++)
           {
-            unsigned int i1 = indices[i*3+0];
-            unsigned int i2 = indices[i*3+1];
-            unsigned int i3 = indices[i*3+2];
-            const double *_p1 = &vertices[i1*3];
-            const double *_p2 = &vertices[i2*3];
-            const double *_p3 = &vertices[i3*3];
-            float p1[3];
-            float p2[3];
-            float p3[3];
+            NxU32 i1 = indices[i*3+0];
+            NxU32 i2 = indices[i*3+1];
+            NxU32 i3 = indices[i*3+2];
+            const NxF64 *_p1 = &vertices[i1*3];
+            const NxF64 *_p2 = &vertices[i2*3];
+            const NxF64 *_p3 = &vertices[i3*3];
+            NxF32 p1[3];
+            NxF32 p2[3];
+            NxF32 p3[3];
             fm_doubleToFloat3(_p1,p1);
             fm_doubleToFloat3(_p2,p2);
             fm_doubleToFloat3(_p3,p3);
@@ -1350,15 +1350,15 @@ public:
 
           for (size_t i=0; i<r.mHullTcount; i++)
           {
-            unsigned int i1 = r.mHullIndices[i*3+0];
-            unsigned int i2 = r.mHullIndices[i*3+1];
-            unsigned int i3 = r.mHullIndices[i*3+2];
-            const double *_p1 = &r.mHullVertices[i1*3];
-            const double *_p2 = &r.mHullVertices[i2*3];
-            const double *_p3 = &r.mHullVertices[i3*3];
-            float p1[3];
-            float p2[3];
-            float p3[3];
+            NxU32 i1 = r.mHullIndices[i*3+0];
+            NxU32 i2 = r.mHullIndices[i*3+1];
+            NxU32 i3 = r.mHullIndices[i*3+2];
+            const NxF64 *_p1 = &r.mHullVertices[i1*3];
+            const NxF64 *_p2 = &r.mHullVertices[i2*3];
+            const NxF64 *_p3 = &r.mHullVertices[i3*3];
+            NxF32 p1[3];
+            NxF32 p2[3];
+            NxF32 p3[3];
             fm_doubleToFloat3(_p1,p1);
             fm_doubleToFloat3(_p2,p2);
             fm_doubleToFloat3(_p3,p3);
@@ -1383,11 +1383,11 @@ public:
 #if SHOW_DEBUG
   //    debugMesh(mesh,0xFFFFFF);
 
-  //    float p[4];
-  //    p[0] = (float)plane[0];
-  //    p[1] = (float)plane[1];
-  //    p[2] = (float)plane[2];
-  //    p[3] = (float)plane[3];
+  //    NxF32 p[4];
+  //    p[0] = (NxF32)plane[0];
+  //    p[1] = (NxF32)plane[1];
+  //    p[2] = (NxF32)plane[2];
+  //    p[3] = (NxF32)plane[3];
 
   //    gRenderDebug->DebugPlane(p,2.0f,2.0f,0xFFFF00,30.0f);
 #endif
@@ -1401,7 +1401,7 @@ public:
       rightMesh.mVcount = fm_copyUniqueVertices( rightMesh.mVcount, rightMesh.mVertices, rightMesh.mVertices, rightMesh.mTcount, rightMesh.mIndices, rightMesh.mIndices );
 
 #if SHOW_DEBUG
-  //    static double offset=0;
+  //    static NxF64 offset=0;
   //    debugMesh(leftMesh,0xFFFF00,offset,plane,0.1);
   //    debugMesh(rightMesh,0x00FF00,offset,plane,-0.1);
   //    offset+=4;
@@ -1421,7 +1421,7 @@ public:
           else
           {
 
-            double *scratch_vertices = new double[leftMesh.mVcount*3];
+            NxF64 *scratch_vertices = new NxF64[leftMesh.mVcount*3];
 
             for (size_t i=0; i<icount; i++)
             {
@@ -1458,7 +1458,7 @@ public:
           }
           else
           {
-            double *scratch_vertices = new double[rightMesh.mVcount*3];
+            NxF64 *scratch_vertices = new NxF64[rightMesh.mVcount*3];
             for (size_t i=0; i<icount; i++)
             {
               size_t otcount;
@@ -1484,21 +1484,21 @@ public:
     }
   }
 
-double          mMergePercent;
+NxF64          mMergePercent;
 CHullVector     mChulls;
 ConvexDecompInterface *mCallback;
 
 };
 
-unsigned int performConvexDecomposition(const DecompDesc &_desc)
+NxU32 performConvexDecomposition(const DecompDesc &_desc)
 {
-	unsigned int ret = 0;
+	NxU32 ret = 0;
 
 
   // we cannot assume that the input mesh has been properly indexed
   // so we must re-index it here!
 
-  fm_VertexIndex *vindex = fm_createVertexIndex( (double) SPLIT_EPSILON, false );
+  fm_VertexIndex *vindex = fm_createVertexIndex( (NxF64) SPLIT_EPSILON, false );
   typedef USER_STL::vector< size_t > size_tVector;
 
   size_tVector indices;
@@ -1506,13 +1506,13 @@ unsigned int performConvexDecomposition(const DecompDesc &_desc)
 
   for (size_t i=0; i<_desc.mTcount; i++)
   {
-    unsigned int i1 = _desc.mIndices[i*3+0];
-    unsigned int i2 = _desc.mIndices[i*3+1];
-    unsigned int i3 = _desc.mIndices[i*3+2];
+    NxU32 i1 = _desc.mIndices[i*3+0];
+    NxU32 i2 = _desc.mIndices[i*3+1];
+    NxU32 i3 = _desc.mIndices[i*3+2];
 
-    const double *p1 = &_desc.mVertices[i1*3];
-    const double *p2 = &_desc.mVertices[i2*3];
-    const double *p3 = &_desc.mVertices[i3*3];
+    const NxF64 *p1 = &_desc.mVertices[i1*3];
+    const NxF64 *p2 = &_desc.mVertices[i2*3];
+    const NxF64 *p3 = &_desc.mVertices[i3*3];
 
     bool newp;
     i1 = vindex->getIndex(p1,newp);
@@ -1539,8 +1539,8 @@ unsigned int performConvexDecomposition(const DecompDesc &_desc)
   {
     for (size_t i=0; i<desc.mVcount; i++)
     {
-      const double *p = &desc.mVertices[i*3];
-      fprintf(fph,"v %0.9f %0.9f %0.9f\r\n", (float)p[0], (float)p[1], (float)p[2]);
+      const NxF64 *p = &desc.mVertices[i*3];
+      fprintf(fph,"v %0.9f %0.9f %0.9f\r\n", (NxF32)p[0], (NxF32)p[1], (NxF32)p[2]);
     }
     for (size_t i=0; i<desc.mTcount; i++)
     {

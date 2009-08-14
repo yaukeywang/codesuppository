@@ -804,11 +804,11 @@ bool           endsWith(const char *str,const char *ends,bool caseSensitive)
 {
   bool ret = false;
 
-  int l1 = strlen(str);
-  int l2 = strlen(ends);
+  NxI32 l1 = strlen(str);
+  NxI32 l2 = strlen(ends);
   if ( l1 >= l2 )
   {
-    int diff = l1-l2;
+    NxI32 diff = l1-l2;
     const char *echeck = &str[diff];
     if ( caseSensitive )
     {

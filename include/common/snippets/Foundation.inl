@@ -341,91 +341,91 @@ enum NxThreadPriority
 */
 
 // Platform specific types:
-//Design note: Its OK to use int for general loop variables and temps.
+//Design note: Its OK to use NxI32 for general loop variables and temps.
 
 #ifdef WIN32
 	typedef __int64				NxI64;
-	typedef signed int			NxI32;
+	typedef signed NxI32			NxI32;
 	typedef signed short		NxI16;
 	typedef signed char			NxI8;
 
 	typedef unsigned __int64	NxU64;
-	typedef unsigned int		NxU32;
+	typedef NxU32		NxU32;
 	typedef unsigned short		NxU16;
-	typedef unsigned char		NxU8;
+	typedef NxU8		NxU8;
 
-	typedef float				NxF32;
-	typedef double				NxF64;
+	typedef NxF32				NxF32;
+	typedef NxF64				NxF64;
 
 #elif LINUX
 	typedef long long			NxI64;
-	typedef signed int			NxI32;
+	typedef signed NxI32			NxI32;
 	typedef signed short		NxI16;
 	typedef signed char			NxI8;
 
 	typedef unsigned long long	NxU64;
-	typedef unsigned int		NxU32;
+	typedef NxU32		NxU32;
 	typedef unsigned short		NxU16;
-	typedef unsigned char		NxU8;
+	typedef NxU8		NxU8;
 
-	typedef float				NxF32;
-	typedef double				NxF64;
+	typedef NxF32				NxF32;
+	typedef NxF64				NxF64;
 
 #elif __APPLE__
 	typedef long long			NxI64;
-	typedef signed int			NxI32;
+	typedef signed NxI32			NxI32;
 	typedef signed short		NxI16;
 	typedef signed char			NxI8;
 
 	typedef unsigned long long	NxU64;
-	typedef unsigned int		NxU32;
+	typedef NxU32		NxU32;
 	typedef unsigned short		NxU16;
-	typedef unsigned char		NxU8;
+	typedef NxU8		NxU8;
 
-	typedef float				NxF32;
-	typedef double				NxF64;
+	typedef NxF32				NxF32;
+	typedef NxF64				NxF64;
 
 #elif __CELLOS_LV2__
 	typedef long long			NxI64;
-	typedef signed int			NxI32;
+	typedef signed NxI32			NxI32;
 	typedef signed short		NxI16;
 	typedef signed char			NxI8;
 
 	typedef unsigned long long	NxU64;
-	typedef unsigned int		NxU32;
+	typedef NxU32		NxU32;
 	typedef unsigned short		NxU16;
-	typedef unsigned char		NxU8;
+	typedef NxU8		NxU8;
 
-	typedef float				NxF32;
-	typedef double				NxF64;
+	typedef NxF32				NxF32;
+	typedef NxF64				NxF64;
 
 #elif _XBOX
 	typedef __int64				NxI64;
-	typedef signed int			NxI32;
+	typedef signed NxI32			NxI32;
 	typedef signed short		NxI16;
 	typedef signed char			NxI8;
 
 	typedef unsigned __int64	NxU64;
-	typedef unsigned int		NxU32;
+	typedef NxU32		NxU32;
 	typedef unsigned short		NxU16;
-	typedef unsigned char		NxU8;
+	typedef NxU8		NxU8;
 
-	typedef float				NxF32;
-	typedef double				NxF64;
+	typedef NxF32				NxF32;
+	typedef NxF64				NxF64;
     
 #elif defined(__PPCGEKKO__)
 	typedef long long			NxI64;
-	typedef signed int			NxI32;
+	typedef signed NxI32			NxI32;
 	typedef signed short		NxI16;
 	typedef signed char			NxI8;
 
 	typedef unsigned long long	NxU64;
-	typedef unsigned int		NxU32;
+	typedef NxU32		NxU32;
 	typedef unsigned short		NxU16;
-	typedef unsigned char		NxU8;
+	typedef NxU8		NxU8;
 
-	typedef float				NxF32;
-	typedef double				NxF64;
+	typedef NxF32				NxF32;
+	typedef NxF64				NxF64;
 
 #else
 	#error Unknown platform!
@@ -469,10 +469,10 @@ union NxU32F32
 	#define	NX_MIN_I32			0x80000000		//min possible sdword value
 	#define	NX_MAX_U32			0xffffffff		//max possible udword value
 	#define	NX_MIN_U32			0x00000000		//min possible udword value
-	#define	NX_MAX_F32			FLT_MAX			//max possible float value
-	#define	NX_MIN_F32			(-FLT_MAX)		//min possible float value
-	#define	NX_MAX_F64			DBL_MAX			//max possible double value
-	#define	NX_MIN_F64			(-DBL_MAX)		//min possible double value
+	#define	NX_MAX_F32			FLT_MAX			//max possible NxF32 value
+	#define	NX_MIN_F32			(-FLT_MAX)		//min possible NxF32 value
+	#define	NX_MAX_F64			DBL_MAX			//max possible NxF64 value
+	#define	NX_MIN_F64			(-DBL_MAX)		//min possible NxF64 value
 
 	#define NX_EPS_F32			FLT_EPSILON		//smallest number not zero
 	#define NX_EPS_F64			DBL_EPSILON		//smallest number not zero
@@ -482,7 +482,7 @@ union NxU32F32
 	#define NX_IEEE_MAX_F32		0x7f7fffff		//integer representation of MAX_NXFLOAT
 	#define NX_IEEE_MIN_F32		0xff7fffff		//integer representation of MIN_NXFLOAT
 
-	typedef int	NX_BOOL;
+	typedef NxI32	NX_BOOL;
 	#define NX_FALSE			0
 	#define NX_TRUE				1
 
@@ -623,7 +623,7 @@ static const NxF64 NxPiF64		= 3.141592653589793;
 static const NxF64 NxHalfPiF64	= 1.57079632679489661923;
 static const NxF64 NxTwoPiF64	= 6.28318530717958647692;
 static const NxF64 NxInvPiF64	= 0.31830988618379067154;
-//we can get bad range checks if we use double prec consts to check single prec results.
+//we can get bad range checks if we use NxF64 prec consts to check single prec results.
 static const NxF32 NxPiF32		= 3.141592653589793f;
 static const NxF32 NxHalfPiF32	= 1.57079632679489661923f;
 static const NxF32 NxTwoPiF32	= 6.28318530717958647692f;
@@ -666,16 +666,16 @@ class NxMath
 		*/
 		NX_INLINE static NxF32 ceil(NxF32);
 		/**
-		\brief The ceil function returns a double value representing the smallest integer that is greater than or equal to x. 
+		\brief The ceil function returns a NxF64 value representing the smallest integer that is greater than or equal to x. 
 		*/
 		NX_INLINE static NxF64 ceil(NxF64);
 
 		/**
-		\brief Truncates the float to an integer.
+		\brief Truncates the NxF32 to an integer.
 		*/
 		NX_INLINE static NxI32 trunc(NxF32);
 		/**
-		\brief Truncates the double precision float to an integer.
+		\brief Truncates the NxF64 precision NxF32 to an integer.
 		*/
 		NX_INLINE static NxI32 trunc(NxF64);
 
@@ -1010,7 +1010,7 @@ class NxMath
 		/**
 		\brief hash32
 		*/
-		NX_INLINE static int hash32(int);
+		NX_INLINE static NxI32 hash32(NxI32);
 
 		/**
 		\brief returns true if the passed number is a finite floating point number as opposed to INF, NAN, etc.
@@ -1530,7 +1530,7 @@ NX_INLINE NxU32 NxMath::hash(const NxU32 *k, NxU32 length)
 	}
 #undef NX_HASH_MIX
 
-NX_INLINE int NxMath::hash32(int key)
+NX_INLINE NxI32 NxMath::hash32(NxI32 key)
 	{
 	key += ~(key << 15);
 	key ^=  (key >> 10);
@@ -1633,7 +1633,7 @@ typedef struct _Nx3F32
 This is a vector class with public data members.
 This is not nice but it has become such a standard that hiding the xyz data members
 makes it difficult to reuse external code that assumes that these are public in the library.
-The vector class can be made to use float or double precision by appropriately defining NxReal.
+The vector class can be made to use NxF32 or NxF64 precision by appropriately defining NxReal.
 This has been chosen as a cleaner alternative to a template class.
 */
 class NxVec3
@@ -1719,8 +1719,8 @@ class NxVec3
 	*/
 	NX_INLINE void get(NxF64 * dest) const;
 
-	NX_INLINE NxReal& operator[](int index);
-	NX_INLINE NxReal  operator[](int index) const;
+	NX_INLINE NxReal& operator[](NxI32 index);
+	NX_INLINE NxReal  operator[](NxI32 index) const;
 
 	//Operators
 	/**
@@ -2038,14 +2038,14 @@ NX_INLINE void  NxVec3::get(NxF64 * v) const
 	}
 
 
-NX_INLINE NxReal& NxVec3::operator[](int index)
+NX_INLINE NxReal& NxVec3::operator[](NxI32 index)
 	{
 	NX_ASSERT(index>=0 && index<=2);
 	return (&x)[index];
 	}
 
 
-NX_INLINE NxReal  NxVec3::operator[](int index) const
+NX_INLINE NxReal  NxVec3::operator[](NxI32 index) const
 	{
 	NX_ASSERT(index>=0 && index<=2);
 	return (&x)[index];
@@ -2156,13 +2156,13 @@ NX_INLINE void  NxVec3::zero()
  
 NX_INLINE void  NxVec3::setPlusInfinity()
 	{
-	x = y = z = NX_MAX_F32; //TODO: this may be double too, but here we can't tell!
+	x = y = z = NX_MAX_F32; //TODO: this may be NxF64 too, but here we can't tell!
 	}
 
  
 NX_INLINE void  NxVec3::setMinusInfinity()
 	{
-	x = y = z = NX_MIN_F32; //TODO: this may be double too, but here we can't tell!
+	x = y = z = NX_MIN_F32; //TODO: this may be NxF64 too, but here we can't tell!
 	}
 
  
@@ -3395,7 +3395,7 @@ class NxMat33
 
 	// Access elements
 
-	//low level data access, single or double precision, with eventual translation:
+	//low level data access, single or NxF64 precision, with eventual translation:
 	//for dense 9 element data
 	NX_INLINE void setRowMajor(const NxF32 *);
 	NX_INLINE void setRowMajor(const NxF32 d[][3]);
@@ -3436,18 +3436,18 @@ class NxMat33
 	NX_INLINE void getColumnMajorStride4(NxF64 d[][4]) const;
 
 
-	NX_INLINE void setRow(int row, const NxVec3 &);
-	NX_INLINE void setColumn(int col, const NxVec3 &);
-	NX_INLINE void getRow(int row, NxVec3 &) const;
-	NX_INLINE void getColumn(int col, NxVec3 &) const;
+	NX_INLINE void setRow(NxI32 row, const NxVec3 &);
+	NX_INLINE void setColumn(NxI32 col, const NxVec3 &);
+	NX_INLINE void getRow(NxI32 row, NxVec3 &) const;
+	NX_INLINE void getColumn(NxI32 col, NxVec3 &) const;
 
-	NX_INLINE NxVec3 getRow(int row) const;
-	NX_INLINE NxVec3 getColumn(int col) const;
+	NX_INLINE NxVec3 getRow(NxI32 row) const;
+	NX_INLINE NxVec3 getColumn(NxI32 col) const;
 
 
 	//element access:
-    NX_INLINE NxReal & operator()(int row, int col);
-    NX_INLINE const NxReal & operator() (int row, int col) const;
+    NX_INLINE NxReal & operator()(NxI32 row, NxI32 col);
+    NX_INLINE const NxReal & operator() (NxI32 row, NxI32 col) const;
 
 	/**
 	\brief returns true for identity matrix
@@ -3649,7 +3649,7 @@ class NxMat33
 	/**
 	\brief matrix scalar product
 	*/
-	NX_INLINE NxMat33	operator*  (float s)				const;
+	NX_INLINE NxMat33	operator*  (NxF32 s)				const;
 
 	private:
 	Mat33DataType data;
@@ -4256,7 +4256,7 @@ NX_INLINE void NxMat33::getColumnMajorStride4(NxF64 d[][4]) const
 	}
 
 
-NX_INLINE void NxMat33::setRow(int row, const NxVec3 & v)
+NX_INLINE void NxMat33::setRow(NxI32 row, const NxVec3 & v)
 	{
 #ifndef TRANSPOSED_MAT33
 	data.m[row][0] = v.x;
@@ -4270,7 +4270,7 @@ NX_INLINE void NxMat33::setRow(int row, const NxVec3 & v)
 	}
 
 
-NX_INLINE void NxMat33::setColumn(int col, const NxVec3 & v)
+NX_INLINE void NxMat33::setColumn(NxI32 col, const NxVec3 & v)
 	{
 #ifndef TRANSPOSED_MAT33
 	data.m[0][col] = v.x;
@@ -4284,7 +4284,7 @@ NX_INLINE void NxMat33::setColumn(int col, const NxVec3 & v)
 	}
 
 
-NX_INLINE void NxMat33::getRow(int row, NxVec3 & v) const
+NX_INLINE void NxMat33::getRow(NxI32 row, NxVec3 & v) const
 	{
 #ifndef TRANSPOSED_MAT33
 	v.x = data.m[row][0];
@@ -4298,7 +4298,7 @@ NX_INLINE void NxMat33::getRow(int row, NxVec3 & v) const
 	}
 
 
-NX_INLINE void NxMat33::getColumn(int col, NxVec3 & v) const
+NX_INLINE void NxMat33::getColumn(NxI32 col, NxVec3 & v) const
 	{
 #ifndef TRANSPOSED_MAT33
 	v.x = data.m[0][col];
@@ -4312,7 +4312,7 @@ NX_INLINE void NxMat33::getColumn(int col, NxVec3 & v) const
 	}
 
 
-NX_INLINE NxVec3 NxMat33::getRow(int row) const
+NX_INLINE NxVec3 NxMat33::getRow(NxI32 row) const
 {
 #ifndef TRANSPOSED_MAT33
 	return NxVec3(data.m[row][0],data.m[row][1],data.m[row][2]);
@@ -4321,7 +4321,7 @@ NX_INLINE NxVec3 NxMat33::getRow(int row) const
 #endif
 }
 
-NX_INLINE NxVec3 NxMat33::getColumn(int col) const
+NX_INLINE NxVec3 NxMat33::getColumn(NxI32 col) const
 {
 #ifndef TRANSPOSED_MAT33
 	return NxVec3(data.m[0][col],data.m[1][col],data.m[2][col]);
@@ -4330,7 +4330,7 @@ NX_INLINE NxVec3 NxMat33::getColumn(int col) const
 #endif
 }
 
-NX_INLINE NxReal & NxMat33::operator()(int row, int col)
+NX_INLINE NxReal & NxMat33::operator()(NxI32 row, NxI32 col)
 	{
 #ifndef TRANSPOSED_MAT33
 	return data.m[row][col];
@@ -4340,7 +4340,7 @@ NX_INLINE NxReal & NxMat33::operator()(int row, int col)
 	}
 
 
-NX_INLINE const NxReal & NxMat33::operator() (int row, int col) const
+NX_INLINE const NxReal & NxMat33::operator() (NxI32 row, NxI32 col) const
 	{
 #ifndef TRANSPOSED_MAT33
 	return data.m[row][col];
@@ -4513,7 +4513,7 @@ NX_INLINE void NxMat33::toQuat(NxQuat & q) const					// set the NxQuat from a ro
 		}
     else
 		{
-		int i = 0; 
+		NxI32 i = 0; 
 		if (data.s._22 > data.s._11)
 			i = 1; 
 		if(data.s._33 > (*this)(i,i))
@@ -4556,7 +4556,7 @@ NX_INLINE void NxMat33::orthonormalize()	//Gram-Schmidt orthogonalization to cor
 
     const NxReal m=3;			//m := linalg[rowdim](A);
     const NxReal n=3;			//n := linalg[coldim](A);
-	int i, j, k = 0;				//k := 0;
+	NxI32 i, j, k = 0;				//k := 0;
 
 
     Mat33d v = *this;				//v := linalg[col](A, 1 .. n); -- 3 column vectors indexable
@@ -5080,7 +5080,7 @@ NX_INLINE NxMat33	NxMat33::operator*  (const NxMat33& mat)	const
 	}
 
 
-NX_INLINE NxMat33	NxMat33::operator*  (float s)			const
+NX_INLINE NxMat33	NxMat33::operator*  (NxF32 s)			const
 	{
 	NxMat33 temp;
 	temp.multiply(s, *this);
@@ -6043,7 +6043,7 @@ inline NxU32 HashFunction<NxU64>(const NxU64& key)
 }
 
 // Helper for pointer hashing
-template<int size>
+template<NxI32 size>
 NxU32 PointerHash(void* ptr);
 
 template<>
@@ -6089,7 +6089,7 @@ template <class T>
 class SortedSet
 {
 public:
-	static const int SET_DEFAULT_SIZE = 4;
+	static const NxI32 SET_DEFAULT_SIZE = 4;
 
 	/*!
 	Default Set constructor.
@@ -6319,9 +6319,9 @@ public:
 	*/
 	inline bool insert(const T &a, NxU32* index = NULL)
 	{
-		int l=0;
-		int r=mSize-1;
-		int i;
+		NxI32 l=0;
+		NxI32 r=mSize-1;
+		NxI32 i;
 		for(;r>=l;)
 		{
 			i=(l+r)/2;
@@ -6368,9 +6368,9 @@ public:
 	*/
 	inline bool remove(const T &a) 
 	{
-		int l=0;
-		int r=mSize-1;
-		int i;
+		NxI32 l=0;
+		NxI32 r=mSize-1;
+		NxI32 i;
 		for(;r>=l;) 
 		{
 			i=(l+r)/2;

@@ -61,7 +61,7 @@
 // class MyLineDraw : public VectorFontInterfac
 // {
 //     public:
-//      virtual void drawLine(float x1,float y1,float x2,float y2)
+//      virtual void drawLine(NxF32 x1,NxF32 y1,NxF32 x2,NxF32 y2)
 //      {
 //        // Right here, in this callback, draw the line using your own line draw interface, OpenGL, D3D, or whatever works for you.
 //      }
@@ -121,7 +121,7 @@ namespace VECTOR_FONT
 
 #define FONT_VERSION 1
 
-unsigned char g_font[6350] = {
+NxU8 g_font[6350] = {
   0x46,0x4F,0x4E,0x54,0x01,0x00,0x00,0x00,0x43,0x01,0x00,0x00,0x5E,0x00,0x00,0x00,0xC4,0x06,0x00,0x00,0x0A,0xD7,0x23,0x3C,0x3D,0x0A,0x57,0x3E,0x0A,0xD7,0x23,0x3C,
   0x28,0x5C,0x8F,0x3D,0x0A,0xD7,0x23,0x3C,0x08,0xD7,0xA3,0x3C,0x00,0x00,0x00,0x00,0x08,0xD7,0x23,0x3C,0x0A,0xD7,0x23,0x3C,0x00,0x00,0x00,0x00,0x0A,0xD7,0xA3,0x3C,
   0x08,0xD7,0x23,0x3C,0x00,0x00,0x00,0x00,0x3D,0x0A,0x57,0x3E,0x00,0x00,0x00,0x00,0x28,0x5C,0x0F,0x3E,0x0A,0xD7,0xA3,0x3D,0x3D,0x0A,0x57,0x3E,0x0A,0xD7,0xA3,0x3D,
@@ -323,13 +323,13 @@ unsigned char g_font[6350] = {
   0x3F,0x01,0x3F,0x01,0x40,0x01,0x40,0x01,0x3B,0x01,0x3B,0x01,0xBB,0x00
 };
 
-void  fm_transform(const float matrix[16],const float v[3],float t[3]) // rotate and translate this point
+void  fm_transform(const NxF32 matrix[16],const NxF32 v[3],NxF32 t[3]) // rotate and translate this point
 {
   if ( matrix )
   {
-    float tx = (matrix[0*4+0] * v[0]) +  (matrix[1*4+0] * v[1]) + (matrix[2*4+0] * v[2]) + matrix[3*4+0];
-    float ty = (matrix[0*4+1] * v[0]) +  (matrix[1*4+1] * v[1]) + (matrix[2*4+1] * v[2]) + matrix[3*4+1];
-    float tz = (matrix[0*4+2] * v[0]) +  (matrix[1*4+2] * v[1]) + (matrix[2*4+2] * v[2]) + matrix[3*4+2];
+    NxF32 tx = (matrix[0*4+0] * v[0]) +  (matrix[1*4+0] * v[1]) + (matrix[2*4+0] * v[2]) + matrix[3*4+0];
+    NxF32 ty = (matrix[0*4+1] * v[0]) +  (matrix[1*4+1] * v[1]) + (matrix[2*4+1] * v[2]) + matrix[3*4+1];
+    NxF32 tz = (matrix[0*4+2] * v[0]) +  (matrix[1*4+2] * v[1]) + (matrix[2*4+2] * v[2]) + matrix[3*4+2];
     t[0] = tx;
     t[1] = ty;
     t[2] = tz;
@@ -342,7 +342,7 @@ void  fm_transform(const float matrix[16],const float v[3],float t[3]) // rotate
   }
 }
 
-static inline const unsigned char * getUShort(const unsigned char *data,unsigned short &v)
+static inline const NxU8 * getUShort(const NxU8 *data,unsigned short &v)
 {
     const unsigned short *src = (const unsigned short *)data;
     v = src[0];
@@ -350,11 +350,11 @@ static inline const unsigned char * getUShort(const unsigned char *data,unsigned
 	return data;
 }
 
-static inline const unsigned char * getUint(const unsigned char *data,unsigned int &v)
+static inline const NxU8 * getUint(const NxU8 *data,NxU32 &v)
 {
-    const unsigned int *src = (const unsigned int *)data;
+    const NxU32 *src = (const NxU32 *)data;
     v = src[0];
-    data+=sizeof(unsigned int);
+    data+=sizeof(NxU32);
 	return data;
 }
 
@@ -368,15 +368,15 @@ public:
     mX1 = mY1 = mX2 = mY2 = 0;
   }
 
-  const unsigned char * init(const unsigned char *data,const float *vertices)
+  const NxU8 * init(const NxU8 *data,const NxF32 *vertices)
   {
     data = getUShort(data,mIndexCount);
     mIndices = (const unsigned short *)data;
     data+=(mIndexCount*sizeof(unsigned short));
-    for (unsigned int i=0; i<mIndexCount; i++)
+    for (NxU32 i=0; i<mIndexCount; i++)
     {
-        unsigned int index = mIndices[i];
-        const float *vertex = &vertices[index*2];
+        NxU32 index = mIndices[i];
+        const NxF32 *vertex = &vertices[index*2];
 		assert( _finite(vertex[0]));
 		assert( _finite(vertex[1]));
         if ( i == 0 )
@@ -403,23 +403,23 @@ public:
     return data;
   }
 
-  void vputc(const float *vertices,VectorFontInterface *debug,const float *pose,float textScale,float &x,float &y)
+  void vputc(const NxF32 *vertices,VectorFontInterface *debug,const NxF32 *pose,NxF32 textScale,NxF32 &x,NxF32 &y)
   {
     if ( mIndices )
     {
-        unsigned int lineCount = mIndexCount/2;
-		float spacing = (mX2-mX1)+0.05f;
+        NxU32 lineCount = mIndexCount/2;
+		NxF32 spacing = (mX2-mX1)+0.05f;
 
-        for (unsigned int i=0; i<lineCount; i++)
+        for (NxU32 i=0; i<lineCount; i++)
         {
             unsigned short i1 = mIndices[i*2+0];
             unsigned short i2 = mIndices[i*2+1];
 
-            const float *v1 = &vertices[i1*2];
-            const float *v2 = &vertices[i2*2];
+            const NxF32 *v1 = &vertices[i1*2];
+            const NxF32 *v2 = &vertices[i2*2];
 
-			float p1[3] = { (v1[0]+x)*textScale,(v1[1]+y)*textScale,0 };
-			float p2[3] = { (v2[0]+x)*textScale,(v2[1]+y)*textScale,0 };
+			NxF32 p1[3] = { (v1[0]+x)*textScale,(v1[1]+y)*textScale,0 };
+			NxF32 p2[3] = { (v2[0]+x)*textScale,(v2[1]+y)*textScale,0 };
 
             fm_transform(pose,p1,p1);
             fm_transform(pose,p2,p2);
@@ -436,9 +436,9 @@ public:
     }
   }
 
-  float getWidth(void) const
+  NxF32 getWidth(void) const
   {
-    float ret = 0.1f;
+    NxF32 ret = 0.1f;
     if ( mIndexCount > 0 )
     {
         ret = (mX2-mX1)+0.05f;
@@ -447,10 +447,10 @@ public:
   }
 
 
-  float          mX1;
-  float          mX2;
-  float          mY1;
-  float          mY2;
+  NxF32          mX1;
+  NxF32          mX2;
+  NxF32          mY1;
+  NxF32          mY2;
   unsigned short mIndexCount;
   const unsigned short *mIndices;
 };
@@ -481,7 +481,7 @@ public:
     mVertices = 0;
   }
 
-  void initFont(const unsigned char *font)
+  void initFont(const NxU8 *font)
   {
     release();
     if ( font[0] == 'F' && font[1] == 'O' && font[2] == 'N' && font[3] == 'T' )
@@ -493,29 +493,29 @@ public:
             font = getUint(font,mVcount);
             font = getUint(font,mCount);
             font = getUint(font,mIcount);
-            unsigned int vsize = sizeof(float)*mVcount*2;
-            mVertices = (float *)font;
+            NxU32 vsize = sizeof(NxF32)*mVcount*2;
+            mVertices = (NxF32 *)font;
 			font+=vsize;
-            for (unsigned int i=0; i<mCount; i++)
+            for (NxU32 i=0; i<mCount; i++)
             {
-                unsigned char c = *font++;
+                NxU8 c = *font++;
                 font = mCharacters[c].init(font,mVertices);
             }
         }
     }
   }
 
-  virtual void vprintf(const float *transform,float textScale,bool centered,const char *fmt,...)
+  virtual void vprintf(const NxF32 *transform,NxF32 textScale,bool centered,const char *fmt,...)
   {
 	char buffer[8192];
     buffer[8191] = 0;
 	_vsnprintf(buffer,8191, fmt, (char *)(&fmt+1));
     const char *scan = buffer;
-	float x = 0;
-	float y = 0;
+	NxF32 x = 0;
+	NxF32 y = 0;
     if ( centered )
     {
-        float wid=0;
+        NxF32 wid=0;
         while ( *scan )
         {
 			char c = *scan++;
@@ -532,11 +532,11 @@ public:
   }
 
 private:
-  unsigned int    mVersion;
-  unsigned int    mVcount;
-  unsigned int    mCount;
-  float          *mVertices;
-  unsigned int    mIcount;
+  NxU32    mVersion;
+  NxU32    mVcount;
+  NxU32    mCount;
+  NxF32          *mVertices;
+  NxU32    mIcount;
   FontChar        mCharacters[256];
   VectorFontInterface *mInterface;
 };

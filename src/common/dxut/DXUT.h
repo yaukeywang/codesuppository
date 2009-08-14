@@ -7,6 +7,8 @@
 #ifndef DXUT_H
 #define DXUT_H
 
+#include "UserMemAlloc.h"
+
 #ifndef UNICODE
 #error "DXUT requires a Unicode build. See the nearby comments for details"
 //
@@ -64,10 +66,10 @@ typedef HRESULT (CALLBACK *LPDXUTCALLBACKDEVICECREATED)( IDirect3DDevice9* pd3dD
 typedef HRESULT (CALLBACK *LPDXUTCALLBACKDEVICERESET)( IDirect3DDevice9* pd3dDevice, const D3DSURFACE_DESC* pBackBufferSurfaceDesc, void* pUserContext );
 typedef void    (CALLBACK *LPDXUTCALLBACKDEVICEDESTROYED)( void* pUserContext );
 typedef void    (CALLBACK *LPDXUTCALLBACKDEVICELOST)( void* pUserContext );
-typedef void    (CALLBACK *LPDXUTCALLBACKFRAMEMOVE)( IDirect3DDevice9* pd3dDevice, double fTime, float fElapsedTime, void* pUserContext );
-typedef void    (CALLBACK *LPDXUTCALLBACKFRAMERENDER)( IDirect3DDevice9* pd3dDevice, double fTime, float fElapsedTime, void* pUserContext );
+typedef void    (CALLBACK *LPDXUTCALLBACKFRAMEMOVE)( IDirect3DDevice9* pd3dDevice, NxF64 fTime, NxF32 fElapsedTime, void* pUserContext );
+typedef void    (CALLBACK *LPDXUTCALLBACKFRAMERENDER)( IDirect3DDevice9* pd3dDevice, NxF64 fTime, NxF32 fElapsedTime, void* pUserContext );
 typedef void    (CALLBACK *LPDXUTCALLBACKKEYBOARD)( UINT nChar, bool bKeyDown, bool bAltDown, void* pUserContext );
-typedef void    (CALLBACK *LPDXUTCALLBACKMOUSE)( bool bLeftButtonDown, bool bRightButtonDown, bool bMiddleButtonDown, bool bSideButton1Down, bool bSideButton2Down, int nMouseWheelDelta, int xPos, int yPos, void* pUserContext );
+typedef void    (CALLBACK *LPDXUTCALLBACKMOUSE)( bool bLeftButtonDown, bool bRightButtonDown, bool bMiddleButtonDown, bool bSideButton1Down, bool bSideButton2Down, NxI32 nMouseWheelDelta, NxI32 xPos, NxI32 yPos, void* pUserContext );
 typedef LRESULT (CALLBACK *LPDXUTCALLBACKMSGPROC)( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool* pbNoFurtherProcessing, void* pUserContext );
 typedef void    (CALLBACK *LPDXUTCALLBACKTIMER)( UINT idEvent, void* pUserContext );
 
@@ -96,13 +98,13 @@ HRESULT DXUTInit( bool bParseCommandLine = true, bool bHandleDefaultHotkeys = tr
 // Choose either DXUTCreateWindow or DXUTSetWindow.  If using DXUTSetWindow, consider using DXUTStaticWndProc
 HRESULT DXUTCreateWindow( const WCHAR* strWindowTitle = L"Direct3D Window", 
                           HINSTANCE hInstance = NULL, HICON hIcon = NULL, HMENU hMenu = NULL,
-                          int x = CW_USEDEFAULT, int y = CW_USEDEFAULT );
+                          NxI32 x = CW_USEDEFAULT, NxI32 y = CW_USEDEFAULT );
 HRESULT DXUTSetWindow( HWND hWndFocus, HWND hWndDeviceFullScreen, HWND hWndDeviceWindowed, bool bHandleMessages = true );
 LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 
 // Choose either DXUTCreateDevice or DXUTSetDevice or DXUTCreateDeviceFromSettings
 HRESULT DXUTCreateDevice( UINT AdapterOrdinal = D3DADAPTER_DEFAULT, bool bWindowed = true, 
-                          int nSuggestedWidth = 0, int nSuggestedHeight = 0,
+                          NxI32 nSuggestedWidth = 0, NxI32 nSuggestedHeight = 0,
                           LPDXUTCALLBACKISDEVICEACCEPTABLE pCallbackIsDeviceAcceptable = NULL,
                           LPDXUTCALLBACKMODIFYDEVICESETTINGS pCallbackModifyDeviceSettings = NULL, 
                           void* pUserContext = NULL );
@@ -155,14 +157,14 @@ void    DXUTSetCursorSettings( bool bShowCursorWhenFullScreen, bool bClipCursorW
 void    DXUTSetMultimonSettings( bool bAutoChangeAdapter );
 void    DXUTSetShortcutKeySettings( bool bAllowWhenFullscreen = false, bool bAllowWhenWindowed = true ); // Controls the Windows key, and accessibility shortcut keys
 void    DXUTSetWindowSettings( bool bCallDefWindowProc = true );
-void    DXUTSetConstantFrameTime( bool bConstantFrameTime, float fTimePerFrame = 0.0333f );
-HRESULT DXUTSetTimer( LPDXUTCALLBACKTIMER pCallbackTimer, float fTimeoutInSecs = 1.0f, UINT* pnIDEvent = NULL, void* pCallbackUserContext = NULL );
+void    DXUTSetConstantFrameTime( bool bConstantFrameTime, NxF32 fTimePerFrame = 0.0333f );
+HRESULT DXUTSetTimer( LPDXUTCALLBACKTIMER pCallbackTimer, NxF32 fTimeoutInSecs = 1.0f, UINT* pnIDEvent = NULL, void* pCallbackUserContext = NULL );
 HRESULT DXUTKillTimer( UINT nIDEvent );
 HRESULT DXUTToggleFullScreen();
 HRESULT DXUTToggleREF();
 void    DXUTPause( bool bPauseTime, bool bPauseRendering );
 void    DXUTResetFrameworkState();
-void    DXUTShutdown( int nExitCode = 0 );
+void    DXUTShutdown( NxI32 nExitCode = 0 );
 
 
 //--------------------------------------------------------------------------------------
@@ -182,17 +184,17 @@ HWND                    DXUTGetHWNDDeviceWindowed();
 RECT                    DXUTGetWindowClientRect();
 RECT                    DXUTGetWindowClientRectAtModeChange(); // Useful for returning to windowed mode with the same resolution as before toggle to full screen mode
 RECT                    DXUTGetFullsceenClientRectAtModeChange(); // Useful for returning to full screen mode with the same resolution as before toggle to windowed mode
-double                  DXUTGetTime();
-float                   DXUTGetElapsedTime();
+NxF64                  DXUTGetTime();
+NxF32                   DXUTGetElapsedTime();
 bool                    DXUTIsWindowed();
-float                   DXUTGetFPS();
+NxF32                   DXUTGetFPS();
 LPCWSTR                 DXUTGetWindowTitle();
 LPCWSTR                 DXUTGetFrameStats( bool bIncludeFPS = false );
 LPCWSTR                 DXUTGetDeviceStats();
 bool                    DXUTIsRenderingPaused();
 bool                    DXUTIsTimePaused();
 bool                    DXUTIsActive();
-int                     DXUTGetExitCode();
+NxI32                     DXUTGetExitCode();
 bool                    DXUTGetShowMsgBoxOnError();
 bool                    DXUTGetHandleDefaultHotkeys();
 bool                    DXUTIsKeyDown( BYTE vKey ); // Pass a virtual-key code, ex. VK_F1, 'A', VK_RETURN, VK_LSHIFT, etc

@@ -19,14 +19,6 @@ rd Vtune /s
 rd _UpgradeReport_Files /s
 del UpgradeLog.xml
 cd ..
-cd vc7
-del *.xml
-del *.old
-del *.suo
-rd build /s
-rd Vtune /s
-cd ..
-cd ..
 
 cd app
 cd TestAwareness

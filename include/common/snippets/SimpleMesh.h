@@ -17,14 +17,14 @@ public:
   }
   ~SimpleMesh(void)
   {
-    MEMALLOC_DELETE_ARRAY(const float,mVertice);
-    MEMALLOC_DELETE_ARRAY(unsigned int,mIndices);
+    MEMALLOC_DELETE_ARRAY(const NxF32,mVertice);
+    MEMALLOC_DELETE_ARRAY(NxU32,mIndices);
   }
 
-  unsigned int mVcount;
-  const float *mVertices;
-  unsigned int mTcount;
-  unsigned int mIndices;
+  NxU32 mVcount;
+  const NxF32 *mVertices;
+  NxU32 mTcount;
+  NxU32 mIndices;
 };
 
 #endif

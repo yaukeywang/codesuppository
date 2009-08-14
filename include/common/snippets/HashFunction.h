@@ -58,7 +58,7 @@ inline NxU32 HashFunction<NxU64>(const NxU64& key)
 }
 
 // Helper for pointer hashing
-template<int size>
+template<NxI32 size>
 NxU32 PointerHash(void* ptr);
 
 template<>

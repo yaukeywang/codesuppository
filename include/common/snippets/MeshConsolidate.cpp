@@ -118,7 +118,7 @@ public:
     bool ret = false;
     if ( mSubMesh == p.mSubMesh ) // must be part of the same material group.
     {
-        float dot = fm_dot(&mNormal.x,&p.mNormal.x);
+        NxF32 dot = fm_dot(&mNormal.x,&p.mNormal.x);
         ret = dot >= 0.9999f && dot <= 1.0001f ? true : false;
     }
     return ret;
@@ -327,7 +327,7 @@ class MyMeshConsolidate : public MeshConsolidate
 {
 public:
 
-  MyMeshConsolidate(float epsilon)
+  MyMeshConsolidate(NxF32 epsilon)
   {
     mWeldEpsilon = epsilon;
     mVertices = fm_createVertexIndex(mWeldEpsilon,false);
@@ -703,8 +703,8 @@ public:
     removePolyPoint(e3,mPolyPoints);
   }
 
-  float           mEpsilon;
-  float           mWeldEpsilon;
+  NxF32           mEpsilon;
+  NxF32           mWeldEpsilon;
   NxU32           mPolyCount;
   NxU32           mEdgeCount;
   NxU32           mVcount; // number of vertices
@@ -886,7 +886,7 @@ Edge * Polygon::mergePolygon(Polygon *merge,Edge *e,Edge **polyPoints,MyMeshCons
 
 using namespace MESH_CONSOLIDATE;
 
-MeshConsolidate * createMeshConsolidate(float epsilon)
+MeshConsolidate * createMeshConsolidate(NxF32 epsilon)
 {
   MyMeshConsolidate *mcm = new MyMeshConsolidate(epsilon);
   return static_cast< MeshConsolidate *>(mcm);

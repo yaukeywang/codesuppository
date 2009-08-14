@@ -5,6 +5,8 @@
 #include <stdarg.h>
 #include <queue>
 
+#include "UserMemAlloc.h"
+
 #pragma warning(disable:4996 4100 4189)
 
 #define MAXPARSEBUFFER 2048
@@ -64,7 +66,7 @@ namespace WINMSG
 class InPlaceParserInterface
 {
 public:
-	virtual int ParseLine(int lineno,int argc,const char **argv) =0;  // return TRUE to continue parsing, return FALSE to abort parsing process
+	virtual NxI32 ParseLine(NxI32 lineno,NxI32 argc,const char **argv) =0;  // return TRUE to continue parsing, return FALSE to abort parsing process
 };
 
 enum SeparatorType
@@ -83,7 +85,7 @@ public:
 		Init();
 	}
 
-	InPlaceParser(char *data,int len)
+	InPlaceParser(char *data,NxI32 len)
 	{
 		Init();
 		SetSourceData(data,len);
@@ -103,7 +105,7 @@ public:
 		mData = 0;
 		mLen  = 0;
 		mMyAlloc = false;
-		for (int i=0; i<256; i++)
+		for (NxI32 i=0; i<256; i++)
 		{
 			mHard[i] = ST_DATA;
 			mHardString[i*2] = (char)i;
@@ -118,18 +120,18 @@ public:
 
 	void SetFile(const char *fname); // use this file as source data to parse.
 
-	void SetSourceData(char *data,int len)
+	void SetSourceData(char *data,NxI32 len)
 	{
 		mData = data;
 		mLen  = len;
 		mMyAlloc = false;
 	};
 
-	int  Parse(InPlaceParserInterface *callback); // returns true if entire file was parsed, false if it aborted for some reason
+	NxI32  Parse(InPlaceParserInterface *callback); // returns true if entire file was parsed, false if it aborted for some reason
 
-	int ProcessLine(int lineno,char *line,InPlaceParserInterface *callback);
+	NxI32 ProcessLine(NxI32 lineno,char *line,InPlaceParserInterface *callback);
 
-	const char ** GetArglist(char *source,int &count); // convert source string into an arg list, this is a destructive parse.
+	const char ** GetArglist(char *source,NxI32 &count); // convert source string into an arg list, this is a destructive parse.
 
 	void SetHardSeparator(char c) // add a hard separator
 	{
@@ -172,7 +174,7 @@ public:
 private:
 
 
-	inline char * AddHard(int &argc,const char **argv,char *foo);
+	inline char * AddHard(NxI32 &argc,const char **argv,char *foo);
 	inline bool   IsHard(char c);
 	inline char * SkipSpaces(char *foo);
 	inline bool   IsWhiteSpace(char c);
@@ -180,7 +182,7 @@ private:
 
 	bool   mMyAlloc; // whether or not *I* allocated the buffer and am responsible for deleting it.
 	char  *mData;  // ascii data to parse.
-	int    mLen;   // length of data
+	NxI32    mLen;   // length of data
 	SeparatorType  mHard[256];
 	char   mHardString[256*2];
 	char           mQuoteChar;
@@ -208,7 +210,7 @@ void InPlaceParser::SetFile(const char *fname)
 		if ( mLen )
 		{
 			mData = (char *) ::malloc(sizeof(char)*(mLen+1));
-			int ok = (int)fread(mData, mLen, 1, fph);
+			NxI32 ok = (NxI32)fread(mData, mLen, 1, fph);
 			if ( !ok )
 			{
 				::free(mData);
@@ -239,7 +241,7 @@ bool InPlaceParser::IsHard(char c)
 	return mHard[c] == ST_HARD;
 }
 
-char * InPlaceParser::AddHard(int &argc,const char **argv,char *foo)
+char * InPlaceParser::AddHard(NxI32 &argc,const char **argv,char *foo)
 {
 	while ( IsHard(*foo) )
 	{
@@ -271,12 +273,12 @@ bool InPlaceParser::IsNonSeparator(char c)
 }
 
 
-int InPlaceParser::ProcessLine(int lineno,char *line,InPlaceParserInterface *callback)
+NxI32 InPlaceParser::ProcessLine(NxI32 lineno,char *line,InPlaceParserInterface *callback)
 {
-	int ret = 0;
+	NxI32 ret = 0;
 
 	const char *argv[MAXARGS];
-	int argc = 0;
+	NxI32 argc = 0;
 
 	char *foo = line;
 
@@ -360,14 +362,14 @@ int InPlaceParser::ProcessLine(int lineno,char *line,InPlaceParserInterface *cal
 	return ret;
 }
 
-int  InPlaceParser::Parse(InPlaceParserInterface *callback) // returns true if entire file was parsed, false if it aborted for some reason
+NxI32  InPlaceParser::Parse(InPlaceParserInterface *callback) // returns true if entire file was parsed, false if it aborted for some reason
 {
 	assert( callback );
 	if ( !mData ) return 0;
 
-	int ret = 0;
+	NxI32 ret = 0;
 
-	int lineno = 0;
+	NxI32 lineno = 0;
 
 	char *foo   = mData;
 	char *begin = foo;
@@ -382,7 +384,7 @@ int  InPlaceParser::Parse(InPlaceParserInterface *callback) // returns true if e
 
 			if ( *begin ) // if there is any data to parse at all...
 			{
-				int v = ProcessLine(lineno,begin,callback);
+				NxI32 v = ProcessLine(lineno,begin,callback);
 				if ( v ) ret = v;
 			}
 
@@ -398,7 +400,7 @@ int  InPlaceParser::Parse(InPlaceParserInterface *callback) // returns true if e
 
 	lineno++; // lasst line.
 
-	int v = ProcessLine(lineno,begin,callback);
+	NxI32 v = ProcessLine(lineno,begin,callback);
 	if ( v ) ret = v;
 	return ret;
 }
@@ -421,12 +423,12 @@ void InPlaceParser::DefaultSymbols(void)
 }
 
 
-const char ** InPlaceParser::GetArglist(char *line,int &count) // convert source string into an arg list, this is a destructive parse.
+const char ** InPlaceParser::GetArglist(char *line,NxI32 &count) // convert source string into an arg list, this is a destructive parse.
 {
 	const char **ret = 0;
 
 	static const char *argv[MAXARGS];
-	int argc = 0;
+	NxI32 argc = 0;
 
 	char *foo = line;
 
@@ -716,13 +718,13 @@ public:
 #endif
     }
 
-    virtual const char ** getArgs(const char *input,unsigned int &argc)  // parse string into a series of arguments.
+    virtual const char ** getArgs(const char *input,NxU32 &argc)  // parse string into a series of arguments.
     {
       strncpy(mParseBuffer,input,MAXPARSEBUFFER);
       mParseBuffer[MAXPARSEBUFFER-1] = 0;
-      int ac;
+      NxI32 ac;
       const char **ret = mParser.GetArglist(mParseBuffer,ac);
-      argc = (unsigned int)ac;
+      argc = (NxU32)ac;
       return ret;
     }
 

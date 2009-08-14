@@ -81,7 +81,7 @@
 namespace THREAD_CONFIG
 {
 
-unsigned int tc_timeGetTime(void)
+NxU32 tc_timeGetTime(void)
 {
    #if defined(__linux__)
       struct timespec ts;
@@ -92,7 +92,7 @@ unsigned int tc_timeGetTime(void)
    #endif
 }
 
-void   tc_sleep(unsigned int ms)
+void   tc_sleep(NxU32 ms)
 {
    #if defined(__linux__)
       usleep(ms * 1000);
@@ -134,7 +134,7 @@ void tc_interlockedExchange(void *dest, const int64_t exchange)
    #endif
 }
 
-int tc_interlockedCompareExchange(void *dest, int exchange, int compare)
+NxI32 tc_interlockedCompareExchange(void *dest, NxI32 exchange, NxI32 compare)
 {
    #ifdef __linux__
 	  // not working
@@ -161,7 +161,7 @@ int tc_interlockedCompareExchange(void *dest, int exchange, int compare)
    #endif
 }
 
-int tc_interlockedCompareExchange(void *dest, const int exchange1, const int exchange2, const int compare1, const int compare2)
+NxI32 tc_interlockedCompareExchange(void *dest, const NxI32 exchange1, const NxI32 exchange2, const NxI32 compare1, const NxI32 compare2)
 {
    #ifdef __linux__
 	  // not working
@@ -231,7 +231,7 @@ public:
   	bRet = TryEnterCriticalSection(&m_Mutex) ? true : false;
   	return bRet;
     #elif defined(__APPLE__) || defined(__linux__)
-  	int result = pthread_mutex_trylock(&m_Mutex);
+  	NxI32 result = pthread_mutex_trylock(&m_Mutex);
   	return (result == 0);
     #endif
   }
@@ -388,7 +388,7 @@ public:
 	#endif
   }
 
-  virtual void waitForSingleObject(unsigned int ms)
+  virtual void waitForSingleObject(NxU32 ms)
   {
 	#if defined(WIN32) || defined(_XBOX)
     if ( mEvent )
@@ -408,7 +408,7 @@ public:
 	      ts.tv_nsec += ms * 1000000;
 	      ts.tv_sec += ts.tv_nsec / 1000000000;
 	      ts.tv_nsec %= 1000000000;
-		  int result = pthread_cond_timedwait(&mEvent, &mEventMutex, &ts);
+		  NxI32 result = pthread_cond_timedwait(&mEvent, &mEventMutex, &ts);
 		  assert(result == 0 || result == ETIMEDOUT);
 	  }
 	  VERIFY( pthread_mutex_unlock(&mEventMutex) == 0 );

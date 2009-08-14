@@ -32,11 +32,11 @@
 
 #include "boundingvolume.h"
 
-static unsigned int   MINLEAF=4;     //  leaf nodes down to 2 leaves
-static unsigned int   MAXDEPTH=12;   //  no more than 12 deep allowed!
-static float MINAXIS=2;     //  2 meters is fine enough
+static NxU32   MINLEAF=4;     //  leaf nodes down to 2 leaves
+static NxU32   MAXDEPTH=12;   //  no more than 12 deep allowed!
+static NxF32 MINAXIS=2;     //  2 meters is fine enough
 
-BoundingVolumeSystem::BoundingVolumeSystem(unsigned int minleaf,unsigned int maxdepth,float minaxis)
+BoundingVolumeSystem::BoundingVolumeSystem(NxU32 minleaf,NxU32 maxdepth,NxF32 minaxis)
 {
 	mMinLeaf  = minleaf;
 	mMaxDepth = maxdepth;
@@ -67,17 +67,17 @@ BoundingVolumeAABV::~BoundingVolumeAABV(void)
 	delete mRight;
 }
 
-void BoundingVolumeAABV::Split(BoundingVolumeSystem *system,unsigned int depth)
+void BoundingVolumeAABV::Split(BoundingVolumeSystem *system,NxU32 depth)
 {
-	unsigned int count = (unsigned int)mList.size();
+	NxU32 count = (NxU32)mList.size();
 
-	float dx = mBound.mMax[0] - mBound.mMin[0];  // JWR
-	float dy = mBound.mMax[1] - mBound.mMin[1];
-	float dz = mBound.mMax[2] - mBound.mMin[2];
+	NxF32 dx = mBound.mMax[0] - mBound.mMin[0];  // JWR
+	NxF32 dy = mBound.mMax[1] - mBound.mMin[1];
+	NxF32 dz = mBound.mMax[2] - mBound.mMin[2];
 
-	float laxis = dx;
+	NxF32 laxis = dx;
 
-	unsigned int axis = 0;
+	NxU32 axis = 0;
 
 	if ( dy > dx )
 	{
@@ -98,7 +98,7 @@ void BoundingVolumeAABV::Split(BoundingVolumeSystem *system,unsigned int depth)
 	}
 	else
 	{
-		float midpoint[3];
+		NxF32 midpoint[3];
 		mBound.GetCenter(midpoint);
 		BuildTwo( system,  axis, midpoint );
 
@@ -113,7 +113,7 @@ void BoundingVolumeAABV::Split(BoundingVolumeSystem *system,unsigned int depth)
 
 }
 
-void BoundingVolumeAABV::BuildTwo(BoundingVolumeSystem *aabv,unsigned int axis,const float *midpoint)
+void BoundingVolumeAABV::BuildTwo(BoundingVolumeSystem *aabv,NxU32 axis,const NxF32 *midpoint)
 {
 	BRect3d b1,b2;
 
@@ -126,11 +126,11 @@ void BoundingVolumeAABV::BuildTwo(BoundingVolumeSystem *aabv,unsigned int axis,c
 
 }
 
-void BoundingVolumeAABV::SplitRect(unsigned int axis,
+void BoundingVolumeAABV::SplitRect(NxU32 axis,
 																	 const BRect3d &source,
 																	 BRect3d &b1,
 																	 BRect3d &b2,
-																	 const float *midpoint)
+																	 const NxF32 *midpoint)
 {
 	switch ( axis )
 	{
@@ -173,7 +173,7 @@ BoundingVolumeAABV * BoundingVolumeSystem::GetBoundingVolumeAABV(const BRect3d &
 
 	BoundingVolumeAABV *ret = new BoundingVolumeAABV;
 
-	unsigned int count = 0;
+	NxU32 count = 0;
 	BoundingVolumeVector::const_iterator i;
 	for (i=list.begin(); i!=list.end(); ++i)
 	{
@@ -191,7 +191,7 @@ BoundingVolumeAABV * BoundingVolumeSystem::GetBoundingVolumeAABV(const BRect3d &
 	if ( count )
 	{
 
-		unsigned int wrap = 0;
+		NxU32 wrap = 0;
 
 		if ( b.mMin[0] < bound.mMin[0] ) { b.mMin[0] = bound.mMin[0]; wrap++; };
 		if ( b.mMin[1] < bound.mMin[1] ) { b.mMin[1] = bound.mMin[1]; wrap++; };
@@ -223,7 +223,7 @@ void BoundingVolumeSystem::Render(FrustumInterface *iface)
 }
 
 
-void BoundingVolumeAABV::Render(ViewTest state,FrustumInterface *iface,unsigned int frameno)
+void BoundingVolumeAABV::Render(ViewTest state,FrustumInterface *iface,NxU32 frameno)
 {
 	if ( state & VT_PARTIAL  ) // if still partial
 	{
@@ -293,35 +293,35 @@ void BRect3d::MinMax(const BRect3d &b)
 	if ( b.mMax[2] > mMax[2] ) mMax[2] = b.mMax[2];
 }
 
-void BRect3d::GetCenter(float *center) const
+void BRect3d::GetCenter(NxF32 *center) const
 {
 	center[0] = (mMax[0] - mMin[0])*0.5f + mMin[0];
 	center[1] = (mMax[1] - mMin[1])*0.5f + mMin[1];
 	center[2] = (mMax[2] - mMin[2])*0.5f + mMin[2];
 }
 
-void BRect3d::SetMin(const float *m)
+void BRect3d::SetMin(const NxF32 *m)
 {
 	mMin[0] = m[0];
 	mMin[1] = m[1];
 	mMin[2] = m[2];
 }
 
-void BRect3d::SetMax(const float *m)
+void BRect3d::SetMax(const NxF32 *m)
 {
 	mMax[0] = m[0];
 	mMax[1] = m[1];
 	mMax[2] = m[2];
 }
 
-void BRect3d::SetMin(float x,float y,float z)
+void BRect3d::SetMin(NxF32 x,NxF32 y,NxF32 z)
 {
 	mMin[0] = x;
 	mMin[1] = y;
 	mMin[2] = z;
 }
 
-void BRect3d::SetMax(float x,float y,float z)
+void BRect3d::SetMax(NxF32 x,NxF32 y,NxF32 z)
 {
 	mMax[0] = x;
 	mMax[1] = y;
@@ -329,10 +329,10 @@ void BRect3d::SetMax(float x,float y,float z)
 }
 
 
-float BRect3d::GetDistance2(void) const
+NxF32 BRect3d::GetDistance2(void) const
 {
-	float dx = mMax[0] - mMin[0];
-	float dy = mMax[1] - mMin[1];
-	float dz = mMax[2] - mMin[2];
+	NxF32 dx = mMax[0] - mMin[0];
+	NxF32 dy = mMax[1] - mMin[1];
+	NxF32 dz = mMax[2] - mMin[2];
 	return dx*dx + dy*dy + dz*dz;
 }

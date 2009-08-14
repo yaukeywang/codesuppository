@@ -2,6 +2,7 @@
 
 #define TEST_AUTO_GEOMETRY_H
 
+#include "UserMemAlloc.h"
 class MeshSystemHelper;
 
 class TestAutoGeometry

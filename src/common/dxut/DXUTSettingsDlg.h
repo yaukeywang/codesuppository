@@ -7,6 +7,7 @@
 #ifndef DXUT_SETTINGS_H
 #define DXUT_SETTINGS_H
 
+#include "UserMemAlloc.h"
 
 //--------------------------------------------------------------------------------------
 // Control IDs
@@ -54,7 +55,7 @@ public:
     HRESULT Refresh();
     HRESULT OnResetDevice();
     HRESULT OnLostDevice();
-    HRESULT OnRender( float fElapsedTime );
+    HRESULT OnRender( NxF32 fElapsedTime );
     HRESULT OnDestroyDevice();
 
     CDXUTDialog* GetDialogControl() { return &m_Dialog; }
@@ -69,8 +70,8 @@ protected:
     void CreateControls();
     HRESULT SetDeviceSettingsFromUI();
 
-    void OnEvent( UINT nEvent, int nControlID, CDXUTControl* pControl );
-    static void WINAPI StaticOnEvent( UINT nEvent, int nControlID, CDXUTControl* pControl, void* pUserData );
+    void OnEvent( UINT nEvent, NxI32 nControlID, CDXUTControl* pControl );
+    static void WINAPI StaticOnEvent( UINT nEvent, NxI32 nControlID, CDXUTControl* pControl, void* pUserData );
 
     CD3DEnumAdapterInfo* GetCurrentAdapterInfo();
     CD3DEnumDeviceInfo* GetCurrentDeviceInfo();

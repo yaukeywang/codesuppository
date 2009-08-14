@@ -2,6 +2,8 @@
 
 #define TIMED_EVENT_H
 
+#include "UserMemAlloc.h"
+
 /*----------------------------------------------------------------------
 		Copyright (c) 2004 Open Dynamics Framework Group
 					www.physicstools.org

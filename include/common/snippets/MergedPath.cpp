@@ -86,7 +86,7 @@ public:
 
         for (NxU32 j=0; j<steps; j++)
         {
-          NxF32 lerp = (float)j*recip;
+          NxF32 lerp = (NxF32)j*recip;
           NxF32 lpos[3];
 
           fm_lerp(p1,p2,lpos,lerp);

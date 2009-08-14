@@ -4,7 +4,6 @@
 #include <assert.h>
 #include <math.h>
 #include <float.h>
-
 /*!
 **
 ** Copyright (c) 2009 by John W. Ratcliff mailto:jratcliffscarab@gmail.com
@@ -55,11 +54,11 @@
 
 #include "FloatMath.h"
 
-#define REAL float
+#define REAL NxF32
 
 #include "FloatMath.inl"
 
 #undef REAL
-#define REAL double
+#define REAL NxF64
 
 #include "FloatMath.inl"

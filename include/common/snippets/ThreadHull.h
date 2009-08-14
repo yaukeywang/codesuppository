@@ -2,6 +2,7 @@
 
 #define THREAD_HULL_H
 
+#include "UserMemAlloc.h"
 #include "StanHull.h"
 
 namespace JOB_SWARM

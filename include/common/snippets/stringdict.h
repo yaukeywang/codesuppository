@@ -1,6 +1,8 @@
 #ifndef STRINGDICT_H
 #define STRINGDICT_H
 
+#include "UserMemAlloc.h"
+
 /*!
 **
 ** Copyright (c) 2007 by John W. Ratcliff mailto:jratcliff@infiniplex.net
@@ -130,7 +132,7 @@ public:
 
 	bool SamePrefix(const char *prefix) const
 	{
-		unsigned int len = (unsigned int)strlen(prefix);
+		NxU32 len = (NxU32)strlen(prefix);
 		if ( len && strncmp(mString,prefix,len) == 0 ) return true;
 		return false;
 	}
@@ -139,8 +141,8 @@ public:
 	{
 		const char *source = mString;
 		const char *suffix = suf.mString;
-		unsigned int len1 = (unsigned int)strlen(source);
-		unsigned int len2 = (unsigned int)strlen(suffix);
+		NxU32 len1 = (NxU32)strlen(source);
+		NxU32 len2 = (NxU32)strlen(suffix);
 		if ( len1 < len2 ) return false;
 		const char *compare = &source[(len1-len2)];
 		if ( strcmp(compare,suffix) == 0 ) return true;
@@ -235,7 +237,7 @@ class StringSortRef
 	 {
 		 const char *str1 = a.Get();
 		 const char *str2 = b.Get();
-		 int r = stricmp(str1,str2);
+		 NxI32 r = stricmp(str1,str2);
 		 return r < 0;
 	 }
 };

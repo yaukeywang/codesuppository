@@ -3,7 +3,7 @@
 #define TUI_H
 
 #include <stdio.h>
-
+#include "UserMemAlloc.h"
 #include "stringdict.h"
 #include "cparser.h"
 

@@ -68,7 +68,7 @@ namespace JOB_SWARM
       mUserId    = 0;
     }
 
-    SwarmJob(JobSwarmInterface *iface,void *userData,int userId)
+    SwarmJob(JobSwarmInterface *iface,void *userData,NxI32 userId)
     {
       mInterface = iface;
       mCancelled = false;
@@ -114,7 +114,7 @@ namespace JOB_SWARM
     JobSwarmInterface *mInterface;
     bool                mCancelled;
     void               *mUserData;
-    int                 mUserId;
+    NxI32                 mUserId;
   };
 
   class JobScheduler;
@@ -195,7 +195,7 @@ namespace JOB_SWARM
   {
   public:
 
-    JobScheduler(int maxThreadCount)
+    JobScheduler(NxI32 maxThreadCount)
     {
       mUseThreads = true;
       maxThreadCount = maxThreadCount;
@@ -209,7 +209,7 @@ namespace JOB_SWARM
 
       mThreads = MEMALLOC_NEW_ARRAY(ThreadWorker,mMaxThreadCount)[mMaxThreadCount]; // the number of worker threads....
 
-      for (unsigned int i=0; i<mMaxThreadCount; i++)
+      for (NxU32 i=0; i<mMaxThreadCount; i++)
       {
         mThreads[i].setJobScheduler(this);
       }
@@ -223,7 +223,7 @@ namespace JOB_SWARM
     }
 
     // Happens in main thread
-    SwarmJob * createSwarmJob(JobSwarmInterface *tji,void *userData,int userId)
+    SwarmJob * createSwarmJob(JobSwarmInterface *tji,void *userData,NxI32 userId)
     {
       SwarmJob *vret[2] = { mJobs.GetFreeLink() , mJobs.GetFreeLink() };
       //
@@ -246,16 +246,16 @@ namespace JOB_SWARM
     }
 
     // Empty the finished list.  This happens in the main application thread!
-    unsigned int processSwarmJobs(void)
+    NxU32 processSwarmJobs(void)
     {
-      unsigned int ret = 0;
+      NxU32 ret = 0;
 
       bool completion = true;
       while ( completion )
       {
         completion = false;
 
-        for (unsigned int i=0; i<mMaxThreadCount; i++)
+        for (NxU32 i=0; i<mMaxThreadCount; i++)
         {
           SwarmJob *job = mThreads[i].getFinished();
           if ( job )
@@ -269,7 +269,7 @@ namespace JOB_SWARM
 
       if ( !mUseThreads )
       {
-        unsigned int stime = THREAD_CONFIG::tc_timeGetTime();
+        NxU32 stime = THREAD_CONFIG::tc_timeGetTime();
         bool working = true;
         while ( working )
         {
@@ -287,8 +287,8 @@ namespace JOB_SWARM
           {
             working = false;
           }
-          unsigned int etime = THREAD_CONFIG::tc_timeGetTime();
-          unsigned int dtime = etime - stime;
+          NxU32 etime = THREAD_CONFIG::tc_timeGetTime();
+          NxU32 dtime = etime - stime;
           if ( dtime > 30 ) break;
         }
 
@@ -330,13 +330,13 @@ namespace JOB_SWARM
       {
         bool busy = false;
 
-        for (unsigned int j=0; j<mMaxThreadCount; j++)
+        for (NxU32 j=0; j<mMaxThreadCount; j++)
         {
           ThreadWorker *tw = &mThreads[j];
           tw->setExit();
         }
 
-        for (unsigned int i=0; i<mMaxThreadCount; i++)
+        for (NxU32 i=0; i<mMaxThreadCount; i++)
         {
           ThreadWorker *tw = &mThreads[i];
           if ( tw->isRunning() )
@@ -360,7 +360,7 @@ namespace JOB_SWARM
   private:
     bool                    mUseThreads;
     bool                    mWaitFinish;  // waiting for a finish completion event to occur...
-    unsigned int            mMaxThreadCount;
+    NxU32            mMaxThreadCount;
     LOCK_FREE_Q::LockFreeQ *mPending;
     Pool< SwarmJob >       mJobs;
     ThreadWorker           *mThreads;
@@ -416,7 +416,7 @@ namespace JOB_SWARM
 
 
 
-  JobSwarmContext * createJobSwarmContext(unsigned int maxThreads)
+  JobSwarmContext * createJobSwarmContext(NxU32 maxThreads)
   {
     JobScheduler *tjf = MEMALLOC_NEW(JobScheduler)(maxThreads);
     JobSwarmContext *ret = static_cast< JobSwarmContext *>(tjf);

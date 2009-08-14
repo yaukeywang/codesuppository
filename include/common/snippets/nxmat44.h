@@ -52,8 +52,8 @@ public:
 	NX_INLINE void id(void);
 
 	//element access:
-  NX_INLINE NxReal& operator()(int row, int col);
-  NX_INLINE NxReal operator() (int row, int col) const;
+  NX_INLINE NxReal& operator()(NxI32 row, NxI32 col);
+  NX_INLINE NxReal operator() (NxI32 row, NxI32 col) const;
 
 	/**
 	\brief returns true for identity matrix
@@ -171,7 +171,7 @@ public:
 
   NX_INLINE void fromQuat(const NxQuat &q);
 
-  NX_INLINE void getSubMatrix(int row, int col, NxMat44& out_matrix) const;
+  NX_INLINE void getSubMatrix(NxI32 row, NxI32 col, NxMat44& out_matrix) const;
 
   NX_INLINE const NxF32 * ptr(void) const
   {
@@ -201,13 +201,13 @@ NX_INLINE void NxMat44::zero(void)
 }
 
 
-NX_INLINE NxReal & NxMat44::operator()(int row, int col)
+NX_INLINE NxReal & NxMat44::operator()(NxI32 row, NxI32 col)
 {
 	return m[col][row];
 }
 
 
-NX_INLINE NxReal NxMat44::operator() (int row, int col) const
+NX_INLINE NxReal NxMat44::operator() (NxI32 row, NxI32 col) const
 {
 	return m[col][row];
 }
@@ -288,7 +288,7 @@ NX_INLINE NxReal NxMat44::getDeterminant() const
   return p0.dot(tmpv);
 }
 
-NX_INLINE void NxMat44::getSubMatrix(int row, int col, NxMat44& out_matrix) const
+NX_INLINE void NxMat44::getSubMatrix(NxI32 row, NxI32 col, NxMat44& out_matrix) const
 {
   NxI32 in_row, in_col;
   NxI32 out_row = 0, out_col = 0;
@@ -376,8 +376,8 @@ NX_INLINE bool NxMat44::getInverseRT(NxMat44& /*dest*/) const
 NX_INLINE void NxMat44::getTranspose(NxMat44& dest) const
 {
   NxMat44 nvro;
-  for (int row = 0; row < 4; ++row)
-    for (int col = 0; col < 4; ++col)
+  for (NxI32 row = 0; row < 4; ++row)
+    for (NxI32 col = 0; col < 4; ++col)
       nvro.m[row][col] = m[col][row];
   dest = nvro;
 }

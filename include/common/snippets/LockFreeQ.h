@@ -66,10 +66,10 @@ namespace LOCK_FREE_Q
   template<class T> class CQueue
   {
   private:
-    volatile int m_Read;
-    volatile int m_Write;
+    volatile NxI32 m_Read;
+    volatile NxI32 m_Write;
     volatile T *m_Data;
-    int         m_Size;
+    NxI32         m_Size;
 
   public:
     CQueue()
@@ -85,7 +85,7 @@ namespace LOCK_FREE_Q
       MEMALLOC_DELETE_ARRAY(T,m_Data);
     }
 
-    void init(int size)
+    void init(NxI32 size)
     {
       MEMALLOC_DELETE_ARRAY(T,m_Data);
       m_Read = 0;
@@ -97,7 +97,7 @@ namespace LOCK_FREE_Q
     //push a new element in the circular queue
     bool push(T &Element)
     {
-      int nextElement = (m_Write + 1) % m_Size;
+      NxI32 nextElement = (m_Write + 1) % m_Size;
       if(nextElement != m_Read)
       {
         m_Data[m_Write] = Element;
@@ -114,7 +114,7 @@ namespace LOCK_FREE_Q
       if(m_Read == m_Write)
         return false;
 
-      int nextElement = (m_Read + 1) % m_Size;
+      NxI32 nextElement = (m_Read + 1) % m_Size;
 
       Element = m_Data[m_Read];
       m_Read = nextElement;
@@ -125,7 +125,7 @@ namespace LOCK_FREE_Q
     {
       bool ret = false;
 
-      int nextElement = (m_Write + 1) % m_Size;
+      NxI32 nextElement = (m_Write + 1) % m_Size;
 
       if(nextElement == m_Read)
       {

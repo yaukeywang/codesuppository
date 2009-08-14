@@ -16,7 +16,7 @@
 /**
 \brief Class which stores a pool of objects for fast allocation.
 */
-template<class Element, int ElementSize>
+template<class Element, NxI32 ElementSize>
 class NxPool
 {
 	typedef NxArraySDK<Element*> ElementPtrArray;
@@ -123,7 +123,7 @@ private:
 
     NxArraySDK<NxU32>     mIDToContents;  /* maps IDs to the mContents array in order to get O(1) removal. 
                                              Only required for things actually allocated, so use 0xffffffff 
-                                             for 'not allocated' and thereby catch double-deletion. */
+                                             for 'not allocated' and thereby catch NxF64-deletion. */
 };
 
  /** @} */

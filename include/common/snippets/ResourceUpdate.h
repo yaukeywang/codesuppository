@@ -2,6 +2,8 @@
 
 #define RESOURCE_UPDATE_H
 
+#include "UserMemAlloc.h"
+
 namespace RESOURCE_INTERFACE
 {
 

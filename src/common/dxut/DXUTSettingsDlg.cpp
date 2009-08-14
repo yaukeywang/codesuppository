@@ -214,7 +214,7 @@ HRESULT CD3DSettingsDlg::Refresh()
     pAdapterCombo->RemoveAllItems();
 
     // Add adapters
-    for( int iAdapter=0; iAdapter<pAdapterInfoList->GetSize(); iAdapter++ )
+    for( NxI32 iAdapter=0; iAdapter<pAdapterInfoList->GetSize(); iAdapter++ )
     {          
         CD3DEnumAdapterInfo* pAdapterInfo = pAdapterInfoList->GetAt(iAdapter);
         AddAdapter( pAdapterInfo->szUniqueDescription, pAdapterInfo->AdapterOrdinal );
@@ -227,7 +227,7 @@ HRESULT CD3DSettingsDlg::Refresh()
         return hr;
 
     //m_Dialog.Refresh();
-    CDXUTDialog::SetRefreshTime( (float) DXUTGetTime() );
+    CDXUTDialog::SetRefreshTime( (NxF32) DXUTGetTime() );
 
     return S_OK;
 }
@@ -255,7 +255,7 @@ HRESULT CD3DSettingsDlg::OnResetDevice()
 
 
 //--------------------------------------------------------------------------------------
-HRESULT CD3DSettingsDlg::OnRender( float fElapsedTime )
+HRESULT CD3DSettingsDlg::OnRender( NxF32 fElapsedTime )
 {
     IDirect3DDevice9* pd3dDevice = DXUTGetD3DDevice();
 
@@ -302,7 +302,7 @@ HRESULT CD3DSettingsDlg::OnDestroyDevice()
 
 
 //--------------------------------------------------------------------------------------
-void WINAPI CD3DSettingsDlg::StaticOnEvent( UINT nEvent, int nControlID, 
+void WINAPI CD3DSettingsDlg::StaticOnEvent( UINT nEvent, NxI32 nControlID, 
                                             CDXUTControl* pControl, void* pUserData )
 {
     CD3DSettingsDlg* pD3DSettings = (CD3DSettingsDlg*) pUserData;
@@ -312,7 +312,7 @@ void WINAPI CD3DSettingsDlg::StaticOnEvent( UINT nEvent, int nControlID,
 
 
 //--------------------------------------------------------------------------------------
-void CD3DSettingsDlg::OnEvent( UINT nEvent, int nControlID, 
+void CD3DSettingsDlg::OnEvent( UINT nEvent, NxI32 nControlID, 
                                CDXUTControl* pControl )
 {
     switch( nControlID )
@@ -466,7 +466,7 @@ HRESULT CD3DSettingsDlg::OnAdapterChanged()
     if( pAdapterInfo == NULL )
         return E_FAIL;
 
-    for( int iDeviceInfo=0; iDeviceInfo < pAdapterInfo->deviceInfoList.GetSize(); iDeviceInfo++ )
+    for( NxI32 iDeviceInfo=0; iDeviceInfo < pAdapterInfo->deviceInfoList.GetSize(); iDeviceInfo++ )
     {
         CD3DEnumDeviceInfo* pDeviceInfo = pAdapterInfo->deviceInfoList.GetAt(iDeviceInfo);
         AddDeviceType( pDeviceInfo->DeviceType );
@@ -498,7 +498,7 @@ HRESULT CD3DSettingsDlg::OnDeviceTypeChanged()
     if( pDeviceInfo == NULL )
         return E_FAIL;
             
-    for( int idc = 0; idc < pDeviceInfo->deviceSettingsComboList.GetSize(); idc++ )
+    for( NxI32 idc = 0; idc < pDeviceInfo->deviceSettingsComboList.GetSize(); idc++ )
     {
         CD3DEnumDeviceSettingsCombo* pDeviceSettingsCombo = pDeviceInfo->deviceSettingsComboList.GetAt( idc );
 
@@ -597,7 +597,7 @@ HRESULT CD3DSettingsDlg::OnWindowedFullScreenChanged()
     }
     else
     {
-        for( int iSettingsCombo=0; iSettingsCombo < pDeviceInfo->deviceSettingsComboList.GetSize(); iSettingsCombo++ )
+        for( NxI32 iSettingsCombo=0; iSettingsCombo < pDeviceInfo->deviceSettingsComboList.GetSize(); iSettingsCombo++ )
         {
             CD3DEnumDeviceSettingsCombo* pSettingsCombo = pDeviceInfo->deviceSettingsComboList.GetAt(iSettingsCombo);
             AddAdapterFormat( pSettingsCombo->AdapterFormat );
@@ -666,12 +666,12 @@ HRESULT CD3DSettingsDlg::OnAdapterFormatChanged()
     // Get the desktop aspect ratio
     D3DDISPLAYMODE dmDesktop;
     DXUTGetDesktopResolution( g_DeviceSettings.AdapterOrdinal, &dmDesktop.Width, &dmDesktop.Height );
-    float fDesktopAspectRatio = dmDesktop.Width / (float)dmDesktop.Height;
+    NxF32 fDesktopAspectRatio = dmDesktop.Width / (NxF32)dmDesktop.Height;
 
-    for( int idm = 0; idm < pAdapterInfo->displayModeList.GetSize(); idm++ )
+    for( NxI32 idm = 0; idm < pAdapterInfo->displayModeList.GetSize(); idm++ )
     {
         D3DDISPLAYMODE DisplayMode = pAdapterInfo->displayModeList.GetAt( idm );
-        float fAspect = (float)DisplayMode.Width / (float)DisplayMode.Height;
+        NxF32 fAspect = (NxF32)DisplayMode.Width / (NxF32)DisplayMode.Height;
 
         if( DisplayMode.Format == adapterFormat )
         {
@@ -704,7 +704,7 @@ HRESULT CD3DSettingsDlg::OnAdapterFormatChanged()
     const BOOL bWindowed = IsWindowed();
     bool bHasWindowedBackBuffer = false;
 
-    for( int idc = 0; idc < pDeviceInfo->deviceSettingsComboList.GetSize(); idc++ )
+    for( NxI32 idc = 0; idc < pDeviceInfo->deviceSettingsComboList.GetSize(); idc++ )
     {
         CD3DEnumDeviceSettingsCombo* pDeviceCombo = pDeviceInfo->deviceSettingsComboList.GetAt( idc );
         if( pDeviceCombo->Windowed == bWindowed &&
@@ -761,7 +761,7 @@ HRESULT CD3DSettingsDlg::OnResolutionChanged()
     pRefreshRateComboBox->RemoveAllItems();
 
     D3DFORMAT adapterFormat = g_DeviceSettings.AdapterFormat;
-    for( int idm = 0; idm < pAdapterInfo->displayModeList.GetSize(); idm++ )
+    for( NxI32 idm = 0; idm < pAdapterInfo->displayModeList.GetSize(); idm++ )
     {
         D3DDISPLAYMODE displayMode = pAdapterInfo->displayModeList.GetAt( idm );
 
@@ -811,7 +811,7 @@ HRESULT CD3DSettingsDlg::OnBackBufferFormatChanged()
     DXUTGetEnumeration()->GetPossibleVertexProcessingList( &bAllowSoftwareVP, &bAllowHardwareVP, 
                                                            &bAllowPureHardwareVP, &bAllowMixedVP );
     
-    for( int idc=0; idc < pDeviceInfo->deviceSettingsComboList.GetSize(); idc++ )
+    for( NxI32 idc=0; idc < pDeviceInfo->deviceSettingsComboList.GetSize(); idc++ )
     {
         CD3DEnumDeviceSettingsCombo* pDeviceCombo = pDeviceInfo->deviceSettingsComboList.GetAt( idc );
 
@@ -825,7 +825,7 @@ HRESULT CD3DSettingsDlg::OnBackBufferFormatChanged()
 
             if( g_DeviceSettings.pp.EnableAutoDepthStencil )
             {
-                for( int ifmt=0; ifmt < pDeviceCombo->depthStencilFormatList.GetSize(); ifmt++ )
+                for( NxI32 ifmt=0; ifmt < pDeviceCombo->depthStencilFormatList.GetSize(); ifmt++ )
                 {
                     D3DFORMAT fmt = pDeviceCombo->depthStencilFormatList.GetAt( ifmt );
 
@@ -907,12 +907,12 @@ HRESULT CD3DSettingsDlg::OnDepthStencilBufferFormatChanged()
     CDXUTComboBox* pMultisampleTypeCombo = m_Dialog.GetComboBox( DXUTSETTINGSDLG_MULTISAMPLE_TYPE );
     pMultisampleTypeCombo->RemoveAllItems();
 
-    for( int ims=0; ims < pDeviceSettingsCombo->multiSampleTypeList.GetSize(); ims++ )
+    for( NxI32 ims=0; ims < pDeviceSettingsCombo->multiSampleTypeList.GetSize(); ims++ )
     {
         D3DMULTISAMPLE_TYPE msType = pDeviceSettingsCombo->multiSampleTypeList.GetAt( ims );
 
         bool bConflictFound = false;
-        for( int iConf = 0; iConf < pDeviceSettingsCombo->DSMSConflictList.GetSize(); iConf++ )
+        for( NxI32 iConf = 0; iConf < pDeviceSettingsCombo->DSMSConflictList.GetSize(); iConf++ )
         {
             CD3DEnumDSMSConflict DSMSConf = pDeviceSettingsCombo->DSMSConflictList.GetAt( iConf );
             if( DSMSConf.DSFormat == depthStencilBufferFormat &&
@@ -951,7 +951,7 @@ HRESULT CD3DSettingsDlg::OnMultisampleTypeChanged()
         return E_FAIL;
 
     DWORD dwMaxQuality = 0;
-    for( int iType = 0; iType < pDeviceSettingsCombo->multiSampleTypeList.GetSize(); iType++ )
+    for( NxI32 iType = 0; iType < pDeviceSettingsCombo->multiSampleTypeList.GetSize(); iType++ )
     {
         D3DMULTISAMPLE_TYPE msType = pDeviceSettingsCombo->multiSampleTypeList.GetAt( iType );
         if( msType == multisampleType )

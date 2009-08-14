@@ -2,12 +2,14 @@
 
 #define PHYSX_H
 
+#include "UserMemAlloc.h"
+
 class PhysX
 {
 public:
   virtual void importHeightMap(const char *fname) = 0;
-  virtual void render(float dtime) = 0;
-  virtual void simulate(float dtime) = 0;
+  virtual void render(NxF32 dtime) = 0;
+  virtual void simulate(NxF32 dtime) = 0;
 };
 
 

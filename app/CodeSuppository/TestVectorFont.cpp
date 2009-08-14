@@ -6,7 +6,7 @@
 class TestVectorFont : public VectorFontInterface
 {
 public:
-	virtual void drawLine(float x1,float y1,float x2,float y2)
+	virtual void drawLine(NxF32 x1,NxF32 y1,NxF32 x2,NxF32 y2)
 	{
 		NxVec3 v1(x1,y1,0);
 		NxVec3 v2(x2,y2,0);

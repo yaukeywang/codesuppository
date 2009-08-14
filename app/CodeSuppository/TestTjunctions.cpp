@@ -39,9 +39,9 @@ void testTjunctions(MeshSystemHelper * ms)
                     size_t i1 = desc.mIndicesOut[i*3+0];
                     size_t i2 = desc.mIndicesOut[i*3+1];
                     size_t i3 = desc.mIndicesOut[i*3+2];
-                    const float *p1 = &desc.mVerticesF[i1*3];
-                    const float *p2 = &desc.mVerticesF[i2*3];
-                    const float *p3 = &desc.mVerticesF[i3*3];
+                    const NxF32 *p1 = &desc.mVerticesF[i1*3];
+                    const NxF32 *p2 = &desc.mVerticesF[i2*3];
+                    const NxF32 *p3 = &desc.mVerticesF[i3*3];
                     gRenderDebug->DebugTri(p1,p2,p3);
                 }
 				gRenderDebug->popRenderState();

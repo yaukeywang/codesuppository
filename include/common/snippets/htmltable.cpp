@@ -41,7 +41,7 @@ public:
   size_t      mLength;
   const char *mTag;
   const char *mFile;
-  int         mLineno;
+  NxI32         mLineno;
 };
 
 class MemTracker
@@ -58,7 +58,7 @@ public:
   {
   }
 
-  void * memAlloc(size_t len,const char *tag,const char *file,int lineno)
+  void * memAlloc(size_t len,const char *tag,const char *file,NxI32 lineno)
   {
     MemHeader *mh = (MemHeader *)::malloc(len+sizeof(MemHeader));
     mh->mNext = mRoot;
@@ -105,10 +105,10 @@ public:
     ::free(mh);
   }
 
-  int getMemoryUsage(void)
+  NxI32 getMemoryUsage(void)
   {
-    int c = 0;
-    int t = 0;
+    NxI32 c = 0;
+    NxI32 t = 0;
 
     MemHeader *mh = mRoot;
     MemHeader *prev = 0;
@@ -128,8 +128,8 @@ public:
   }
 
 private:
-  int        mCount;
-  int        mTotal;
+  NxI32        mCount;
+  NxI32        mTotal;
   MemHeader *mRoot;
 };
 
@@ -1781,7 +1781,7 @@ private:
 typedef std::vector< HtmlRow * > HtmlRowVector;
 
 
-static int gTableCount=0;
+static NxI32 gTableCount=0;
 
 class _HtmlTable : public HtmlTable, public QuickSortPointers
 {
@@ -3563,7 +3563,7 @@ HtmlTableInterface *getHtmlTableInterface(void)
   return &gInterface;
 }
 
-int                 getHtmlMemoryUsage(void)
+NxI32                 getHtmlMemoryUsage(void)
 {
   return gMemTracker.getMemoryUsage();
 }

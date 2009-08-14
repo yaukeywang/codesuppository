@@ -10,6 +10,7 @@
 
 #ifdef PHYSX
 
+#include "UserMemAlloc.h"
 #include "NxPhysics.h"
 
 /**
@@ -32,7 +33,7 @@ Note, not all samples make use of user specific data.
 */
 struct MyParticle
 {
-  float mSoil;
+  NxF32 mSoil;
 };
 
 class MyFluid

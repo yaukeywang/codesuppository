@@ -47,8 +47,8 @@ struct DXUT_TIMER
 {
     LPDXUTCALLBACKTIMER pCallbackTimer;
     void* pCallbackUserContext;
-    float fTimeoutInSecs;
-    float fCountdown;
+    NxF32 fTimeoutInSecs;
+    NxF32 fCountdown;
     bool  bEnabled;
     UINT  nID;
 };
@@ -89,15 +89,15 @@ protected:
         bool  m_MinimizedWhileFullscreen;   // if true, the HWND is minimized due to a focus switch away when fullscreen mode
         bool  m_IgnoreSizeChange;           // if true, DXUT won't reset the device upon HWND size change
 
-        double m_Time;                      // current time in seconds
-        double m_AbsoluteTime;              // absolute time in seconds
-        float m_ElapsedTime;                // time elapsed since last frame
+        NxF64 m_Time;                      // current time in seconds
+        NxF64 m_AbsoluteTime;              // absolute time in seconds
+        NxF32 m_ElapsedTime;                // time elapsed since last frame
 
         HINSTANCE m_HInstance;              // handle to the app instance
-        double m_LastStatsUpdateTime;       // last time the stats were updated
+        NxF64 m_LastStatsUpdateTime;       // last time the stats were updated
         DWORD m_LastStatsUpdateFrames;      // frames count since last time the stats were updated
-        float m_FPS;                        // frames per second
-        int   m_CurrentFrameNumber;         // the current frame number
+        NxF32 m_FPS;                        // frames per second
+        NxI32   m_CurrentFrameNumber;         // the current frame number
         HHOOK m_KeyboardHook;               // handle to keyboard hook
         bool  m_AllowShortcutKeysWhenFullscreen; // if true, when fullscreen enable shortcut keys (Windows keys, StickyKeys shortcut, ToggleKeys shortcut, FilterKeys shortcut) 
         bool  m_AllowShortcutKeysWhenWindowed;   // if true, when windowed enable shortcut keys (Windows keys, StickyKeys shortcut, ToggleKeys shortcut, FilterKeys shortcut) 
@@ -114,11 +114,11 @@ protected:
         bool  m_ClipCursorWhenFullScreen;   // if true, then DXUT will keep the cursor from going outside the window when full screen
         bool  m_ShowCursorWhenFullScreen;   // if true, then DXUT will show a cursor when full screen
         bool  m_ConstantFrameTime;          // if true, then elapsed frame time will always be 0.05f seconds which is good for debugging or automated capture
-        float m_TimePerFrame;               // the constant time per frame in seconds, only valid if m_ConstantFrameTime==true
+        NxF32 m_TimePerFrame;               // the constant time per frame in seconds, only valid if m_ConstantFrameTime==true
         bool  m_WireframeMode;              // if true, then D3DRS_FILLMODE==D3DFILL_WIREFRAME else D3DRS_FILLMODE==D3DFILL_SOLID 
         bool  m_AutoChangeAdapter;          // if true, then the adapter will automatically change if the window is different monitor
         bool  m_WindowCreatedWithDefaultPositions; // if true, then CW_USEDEFAULT was used and the window should be moved to the right adapter
-        int   m_ExitCode;                   // the exit code to be returned to the command line
+        NxI32   m_ExitCode;                   // the exit code to be returned to the command line
 
         bool  m_DXUTInited;                 // if true, then DXUTInit() has succeeded
         bool  m_WindowCreated;              // if true, then DXUTCreateWindow() or DXUTSetWindow() has succeeded
@@ -135,30 +135,30 @@ protected:
         bool  m_Active;                     // if true, then the app is the active top level window
         bool  m_TimePaused;                 // if true, then time is paused
         bool  m_RenderingPaused;            // if true, then rendering is paused
-        int   m_PauseRenderingCount;        // pause rendering ref count
-        int   m_PauseTimeCount;             // pause time ref count
+        NxI32   m_PauseRenderingCount;        // pause rendering ref count
+        NxI32   m_PauseTimeCount;             // pause time ref count
         bool  m_DeviceLost;                 // if true, then the device is lost and needs to be reset
         bool  m_NotifyOnMouseMove;          // if true, include WM_MOUSEMOVE in mousecallback
         bool  m_Automation;                 // if true, automation is enabled
         bool  m_InSizeMove;                 // if true, app is inside a WM_ENTERSIZEMOVE
         UINT  m_TimerLastID;               // last ID of the DXUT timer
 
-        int   m_OverrideAdapterOrdinal;     // if != -1, then override to use this adapter ordinal
+        NxI32   m_OverrideAdapterOrdinal;     // if != -1, then override to use this adapter ordinal
         bool  m_OverrideWindowed;           // if true, then force to start windowed
         bool  m_OverrideFullScreen;         // if true, then force to start full screen
-        int   m_OverrideStartX;             // if != -1, then override to this X position of the window
-        int   m_OverrideStartY;             // if != -1, then override to this Y position of the window
-        int   m_OverrideWidth;              // if != 0, then override to this width
-        int   m_OverrideHeight;             // if != 0, then override to this height
+        NxI32   m_OverrideStartX;             // if != -1, then override to this X position of the window
+        NxI32   m_OverrideStartY;             // if != -1, then override to this Y position of the window
+        NxI32   m_OverrideWidth;              // if != 0, then override to this width
+        NxI32   m_OverrideHeight;             // if != 0, then override to this height
         bool  m_OverrideForceHAL;           // if true, then force to HAL device (failing if one doesn't exist)
         bool  m_OverrideForceREF;           // if true, then force to REF device (failing if one doesn't exist)
         bool  m_OverrideForcePureHWVP;      // if true, then force to use pure HWVP (failing if device doesn't support it)
         bool  m_OverrideForceHWVP;          // if true, then force to use HWVP (failing if device doesn't support it)
         bool  m_OverrideForceSWVP;          // if true, then force to use SWVP 
         bool  m_OverrideConstantFrameTime;  // if true, then force to constant frame time
-        float m_OverrideConstantTimePerFrame; // the constant time per frame in seconds if m_OverrideConstantFrameTime==true
-        int   m_OverrideQuitAfterFrame;     // if != 0, then it will force the app to quit after that frame
-        int   m_OverrideForceVsync;         // if == 0, then it will force the app to use D3DPRESENT_INTERVAL_IMMEDIATE, if == 1 force use of D3DPRESENT_INTERVAL_DEFAULT
+        NxF32 m_OverrideConstantTimePerFrame; // the constant time per frame in seconds if m_OverrideConstantFrameTime==true
+        NxI32   m_OverrideQuitAfterFrame;     // if != 0, then it will force the app to quit after that frame
+        NxI32   m_OverrideForceVsync;         // if == 0, then it will force the app to use D3DPRESENT_INTERVAL_IMMEDIATE, if == 1 force use of D3DPRESENT_INTERVAL_DEFAULT
         bool  m_OverrideRelaunchMCE;          // if true, then force relaunch of MCE at exit
 
         LPDXUTCALLBACKISDEVICEACCEPTABLE    m_IsDeviceAcceptableFunc;   // is device acceptable callback
@@ -256,15 +256,15 @@ public:
     GET_SET_ACCESSOR( bool, MinimizedWhileFullscreen );
     GET_SET_ACCESSOR( bool, IgnoreSizeChange );   
 
-    GET_SET_ACCESSOR( double, Time );
-    GET_SET_ACCESSOR( double, AbsoluteTime );
-    GET_SET_ACCESSOR( float, ElapsedTime );
+    GET_SET_ACCESSOR( NxF64, Time );
+    GET_SET_ACCESSOR( NxF64, AbsoluteTime );
+    GET_SET_ACCESSOR( NxF32, ElapsedTime );
 
     GET_SET_ACCESSOR( HINSTANCE, HInstance );
-    GET_SET_ACCESSOR( double, LastStatsUpdateTime );   
+    GET_SET_ACCESSOR( NxF64, LastStatsUpdateTime );   
     GET_SET_ACCESSOR( DWORD, LastStatsUpdateFrames );   
-    GET_SET_ACCESSOR( float, FPS );    
-    GET_SET_ACCESSOR( int, CurrentFrameNumber );
+    GET_SET_ACCESSOR( NxF32, FPS );    
+    GET_SET_ACCESSOR( NxI32, CurrentFrameNumber );
     GET_SET_ACCESSOR( HHOOK, KeyboardHook );
     GET_SET_ACCESSOR( bool, AllowShortcutKeysWhenFullscreen );
     GET_SET_ACCESSOR( bool, AllowShortcutKeysWhenWindowed );
@@ -281,11 +281,11 @@ public:
     GET_SET_ACCESSOR( bool, ClipCursorWhenFullScreen );   
     GET_SET_ACCESSOR( bool, ShowCursorWhenFullScreen );
     GET_SET_ACCESSOR( bool, ConstantFrameTime );
-    GET_SET_ACCESSOR( float, TimePerFrame );
+    GET_SET_ACCESSOR( NxF32, TimePerFrame );
     GET_SET_ACCESSOR( bool, WireframeMode );   
     GET_SET_ACCESSOR( bool, AutoChangeAdapter );
     GET_SET_ACCESSOR( bool, WindowCreatedWithDefaultPositions );
-    GET_SET_ACCESSOR( int, ExitCode );
+    GET_SET_ACCESSOR( NxI32, ExitCode );
 
     GET_SET_ACCESSOR( bool, DXUTInited );
     GET_SET_ACCESSOR( bool, WindowCreated );
@@ -300,30 +300,30 @@ public:
     GET_SET_ACCESSOR( bool, Active );
     GET_SET_ACCESSOR( bool, RenderingPaused );
     GET_SET_ACCESSOR( bool, TimePaused );
-    GET_SET_ACCESSOR( int, PauseRenderingCount );
-    GET_SET_ACCESSOR( int, PauseTimeCount );
+    GET_SET_ACCESSOR( NxI32, PauseRenderingCount );
+    GET_SET_ACCESSOR( NxI32, PauseTimeCount );
     GET_SET_ACCESSOR( bool, DeviceLost );
     GET_SET_ACCESSOR( bool, NotifyOnMouseMove );
     GET_SET_ACCESSOR( bool, Automation );
     GET_SET_ACCESSOR( bool, InSizeMove );
     GET_SET_ACCESSOR( UINT, TimerLastID );
 
-    GET_SET_ACCESSOR( int, OverrideAdapterOrdinal );
+    GET_SET_ACCESSOR( NxI32, OverrideAdapterOrdinal );
     GET_SET_ACCESSOR( bool, OverrideWindowed );
     GET_SET_ACCESSOR( bool, OverrideFullScreen );
-    GET_SET_ACCESSOR( int, OverrideStartX );
-    GET_SET_ACCESSOR( int, OverrideStartY );
-    GET_SET_ACCESSOR( int, OverrideWidth );
-    GET_SET_ACCESSOR( int, OverrideHeight );
+    GET_SET_ACCESSOR( NxI32, OverrideStartX );
+    GET_SET_ACCESSOR( NxI32, OverrideStartY );
+    GET_SET_ACCESSOR( NxI32, OverrideWidth );
+    GET_SET_ACCESSOR( NxI32, OverrideHeight );
     GET_SET_ACCESSOR( bool, OverrideForceHAL );
     GET_SET_ACCESSOR( bool, OverrideForceREF );
     GET_SET_ACCESSOR( bool, OverrideForcePureHWVP );
     GET_SET_ACCESSOR( bool, OverrideForceHWVP );
     GET_SET_ACCESSOR( bool, OverrideForceSWVP );
     GET_SET_ACCESSOR( bool, OverrideConstantFrameTime );
-    GET_SET_ACCESSOR( float, OverrideConstantTimePerFrame );
-    GET_SET_ACCESSOR( int, OverrideQuitAfterFrame );
-    GET_SET_ACCESSOR( int, OverrideForceVsync );
+    GET_SET_ACCESSOR( NxF32, OverrideConstantTimePerFrame );
+    GET_SET_ACCESSOR( NxI32, OverrideQuitAfterFrame );
+    GET_SET_ACCESSOR( NxI32, OverrideForceVsync );
     GET_SET_ACCESSOR( bool, OverrideRelaunchMCE );
 
     GET_SET_ACCESSOR( LPDXUTCALLBACKISDEVICEACCEPTABLE, IsDeviceAcceptableFunc );
@@ -377,13 +377,13 @@ DXUTState& GetDXUTState()
 //--------------------------------------------------------------------------------------
 typedef IDirect3D9* (WINAPI* LPDIRECT3DCREATE9)(UINT SDKVersion);
 typedef DECLSPEC_IMPORT UINT (WINAPI* LPTIMEBEGINPERIOD)( UINT uPeriod );
-int     DXUTMapButtonToArrayIndex( BYTE vButton );
+NxI32     DXUTMapButtonToArrayIndex( BYTE vButton );
 void    DXUTSetProcessorAffinity();
 void    DXUTParseCommandLine();
 CD3DEnumeration* DXUTPrepareEnumerationObject( bool bEnumerate = false );
 void    DXUTBuildOptimalDeviceSettings( DXUTDeviceSettings* pOptimalDeviceSettings, DXUTDeviceSettings* pDeviceSettingsIn, DXUTMatchOptions* pMatchOptions );
 bool    DXUTDoesDeviceComboMatchPreserveOptions( CD3DEnumDeviceSettingsCombo* pDeviceSettingsCombo, DXUTDeviceSettings* pDeviceSettingsIn, DXUTMatchOptions* pMatchOptions );
-float   DXUTRankDeviceCombo( CD3DEnumDeviceSettingsCombo* pDeviceSettingsCombo, DXUTDeviceSettings* pDeviceSettingsIn, D3DDISPLAYMODE* pAdapterDesktopDisplayMode );
+NxF32   DXUTRankDeviceCombo( CD3DEnumDeviceSettingsCombo* pDeviceSettingsCombo, DXUTDeviceSettings* pDeviceSettingsIn, D3DDISPLAYMODE* pAdapterDesktopDisplayMode );
 void    DXUTBuildValidDeviceSettings( DXUTDeviceSettings* pDeviceSettings, CD3DEnumDeviceSettingsCombo* pBestDeviceSettingsCombo, DXUTDeviceSettings* pDeviceSettingsIn, DXUTMatchOptions* pMatchOptions );
 HRESULT DXUTFindValidResolution( CD3DEnumDeviceSettingsCombo* pBestDeviceSettingsCombo, D3DDISPLAYMODE displayModeIn, D3DDISPLAYMODE* pBestDisplayMode );
 HRESULT DXUTFindAdapterFormat( UINT AdapterOrdinal, D3DDEVTYPE DeviceType, D3DFORMAT BackBufferFormat, BOOL Windowed, D3DFORMAT* pAdapterFormat );
@@ -543,9 +543,9 @@ void DXUTParseCommandLine()
     WCHAR* strCmdLine;
     WCHAR strFlag[MAX_PATH];
 
-    int nNumArgs;
+    NxI32 nNumArgs;
     WCHAR** pstrArgList = CommandLineToArgvW( GetCommandLine(), &nNumArgs );
-    for( int iArg=1; iArg<nNumArgs; iArg++ )
+    for( NxI32 iArg=1; iArg<nNumArgs; iArg++ )
     {
         strCmdLine = pstrArgList[iArg];
 
@@ -558,7 +558,7 @@ void DXUTParseCommandLine()
             {
                 if( DXUTGetCmdParam( strCmdLine, strFlag ) )
                 {
-                    int nAdapter = _wtoi(strFlag);
+                    NxI32 nAdapter = _wtoi(strFlag);
                     GetDXUTState().SetOverrideAdapterOrdinal( nAdapter );
                     continue;
                 }
@@ -610,7 +610,7 @@ void DXUTParseCommandLine()
             {
                 if( DXUTGetCmdParam( strCmdLine, strFlag ) )
                 {
-                    int nOn = _wtoi(strFlag);
+                    NxI32 nOn = _wtoi(strFlag);
                     GetDXUTState().SetOverrideForceVsync( nOn );
                     continue;
                 }
@@ -620,7 +620,7 @@ void DXUTParseCommandLine()
             {
                 if( DXUTGetCmdParam( strCmdLine, strFlag ) )
                 {
-                    int nWidth = _wtoi(strFlag);
+                    NxI32 nWidth = _wtoi(strFlag);
                     GetDXUTState().SetOverrideWidth( nWidth );
                     continue;
                 }
@@ -630,7 +630,7 @@ void DXUTParseCommandLine()
             {
                 if( DXUTGetCmdParam( strCmdLine, strFlag ) )
                 {
-                    int nHeight = _wtoi(strFlag);
+                    NxI32 nHeight = _wtoi(strFlag);
                     GetDXUTState().SetOverrideHeight( nHeight );
                 continue;
                 }
@@ -640,7 +640,7 @@ void DXUTParseCommandLine()
             {
                 if( DXUTGetCmdParam( strCmdLine, strFlag ) )
                 {
-                    int nX = _wtoi(strFlag);
+                    NxI32 nX = _wtoi(strFlag);
                     GetDXUTState().SetOverrideStartX( nX );
                     continue;
                 }
@@ -650,7 +650,7 @@ void DXUTParseCommandLine()
             {
                 if( DXUTGetCmdParam( strCmdLine, strFlag ) )
                 {
-                    int nY = _wtoi(strFlag);
+                    NxI32 nY = _wtoi(strFlag);
                     GetDXUTState().SetOverrideStartY( nY );
                     continue;
                 }
@@ -658,9 +658,9 @@ void DXUTParseCommandLine()
 
             if( DXUTIsNextArg( strCmdLine, L"constantframetime" ) )
             {
-                float fTimePerFrame;
+                NxF32 fTimePerFrame;
                 if( DXUTGetCmdParam( strCmdLine, strFlag ) )
-                    fTimePerFrame = (float)wcstod( strFlag, NULL );
+                    fTimePerFrame = (NxF32)wcstod( strFlag, NULL );
                 else
                     fTimePerFrame = 0.0333f;
                 GetDXUTState().SetOverrideConstantFrameTime( true );
@@ -673,7 +673,7 @@ void DXUTParseCommandLine()
             {
                 if( DXUTGetCmdParam( strCmdLine, strFlag ) )
                 {
-                    int nFrame = _wtoi(strFlag);
+                    NxI32 nFrame = _wtoi(strFlag);
                     GetDXUTState().SetOverrideQuitAfterFrame( nFrame );
                     continue;
                 }
@@ -722,8 +722,8 @@ void DXUTParseCommandLine()
 //--------------------------------------------------------------------------------------
 bool DXUTIsNextArg( WCHAR*& strCmdLine, WCHAR* strArg )
 {
-    int nArgLen = (int) wcslen(strArg);
-    int nCmdLen = (int) wcslen(strCmdLine);
+    NxI32 nArgLen = (NxI32) wcslen(strArg);
+    NxI32 nCmdLen = (NxI32) wcslen(strCmdLine);
 
     if( nCmdLen >= nArgLen && 
         _wcsnicmp( strCmdLine, strArg, nArgLen ) == 0 && 
@@ -774,7 +774,7 @@ bool DXUTGetCmdParam( WCHAR*& strCmdLine, WCHAR* strFlag )
 // call DXUTSetWindow() to use an existing window.  
 //--------------------------------------------------------------------------------------
 HRESULT DXUTCreateWindow( const WCHAR* strWindowTitle, HINSTANCE hInstance, 
-                          HICON hIcon, HMENU hMenu, int x, int y )
+                          HICON hIcon, HMENU hMenu, NxI32 x, NxI32 y )
 {
     HRESULT hr;
 
@@ -841,8 +841,8 @@ HRESULT DXUTCreateWindow( const WCHAR* strWindowTitle, HINSTANCE hInstance,
             GetDXUTState().SetWindowCreatedWithDefaultPositions( true );
 
         // Find the window's initial size, but it might be changed later
-        int nDefaultWidth = 640;
-        int nDefaultHeight = 480;
+        NxI32 nDefaultWidth = 640;
+        NxI32 nDefaultHeight = 480;
         if( GetDXUTState().GetOverrideWidth() != 0 )
             nDefaultWidth = GetDXUTState().GetOverrideWidth();
         if( GetDXUTState().GetOverrideHeight() != 0 )
@@ -948,7 +948,7 @@ HRESULT DXUTSetWindow( HWND hWndFocus, HWND hWndDeviceFullScreen, HWND hWndDevic
 // Instead of calling this, you can call DXUTSetDevice() or DXUTCreateDeviceFromSettings() 
 //--------------------------------------------------------------------------------------
 HRESULT DXUTCreateDevice( UINT AdapterOrdinal, bool bWindowed, 
-                          int nSuggestedWidth, int nSuggestedHeight,
+                          NxI32 nSuggestedWidth, NxI32 nSuggestedHeight,
                           LPDXUTCALLBACKISDEVICEACCEPTABLE pCallbackIsDeviceAcceptable,
                           LPDXUTCALLBACKMODIFYDEVICESETTINGS pCallbackModifyDeviceSettings,
                           void* pUserContext )
@@ -1463,12 +1463,12 @@ HRESULT DXUTFindValidDeviceSettings( DXUTDeviceSettings* pOut, DXUTDeviceSetting
     //      Windowed
     // given what's available on the system and the match options combined with the device settings input.
     // This combination of settings is encapsulated by the CD3DEnumDeviceSettingsCombo class.
-    float fBestRanking = -1.0f;
+    NxF32 fBestRanking = -1.0f;
     CD3DEnumDeviceSettingsCombo* pBestDeviceSettingsCombo = NULL;
     D3DDISPLAYMODE adapterDesktopDisplayMode;
 
     CGrowableArray<CD3DEnumAdapterInfo*>* pAdapterList = pd3dEnum->GetAdapterInfoList();
-    for( int iAdapter=0; iAdapter<pAdapterList->GetSize(); iAdapter++ )
+    for( NxI32 iAdapter=0; iAdapter<pAdapterList->GetSize(); iAdapter++ )
     {
         CD3DEnumAdapterInfo* pAdapterInfo = pAdapterList->GetAt(iAdapter);
 
@@ -1476,13 +1476,13 @@ HRESULT DXUTFindValidDeviceSettings( DXUTDeviceSettings* pOut, DXUTDeviceSetting
         pD3D->GetAdapterDisplayMode( pAdapterInfo->AdapterOrdinal, &adapterDesktopDisplayMode );
 
         // Enum all the device types supported by this adapter to find the best device settings
-        for( int iDeviceInfo=0; iDeviceInfo<pAdapterInfo->deviceInfoList.GetSize(); iDeviceInfo++ )
+        for( NxI32 iDeviceInfo=0; iDeviceInfo<pAdapterInfo->deviceInfoList.GetSize(); iDeviceInfo++ )
         {
             CD3DEnumDeviceInfo* pDeviceInfo = pAdapterInfo->deviceInfoList.GetAt(iDeviceInfo);
 
             // Enum all the device settings combinations.  A device settings combination is 
             // a unique set of an adapter format, back buffer format, and IsWindowed.
-            for( int iDeviceCombo=0; iDeviceCombo<pDeviceInfo->deviceSettingsComboList.GetSize(); iDeviceCombo++ )
+            for( NxI32 iDeviceCombo=0; iDeviceCombo<pDeviceInfo->deviceSettingsComboList.GetSize(); iDeviceCombo++ )
             {
                 CD3DEnumDeviceSettingsCombo* pDeviceSettingsCombo = pDeviceInfo->deviceSettingsComboList.GetAt(iDeviceCombo);
 
@@ -1496,7 +1496,7 @@ HRESULT DXUTFindValidDeviceSettings( DXUTDeviceSettings* pOut, DXUTDeviceSetting
                     continue;           
 
                 // Get a ranking number that describes how closely this device combo matches the optimal combo
-                float fCurRanking = DXUTRankDeviceCombo( pDeviceSettingsCombo, &optimalDeviceSettings, &adapterDesktopDisplayMode );
+                NxF32 fCurRanking = DXUTRankDeviceCombo( pDeviceSettingsCombo, &optimalDeviceSettings, &adapterDesktopDisplayMode );
 
                 // If this combo better matches the input device settings then save it
                 if( fCurRanking > fBestRanking )
@@ -1755,7 +1755,7 @@ bool DXUTDoesDeviceComboMatchPreserveOptions( CD3DEnumDeviceSettingsCombo* pDevi
     if( pMatchOptions->eResolution == DXUTMT_PRESERVE_INPUT )
     {
         bool bFound = false;
-        for( int i=0; i< pDeviceSettingsCombo->pAdapterInfo->displayModeList.GetSize(); i++ )
+        for( NxI32 i=0; i< pDeviceSettingsCombo->pAdapterInfo->displayModeList.GetSize(); i++ )
         {
             D3DDISPLAYMODE displayMode = pDeviceSettingsCombo->pAdapterInfo->displayModeList.GetAt( i );
             if( displayMode.Format != pDeviceSettingsCombo->AdapterFormat )
@@ -1792,7 +1792,7 @@ bool DXUTDoesDeviceComboMatchPreserveOptions( CD3DEnumDeviceSettingsCombo* pDevi
     if( pMatchOptions->eMultiSample == DXUTMT_PRESERVE_INPUT )
     {
         bool bFound = false;
-        for( int i=0; i<pDeviceSettingsCombo->multiSampleTypeList.GetSize(); i++ )
+        for( NxI32 i=0; i<pDeviceSettingsCombo->multiSampleTypeList.GetSize(); i++ )
         {
             D3DMULTISAMPLE_TYPE msType = pDeviceSettingsCombo->multiSampleTypeList.GetAt(i);
             DWORD msQuality  = pDeviceSettingsCombo->multiSampleQualityList.GetAt(i);
@@ -1833,7 +1833,7 @@ bool DXUTDoesDeviceComboMatchPreserveOptions( CD3DEnumDeviceSettingsCombo* pDevi
     {
         bool bFound = false;
         UINT dwDepthBits = DXUTDepthBits( pDeviceSettingsIn->pp.AutoDepthStencilFormat );
-        for( int i=0; i<pDeviceSettingsCombo->depthStencilFormatList.GetSize(); i++ )
+        for( NxI32 i=0; i<pDeviceSettingsCombo->depthStencilFormatList.GetSize(); i++ )
         {
             D3DFORMAT depthStencilFmt = pDeviceSettingsCombo->depthStencilFormatList.GetAt(i);
             UINT dwCurDepthBits = DXUTDepthBits( depthStencilFmt );
@@ -1851,7 +1851,7 @@ bool DXUTDoesDeviceComboMatchPreserveOptions( CD3DEnumDeviceSettingsCombo* pDevi
     {
         bool bFound = false;
         UINT dwStencilBits = DXUTStencilBits( pDeviceSettingsIn->pp.AutoDepthStencilFormat );
-        for( int i=0; i<pDeviceSettingsCombo->depthStencilFormatList.GetSize(); i++ )
+        for( NxI32 i=0; i<pDeviceSettingsCombo->depthStencilFormatList.GetSize(); i++ )
         {
             D3DFORMAT depthStencilFmt = pDeviceSettingsCombo->depthStencilFormatList.GetAt(i);
             UINT dwCurStencilBits = DXUTStencilBits( depthStencilFmt );
@@ -1875,7 +1875,7 @@ bool DXUTDoesDeviceComboMatchPreserveOptions( CD3DEnumDeviceSettingsCombo* pDevi
     if( pMatchOptions->eRefreshRate == DXUTMT_PRESERVE_INPUT )
     {
         bool bFound = false;
-        for( int i=0; i<pDeviceSettingsCombo->pAdapterInfo->displayModeList.GetSize(); i++ )
+        for( NxI32 i=0; i<pDeviceSettingsCombo->pAdapterInfo->displayModeList.GetSize(); i++ )
         {
             D3DDISPLAYMODE displayMode = pDeviceSettingsCombo->pAdapterInfo->displayModeList.GetAt( i );
             if( displayMode.Format != pDeviceSettingsCombo->AdapterFormat )
@@ -1908,24 +1908,24 @@ bool DXUTDoesDeviceComboMatchPreserveOptions( CD3DEnumDeviceSettingsCombo* pDevi
 // Returns a ranking number that describes how closely this device 
 // combo matches the optimal combo based on the match options and the optimal device settings
 //--------------------------------------------------------------------------------------
-float DXUTRankDeviceCombo( CD3DEnumDeviceSettingsCombo* pDeviceSettingsCombo, 
+NxF32 DXUTRankDeviceCombo( CD3DEnumDeviceSettingsCombo* pDeviceSettingsCombo, 
                            DXUTDeviceSettings* pOptimalDeviceSettings,
                            D3DDISPLAYMODE* pAdapterDesktopDisplayMode )
 {
-    float fCurRanking = 0.0f; 
+    NxF32 fCurRanking = 0.0f; 
 
     // Arbitrary weights.  Gives preference to the ordinal, device type, and windowed
-    const float fAdapterOrdinalWeight   = 1000.0f;
-    const float fDeviceTypeWeight       = 100.0f;
-    const float fWindowWeight           = 10.0f;
-    const float fAdapterFormatWeight    = 1.0f;
-    const float fVertexProcessingWeight = 1.0f;
-    const float fResolutionWeight       = 1.0f;
-    const float fBackBufferFormatWeight = 1.0f;
-    const float fMultiSampleWeight      = 1.0f;
-    const float fDepthStencilWeight     = 1.0f;
-    const float fRefreshRateWeight      = 1.0f;
-    const float fPresentIntervalWeight  = 1.0f;
+    const NxF32 fAdapterOrdinalWeight   = 1000.0f;
+    const NxF32 fDeviceTypeWeight       = 100.0f;
+    const NxF32 fWindowWeight           = 10.0f;
+    const NxF32 fAdapterFormatWeight    = 1.0f;
+    const NxF32 fVertexProcessingWeight = 1.0f;
+    const NxF32 fResolutionWeight       = 1.0f;
+    const NxF32 fBackBufferFormatWeight = 1.0f;
+    const NxF32 fMultiSampleWeight      = 1.0f;
+    const NxF32 fDepthStencilWeight     = 1.0f;
+    const NxF32 fRefreshRateWeight      = 1.0f;
+    const NxF32 fPresentIntervalWeight  = 1.0f;
 
     //---------------------
     // Adapter ordinal
@@ -1957,9 +1957,9 @@ float DXUTRankDeviceCombo( CD3DEnumDeviceSettingsCombo* pDeviceSettingsCombo,
     }
     else
     {
-        int nBitDepthDelta = abs( (long) DXUTColorChannelBits(pDeviceSettingsCombo->AdapterFormat) -
+        NxI32 nBitDepthDelta = abs( (long) DXUTColorChannelBits(pDeviceSettingsCombo->AdapterFormat) -
                                   (long) DXUTColorChannelBits(pOptimalDeviceSettings->AdapterFormat) );
-        float fScale = __max(0.9f - (float)nBitDepthDelta*0.2f, 0.0f);
+        NxF32 fScale = __max(0.9f - (NxF32)nBitDepthDelta*0.2f, 0.0f);
         fCurRanking += fScale * fAdapterFormatWeight;
     }
 
@@ -1993,7 +1993,7 @@ float DXUTRankDeviceCombo( CD3DEnumDeviceSettingsCombo* pDeviceSettingsCombo,
     // Resolution
     //---------------------
     bool bResolutionFound = false;
-    for( int idm = 0; idm < pDeviceSettingsCombo->pAdapterInfo->displayModeList.GetSize(); idm++ )
+    for( NxI32 idm = 0; idm < pDeviceSettingsCombo->pAdapterInfo->displayModeList.GetSize(); idm++ )
     {
         D3DDISPLAYMODE displayMode = pDeviceSettingsCombo->pAdapterInfo->displayModeList.GetAt( idm );
         if( displayMode.Format != pDeviceSettingsCombo->AdapterFormat )
@@ -2014,9 +2014,9 @@ float DXUTRankDeviceCombo( CD3DEnumDeviceSettingsCombo* pDeviceSettingsCombo,
     }
     else
     {
-        int nBitDepthDelta = abs( (long) DXUTColorChannelBits(pDeviceSettingsCombo->BackBufferFormat) -
+        NxI32 nBitDepthDelta = abs( (long) DXUTColorChannelBits(pDeviceSettingsCombo->BackBufferFormat) -
                                   (long) DXUTColorChannelBits(pOptimalDeviceSettings->pp.BackBufferFormat) );
-        float fScale = __max(0.9f - (float)nBitDepthDelta*0.2f, 0.0f);
+        NxF32 fScale = __max(0.9f - (NxF32)nBitDepthDelta*0.2f, 0.0f);
         fCurRanking += fScale * fBackBufferFormatWeight;
     }
 
@@ -2035,7 +2035,7 @@ float DXUTRankDeviceCombo( CD3DEnumDeviceSettingsCombo* pDeviceSettingsCombo,
     // Multisample
     //---------------------
     bool bMultiSampleFound = false;
-    for( int i=0; i<pDeviceSettingsCombo->multiSampleTypeList.GetSize(); i++ )
+    for( NxI32 i=0; i<pDeviceSettingsCombo->multiSampleTypeList.GetSize(); i++ )
     {
         D3DMULTISAMPLE_TYPE msType = pDeviceSettingsCombo->multiSampleTypeList.GetAt(i);
         DWORD msQuality  = pDeviceSettingsCombo->multiSampleQualityList.GetAt(i);
@@ -2070,7 +2070,7 @@ float DXUTRankDeviceCombo( CD3DEnumDeviceSettingsCombo* pDeviceSettingsCombo,
     // Refresh rate
     //---------------------
     bool bRefreshFound = false;
-    for( int idm = 0; idm < pDeviceSettingsCombo->pAdapterInfo->displayModeList.GetSize(); idm++ )
+    for( NxI32 idm = 0; idm < pDeviceSettingsCombo->pAdapterInfo->displayModeList.GetSize(); idm++ )
     {
         D3DDISPLAYMODE displayMode = pDeviceSettingsCombo->pAdapterInfo->displayModeList.GetAt( idm );
         if( displayMode.Format != pDeviceSettingsCombo->AdapterFormat )
@@ -2264,7 +2264,7 @@ void DXUTBuildValidDeviceSettings( DXUTDeviceSettings* pValidDeviceSettings,
             bestMultiSampleType = D3DMULTISAMPLE_NONE;
             bestMultiSampleQuality = 0;
 
-            for( int i=0; i < pBestDeviceSettingsCombo->multiSampleTypeList.GetSize(); i++ )
+            for( NxI32 i=0; i < pBestDeviceSettingsCombo->multiSampleTypeList.GetSize(); i++ )
             {
                 D3DMULTISAMPLE_TYPE type = pBestDeviceSettingsCombo->multiSampleTypeList.GetAt(i);
                 DWORD qualityLevels = pBestDeviceSettingsCombo->multiSampleQualityList.GetAt(i);
@@ -2316,7 +2316,7 @@ void DXUTBuildValidDeviceSettings( DXUTDeviceSettings* pValidDeviceSettings,
     D3DFORMAT bestDepthStencilFormat;
     BOOL bestEnableAutoDepthStencil;
 
-    CGrowableArray< int > depthStencilRanking;
+    CGrowableArray< NxI32 > depthStencilRanking;
     depthStencilRanking.SetSize( pBestDeviceSettingsCombo->depthStencilFormatList.GetSize() );
 
     UINT dwBackBufferBitDepth = DXUTColorChannelBits( pBestDeviceSettingsCombo->BackBufferFormat );       
@@ -2324,11 +2324,11 @@ void DXUTBuildValidDeviceSettings( DXUTDeviceSettings* pValidDeviceSettings,
     if( pDeviceSettingsIn )
         dwInputDepthBitDepth = DXUTDepthBits( pDeviceSettingsIn->pp.AutoDepthStencilFormat );
 
-    for( int i=0; i<pBestDeviceSettingsCombo->depthStencilFormatList.GetSize(); i++ )
+    for( NxI32 i=0; i<pBestDeviceSettingsCombo->depthStencilFormatList.GetSize(); i++ )
     {
         D3DFORMAT curDepthStencilFmt = pBestDeviceSettingsCombo->depthStencilFormatList.GetAt(i);
         DWORD dwCurDepthBitDepth = DXUTDepthBits( curDepthStencilFmt );
-        int nRanking;
+        NxI32 nRanking;
 
         if( pMatchOptions->eDepthFormat == DXUTMT_PRESERVE_INPUT )
         {                       
@@ -2341,12 +2341,12 @@ void DXUTBuildValidDeviceSettings( DXUTDeviceSettings* pValidDeviceSettings,
         else if( pMatchOptions->eDepthFormat == DXUTMT_IGNORE_INPUT )
         {
             // Prefer match of backbuffer bit depth
-            nRanking = abs((int)dwCurDepthBitDepth - (int)dwBackBufferBitDepth*4);
+            nRanking = abs((NxI32)dwCurDepthBitDepth - (NxI32)dwBackBufferBitDepth*4);
         }
         else // if( pMatchOptions->eDepthFormat == DXUTMT_CLOSEST_TO_INPUT )
         {
             // Prefer match of input depth format bit depth
-            nRanking = abs((int)dwCurDepthBitDepth - (int)dwInputDepthBitDepth);
+            nRanking = abs((NxI32)dwCurDepthBitDepth - (NxI32)dwInputDepthBitDepth);
         }
 
         depthStencilRanking.Add( nRanking );
@@ -2356,10 +2356,10 @@ void DXUTBuildValidDeviceSettings( DXUTDeviceSettings* pValidDeviceSettings,
     if( pDeviceSettingsIn )
         dwInputStencilBitDepth = DXUTStencilBits( pDeviceSettingsIn->pp.AutoDepthStencilFormat );
 
-    for( int i=0; i<pBestDeviceSettingsCombo->depthStencilFormatList.GetSize(); i++ )
+    for( NxI32 i=0; i<pBestDeviceSettingsCombo->depthStencilFormatList.GetSize(); i++ )
     {
         D3DFORMAT curDepthStencilFmt = pBestDeviceSettingsCombo->depthStencilFormatList.GetAt(i);
-        int nRanking = depthStencilRanking.GetAt(i);
+        NxI32 nRanking = depthStencilRanking.GetAt(i);
         DWORD dwCurStencilBitDepth = DXUTStencilBits( curDepthStencilFmt );
 
         if( pMatchOptions->eStencilFormat == DXUTMT_PRESERVE_INPUT )
@@ -2378,17 +2378,17 @@ void DXUTBuildValidDeviceSettings( DXUTDeviceSettings* pValidDeviceSettings,
         else // if( pMatchOptions->eStencilFormat == DXUTMT_CLOSEST_TO_INPUT )
         {
             // Prefer match of input stencil format bit depth
-            nRanking += abs((int)dwCurStencilBitDepth - (int)dwInputStencilBitDepth);
+            nRanking += abs((NxI32)dwCurStencilBitDepth - (NxI32)dwInputStencilBitDepth);
         }
 
         depthStencilRanking.SetAt( i, nRanking );
     }
 
-    int nBestRanking = 100000;
-    int nBestIndex = -1;
-    for( int i=0; i<pBestDeviceSettingsCombo->depthStencilFormatList.GetSize(); i++ )
+    NxI32 nBestRanking = 100000;
+    NxI32 nBestIndex = -1;
+    for( NxI32 i=0; i<pBestDeviceSettingsCombo->depthStencilFormatList.GetSize(); i++ )
     {
-        int nRanking = depthStencilRanking.GetAt(i);
+        NxI32 nRanking = depthStencilRanking.GetAt(i);
         if( nRanking < nBestRanking )
         {
             nBestRanking = nRanking;
@@ -2459,9 +2459,9 @@ void DXUTBuildValidDeviceSettings( DXUTDeviceSettings* pValidDeviceSettings,
 
             if( refreshRateMatch != 0 )
             {
-                int nBestRefreshRanking = 100000;
+                NxI32 nBestRefreshRanking = 100000;
                 CGrowableArray<D3DDISPLAYMODE>* pDisplayModeList = &pBestDeviceSettingsCombo->pAdapterInfo->displayModeList;
-                for( int iDisplayMode=0; iDisplayMode<pDisplayModeList->GetSize(); iDisplayMode++ )
+                for( NxI32 iDisplayMode=0; iDisplayMode<pDisplayModeList->GetSize(); iDisplayMode++ )
                 {
                     D3DDISPLAYMODE displayMode = pDisplayModeList->GetAt(iDisplayMode);                
                     if( displayMode.Format != pBestDeviceSettingsCombo->AdapterFormat || 
@@ -2470,7 +2470,7 @@ void DXUTBuildValidDeviceSettings( DXUTDeviceSettings* pValidDeviceSettings,
                         continue; // Skip display modes that don't match 
 
                     // Find the delta between the current refresh rate and the optimal refresh rate 
-                    int nCurRanking = abs((int)displayMode.RefreshRate - (int)refreshRateMatch);
+                    NxI32 nCurRanking = abs((NxI32)displayMode.RefreshRate - (NxI32)refreshRateMatch);
                                         
                     if( nCurRanking < nBestRefreshRanking )
                     {
@@ -2554,10 +2554,10 @@ HRESULT DXUTFindValidResolution( CD3DEnumDeviceSettingsCombo* pBestDeviceSetting
     }
     else
     {
-        int nBestRanking = 100000;
-        int nCurRanking;
+        NxI32 nBestRanking = 100000;
+        NxI32 nCurRanking;
         CGrowableArray<D3DDISPLAYMODE>* pDisplayModeList = &pBestDeviceSettingsCombo->pAdapterInfo->displayModeList;
-        for( int iDisplayMode=0; iDisplayMode<pDisplayModeList->GetSize(); iDisplayMode++ )
+        for( NxI32 iDisplayMode=0; iDisplayMode<pDisplayModeList->GetSize(); iDisplayMode++ )
         {
             D3DDISPLAYMODE displayMode = pDisplayModeList->GetAt(iDisplayMode);
 
@@ -2566,8 +2566,8 @@ HRESULT DXUTFindValidResolution( CD3DEnumDeviceSettingsCombo* pBestDeviceSetting
                 continue;
 
             // Find the delta between the current width/height and the optimal width/height
-            nCurRanking = abs((int)displayMode.Width - (int)displayModeIn.Width) + 
-                          abs((int)displayMode.Height- (int)displayModeIn.Height);
+            nCurRanking = abs((NxI32)displayMode.Width - (NxI32)displayModeIn.Width) + 
+                          abs((NxI32)displayMode.Height- (NxI32)displayModeIn.Height);
 
             if( nCurRanking < nBestRanking )
             {
@@ -2604,7 +2604,7 @@ HRESULT DXUTFindAdapterFormat( UINT AdapterOrdinal, D3DDEVTYPE DeviceType, D3DFO
     CD3DEnumDeviceInfo* pDeviceInfo = pd3dEnum->GetDeviceInfo( AdapterOrdinal, DeviceType );
     if( pDeviceInfo )
     {
-        for( int iDeviceCombo=0; iDeviceCombo<pDeviceInfo->deviceSettingsComboList.GetSize(); iDeviceCombo++ )
+        for( NxI32 iDeviceCombo=0; iDeviceCombo<pDeviceInfo->deviceSettingsComboList.GetSize(); iDeviceCombo++ )
         {
             CD3DEnumDeviceSettingsCombo* pDeviceSettingsCombo = pDeviceInfo->deviceSettingsComboList.GetAt(iDeviceCombo);
             if( pDeviceSettingsCombo->BackBufferFormat == BackBufferFormat &&
@@ -2987,11 +2987,11 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings, IDirect3DDevic
             DXUTGetMonitorInfo( DXUTMonitorFromWindow( DXUTGetHWND(), MONITOR_DEFAULTTOPRIMARY ), &miWindow );
 
             // Do something reasonable if the BackBuffer size is greater than the monitor size
-            int nAdapterMonitorWidth = miAdapter.rcWork.right - miAdapter.rcWork.left;
-            int nAdapterMonitorHeight = miAdapter.rcWork.bottom - miAdapter.rcWork.top;
+            NxI32 nAdapterMonitorWidth = miAdapter.rcWork.right - miAdapter.rcWork.left;
+            NxI32 nAdapterMonitorHeight = miAdapter.rcWork.bottom - miAdapter.rcWork.top;
 
-            int nClientWidth = pNewDeviceSettings->pp.BackBufferWidth;
-            int nClientHeight = pNewDeviceSettings->pp.BackBufferHeight;
+            NxI32 nClientWidth = pNewDeviceSettings->pp.BackBufferWidth;
+            NxI32 nClientHeight = pNewDeviceSettings->pp.BackBufferHeight;
 
             // Get the rect of the window
             RECT rcWindow;
@@ -3005,8 +3005,8 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings, IDirect3DDevic
             rcResizedWindow.bottom = nClientHeight;
             AdjustWindowRect( &rcResizedWindow, GetWindowLong( DXUTGetHWNDDeviceWindowed(), GWL_STYLE ), GetDXUTState().GetMenu() != NULL );
 
-            int nWindowWidth = rcResizedWindow.right - rcResizedWindow.left;
-            int nWindowHeight = rcResizedWindow.bottom - rcResizedWindow.top;
+            NxI32 nWindowWidth = rcResizedWindow.right - rcResizedWindow.left;
+            NxI32 nWindowHeight = rcResizedWindow.bottom - rcResizedWindow.top;
 
             if( nWindowWidth > nAdapterMonitorWidth )
                 nWindowWidth = (nAdapterMonitorWidth - 0);
@@ -3018,8 +3018,8 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings, IDirect3DDevic
                 rcResizedWindow.right > miAdapter.rcWork.right ||
                 rcResizedWindow.bottom > miAdapter.rcWork.bottom )
             {
-                int nWindowOffsetX = (nAdapterMonitorWidth - nWindowWidth) / 2;
-                int nWindowOffsetY = (nAdapterMonitorHeight - nWindowHeight) / 2;
+                NxI32 nWindowOffsetX = (nAdapterMonitorWidth - nWindowWidth) / 2;
+                NxI32 nWindowOffsetY = (nAdapterMonitorHeight - nWindowHeight) / 2;
 
                 rcResizedWindow.left = miAdapter.rcWork.left + nWindowOffsetX;
                 rcResizedWindow.top = miAdapter.rcWork.top + nWindowOffsetY;
@@ -3043,8 +3043,8 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings, IDirect3DDevic
             // Resize the window.  It is important to adjust the window size 
             // after resetting the device rather than beforehand to ensure 
             // that the monitor resolution is correct and does not limit the size of the new window.
-            int cx = (int)(rcWindow.right - rcWindow.left);
-            int cy = (int)(rcWindow.bottom - rcWindow.top);
+            NxI32 cx = (NxI32)(rcWindow.right - rcWindow.left);
+            NxI32 cy = (NxI32)(rcWindow.bottom - rcWindow.top);
             SetWindowPos( DXUTGetHWNDDeviceWindowed(), 0, 0, 0, cx, cy, SWP_NOZORDER|SWP_NOMOVE );
         }
 
@@ -3102,7 +3102,7 @@ HRESULT DXUTChangeDevice( DXUTDeviceSettings* pNewDeviceSettings, IDirect3DDevic
 //--------------------------------------------------------------------------------------
 // Low level keyboard hook to disable Windows key to prevent accidental task switching.  
 //--------------------------------------------------------------------------------------
-LRESULT CALLBACK LowLevelKeyboardProc( int nCode, WPARAM wParam, LPARAM lParam )
+LRESULT CALLBACK LowLevelKeyboardProc( NxI32 nCode, WPARAM wParam, LPARAM lParam )
 {
     if (nCode < 0 || nCode != HC_ACTION)  // do not process message 
         return CallNextHookEx( GetDXUTState().GetKeyboardHook(), nCode, wParam, lParam); 
@@ -3464,13 +3464,13 @@ HRESULT DXUTReset3DEnvironment()
 //--------------------------------------------------------------------------------------
 void DXUTPause( bool bPauseTime, bool bPauseRendering )
 {
-    int nPauseTimeCount = GetDXUTState().GetPauseTimeCount();
+    NxI32 nPauseTimeCount = GetDXUTState().GetPauseTimeCount();
     nPauseTimeCount += ( bPauseTime ? +1 : -1 );
     if( nPauseTimeCount < 0 )
         nPauseTimeCount = 0;
     GetDXUTState().SetPauseTimeCount( nPauseTimeCount );
 
-    int nPauseRenderingCount = GetDXUTState().GetPauseRenderingCount();
+    NxI32 nPauseRenderingCount = GetDXUTState().GetPauseRenderingCount();
     nPauseRenderingCount += ( bPauseRendering ? +1 : -1 );
     if( nPauseRenderingCount < 0 )
         nPauseRenderingCount = 0;
@@ -3735,7 +3735,7 @@ void DXUTRender3DEnvironment()
     }
 
     // Get the app's time, in seconds. Skip rendering if no time elapsed
-    double fTime, fAbsTime; float fElapsedTime;
+    NxF64 fTime, fAbsTime; NxF32 fElapsedTime;
     DXUTGetGlobalTimer()->GetTimeValues( &fTime, &fAbsTime, &fElapsedTime );
 
     // Store the time for the app
@@ -3819,7 +3819,7 @@ void DXUTRender3DEnvironment()
     }
 
     // Update current frame #
-    int nFrame = GetDXUTState().GetCurrentFrameNumber();
+    NxI32 nFrame = GetDXUTState().GetCurrentFrameNumber();
     nFrame++;
     GetDXUTState().SetCurrentFrameNumber( nFrame );
 
@@ -3894,7 +3894,7 @@ void DXUTUpdateDeviceStats( D3DDEVTYPE DeviceType, DWORD BehaviorFlags, D3DADAPT
         }
         else
         {
-            const int cchDesc = sizeof(pAdapterIdentifier->Description);
+            const NxI32 cchDesc = sizeof(pAdapterIdentifier->Description);
             WCHAR szDescription[cchDesc];
             MultiByteToWideChar( CP_ACP, 0, pAdapterIdentifier->Description, -1, szDescription, cchDesc );
             szDescription[cchDesc-1] = 0;
@@ -3913,16 +3913,16 @@ void DXUTUpdateFrameStats()
         return;
 
     // Keep track of the frame count
-    double fLastTime = GetDXUTState().GetLastStatsUpdateTime();
+    NxF64 fLastTime = GetDXUTState().GetLastStatsUpdateTime();
     DWORD dwFrames  = GetDXUTState().GetLastStatsUpdateFrames();
-    double fAbsTime = GetDXUTState().GetAbsoluteTime();
+    NxF64 fAbsTime = GetDXUTState().GetAbsoluteTime();
     dwFrames++;
     GetDXUTState().SetLastStatsUpdateFrames( dwFrames );
 
     // Update the scene stats once per second
     if( fAbsTime - fLastTime > 1.0f )
     {
-        float fFPS = (float) (dwFrames / (fAbsTime - fLastTime));
+        NxF32 fFPS = (NxF32) (dwFrames / (fAbsTime - fLastTime));
         GetDXUTState().SetFPS( fFPS );
         GetDXUTState().SetLastStatsUpdateTime( fAbsTime );
         GetDXUTState().SetLastStatsUpdateFrames( 0 );
@@ -4047,8 +4047,8 @@ LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
         uMsg == WM_MOUSEWHEEL || 
         (GetDXUTState().GetNotifyOnMouseMove() && uMsg == WM_MOUSEMOVE) )
     {
-        int xPos = (short)LOWORD(lParam);
-        int yPos = (short)HIWORD(lParam);
+        NxI32 xPos = (short)LOWORD(lParam);
+        NxI32 yPos = (short)HIWORD(lParam);
 
         if( uMsg == WM_MOUSEWHEEL )
         {
@@ -4060,11 +4060,11 @@ LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
             xPos = pt.x; yPos = pt.y;
         }
 
-        int nMouseWheelDelta = 0;
+        NxI32 nMouseWheelDelta = 0;
         if( uMsg == WM_MOUSEWHEEL ) 
             nMouseWheelDelta = (short) HIWORD(wParam);
 
-        int nMouseButtonState = LOWORD(wParam);
+        NxI32 nMouseButtonState = LOWORD(wParam);
         bool bLeftButton  = ((nMouseButtonState & MK_LBUTTON) != 0);
         bool bRightButton = ((nMouseButtonState & MK_RBUTTON) != 0);
         bool bMiddleButton = ((nMouseButtonState & MK_MBUTTON) != 0);
@@ -4105,8 +4105,8 @@ LRESULT CALLBACK DXUTStaticWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
                 GetDXUTState().GetDeviceObjectsCreated() && GetDXUTState().GetDeviceObjectsReset() )
             {
                 HRESULT hr;
-                double fTime = DXUTGetTime();
-                float fElapsedTime = DXUTGetElapsedTime();
+                NxF64 fTime = DXUTGetTime();
+                NxF32 fElapsedTime = DXUTGetElapsedTime();
 
                 LPDXUTCALLBACKFRAMERENDER pCallbackFrameRender = GetDXUTState().GetFrameRenderFunc();
                 if( pCallbackFrameRender != NULL )
@@ -4467,7 +4467,7 @@ void DXUTResetFrameworkState()
 //--------------------------------------------------------------------------------------
 // Closes down the window.  When the window closes, it will cleanup everything
 //--------------------------------------------------------------------------------------
-void DXUTShutdown( int nExitCode )
+void DXUTShutdown( NxI32 nExitCode )
 {
     HWND hWnd = DXUTGetHWND();
     if( hWnd != NULL )
@@ -4590,7 +4590,7 @@ void DXUTUpdateBackBufferDesc()
 //--------------------------------------------------------------------------------------
 // Starts a user defined timer callback
 //--------------------------------------------------------------------------------------
-HRESULT DXUTSetTimer( LPDXUTCALLBACKTIMER pCallbackTimer, float fTimeoutInSecs, UINT* pnIDEvent, void* pCallbackUserContext ) 
+HRESULT DXUTSetTimer( LPDXUTCALLBACKTIMER pCallbackTimer, NxF32 fTimeoutInSecs, UINT* pnIDEvent, void* pCallbackUserContext ) 
 { 
     if( pCallbackTimer == NULL )
         return DXUT_ERR_MSGBOX( L"DXUTSetTimer", E_INVALIDARG ); 
@@ -4635,7 +4635,7 @@ HRESULT DXUTKillTimer( UINT nIDEvent )
 
     bool bFound = false;
 
-    for( int i=0; i<pTimerList->GetSize(); i++ )
+    for( NxI32 i=0; i<pTimerList->GetSize(); i++ )
     {
         DXUT_TIMER DXUTTimer = pTimerList->GetAt(i);
         if( DXUTTimer.nID == nIDEvent )
@@ -4659,14 +4659,14 @@ HRESULT DXUTKillTimer( UINT nIDEvent )
 //--------------------------------------------------------------------------------------
 void DXUTHandleTimers()
 {
-    float fElapsedTime = DXUTGetElapsedTime();
+    NxF32 fElapsedTime = DXUTGetElapsedTime();
 
     CGrowableArray<DXUT_TIMER>* pTimerList = GetDXUTState().GetTimerList();
     if( pTimerList == NULL )
         return;
 
     // Walk through the list of timer callbacks
-    for( int i=0; i<pTimerList->GetSize(); i++ )
+    for( NxI32 i=0; i<pTimerList->GetSize(); i++ )
     {
         DXUT_TIMER DXUTTimer = pTimerList->GetAt(i);
         if( DXUTTimer.bEnabled )
@@ -4700,15 +4700,15 @@ HWND DXUTGetHWNDDeviceWindowed()                    { return GetDXUTState().GetH
 RECT DXUTGetWindowClientRect()                      { RECT rc; GetClientRect( DXUTGetHWND(), &rc ); return rc; }
 RECT DXUTGetWindowClientRectAtModeChange()          { RECT rc = { 0, 0, GetDXUTState().GetWindowBackBufferWidthAtModeChange(), GetDXUTState().GetWindowBackBufferHeightAtModeChange() }; return rc; }
 RECT DXUTGetFullsceenClientRectAtModeChange()       { RECT rc = { 0, 0, GetDXUTState().GetFullScreenBackBufferWidthAtModeChange(), GetDXUTState().GetFullScreenBackBufferHeightAtModeChange() }; return rc; }
-double DXUTGetTime()                                { return GetDXUTState().GetTime(); }
-float DXUTGetElapsedTime()                          { return GetDXUTState().GetElapsedTime(); }
-float DXUTGetFPS()                                  { return GetDXUTState().GetFPS(); }
+NxF64 DXUTGetTime()                                { return GetDXUTState().GetTime(); }
+NxF32 DXUTGetElapsedTime()                          { return GetDXUTState().GetElapsedTime(); }
+NxF32 DXUTGetFPS()                                  { return GetDXUTState().GetFPS(); }
 LPCWSTR DXUTGetWindowTitle()                        { return GetDXUTState().GetWindowTitle(); }
 LPCWSTR DXUTGetDeviceStats()                        { return GetDXUTState().GetDeviceStats(); }
 bool DXUTIsRenderingPaused()                        { return GetDXUTState().GetPauseRenderingCount() > 0; }
 bool DXUTIsTimePaused()                             { return GetDXUTState().GetPauseTimeCount() > 0; }
 bool DXUTIsActive()                                 { return GetDXUTState().GetActive(); }
-int DXUTGetExitCode()                               { return GetDXUTState().GetExitCode(); }
+NxI32 DXUTGetExitCode()                               { return GetDXUTState().GetExitCode(); }
 bool DXUTGetShowMsgBoxOnError()                     { return GetDXUTState().GetShowMsgBoxOnError(); }
 bool DXUTGetAutomation()                            { return GetDXUTState().GetAutomation(); }
 bool DXUTGetHandleDefaultHotkeys()                  { return GetDXUTState().GetHandleDefaultHotkeys(); }
@@ -4725,7 +4725,7 @@ bool DXUTIsKeyDown( BYTE vKey )
 bool DXUTIsMouseButtonDown( BYTE vButton )          
 { 
     bool* bMouseButtons = GetDXUTState().GetMouseButtons(); 
-    int nIndex = DXUTMapButtonToArrayIndex(vButton); 
+    NxI32 nIndex = DXUTMapButtonToArrayIndex(vButton); 
     return bMouseButtons[nIndex]; 
 }
 void DXUTSetMultimonSettings( bool bAutoChangeAdapter )
@@ -4742,7 +4742,7 @@ void DXUTSetWindowSettings( bool bCallDefWindowProc )
 {
     GetDXUTState().SetCallDefWindowProc( bCallDefWindowProc );
 }
-void DXUTSetConstantFrameTime( bool bEnabled, float fTimePerFrame ) 
+void DXUTSetConstantFrameTime( bool bEnabled, NxF32 fTimePerFrame ) 
 { 
     if( GetDXUTState().GetOverrideConstantFrameTime() ) 
     { 
@@ -4818,7 +4818,7 @@ void DXUTDisplayErrorMessage( HRESULT hr )
 {
     WCHAR strBuffer[512];
 
-    int nExitCode;
+    NxI32 nExitCode;
     bool bFound = true; 
     switch( hr )
     {
@@ -4947,7 +4947,7 @@ HRESULT DXUTGetAdapterOrdinalFromMonitor( HMONITOR hMonitor, UINT* pAdapterOrdin
     IDirect3D9*      pD3D     = DXUTGetD3DObject();
 
     CGrowableArray<CD3DEnumAdapterInfo*>* pAdapterList = pd3dEnum->GetAdapterInfoList();
-    for( int iAdapter=0; iAdapter<pAdapterList->GetSize(); iAdapter++ )
+    for( NxI32 iAdapter=0; iAdapter<pAdapterList->GetSize(); iAdapter++ )
     {
         CD3DEnumAdapterInfo* pAdapterInfo = pAdapterList->GetAt(iAdapter);
         HMONITOR hAdapterMonitor = pD3D->GetAdapterMonitor( pAdapterInfo->AdapterOrdinal );
@@ -4965,7 +4965,7 @@ HRESULT DXUTGetAdapterOrdinalFromMonitor( HMONITOR hMonitor, UINT* pAdapterOrdin
 //--------------------------------------------------------------------------------------
 // Internal function to map MK_* to an array index
 //--------------------------------------------------------------------------------------
-int DXUTMapButtonToArrayIndex( BYTE vButton )
+NxI32 DXUTMapButtonToArrayIndex( BYTE vButton )
 {
     switch( vButton )
     {

@@ -195,8 +195,8 @@ public:
   virtual		NxU8			readByte()								const;
   virtual		NxU16			readWord()								const;
   virtual		NxU32			readDword()								const;
-  virtual		float			readFloat()								const;
-  virtual		double			readDouble()							const;
+  virtual		NxF32			readFloat()								const;
+  virtual		NxF64			readDouble()							const;
   virtual		void			readBuffer(void* buffer, NxU32 size)	const;
 
   virtual		NxStream&		storeByte(NxU8 b);
@@ -219,8 +219,8 @@ public:
   virtual		NxU8			readByte()								const	{ NX_ASSERT(0);	return 0;	}
   virtual		NxU16			readWord()								const	{ NX_ASSERT(0);	return 0;	}
   virtual		NxU32			readDword()								const	{ NX_ASSERT(0);	return 0;	}
-  virtual		float			readFloat()								const	{ NX_ASSERT(0);	return 0.0f;}
-  virtual		double			readDouble()							const	{ NX_ASSERT(0);	return 0.0;	}
+  virtual		NxF32			readFloat()								const	{ NX_ASSERT(0);	return 0.0f;}
+  virtual		NxF64			readDouble()							const	{ NX_ASSERT(0);	return 0.0;	}
   virtual		void			readBuffer(void* buffer, NxU32 size)	const	{ NX_ASSERT(0);				}
 
   virtual		NxStream&		storeByte(NxU8 b);
@@ -244,8 +244,8 @@ public:
   virtual		NxU8			readByte()								const;
   virtual		NxU16			readWord()								const;
   virtual		NxU32			readDword()								const;
-  virtual		float			readFloat()								const;
-  virtual		double			readDouble()							const;
+  virtual		NxF32			readFloat()								const;
+  virtual		NxF64			readDouble()							const;
   virtual		void			readBuffer(void* buffer, NxU32 size)	const;
 
   virtual		NxStream&		storeByte(NxU8 b)							{ NX_ASSERT(0);	return *this;	}
@@ -293,7 +293,7 @@ NxU32 UserStream::readDword() const
   return d;
 }
 
-float UserStream::readFloat() const
+NxF32 UserStream::readFloat() const
 {
   NxReal f;
   size_t r = fread(&f, sizeof(NxReal), 1, fp);
@@ -301,7 +301,7 @@ float UserStream::readFloat() const
   return f;
 }
 
-double UserStream::readDouble() const
+NxF64 UserStream::readDouble() const
 {
   NxF64 f;
   size_t r = fread(&f, sizeof(NxF64), 1, fp);
@@ -456,19 +456,19 @@ NxU32 MemoryReadBuffer::readDword() const
   return d;
 }
 
-float MemoryReadBuffer::readFloat() const
+NxF32 MemoryReadBuffer::readFloat() const
 {
-  float f;
-  memcpy(&f, buffer, sizeof(float));
-  buffer += sizeof(float);
+  NxF32 f;
+  memcpy(&f, buffer, sizeof(NxF32));
+  buffer += sizeof(NxF32);
   return f;
 }
 
-double MemoryReadBuffer::readDouble() const
+NxF64 MemoryReadBuffer::readDouble() const
 {
-  double f;
-  memcpy(&f, buffer, sizeof(double));
-  buffer += sizeof(double);
+  NxF64 f;
+  memcpy(&f, buffer, sizeof(NxF64));
+  buffer += sizeof(NxF64);
   return f;
 }
 
@@ -537,7 +537,7 @@ public:
     mTerrain = createTerrain(fname,this);
   }
 
-  void render(float dtime)
+  void render(NxF32 dtime)
   {
     if ( mTerrain )
     {
@@ -555,7 +555,7 @@ public:
     }
   }
 
-  void simulate(float dtime)
+  void simulate(NxF32 dtime)
   {
     if ( mScene )
     {

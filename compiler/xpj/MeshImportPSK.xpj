@@ -36,6 +36,13 @@
           snippets/SystemServices.h
           snippets/UserMemAlloc.h
           snippets/Nx*.h
+          snippets/sutil.h
+          snippets/sutil.cpp
+          snippets/FloatMath.h
+          snippets/FloatMath.inl
+          snippets/FloatMath.cpp
+          snippets/inparser.h
+          snippets/inparser.cpp
 				</Files>
 				<OutDir>../../bin/win32</OutDir>
 				<ImpDir>../../lib/win32</ImpDir>

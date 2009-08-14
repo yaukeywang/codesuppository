@@ -39,7 +39,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/W3 /fp:fast /MDd /Zi "
 				Optimization="4"
-				AdditionalIncludeDirectories="&quot;../../include&quot;;&quot;../../include/common/snippets&quot;;&quot;../../ext/fbx&quot;;"
+				AdditionalIncludeDirectories="&quot;../../include&quot;;&quot;../../include/common/snippets&quot;;&quot;../../include/MeshImport&quot;;&quot;../../ext/fbx&quot;;"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_CONSOLE;UNICODE=1;_UNICODE=1;K_PLUGIN;K_FBXSDK;K_NODLL;_CRT_SECURET_NO_DEPRECATE;FBXIMPORTER_EXPORTS;MESHIMPORTFBX_EXPORTS;_DEBUG;"
 				ExceptionHandling="1"
 				WarningLevel="3"
@@ -116,7 +116,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zi /W3 /fp:fast /WX /MD /O2 "
 				Optimization="4"
-				AdditionalIncludeDirectories="&quot;../../include&quot;;&quot;../../include/common/snippets&quot;;&quot;../../ext/fbx&quot;;"
+				AdditionalIncludeDirectories="&quot;../../include&quot;;&quot;../../include/common/snippets&quot;;&quot;../../include/MeshImport&quot;;&quot;../../ext/fbx&quot;;"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_CONSOLE;UNICODE=1;_UNICODE=1;K_PLUGIN;K_FBXSDK;K_NODLL;_CRT_SECURET_NO_DEPRECATE;FBXIMPORTER_EXPORTS;MESHIMPORTFBX_EXPORTS;NDEBUG;"
 				ExceptionHandling="1"
 				WarningLevel="3"
@@ -471,14 +471,6 @@
 				</File>
 				<File
 					RelativePath="..\..\include\common\snippets\UserMemAlloc.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\VtxWeld.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\VtxWeld.h"
 					>
 				</File>
 				<File

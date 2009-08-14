@@ -584,7 +584,7 @@ public:
 	MeshBone(void)
 	{
 		mParentIndex = -1;
-    mName = "";
+		mName = "";
 		Identity();
 	}
 
@@ -648,7 +648,7 @@ public:
 	int           mParentIndex;          // array index of parent bone
 	float         mPosition[3];
 	float         mOrientation[4];
-  float         mScale[3];
+	float         mScale[3];
 };
 
 class MeshEntry
@@ -1315,6 +1315,8 @@ enum MeshSerializeFormat
   MSF_EZMESH, // save it back out into ez-mesh, lossless XML format.
   MSF_OGRE3D, // save it back out into the Ogre3d XML format.
   MSF_WAVEFRONT, // save as wavefront OBJ
+  MSF_PSK, // save it back out as a PSK format file.
+  MSF_FBX,  // FBX import is supported by FBX output is not yet.
   MSF_LAST
 };
 

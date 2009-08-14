@@ -3,6 +3,7 @@
 	<Project name="CodeSuppository" version="1">
 		<Export platform="win32" tool="vc7">../vc7</Export>
 		<Export platform="win32" tool="vc8">../vc8</Export>
+		<Import root=".\" file="MeshConvert.xpj"/>
 		<Import root=".\" file="Pd3d.xpj"/>
 		<Import root=".\" file="RenderDebugPd3d.xpj"/>
 		<Import root=".\" file="MeshImport.xpj"/>
@@ -107,8 +108,6 @@
 				*.h
 			</Files>
 			<Files name="Shared Application Source" root="../../app/shared" type="header">
-				debugmsg/*.h
-        debugmsg/*.cpp
         MeshSystem/*.cpp
         MeshSystem/*.h
 			</Files>
@@ -117,7 +116,7 @@
 			</Files>
 			<Files name="MeshImport Files" root="../../include/MeshImport" type="source">
 				*.cpp
-        *.h
+               *.h
 			</Files>
 			<Files name="Common Source Files" root="../../src/common" type="source">
         tui/*.cpp

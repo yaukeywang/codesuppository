@@ -851,10 +851,6 @@
 			Name="Internal Header Files"
 			>
 			<File
-				RelativePath="..\..\app\CodeSuppository\ApexRenderInterface.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\app\CodeSuppository\CodeSuppository.h"
 				>
 			</File>
@@ -1542,6 +1538,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\common\snippets\Foundation.inl"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\common\snippets\frustum.cpp"
 					>
 				</File>
@@ -1707,14 +1707,6 @@
 				</File>
 				<File
 					RelativePath="..\..\include\common\snippets\MeshConsolidate.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\MeshImport.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\MeshImport.h"
 					>
 				</File>
 				<File
@@ -2263,22 +2255,6 @@
 				>
 				<File
 					RelativePath="..\..\include\Pd3d\pd3d.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="RenderDebug"
-				>
-				<File
-					RelativePath="..\..\include\RenderDebug\BaseRenderDebug.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\RenderDebug\RenderDebug.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\RenderDebug\StreamRenderDebug.h"
 					>
 				</File>
 			</Filter>

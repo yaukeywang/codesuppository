@@ -199,30 +199,6 @@
 				</File>
 			</Filter>
 		</Filter>
-		<Filter
-			Name="Source Files"
-			>
-			<File
-				RelativePath="..\..\src\RenderDebug\RenderDebug.cpp"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Public Header Files"
-			>
-			<File
-				RelativePath="..\..\include\RenderDebug\BaseRenderDebug.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\RenderDebug\RenderDebug.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\RenderDebug\StreamRenderDebug.h"
-				>
-			</File>
-		</Filter>
 	</Files>
 	<Globals>
 	</Globals>

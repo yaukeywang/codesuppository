@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <vector>
 
 #include "AsciiPath.h"
 #include "UserMemAlloc.h"

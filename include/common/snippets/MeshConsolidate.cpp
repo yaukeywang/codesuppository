@@ -356,9 +356,9 @@ public:
 		fm_releaseVertexIndex(mVertexOutput);
 		mVertexOutput = 0;
 	}
-    MEMALLOC_DELETE_ARRAY(Polygon,mPolygons);
-    MEMALLOC_DELETE_ARRAY(Edge,mEdges);
-    MEMALLOC_DELETE_ARRAY(Edge *,mPolyPoints);
+    delete []mPolygons;
+    delete []mEdges;
+    delete []mPolyPoints;
     mPolygons = 0;
     mEdges = 0;
     mPolyCount = 0;
@@ -403,13 +403,13 @@ public:
     if ( !mInputTriangles.empty() )
     {
         mPolyCount = (NxU32)mInputTriangles.size();
-        mPolygons  = MEMALLOC_NEW_ARRAY(Polygon,mPolyCount)[mPolyCount];
-        mEdges     = MEMALLOC_NEW_ARRAY(Edge,mPolyCount*3)[mPolyCount*3];
+        mPolygons  = MEMALLOC_NEW(Polygon)[mPolyCount];
+        mEdges     = MEMALLOC_NEW(Edge)[mPolyCount*3];
         TempTri *tri = &mInputTriangles[0];
         Edge *e = mEdges;
         Polygon *p = mPolygons;
         mVcount = (NxU32)mVertices->getVcount();
-        mPolyPoints = MEMALLOC_NEW_ARRAY(Edge *,mVcount)[mVcount];
+        mPolyPoints = MEMALLOC_NEW(Edge *)[mVcount];
 		memset(mPolyPoints,0,sizeof(Edge *)*mVcount);
         for (NxU32 i=0; i<mPolyCount; i++)
         {

@@ -141,9 +141,9 @@ public:
     for (i=mBlobs.begin(); i!=mBlobs.end(); ++i)
     {
         Blob *b = (*i);
-        MEMALLOC_DELETE(block,b);
+        delete b;
     }
-    MEMALLOC_DELETE(Blob,mLastBlob);
+    delete mLastBlob;
   }
 
   // convert a blob of binary data into multiple lines of ascii data
@@ -221,7 +221,7 @@ public:
     data = 0;
     dlen = 0;
 
-    MEMALLOC_DELETE(Blob,mLastBlob);
+    delete mLastBlob;
     mLastBlob = 0;
 
     if ( !mBlobs.empty() )
@@ -379,5 +379,5 @@ BlobIO * createBlobIO(BlobIOInterface *iface)
 void     releaseBlobIO(BlobIO *b)
 {
     MyBlobIO *m = static_cast< MyBlobIO *>(b);
-    MEMALLOC_DELETE(MyBlobIO,m);
+    delete m;
 }

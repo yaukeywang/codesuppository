@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <hash_map>
 
 #pragma warning(disable:4702)
 
@@ -18,7 +17,6 @@
 #include "log.h"
 #endif
 
-#include <vector>
 #include "UserMemAlloc.h"
 
 namespace CONSOLIDATE_MESH

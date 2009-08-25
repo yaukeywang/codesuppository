@@ -1,8 +1,9 @@
-#ifndef LOG_H
+#ifndef VTX_WELD_H
 
-#define LOG_H
+#define VFX_WELD_H
 
 #include "UserMemAlloc.h"
+
 /*!
 **
 ** Copyright (c) 2007 by John W. Ratcliff mailto:jratcliff@infiniplex.net
@@ -29,6 +30,11 @@
 ** Yahoo: jratcliff63367
 ** AOL: jratcliff1961
 ** email: jratcliff@infiniplex.net
+** Personal website: http://jratcliffscarab.blogspot.com
+** Coding Website:   http://codesuppository.blogspot.com
+** FundRaising Blog: http://amillionpixels.blogspot.com
+** Fundraising site: http://www.amillionpixels.us
+** New Temple Site:  http://newtemple.blogspot.com
 **
 **
 ** The MIT license:
@@ -53,72 +59,118 @@
 */
 
 
-#include <stdio.h>
-#include <string>
-#include <queue>
+#include <set>
+#include <vector>
 
 #include "UserMemAlloc.h"
+#include "MeshImport.h"
 
-#define MAXNUMERIC 32  // JWR  support up to 16 32 character long numeric formated strings
-#define MAXFNUM    16
+namespace MESHIMPORT
+{
 
-#if defined(LINUX)
-#define _vsnprintf vsnprintf
-#endif
-
-class TrapLog
+template <class Type> class VertexLess
 {
 public:
-  virtual void logMessage(const char *str) = 0;
-};
+	typedef USER_STL::vector< Type > VertexVector;
 
-typedef USER_STL::queue< std::string > StringQueue;
+	bool operator()(NxI32 v1,NxI32 v2) const;
 
-class Log
-{
-public:
-
-	Log(void);
-	Log(const char *fname,bool buffer=true);
-	~Log(void);
-
-	void Display(const char *fmt, ...);
-	void LogFile(const char *fmt, ...);
-
-	void AddBuffer(char *buffer,const char *fmt, ...);
-
-	const char * FormatNumber(NxI32 number); // JWR  format this integer into a fancy comma delimited string
-
-	void Flush(void);
-
-	const char * GetLogMessage(void); // spool report output messages...
-	bool         HasLogMessage(void) const { return mHaveLogMessages; };
-
-  void setTrapLog(TrapLog *log);
-  TrapLog * getTrapLog(void) const { return mTrapLog; };
-
-  void setEcho(bool state) { mEcho = state; };
-  bool getEcho(void) const { return mEcho; };
-  void setBufferMessages(bool state) { mBufferMessages = state; };
-  bool getBufferMessages(void) const { return mBufferMessages; };
+	static void SetSearch(const Type& match,VertexVector *list)
+	{
+		mFind = match;
+		mList = list;
+	};
 
 private:
-	NxI32              mLogLevel;
-	FILE            *mFph;
-	NxI32              mIndex;
-	char             mFormat[MAXNUMERIC*MAXFNUM];
-	bool             mBufferMessages;
-	NxI32              mLogFrame;
-  char            *mDest;
-	char             mBuffer[1024];
-  char             mTempBuffer[1024];
-	bool             mHaveLogMessages;
-	NxI32              mLogIndex;
-  StringQueue      mLogMessages;
-	TrapLog         *mTrapLog;
-  bool             mEcho;
+	const Type& Get(NxI32 index) const
+	{
+		if ( index == -1 ) return mFind;
+		VertexVector &vlist = *mList;
+		return vlist[index];
+	}
+	static Type mFind; // vertice to locate.
+	static VertexVector  *mList;
 };
 
-extern Log *gLog;
+template <class Type> class VertexPool
+{
+public:
+#if HE_USE_MEMORY_TRACKING
+  typedef USER_STL::set<NxI32, USER_STL::GlobalMemoryPool, VertexLess<Type> > VertexSet;
+#else
+  typedef USER_STL::set<NxI32, VertexLess<Type> > VertexSet;
+#endif
+	typedef USER_STL::vector< Type > VertexVector;
+
+	NxI32 GetVertex(const Type& vtx)
+	{
+		VertexLess<Type>::SetSearch(vtx,&mVtxs);
+		typename VertexSet::iterator found;
+		found = mVertSet.find( -1 );
+		if ( found != mVertSet.end() )
+		{
+			return *found;
+		}
+		NxI32 idx = (NxI32)mVtxs.size();
+		mVtxs.push_back( vtx );
+		mVertSet.insert( idx );
+		return idx;
+	};
+
+	void GetPos(NxI32 idx,NxF32 pos[3]) const
+	{
+		pos[0] = mVtxs[idx].mPos[0];
+    pos[1] = mVtxs[idx].mPos[1];
+    pos[2] = mVtxs[idx].mPos[2];
+	}
+
+	const Type& Get(NxI32 idx) const
+	{
+		return mVtxs[idx];
+	};
+
+	NxI32 GetSize(void) const
+	{
+		return (NxI32)mVtxs.size();
+	};
+
+	void Clear(NxI32 reservesize)  // clear the vertice pool.
+	{
+		mVertSet.clear();
+		mVtxs.clear();
+		mVtxs.reserve(reservesize);
+	};
+
+	const VertexVector& GetVertexList(void) const { return mVtxs; };
+
+	void Set(const Type& vtx)
+	{
+		mVtxs.push_back(vtx);
+	}
+
+	NxI32 GetVertexCount(void) const
+	{
+		return (NxI32)mVtxs.size();
+	};
+
+	bool GetVertex(NxI32 i,NxF32 vect[3]) const
+	{
+		vect[0] = mVtxs[i].mPos[0];
+    vect[1] = mVtxs[i].mPos[1];
+    vect[2] = mVtxs[i].mPos[2];
+		return true;
+	};
+
+
+	Type * GetBuffer(void)
+	{
+		return &mVtxs[0];
+	};
+private:
+	VertexSet      mVertSet; // ordered list.
+	VertexVector   mVtxs;  // set of vertices.
+};
+
+}; // end of namespace
 
 #endif

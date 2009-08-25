@@ -136,7 +136,7 @@ public:
   RandPool(NxI32 size,NxI32 seed)  // size of random number bool.
   {
     mRand.setSeed(seed);       // init random number generator.
-    mData = MEMALLOC_NEW_ARRAY(NxI32,size)[size]; // allocate memory for random number bool.
+    mData = MEMALLOC_NEW(NxI32)[size]; // allocate memory for random number bool.
     mSize = size;
     mTop  = mSize;
     for (NxI32 i=0; i<mSize; i++) mData[i] = i;

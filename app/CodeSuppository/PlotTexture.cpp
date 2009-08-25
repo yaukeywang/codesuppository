@@ -25,7 +25,7 @@ public:
     if ( mTexture )
     {
       mPixels = (NxU8 *)gPd3d->lockTexture(mTexture,width,height,mPitch);
-      mBackBuffer = MEMALLOC_NEW_ARRAY(NxU8,height*mPitch)[height*mPitch];
+      mBackBuffer = MEMALLOC_NEW(NxU8)[height*mPitch];
     }
   }
 

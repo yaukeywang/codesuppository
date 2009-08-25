@@ -266,7 +266,7 @@ public:
            ma.mFrameCount = ainfo->mNumRawFrames;
 		   ma.mDtime = 1.0f / (NxF32)(ainfo->mAnimRate);
            ma.mDuration = ma.mDtime*ainfo->mNumRawFrames;
-           ma.mTracks = MEMALLOC_NEW_ARRAY(MeshAnimTrack *,ma.mTrackCount)[ma.mTrackCount];
+           ma.mTracks = MEMALLOC_NEW(MeshAnimTrack *)[ma.mTrackCount];
 
            for (NxI32 i=0; i<ma.mTrackCount; i++)
            {
@@ -278,7 +278,7 @@ public:
              track->mFrameCount = ma.mFrameCount;
              track->mDuration   = ma.mDuration;
 			 track->mDtime      = ma.mDtime;
-             track->mPose       = MEMALLOC_NEW_ARRAY(MeshAnimPose,track->mFrameCount)[track->mFrameCount];
+             track->mPose       = MEMALLOC_NEW(MeshAnimPose)[track->mFrameCount];
 
              for (NxI32 j=0; j<ma.mFrameCount; j++)
              {
@@ -311,10 +311,10 @@ public:
           for (NxI32 i=0; i<ma.mTrackCount; i++)
           {
             MeshAnimTrack *track = ma.mTracks[i];
-            MEMALLOC_DELETE_ARRAY(MeshAnimPose,track->mPose);
-            MEMALLOC_DELETE(MeshAnimTrack,track);
+            delete []track->mPose;
+            delete track;
           }
-          MEMALLOC_DELETE_ARRAY(MeshAnimTrack *,ma.mTracks);
+          delete []ma.mTracks;
           appResource->releaseApplicationResource(mem);
         }
       }
@@ -377,7 +377,7 @@ public:
         MeshSkeleton *ms = MEMALLOC_NEW(MeshSkeleton);
         ms->mName = meshName;
         ms->mBoneCount = bonesHeader->mCount;
-        ms->mBones = MEMALLOC_NEW_ARRAY(MeshBone,ms->mBoneCount)[ms->mBoneCount];
+        ms->mBones = MEMALLOC_NEW(MeshBone)[ms->mBoneCount];
         for (NxI32 i=0; i<ms->mBoneCount; i++)
         {
             MeshBone &dest = ms->mBones[i];
@@ -406,13 +406,13 @@ public:
 
         }
         callback->importSkeleton(*ms);
-        MEMALLOC_DELETE_ARRAY(MeshBone,ms->mBones);
-        MEMALLOC_DELETE(MeshSkeleton,ms);
+        delete []ms->mBones;
+        delete ms;
       }
 
       assert( scan == end );
 
-      DeformVector *dvertices = MEMALLOC_NEW_ARRAY(DeformVector,positionsHeader->mCount)[positionsHeader->mCount];
+      DeformVector *dvertices = MEMALLOC_NEW(DeformVector)[positionsHeader->mCount];
 
       for (NxI32 i=0; i<boneInfluencesHeader->mCount; i++)
       {
@@ -506,7 +506,7 @@ public:
       }
 
 
-      MEMALLOC_DELETE_ARRAY(DeformVector,dvertices);
+      delete []dvertices;
       MEMALLOC_FREE(data);
 
 	  return ret;
@@ -524,7 +524,7 @@ MeshImporter * createMeshImportPSK(void)
 void           releaseMeshImportPSK(MeshImporter *iface)
 {
     MeshImporterPSK *p = static_cast< MeshImporterPSK *>(iface);
-    MEMALLOC_DELETE(MeshImporterPSK,p);
+    delete p;
 }
 
 

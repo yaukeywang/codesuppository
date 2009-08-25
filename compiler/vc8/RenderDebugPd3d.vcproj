@@ -4,6 +4,9 @@
 	Version="8.00"
 	Name="RenderDebugPd3d"
 	ProjectGUID="{927C6EE0-5C40-F724-89D8-0D807A3C22B4}"
+	SccProjectName="Perforce Project"
+	SccLocalPath="."
+	SccProvider="MSCCI:Perforce SCM"
 	>
 	<Platforms>
 		<Platform

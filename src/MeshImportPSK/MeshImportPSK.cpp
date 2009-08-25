@@ -118,7 +118,7 @@ bool doShutdown(void)
   if ( gInterface )
   {
     ret = true;
-    MEMALLOC_DELETE(MeshImportPSK,gInterface);
+    delete gInterface;
     gInterface = 0;
   }
   return ret;

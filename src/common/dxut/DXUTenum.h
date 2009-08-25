@@ -103,7 +103,7 @@ CD3DEnumeration* DXUTGetEnumeration();
 // A class describing an adapter which contains a unique adapter ordinal 
 // that is installed on the system
 //--------------------------------------------------------------------------------------
-class CD3DEnumAdapterInfo
+class CD3DEnumAdapterInfo : public Memalloc
 {
 public:
     ~CD3DEnumAdapterInfo();
@@ -121,7 +121,7 @@ public:
 // A class describing a Direct3D device that contains a 
 //       unique supported device type 
 //--------------------------------------------------------------------------------------
-class CD3DEnumDeviceInfo
+class CD3DEnumDeviceInfo : public Memalloc
 {
 public:
     ~CD3DEnumDeviceInfo();
@@ -141,7 +141,7 @@ public:
 // adapter format, back buffer format, and windowed that is compatible with a 
 // particular Direct3D device and the app.
 //--------------------------------------------------------------------------------------
-struct CD3DEnumDeviceSettingsCombo
+struct CD3DEnumDeviceSettingsCombo : public Memalloc
 {
     UINT AdapterOrdinal;
     D3DDEVTYPE DeviceType;

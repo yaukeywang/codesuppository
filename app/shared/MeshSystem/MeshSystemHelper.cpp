@@ -267,7 +267,7 @@ public:
   void debugRender(MESHIMPORT::Mesh *m,MESHIMPORT::MeshSkeletonInstance *skeleton)
   {
     NxI32 vcount = m->mVertexCount;
-    MESHIMPORT::MeshVertex *vertices = MEMALLOC_NEW_ARRAY(MESHIMPORT::MeshVertex,vcount);
+    MESHIMPORT::MeshVertex *vertices = MEMALLOC_NEW(MESHIMPORT::MeshVertex);
     gMeshImport->transformVertices(vcount,m->mVertices,vertices,skeleton);
 
     NxU32 color = gRenderDebug->getDebugColor(true);
@@ -277,7 +277,7 @@ public:
       color = gRenderDebug->getDebugColor();
     }
 
-    MEMALLOC_DELETE_ARRAY(MESHIMPORT::MeshVertex,vertices);
+    delete []vertices;
   }
 
   void debugRender(MESHIMPORT::SubMesh *m,NxU32 color,MESHIMPORT::Mesh *pm)
@@ -285,7 +285,7 @@ public:
 //    if ( mShowBounds )
 //      gRenderDebug->DebugBound(m->mAABB.mMin, m->mAABB.mMax, color);
 
-    PD3D::Pd3dGraphicsVertex *vertices = MEMALLOC_NEW_ARRAY(PD3D::Pd3dGraphicsVertex,pm->mVertexCount)[pm->mVertexCount];
+    PD3D::Pd3dGraphicsVertex *vertices = MEMALLOC_NEW(PD3D::Pd3dGraphicsVertex)[pm->mVertexCount];
     PD3D::Pd3dGraphicsVertex *dest = vertices;
     const MESHIMPORT::MeshVertex *src = pm->mVertices;
     for (NxU32 i=0; i<pm->mVertexCount; i++)
@@ -323,7 +323,7 @@ public:
     }
 	vertices;
 
-    MEMALLOC_DELETE_ARRAY(PD3D::Pd3dGraphicsVertex,vertices);
+    delete []vertices;
 
   }
 
@@ -689,7 +689,7 @@ public:
     {
       MEMALLOC_FREE(mr->mVertices);
       MEMALLOC_FREE(mr->mIndices);
-      MEMALLOC_DELETE(MeshSystemRaw,mr);
+      delete mr;
     }
   }
 
@@ -717,7 +717,7 @@ MeshSystemHelper * createMeshSystemHelper(void)
 void   releaseMeshSystemHelper(MeshSystemHelper *m)
 {
   MyMeshSystemHelper *s = static_cast< MyMeshSystemHelper *>(m);
-  MEMALLOC_DELETE(MyMeshSystemHelper,s);
+  delete s;
 }
 
 

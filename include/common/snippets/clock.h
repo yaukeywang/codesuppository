@@ -63,7 +63,7 @@ public:
     mTotalFrames = 0;
     mFrameCount = frames;
     mFrameNo    = 0;
-    mTimes = MEMALLOC_NEW_ARRAY(NxF32,frames)[frames];
+    mTimes = MEMALLOC_NEW(NxF32)[frames];
   }
 
   ~TimeTracker(void)

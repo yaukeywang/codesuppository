@@ -33,7 +33,7 @@
 //--------------------------------------------------------------------------------------
 class CD3DEnumeration;
 
-struct DXUTDeviceSettings
+struct DXUTDeviceSettings : public Memalloc
 {
     UINT AdapterOrdinal;
     D3DDEVTYPE DeviceType;

@@ -219,7 +219,7 @@ public:
 Frustum::Frustum(void)
 {
 	mViewProjectionMatrix = 0;
-	m_frustumPlanes = MEMALLOC_NEW_ARRAY(FrustumPlane,6)[6];
+	m_frustumPlanes = MEMALLOC_NEW(FrustumPlane)[6];
 }
 
 Frustum::~Frustum(void)

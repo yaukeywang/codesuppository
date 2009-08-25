@@ -577,18 +577,18 @@ public:
 #ifdef WIN32
         if ( mCurrent )
         {
-            MEMALLOC_DELETE(WindowsMessage,mCurrent);
+            delete mCurrent;
         }
         while ( !mStrings.empty() )
         {
             WindowsMessage *wm = mStrings.front();
-            MEMALLOC_DELETE(WindowsMessage,wm);
+            delete wm;
             mStrings.pop();
         }
         while ( !mBlobs.empty() )
         {
             WindowsMessage *wm = mBlobs.front();
-            MEMALLOC_DELETE(WindowsMessage,wm);
+            delete wm;
             mBlobs.pop();
         }
 
@@ -677,7 +677,7 @@ public:
 
         if ( !mStrings.empty() )
         {
-            MEMALLOC_DELETE(WindowsMessage,mCurrent);
+            delete mCurrent;
             mCurrent = mStrings.front();
             mStrings.pop();
             ret = mCurrent->mMessage;
@@ -692,7 +692,7 @@ public:
         checkWinMsg();
         if ( !mBlobs.empty() )
         {
-            MEMALLOC_DELETE(WindowsMessage,mCurrent);
+            delete mCurrent;
             mCurrent = mBlobs.front();
             mBlobs.pop();
             ret = mCurrent->mType;
@@ -918,7 +918,7 @@ WinMsg * createWinMsg(const char *windowName)  // can be null if this is being u
 void     releaseWinMsg(WinMsg *msg)
 {
     MyWinMsg *mwm = static_cast< MyWinMsg *>(msg);
-    MEMALLOC_DELETE(MyWinMsg,mwm);
+    delete mwm;
 }
 
 

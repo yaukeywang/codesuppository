@@ -2,8 +2,6 @@
 
 #define KDTREE_H
 
-#include <vector>
-
 #include "UserMemAlloc.h"
 
 class KdTreeNode;

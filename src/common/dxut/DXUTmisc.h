@@ -68,7 +68,7 @@ void    DXUTEnableXInput( bool bEnable );
 // A growable array
 //--------------------------------------------------------------------------------------
 template< typename TYPE >
-class CGrowableArray
+class CGrowableArray : public Memalloc
 {
 public:
     CGrowableArray()  { m_pData = NULL; m_nSize = 0; m_nMaxSize = 0; }

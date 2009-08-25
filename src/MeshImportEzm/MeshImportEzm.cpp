@@ -111,7 +111,7 @@ bool doShutdown(void)
   if ( gInterface )
   {
     ret = true;
-    MEMALLOC_DELETE(MeshimImportEzm,gInterface);
+    delete gInterface;
     gInterface = 0;
   }
   return ret;

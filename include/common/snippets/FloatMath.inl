@@ -2227,10 +2227,6 @@ void fm_eulerMatrix(REAL ax,REAL ay,REAL az,REAL *matrix) // convert euler (in r
 
 #define VERTEX_INDEX_H
 
-#include <vector>
-
-#include <vector>
-
 namespace VERTEX_INDEX
 {
 
@@ -3188,9 +3184,6 @@ void          fm_releaseVertexIndex(fm_VertexIndex *vindex)
 
 #define LINE_SWEEP_H
 
-#include <list>
-#include <vector>
-
 class fm_quickSort
 {
 public:
@@ -3571,8 +3564,8 @@ public:
     mResults.clear();
     scount = 0;
 
-    MyLineSegment *mls   = MEMALLOC_NEW_ARRAY(MyLineSegment,icount)[icount];
-    MyLineSegment **mptr = MEMALLOC_NEW_ARRAY(MyLineSegment *,icount)[icount];
+    MyLineSegment *mls   = MEMALLOC_NEW(MyLineSegment)[icount];
+    MyLineSegment **mptr = MEMALLOC_NEW(MyLineSegment *)[icount];
 
     for (NxU32 i=0; i<icount; i++)
     {
@@ -4246,11 +4239,11 @@ NxU32  fm_copyUniqueVertices(NxU32 vcount,const REAL *input_vertices,REAL *outpu
 {
   NxU32 ret = 0;
 
-  REAL *vertices = MEMALLOC_NEW_ARRAY(REAL,vcount*3)[vcount*3];
+  REAL *vertices = MEMALLOC_NEW(REAL)[vcount*3];
   memcpy(vertices,input_vertices,sizeof(REAL)*vcount*3);
   REAL *dest = output_vertices;
 
-  NxU32 *reindex = MEMALLOC_NEW_ARRAY(NxU32,vcount)[vcount];
+  NxU32 *reindex = MEMALLOC_NEW(NxU32)[vcount];
   memset(reindex,0xFF,sizeof(NxU32)*vcount);
 
   NxU32 icount = tcount*3;
@@ -4372,7 +4365,7 @@ public:
     if ( mVertices->isDouble() )
     {
       NxU32 vcount = mVertices->getVcount();
-      NxF64 *vertices = MEMALLOC_NEW_ARRAY(NxF64,vcount*3)[vcount*3];
+      NxF64 *vertices = MEMALLOC_NEW(NxF64)[vcount*3];
       memcpy(vertices,mVertices->getVerticesDouble(),sizeof(NxF64)*vcount*3);
 
       for (NxU32 i=0; i<tcount; i++)
@@ -4393,7 +4386,7 @@ public:
     else
     {
       NxU32 vcount = mVertices->getVcount();
-      NxF32 *vertices = MEMALLOC_NEW_ARRAY(NxF32,vcount*3)[vcount*3];
+      NxF32 *vertices = MEMALLOC_NEW(NxF32)[vcount*3];
       memcpy(vertices,mVertices->getVerticesFloat(),sizeof(NxF32)*vcount*3);
 
 
@@ -5061,8 +5054,8 @@ public:
   NxF64 z;
 };
 
-typedef std::vector< TVec >  TVecVector;
-typedef std::vector< TU32 >  TU32Vector;
+typedef USER_STL::vector< TVec >  TVecVector;
+typedef USER_STL::vector< TU32 >  TU32Vector;
 
 class CTriangulator
 {
@@ -5238,7 +5231,7 @@ void CTriangulator::_process(TU32Vector &indices)
     const NxI32 n = (const NxI32)mPoints.size();
     if (n < 3)
         return;
-    NxI32 *V = new NxI32[n];
+    NxI32 *V = MEMALLOC_NEW(NxI32)[n];
 
 	bool flipped = false;
 
@@ -5387,7 +5380,7 @@ public:
   {
     reset();
 
-    NxF64 *points = new NxF64[pcount*3];
+    NxF64 *points = MEMALLOC_NEW(NxF64)[pcount*3];
     if ( consolidate )
     {
       pcount = fm_consolidatePolygon(pcount,_points,vstride,points,1-epsilon);
@@ -5419,7 +5412,7 @@ public:
       if ( indices )
       {
         tcount = _tcount;
-        mPointsDouble = new NxF64[tcount*3*3];
+        mPointsDouble = MEMALLOC_NEW(NxF64)[tcount*3*3];
         NxF64 *dest = mPointsDouble;
         for (NxU32 i=0; i<tcount; i++)
         {
@@ -5459,7 +5452,7 @@ public:
   {
     reset();
 
-    NxF64 *temp = new NxF64[pcount*3];
+    NxF64 *temp = MEMALLOC_NEW(NxF64)[pcount*3];
     NxF64 *dest = temp;
     for (NxU32 i=0; i<pcount; i++)
     {
@@ -5473,7 +5466,7 @@ public:
     if ( results )
     {
       NxU32 fcount = tcount*3*3;
-      mPointsFloat = new NxF32[tcount*3*3];
+      mPointsFloat = MEMALLOC_NEW(NxF32)[tcount*3*3];
       NxF32 *dest = mPointsFloat;
       for (NxU32 i=0; i<fcount; i++)
       {
@@ -5494,7 +5487,7 @@ private:
 
 fm_Triangulate * fm_createTriangulate(void)
 {
-  Triangulate *t = new Triangulate;
+  Triangulate *t = MEMALLOC_NEW(Triangulate);
   return static_cast< fm_Triangulate *>(t);
 }
 

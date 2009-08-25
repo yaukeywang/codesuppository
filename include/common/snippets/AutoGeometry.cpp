@@ -3,7 +3,6 @@
 #include <string.h>
 #include <assert.h>
 
-#include <vector>
 
 #ifdef APEX_TOOLS
 #include "AutoGeometry.h"
@@ -53,8 +52,8 @@ public:
 
   void release(void)
   {
-    MEMALLOC_DELETE_ARRAY(NxU32,mIndices);
-    MEMALLOC_DELETE_ARRAY(NxF32,mVertices);
+    delete []mIndices;
+    delete []mVertices;
     mIndices = 0;
     mVertices = 0;
     mTriCount = 0;
@@ -85,10 +84,10 @@ public:
       if ( e == STAN_HULL::QE_OK )
       {
         mTriCount = result.mNumFaces;
-        mIndices  = MEMALLOC_NEW_ARRAY(NxU32,mTriCount*3)[mTriCount*3];
+        mIndices  = MEMALLOC_NEW(NxU32)[mTriCount*3];
         memcpy(mIndices,result.mIndices,sizeof(NxU32)*mTriCount*3);
         mVertexCount = result.mNumOutputVertices;
-        mVertices = MEMALLOC_NEW_ARRAY(NxF32,mVertexCount*3)[mVertexCount*3];
+        mVertices = MEMALLOC_NEW(NxF32)[mVertexCount*3];
         memcpy(mVertices,result.mOutputVertices,sizeof(NxF32)*mVertexCount*3);
         mValidHull = true;
         mMeshVolume = fm_computeMeshVolume( mVertices, mTriCount, mIndices ); // compute the volume of this mesh.
@@ -176,9 +175,9 @@ public:
 
   void release(void)
   {
-    MEMALLOC_DELETE_ARRAY(MyHull,mHulls);
+    delete []mHulls;
     mHulls = 0;
-    MEMALLOC_DELETE_ARRAY(SimpleHull *,mSimpleHulls);
+    delete []mSimpleHulls;
     mSimpleHulls = 0;
   }
 
@@ -239,7 +238,7 @@ public:
     release();
     geom_count = 0;
 
-    mHulls = MEMALLOC_NEW_ARRAY(MyHull,bone_count)[bone_count];
+    mHulls = MEMALLOC_NEW(MyHull)[bone_count];
 
     for (NxU32 i=0; i<bone_count; i++)
     {
@@ -293,7 +292,7 @@ public:
 
     if ( geom_count )
     {
-      mSimpleHulls = MEMALLOC_NEW_ARRAY(SimpleHull *,geom_count)[geom_count];
+      mSimpleHulls = MEMALLOC_NEW(SimpleHull *)[geom_count];
       NxI32 index = 0;
       for (NxI32 i=0; i<(NxI32)bone_count; i++)
       {
@@ -496,7 +495,7 @@ AutoGeometry * createAutoGeometry(void)
 void           releaseAutoGeometry(AutoGeometry *g)
 {
   MyAutoGeometry * m = static_cast<MyAutoGeometry *>(g);
-  MEMALLOC_DELETE(MyAutoGeometry,m);
+  delete m;
 }
 
 

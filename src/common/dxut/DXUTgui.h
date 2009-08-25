@@ -317,7 +317,7 @@ struct DXUTTextureNode
     DWORD dwHeight;
 };
 
-struct DXUTFontNode
+struct DXUTFontNode : public Memalloc
 {
     WCHAR strFace[MAX_PATH];
     ID3DXFont* pFont;

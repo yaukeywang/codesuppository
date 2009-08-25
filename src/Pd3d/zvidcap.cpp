@@ -697,8 +697,8 @@ HRESULT ZVidcapFilter::SetMediaType(const AM_MEDIA_TYPE *media_type) {
 	if( incoming_image_buffers[1] ) {
 		delete incoming_image_buffers[1];
 	}
-	incoming_image_buffers[0] = MEMALLOC_NEW_ARRAY(char,width * height * depth)[width * height * depth];
-	incoming_image_buffers[1] = MEMALLOC_NEW_ARRAY(char,width * height * depth)[width * height * depth];
+	incoming_image_buffers[0] = MEMALLOC_NEW(char)[width * height * depth];
+	incoming_image_buffers[1] = MEMALLOC_NEW(char)[width * height * depth];
 
 	locks[0] = 0;
 	locks[1] = 0;
@@ -810,7 +810,7 @@ STDMETHODIMP ZVidcapFilter::JoinFilterGraph(IFilterGraph *graph, LPCWSTR desired
 
 	if (desired_name) {
 		DWORD len = lstrlenW(desired_name)+1;
-		name = MEMALLOC_NEW_ARRAY(WCHAR,len)[len];
+		name = MEMALLOC_NEW(WCHAR)[len];
 		assert(name);
 
 		if (name) memcpy(name, desired_name, len * sizeof(WCHAR));

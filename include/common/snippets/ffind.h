@@ -54,11 +54,10 @@
 */
 
 #include <string>
-#include <vector>
 
 #include "UserMemAlloc.h"
 
-typedef std::string String;
+typedef USER_STL::string String;
 typedef USER_STL::vector< String > StringVector;
 
 class WildCard;

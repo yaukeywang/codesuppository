@@ -207,7 +207,7 @@ namespace JOB_SWARM
 
       mMaxThreadCount = maxThreadCount;
 
-      mThreads = MEMALLOC_NEW_ARRAY(ThreadWorker,mMaxThreadCount)[mMaxThreadCount]; // the number of worker threads....
+      mThreads = MEMALLOC_NEW(ThreadWorker)[mMaxThreadCount]; // the number of worker threads....
 
       for (NxU32 i=0; i<mMaxThreadCount; i++)
       {
@@ -218,7 +218,7 @@ namespace JOB_SWARM
     ~JobScheduler(void)
     {
       waitFinish();
-      MEMALLOC_DELETE_ARRAY(ThreadWorker,mThreads);
+      delete []mThreads;
       LOCK_FREE_Q::releaseLockFreeQ(mPending);
     }
 
@@ -429,7 +429,7 @@ namespace JOB_SWARM
     if ( tc )
     {
       JobScheduler *tjf = static_cast< JobScheduler *>(tc);
-      MEMALLOC_DELETE(JobScheduler,tjf);
+      delete tjf;
       ret = true;
     }
     return ret;

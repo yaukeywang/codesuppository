@@ -658,7 +658,7 @@ public:
     mCount = spec->getCount();
     if ( mCount )
     {
-      mData  = MEMALLOC_NEW_ARRAY(KeyData,mCount)[mCount];
+      mData  = MEMALLOC_NEW(KeyData)[mCount];
 
       MyKeyValueMap::iterator i;
       for (i=spec->mValues.begin(); i!=spec->mValues.end(); ++i)

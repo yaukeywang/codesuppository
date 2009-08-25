@@ -115,7 +115,7 @@ bool doShutdown(void)
   if ( gInterface )
   {
     ret = true;
-    MEMALLOC_DELETE(MeshImportObj,gInterface);
+    delete gInterface;
     gInterface = 0;
   }
   return ret;

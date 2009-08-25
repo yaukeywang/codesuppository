@@ -39,8 +39,6 @@
 #include <assert.h>
 
 
-#include <vector>
-
 enum BoundingVolumeFlag
 {
 	BV_LEAF  = (1<<0),

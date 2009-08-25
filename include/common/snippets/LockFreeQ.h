@@ -82,16 +82,16 @@ namespace LOCK_FREE_Q
 
     ~CQueue(void)
     {
-      MEMALLOC_DELETE_ARRAY(T,m_Data);
+      delete []m_Data;
     }
 
     void init(NxI32 size)
     {
-      MEMALLOC_DELETE_ARRAY(T,m_Data);
+      delete []m_Data;
       m_Read = 0;
       m_Write = 0;
       m_Size = size;
-      m_Data = MEMALLOC_NEW_ARRAY(T,size)[size];
+      m_Data = MEMALLOC_NEW(T)[size];
     }
 
     //push a new element in the circular queue

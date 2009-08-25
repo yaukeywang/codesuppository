@@ -96,7 +96,7 @@ FileFind::~FileFind(void)
 }
 
 
-bool FileFind::FindFirst(std::string &name)
+bool FileFind::FindFirst(USER_STL::string &name)
 {
 #ifdef WIN32
   mInternalFind->hFindNext = FindFirstFileA(mSearchName, &mInternalFind->finddata);
@@ -217,7 +217,8 @@ NxI32 deleteFiles(const String &str)
 
 void FileFind::GetFiles(StringVector &list)  // get all files.
 {
-  std::string str;
+
+	USER_STL::string str;
   if ( FindFirst(str) )
   {
     list.push_back(str);

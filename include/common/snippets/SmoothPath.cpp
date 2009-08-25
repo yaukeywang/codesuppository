@@ -44,7 +44,7 @@ public:
     mCurrent = 0;
     mSize = size;
     mIndex = 0;
-    mNodes = MEMALLOC_NEW_ARRAY(BsplineNode,size)[size];
+    mNodes = MEMALLOC_NEW(BsplineNode)[size];
   };
 
   NxU32 GetSize(void)

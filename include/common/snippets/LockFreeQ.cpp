@@ -221,7 +221,7 @@ namespace LOCK_FREE_Q
   void        releaseLockFreeQ(LockFreeQ *q)
   {
     MyLockFreeQ *m = static_cast< MyLockFreeQ *>(q);
-    MEMALLOC_DELETE(MyLockFreeQ,m);
+    delete m;
   }
 
 };

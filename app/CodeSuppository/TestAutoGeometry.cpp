@@ -229,5 +229,5 @@ TestAutoGeometry * createTestAutoGeometry(MeshSystemHelper *h)
 void               releaseTestAutoGeometry(TestAutoGeometry *t)
 {
   MyTestAutoGeometry *m = static_cast< MyTestAutoGeometry *>(t);
-  MEMALLOC_DELETE(MyTestAutoGeometry,m);
+  delete m;
 }

@@ -16,10 +16,7 @@
 
 #pragma warning(disable:4996 4702) // Disable Microsof'ts freaking idiotic 'warnings' not to use standard ANSI C stdlib and string functions!
 
-#include <string>
-#include <vector>
-
-#include "NxSimpleTypes.h"
+#include "UserMemAlloc.h"
 #include "htmltable.h"
 
 #if defined(LINUX)
@@ -1230,7 +1227,7 @@ static bool numeric(char c)
   return ret;
 }
 
-static bool isNumeric(const std::string &str)
+static bool isNumeric(const USER_STL::string &str)
 {
   bool ret = true;
 
@@ -1326,7 +1323,7 @@ NxF32 getFloatValue(const char *data)
   return v;
 }
 
-void getFloat(NxF32 v,std::string &ret)
+void getFloat(NxF32 v,USER_STL::string &ret)
 {
   NxI32 ivalue = (NxI32)v;
 
@@ -1396,17 +1393,17 @@ public:
   }
 
 
-  std::string           mSortName;
+  USER_STL::string           mSortName;
   NxU32          mPrimaryKey;
   NxU32          mSecondaryKey;
   bool                  mPrimaryAscending:1;
   bool                  mSecondaryAscending:1;
 };
 
-typedef std::vector< SortRequest > SortRequestVector;
+typedef USER_STL::vector< SortRequest > SortRequestVector;
 
-typedef std::vector< std::string >  StringVector;
-typedef std::vector< size_t > SizetVector;
+typedef USER_STL::vector< USER_STL::string >  StringVector;
+typedef USER_STL::vector< size_t > SizetVector;
 
 class HtmlRow
 {
@@ -1470,7 +1467,7 @@ public:
   {
     if ( data )
     {
-      std::string str = data;
+		USER_STL::string str = data;
       if ( isNumeric(data) )
       {
         NxF32 v = getFloatValue(data);
@@ -1497,7 +1494,7 @@ public:
     }
   }
 
-  void getString(size_t index,std::string &str) const
+  void getString(size_t index,USER_STL::string &str) const
   {
     if ( index >= 0 && index < mRow.size() )
     {
@@ -1641,7 +1638,7 @@ public:
       bool needQuote = false;
       bool isNumeric = true;
 
-      std::string str;
+	  USER_STL::string str;
       while ( *data )
       {
         char c = *data++;
@@ -1703,8 +1700,8 @@ public:
   {
     NxI32 ret = 0;
 
-    std::string p1;  // primary 1
-    std::string p2;  // primary 2
+	USER_STL::string p1;  // primary 1
+	USER_STL::string p2;  // primary 2
 
 
     getString(s.mPrimaryKey-1,p1);
@@ -1738,8 +1735,8 @@ public:
 
     if ( ret == 0 )
     {
-      std::string p1;  // secondary 1
-      std::string p2;  // secondary 2
+		USER_STL::string p1;  // secondary 1
+		USER_STL::string p2;  // secondary 2
       getString(s.mSecondaryKey-1,p1);
       r.getString(s.mSecondaryKey-1,p2);
       if (isNumeric(p1) && isNumeric(p2) )
@@ -1778,7 +1775,7 @@ private:
   StringVector  mRow;
 };
 
-typedef std::vector< HtmlRow * > HtmlRowVector;
+typedef USER_STL::vector< HtmlRow * > HtmlRowVector;
 
 
 static NxI32 gTableCount=0;
@@ -1883,7 +1880,7 @@ public:
     mCurrent = 0;
   }
 
-  void addString(std::string &str,const char *data)
+  void addString(USER_STL::string &str,const char *data)
   {
     str.push_back(34);
     while ( *data )
@@ -1905,7 +1902,7 @@ public:
 
     if ( strstr(data,"/") )
     {
-      std::string sdata = data;
+		USER_STL::string sdata = data;
 
       bool bstate = true;
       while ( bstate )
@@ -1913,8 +1910,8 @@ public:
         size_t len = sdata.size();
 
 
-        std::string header1;
-        std::string header2;
+		USER_STL::string header1;
+		USER_STL::string header2;
 
         char *temp = (char *)HTML_MALLOC(sizeof(char)*(len+1));
         memcpy(temp,sdata.c_str(),len+1);
@@ -2001,7 +1998,7 @@ public:
 
   void addColumn(NxF32 v)
   {
-    std::string str;
+	  USER_STL::string str;
     getFloat(v,str);
     addColumn(str.c_str());
   }
@@ -2048,7 +2045,7 @@ public:
   }
 
 
-  void printLeft(FILE_INTERFACE *fph,const std::string &str,size_t width)
+  void printLeft(FILE_INTERFACE *fph,const USER_STL::string &str,size_t width)
   {
     size_t swid = str.size();
     assert( swid <= width );
@@ -2062,7 +2059,7 @@ public:
     }
   }
 
-  void printRight(FILE_INTERFACE *fph,const std::string &str,size_t width)
+  void printRight(FILE_INTERFACE *fph,const USER_STL::string &str,size_t width)
   {
     size_t swid = str.size();
     assert( swid <= width );
@@ -2078,7 +2075,7 @@ public:
 
   }
 
-  void printCenter(FILE_INTERFACE *fph,const std::string &str,size_t width)
+  void printCenter(FILE_INTERFACE *fph,const USER_STL::string &str,size_t width)
   {
     size_t swid = str.size();
     if ( swid > width )
@@ -2316,7 +2313,7 @@ public:
       HtmlRow *row = (*i);
       if ( !row->isHeader() )
       {
-        std::string str;
+		  USER_STL::string str;
         row->getString(column,str);
         if ( isNumeric(str) )
         {
@@ -2356,12 +2353,12 @@ public:
         {
           if ( !excluded(i+1) )
           {
-            std::string str;
+			  USER_STL::string str;
             first_row->getString(i,str);
             if ( isNumeric(str) )
             {
               NxF32 v = computeTotal(i);
-              std::string str;
+              USER_STL::string str;
               getFloat(v,str);
               totals->addColumn(str.c_str());
             }
@@ -2511,7 +2508,7 @@ public:
         size_t c = csize[i];
 
 
-        std::string str;
+        USER_STL::string str;
         row.getString(i,str);
 
         assert( str.size() < csize[i] );
@@ -2650,15 +2647,15 @@ public:
   }
 
 
-  const std::string & getHeading(void) const { return mHeading; };
+  const USER_STL::string & getHeading(void) const { return mHeading; };
 
 private:
   NxU32                        mHeaderColor;
   NxU32                        mFooterColor;
   NxU32                        mBodyColor;
-  std::vector< NxU32 > mColumnColors;
+  USER_STL::vector< NxU32 > mColumnColors;
   HtmlDocument        *mParent;
-  std::string          mHeading;
+  USER_STL::string          mHeading;
   HtmlRow             *mCurrent;
   HtmlRowVector        mBody;
   InPlaceParser        mParser;
@@ -2666,7 +2663,7 @@ private:
   SortRequestVector    mSortRequests;
 
   bool                        mComputeTotals;
-  std::vector< NxU32 > mExcludeTotals;
+  USER_STL::vector< NxU32 > mExcludeTotals;
 
   NxU8 UPPER_LEFT_BORDER;
   NxU8 UPPER_RIGHT_BORDER;
@@ -2686,7 +2683,7 @@ private:
 
 };
 
-typedef std::vector< _HtmlTable * > HtmlTableVector;
+typedef USER_STL::vector< _HtmlTable * > HtmlTableVector;
 
 class _HtmlDocument : public HtmlDocument
 {
@@ -2855,9 +2852,9 @@ public:
   {
     bool ret = false;
 
-    std::string dest_name;
-    std::string base_name;
-    std::string root_dir;
+    USER_STL::string dest_name;
+    USER_STL::string base_name;
+    USER_STL::string root_dir;
 
 
     char scratch[512];
@@ -2902,7 +2899,7 @@ public:
     return ret;
   }
 
-  void saveExcel(const std::string &dest_name,const std::string &base_name,std::string &root_dir)
+  void saveExcel(const USER_STL::string &dest_name,const USER_STL::string &base_name,USER_STL::string &root_dir)
   {
 #if USE_EXCEL
 
@@ -3526,7 +3523,7 @@ public:
 
 
 private:
-  std::string      mDocumentName;
+  USER_STL::string      mDocumentName;
   HtmlTableVector  mTables;
   HtmlTableInterface *mInterface;
 };

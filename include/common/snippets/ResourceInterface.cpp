@@ -86,7 +86,7 @@ public:
   void init(const char *fqn,void *userData,const void *mem,NxU32 len,ResourceInterfaceCallback *iface,const char *options)
   {
     NxU32 wlen = strlen(fqn);
-    mFQN = MEMALLOC_NEW_ARRAY(char,wlen+1)[wlen+1];
+    mFQN = MEMALLOC_NEW(char)[wlen+1];
     strcpy((char *)mFQN,fqn);
     mUserData = userData;
     mData     = (void *)mem;
@@ -219,7 +219,7 @@ RESOURCE_HANDLE  FileResourceInterface::getResource(const char *fqn,void *userDa
       }
       else
       {
-        ret = MEMALLOC_NEW_ARRAY(char,len)[len];
+        ret = MEMALLOC_NEW(char)[len];
 
         if ( ret )
         {
@@ -392,7 +392,7 @@ void * getFileSynchronous(const char *fname,NxU32 &len)
       if ( ok && info.mLen )
       {
         len = (NxU32) info.mLen;
-        char *mem = MEMALLOC_NEW_ARRAY(char,len)[len];
+        char *mem = MEMALLOC_NEW(char)[len];
         memcpy(mem,info.mData,len);
         gResourceInterface->releaseResource(handle,RESOURCE_INTERFACE::RU_RELEASE_NO_UPDATE);
         ret = mem;

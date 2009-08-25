@@ -17,8 +17,8 @@ public:
   }
   ~SimpleMesh(void)
   {
-    MEMALLOC_DELETE_ARRAY(const NxF32,mVertice);
-    MEMALLOC_DELETE_ARRAY(NxU32,mIndices);
+    delete []mVertices;
+    delete []mIndices;
   }
 
   NxU32 mVcount;

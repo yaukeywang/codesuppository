@@ -66,8 +66,6 @@
 #include "wavefront.h"
 #include "FloatMath.h"
 
-#include <vector>
-
 typedef USER_STL::vector< NxI32 > IntVector;
 typedef USER_STL::vector< NxF32 > FloatVector;
 

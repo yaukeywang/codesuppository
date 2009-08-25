@@ -23,7 +23,7 @@ public:
     mRet = QE_NOT_READY;
     mDesc.mFlags         = desc.mFlags;
     mDesc.mVcount        = desc.mVcount;
-    mDesc.mVertices      = MEMALLOC_NEW_ARRAY(NxF32,mDesc.mVcount*3)[mDesc.mVcount*3];
+    mDesc.mVertices      = MEMALLOC_NEW(NxF32)[mDesc.mVcount*3];
     mDesc.mVertexStride  = sizeof(NxF32)*3;
     if ( mDesc.mVertexStride == desc.mVertexStride )
     {
@@ -66,7 +66,7 @@ public:
   virtual void job_process(void *userData,NxI32 userId)    // RUNS IN ANOTHER THREAD!! MUST BE THREAD SAFE!
   {
     mRet = mHull.CreateConvexHull(mDesc,mResult);
-    MEMALLOC_DELETE_ARRAY(NxF32,mDesc.mVertices);
+    delete []mDesc.mVertices;
     mDesc.mVertices = 0;
   }
 
@@ -102,7 +102,7 @@ ThreadHull * createThreadHull(const HullDesc &desc,JOB_SWARM::JobSwarmContext *c
 void         releaseThreadHull(ThreadHull *th)
 {
   MyThreadHull *m = static_cast< MyThreadHull *>(th);
-  MEMALLOC_DELETE(MyThreadHull,m);
+  delete m;
 }
 
 };

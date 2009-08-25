@@ -181,7 +181,7 @@ public:
       while ( mb )
       {
         MemoryBlock *next = mb->mNextBlock;
-        MEMALLOC_DELETE(MemoryBlock,mb);
+        delete mb;
         mb = next;
       }
 
@@ -430,7 +430,7 @@ public:
       {
         dest = mb->getData(dest);
         MemoryBlock *next = mb->mNextBlock;
-        MEMALLOC_DELETE(MemoryBlock,mb);
+        delete mb;
         mb = next;
       }
 
@@ -473,7 +473,7 @@ FILE_INTERFACE * fi_fopen(const char *fname,const char *spec,void *mem,size_t le
   {
   	if ( ret->mFph == 0 )
   	{
-      MEMALLOC_DELETE(_FILE_INTERFACE,ret);
+      delete ret;
   		ret = 0;
   	}
   }
@@ -488,7 +488,7 @@ size_t  fi_fclose(FILE_INTERFACE *_file)
   if ( _file )
   {
     _FILE_INTERFACE *file = (_FILE_INTERFACE *)_file;
-    MEMALLOC_DELETE(_FILE_INTERFACE,file);
+    delete file;
   }
   return ret;
 }

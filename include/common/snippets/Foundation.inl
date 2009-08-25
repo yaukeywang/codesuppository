@@ -5969,13 +5969,8 @@ NX_INLINE void NxBounds3::fatten(NxReal distance)
 #define USER_STL_EXT stdext
 
 #define MEMALLOC_NEW(x) new x
-#define MEMALLOC_NEW_ARRAY(x,y) new x
 
-#define MEMALLOC_DELETE(x,y) delete y;
-#define MEMALLOC_DELETE_ARRAY(x,y) delete []y;
-
-#define MEMALLOC_MALLOC_TYPE(x,t,f,l) ::malloc(x)
-#define MEMALLOC_MALLOC_TAGGED(x,t) ::malloc(x)
+#define MEMALLOC_MALLOC(x,t,f,l) ::malloc(x)
 #define MEMALLOC_MALLOC(x) ::malloc(x)
 #define MEMALLOC_FREE(x) ::free(x)
 #define MEMALLOC_REALLOC(x,y) ::realloc(x,y)

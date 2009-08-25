@@ -6,9 +6,6 @@
 #include <assert.h>
 #include <float.h>
 #include <math.h>
-#include <algorithm>
-#include <vector>
-
 
 #include "UserMemAlloc.h"
 #include "ConvexDecomposition.h"
@@ -1183,7 +1180,7 @@ public:
 
 	void sortChulls(CHullVector &hulls)
 	{
-		std::sort( hulls.begin(), hulls.end(), CHullSort() );
+		USER_STL::sort( hulls.begin(), hulls.end(), CHullSort() );
 	}
 
   bool addTri(fm_VertexIndex *vl,

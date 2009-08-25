@@ -530,7 +530,7 @@ HRESULT LoadMesh( IDirect3DDevice9* pd3dDevice, WCHAR* strFileName, ID3DXMesh** 
     // so when rendering the mesh's triangle list the vertices will
     // cache hit more often so it won't have to re-execute the vertex shader
     // on those vertices so it will improve perf.
-    rgdwAdjacency = MEMALLOC_NEW_ARRAY(DWORD,pMesh->GetNumFaces() * 3)[pMesh->GetNumFaces() * 3];
+    rgdwAdjacency = MEMALLOC_NEW(DWORD)[pMesh->GetNumFaces() * 3];
     if( rgdwAdjacency == NULL )
         return E_OUTOFMEMORY;
     V( pMesh->GenerateAdjacency(1e-6f,rgdwAdjacency) );

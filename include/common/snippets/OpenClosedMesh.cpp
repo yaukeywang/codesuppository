@@ -11,7 +11,7 @@
 namespace OPEN_CLOSED_MESH
 {
 
-typedef USER_STL::vector< size_t > size_tVector;
+typedef std::vector< size_t > size_tVector;
 
 class Edge
 {
@@ -44,7 +44,7 @@ public:
   Edge  *mNextEdge;
 };
 
-typedef USER_STL_EXT::hash_map< size_t, Edge * > EdgeMap;
+typedef stdext::hash_map< size_t, Edge * > EdgeMap;
 
 class MyOpenClosedMesh : public OpenClosedMesh
 {

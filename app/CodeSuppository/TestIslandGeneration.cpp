@@ -5,7 +5,7 @@
 
 #include "TestIslandGeneration.h"
 #include "MeshImport.h"
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 #include "MeshIslandGeneration.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
 #include "RenderDebug.h"

@@ -35,15 +35,10 @@
 #include <stdarg.h>
 #include <setjmp.h>
 
-#ifdef APEX_TOOLS
 #include "StanHull.h"
 #include "UserMemAlloc.h"
-#else
-#include "StanHull.h"
-#include "UserMemAlloc.h"
-#endif
 
-namespace STAN_HULL
+namespace NVSHARE
 {
 
 //*****************************************************
@@ -310,7 +305,7 @@ T Min(const T &a,const T &b)
 
 //----------------------------------
 
-class int3  
+class int3  : public Memalloc
 {
 public:
 	NxI32 x,y,z;
@@ -323,7 +318,7 @@ public:
 
 //-------- 2D --------
 
-class float2
+class float2  : public Memalloc
 {
 public:
 	NxF32 x,y;
@@ -337,7 +332,7 @@ inline float2 operator+( const float2& a, const float2& b ){return float2(a.x+b.
 
 //--------- 3D ---------
 
-class float3 // 3D
+class float3  : public Memalloc // 3D
 {
 	public:
 	NxF32 x,y,z;
@@ -377,7 +372,7 @@ float3	VectorMin(const float3 &a, const float3 &b);
 
 
 
-class float3x3
+class float3x3  : public Memalloc
 {
 	public:
 	float3 x,y,z;  // the 3 rows of the Matrix
@@ -406,7 +401,7 @@ float3x3 Inverse(const float3x3& a);  // its just 3x3 so we simply do that cofac
 
 //-------- 4D Math --------
 
-class float4
+class float4  : public Memalloc
 {
 public:
 	NxF32 x,y,z,w;
@@ -423,7 +418,7 @@ public:
 
 struct D3DXMATRIX; 
 
-class float4x4
+class float4x4  : public Memalloc
 {
 	public:
 	float4 x,y,z,w;  // the 4 rows
@@ -1599,7 +1594,7 @@ void ReleaseHull(PHullResult &result);
 
 NxF32 planetestepsilon = PAPERWIDTH;
 
-class ConvexH 
+class ConvexH : public Memalloc
 {
   public:
 	class HalfEdge
@@ -2784,7 +2779,7 @@ bool ComputeHull(NxU32 vcount,const NxF32 *vertices,PHullResult &result,NxU32 vl
 	result.mVcount     = (NxU32) verts_count_out;
 	result.mIndices    = (NxU32 *) tris.element;
 	tris.element=NULL; tris.count = tris.array_size=0;
-	STAN_HULL::tris.SetSize(0); //have to set the size to 0 in order to protect from a "pure virtual function call" problem
+	NVSHARE::tris.SetSize(0); //have to set the size to 0 in order to protect from a "pure virtual function call" problem
 
 	return true;
 }
@@ -3248,7 +3243,7 @@ void HullLibrary::BringOutYourDead(const NxF32 *verts,NxU32 vcount, NxF32 *overt
 	{
 		NxU32 v = indices[i]; // original array index
 
-		assert( v >= 0 && v < vcount );
+		assert( v < vcount );
 
 		if ( used[v] ) // if already remapped
 		{
@@ -3265,7 +3260,7 @@ void HullLibrary::BringOutYourDead(const NxF32 *verts,NxU32 vcount, NxF32 *overt
 
 			ocount++; // increment output vert count
 
-			assert( ocount >=0 && ocount <= vcount );
+			assert( ocount <= vcount );
 
 			used[v] = ocount; // assign new index remapping
 		}
@@ -3440,4 +3435,4 @@ NxF32 HullLibrary::ComputeNormal(NxF32 *n,const NxF32 *A,const NxF32 *B,const Nx
 	return mag;
 }
 
-}; // End of STAN_HULL namespace
+}; // End of namespace

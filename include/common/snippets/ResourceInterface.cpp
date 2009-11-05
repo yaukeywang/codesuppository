@@ -9,6 +9,8 @@
 #include "filesystem.h"
 #include "pool.h"
 
+using namespace NVSHARE;
+
 /*!
 **
 ** Copyright (c) 2007 by John W. Ratcliff mailto:jratcliff@infiniplex.net
@@ -86,7 +88,7 @@ public:
   void init(const char *fqn,void *userData,const void *mem,NxU32 len,ResourceInterfaceCallback *iface,const char *options)
   {
     NxU32 wlen = strlen(fqn);
-    mFQN = MEMALLOC_NEW(char)[wlen+1];
+    mFQN = (char *) MEMALLOC_MALLOC(sizeof(char)*(wlen+1));
     strcpy((char *)mFQN,fqn);
     mUserData = userData;
     mData     = (void *)mem;
@@ -129,7 +131,7 @@ public:
 #define START_HANDLES 10
 #define GROW_HANDLES  10
 
-class FileResourceInterface : public ResourceInterface
+class FileResourceInterface : public ResourceInterface, public NVSHARE::Memalloc
 {
 public:
   FileResourceInterface(void)
@@ -219,7 +221,7 @@ RESOURCE_HANDLE  FileResourceInterface::getResource(const char *fqn,void *userDa
       }
       else
       {
-        ret = MEMALLOC_NEW(char)[len];
+        ret = (char *)MEMALLOC_MALLOC(len);
 
         if ( ret )
         {
@@ -392,7 +394,7 @@ void * getFileSynchronous(const char *fname,NxU32 &len)
       if ( ok && info.mLen )
       {
         len = (NxU32) info.mLen;
-        char *mem = MEMALLOC_NEW(char)[len];
+        char *mem = (char *)MEMALLOC_MALLOC(len);
         memcpy(mem,info.mData,len);
         gResourceInterface->releaseResource(handle,RESOURCE_INTERFACE::RU_RELEASE_NO_UPDATE);
         ret = mem;

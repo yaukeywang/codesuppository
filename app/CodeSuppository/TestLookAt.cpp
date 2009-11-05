@@ -5,7 +5,7 @@
 
 #include "TestLookAt.h"
 
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 
 void testLookAt(void)
 {

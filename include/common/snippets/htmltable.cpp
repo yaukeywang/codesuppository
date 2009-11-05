@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <math.h>
 #include <stdarg.h>
+#include <vector>
 
 #if defined(WIN32)
 #include <direct.h>
@@ -25,8 +26,12 @@
 #define _mkdir(a) mkdir(a, 0)
 #endif
 
-namespace HTML_TABLE
+#define HTMLTABLE_NVSHARE HTMLTABLE_##NVSHARE
+
+namespace HTMLTABLE_NVSHARE
 {
+
+using namespace NVSHARE;
 
 #pragma warning(disable:4100)
 
@@ -1227,7 +1232,7 @@ static bool numeric(char c)
   return ret;
 }
 
-static bool isNumeric(const USER_STL::string &str)
+static bool isNumeric(const std::string &str)
 {
   bool ret = true;
 
@@ -1238,6 +1243,7 @@ static bool isNumeric(const USER_STL::string &str)
   else
   {
     const char *scan = str.c_str();
+	if ( *scan == '-' ) scan++;
     while ( *scan )
     {
       if ( !numeric(*scan) )
@@ -1271,12 +1277,19 @@ const char * formatNumber(NxI32 number) // JWR  format this integer into a fancy
 	itoa(number,scratch,10);
 #endif
 
+	char *source = scratch;
 	char *str = dest;
 	NxU32 len = (NxU32)strlen(scratch);
+	if ( scratch[0] == '-' )
+	{
+		*str++ = '-';
+		source++;
+		len--;
+	}
 	for (NxU32 i=0; i<len; i++)
 	{
 		NxI32 place = (len-1)-i;
-		*str++ = scratch[i];
+		*str++ = source[i];
 		if ( place && (place%3) == 0 ) *str++ = ',';
 	}
 	*str = 0;
@@ -1323,7 +1336,7 @@ NxF32 getFloatValue(const char *data)
   return v;
 }
 
-void getFloat(NxF32 v,USER_STL::string &ret)
+void getFloat(NxF32 v,std::string &ret)
 {
   NxI32 ivalue = (NxI32)v;
 
@@ -1393,17 +1406,17 @@ public:
   }
 
 
-  USER_STL::string           mSortName;
+  std::string           mSortName;
   NxU32          mPrimaryKey;
   NxU32          mSecondaryKey;
   bool                  mPrimaryAscending:1;
   bool                  mSecondaryAscending:1;
 };
 
-typedef USER_STL::vector< SortRequest > SortRequestVector;
+typedef std::vector< SortRequest > SortRequestVector;
 
-typedef USER_STL::vector< USER_STL::string >  StringVector;
-typedef USER_STL::vector< size_t > SizetVector;
+typedef std::vector< std::string >  StringVector;
+typedef std::vector< size_t > SizetVector;
 
 class HtmlRow
 {
@@ -1467,7 +1480,7 @@ public:
   {
     if ( data )
     {
-		USER_STL::string str = data;
+		std::string str = data;
       if ( isNumeric(data) )
       {
         NxF32 v = getFloatValue(data);
@@ -1494,7 +1507,7 @@ public:
     }
   }
 
-  void getString(size_t index,USER_STL::string &str) const
+  void getString(size_t index,std::string &str) const
   {
     if ( index >= 0 && index < mRow.size() )
     {
@@ -1638,7 +1651,7 @@ public:
       bool needQuote = false;
       bool isNumeric = true;
 
-	  USER_STL::string str;
+	  std::string str;
       while ( *data )
       {
         char c = *data++;
@@ -1700,8 +1713,8 @@ public:
   {
     NxI32 ret = 0;
 
-	USER_STL::string p1;  // primary 1
-	USER_STL::string p2;  // primary 2
+	std::string p1;  // primary 1
+	std::string p2;  // primary 2
 
 
     getString(s.mPrimaryKey-1,p1);
@@ -1735,8 +1748,8 @@ public:
 
     if ( ret == 0 )
     {
-		USER_STL::string p1;  // secondary 1
-		USER_STL::string p2;  // secondary 2
+		std::string p1;  // secondary 1
+		std::string p2;  // secondary 2
       getString(s.mSecondaryKey-1,p1);
       r.getString(s.mSecondaryKey-1,p2);
       if (isNumeric(p1) && isNumeric(p2) )
@@ -1775,7 +1788,7 @@ private:
   StringVector  mRow;
 };
 
-typedef USER_STL::vector< HtmlRow * > HtmlRowVector;
+typedef std::vector< HtmlRow * > HtmlRowVector;
 
 
 static NxI32 gTableCount=0;
@@ -1783,34 +1796,18 @@ static NxI32 gTableCount=0;
 class _HtmlTable : public HtmlTable, public QuickSortPointers
 {
 public:
-  _HtmlTable(const char *heading,HtmlDocument *parent)
-  {
-//    gTableCount++;
-//    printf("Constructed _HtmlTable(%08X) Count:%d\r\n", this,gTableCount );
+  _HtmlTable(const char *heading,HtmlDocument *parent);
 
-    mHeaderColor = 0x00FFFF;
-    mFooterColor = 0xCCFFFF;
-    mBodyColor   = 0xCCFFCC;
 
-    mParent = parent;
-    if ( heading )
-    {
-      mHeading = heading;
-    }
-    mComputeTotals = false;
-
-    mCurrent = 0;
-    mParser.ClearHardSeparator(32);
-    mParser.ClearHardSeparator(9);
-    mParser.SetHard(',');
-  }
-
-  ~_HtmlTable(void)
+  virtual ~_HtmlTable(void)
   {
 //    gTableCount--;
 //    printf("Destructed _HtmlTable(%08X) Count:%d\r\n", this, gTableCount );
     reset();
   }
+
+  NxU32 getDisplayOrder(void) const { return mDisplayOrder; };
+
 
 	NxI32 compare(void **p1,void **p2)
   {
@@ -1880,7 +1877,7 @@ public:
     mCurrent = 0;
   }
 
-  void addString(USER_STL::string &str,const char *data)
+  void addString(std::string &str,const char *data)
   {
     str.push_back(34);
     while ( *data )
@@ -1902,7 +1899,7 @@ public:
 
     if ( strstr(data,"/") )
     {
-		USER_STL::string sdata = data;
+		std::string sdata = data;
 
       bool bstate = true;
       while ( bstate )
@@ -1910,8 +1907,8 @@ public:
         size_t len = sdata.size();
 
 
-		USER_STL::string header1;
-		USER_STL::string header2;
+		std::string header1;
+		std::string header2;
 
         char *temp = (char *)HTML_MALLOC(sizeof(char)*(len+1));
         memcpy(temp,sdata.c_str(),len+1);
@@ -1998,10 +1995,18 @@ public:
 
   void addColumn(NxF32 v)
   {
-	  USER_STL::string str;
+	  std::string str;
     getFloat(v,str);
     addColumn(str.c_str());
   }
+
+  void addColumnHex(NxU32 v)
+  {
+	  char scratch[512];
+	  sprintf(scratch,"$%08X",v);
+	  addColumn(scratch);
+  }
+
 
   void addColumn(NxI32 v)
   {
@@ -2045,7 +2050,7 @@ public:
   }
 
 
-  void printLeft(FILE_INTERFACE *fph,const USER_STL::string &str,size_t width)
+  void printLeft(FILE_INTERFACE *fph,const std::string &str,size_t width)
   {
     size_t swid = str.size();
     assert( swid <= width );
@@ -2059,7 +2064,7 @@ public:
     }
   }
 
-  void printRight(FILE_INTERFACE *fph,const USER_STL::string &str,size_t width)
+  void printRight(FILE_INTERFACE *fph,const std::string &str,size_t width)
   {
     size_t swid = str.size();
     assert( swid <= width );
@@ -2075,7 +2080,7 @@ public:
 
   }
 
-  void printCenter(FILE_INTERFACE *fph,const USER_STL::string &str,size_t width)
+  void printCenter(FILE_INTERFACE *fph,const std::string &str,size_t width)
   {
     size_t swid = str.size();
     if ( swid > width )
@@ -2160,7 +2165,7 @@ public:
   {
     fi_fprintf(fph,"  if ( 1 )\r\n");
     fi_fprintf(fph,"  {\r\n");
-    fi_fprintf(fph,"    HTML_TABLE::HtmlTable *table = document->createHtmlTable(\"%s\");\r\n", mHeading.c_str() );
+    fi_fprintf(fph,"    NVSHARE::HtmlTable *table = document->createHtmlTable(\"%s\");\r\n", mHeading.c_str() );
     HtmlRowVector::iterator i;
     for (i=mBody.begin(); i!=mBody.end(); i++)
     {
@@ -2313,7 +2318,7 @@ public:
       HtmlRow *row = (*i);
       if ( !row->isHeader() )
       {
-		  USER_STL::string str;
+		  std::string str;
         row->getString(column,str);
         if ( isNumeric(str) )
         {
@@ -2353,12 +2358,12 @@ public:
         {
           if ( !excluded(i+1) )
           {
-			  USER_STL::string str;
+			  std::string str;
             first_row->getString(i,str);
             if ( isNumeric(str) )
             {
               NxF32 v = computeTotal(i);
-              USER_STL::string str;
+              std::string str;
               getFloat(v,str);
               totals->addColumn(str.c_str());
             }
@@ -2508,7 +2513,7 @@ public:
         size_t c = csize[i];
 
 
-        USER_STL::string str;
+        std::string str;
         row.getString(i,str);
 
         assert( str.size() < csize[i] );
@@ -2646,16 +2651,22 @@ public:
     return ret;
   }
 
+  virtual void                setOrder(NxU32 order)
+  {
+    mDisplayOrder = order;
+  }
 
-  const USER_STL::string & getHeading(void) const { return mHeading; };
+
+  const std::string & getHeading(void) const { return mHeading; };
 
 private:
+  NxU32                        mDisplayOrder;
   NxU32                        mHeaderColor;
   NxU32                        mFooterColor;
   NxU32                        mBodyColor;
-  USER_STL::vector< NxU32 > mColumnColors;
+  std::vector< NxU32 > mColumnColors;
   HtmlDocument        *mParent;
-  USER_STL::string          mHeading;
+  std::string          mHeading;
   HtmlRow             *mCurrent;
   HtmlRowVector        mBody;
   InPlaceParser        mParser;
@@ -2663,7 +2674,7 @@ private:
   SortRequestVector    mSortRequests;
 
   bool                        mComputeTotals;
-  USER_STL::vector< NxU32 > mExcludeTotals;
+  std::vector< NxU32 > mExcludeTotals;
 
   NxU8 UPPER_LEFT_BORDER;
   NxU8 UPPER_RIGHT_BORDER;
@@ -2683,13 +2694,34 @@ private:
 
 };
 
-typedef USER_STL::vector< _HtmlTable * > HtmlTableVector;
+typedef std::vector< _HtmlTable * > HtmlTableVector;
+
+
+class SortTables : public QuickSortPointers
+{
+public:
+  SortTables(NxU32 tcount,_HtmlTable **tables)
+  {
+    qsort((void **)tables,tcount);
+  }
+
+  virtual NxI32 compare(void **p1,void **p2)
+  {
+    _HtmlTable **tp1 = (_HtmlTable **)p1;
+    _HtmlTable **tp2 = (_HtmlTable **)p2;
+    _HtmlTable *t1   = *tp1;
+    _HtmlTable *t2   = *tp2;
+    return (NxI32)t1->getDisplayOrder() - (NxI32)t2->getDisplayOrder();
+  }
+
+};
 
 class _HtmlDocument : public HtmlDocument
 {
 public:
   _HtmlDocument(const char *document_name,HtmlTableInterface *iface)
   {
+    mDisplayOrder = 0;
     mInterface = iface;
     if ( document_name )
     {
@@ -2697,9 +2729,15 @@ public:
     }
   }
 
-  ~_HtmlDocument(void)
+  virtual ~_HtmlDocument(void)
   {
     reset();
+  }
+
+  NxU32 getDisplayOrder(void)
+  {
+    mDisplayOrder++;
+    return mDisplayOrder;
   }
 
   void reset(void)
@@ -2746,7 +2784,7 @@ public:
           fi_fprintf(fph,"\r\n");
 
 
-          fi_fprintf(fph,"%s\r\n","void testSave(HTML_TABLE::HtmlDocument *document,const char *fname,HTML_TABLE::HtmlSaveType type)");
+          fi_fprintf(fph,"%s\r\n","void testSave(NVSHARE::HtmlDocument *document,const char *fname,NVSHARE::HtmlSaveType type)");
           fi_fprintf(fph,"%s\r\n","{");
           fi_fprintf(fph,"%s\r\n","  size_t len;");
           fi_fprintf(fph,"%s\r\n","  const char *data = document->saveDocument(len,type);");
@@ -2773,8 +2811,8 @@ public:
 
           fi_fprintf(fph,"void html_test(void)\r\n");
           fi_fprintf(fph,"{\r\n");
-          fi_fprintf(fph,"  HTML_TABLE::HtmlTableInterface *iface = HTML_TABLE::getHtmlTableInterface();\r\n");
-          fi_fprintf(fph,"  HTML_TABLE::HtmlDocument *document    = iface->createHtmlDocument(\"%s\");\r\n", mDocumentName.c_str() );
+          fi_fprintf(fph,"  NVSHARE::HtmlTableInterface *iface = NVSHARE::getHtmlTableInterface();\r\n");
+          fi_fprintf(fph,"  NVSHARE::HtmlDocument *document    = iface->createHtmlDocument(\"%s\");\r\n", mDocumentName.c_str() );
 #endif
           break;
         case HST_TEXT:
@@ -2784,11 +2822,17 @@ public:
           break;
       }
 
-      HtmlTableVector::iterator i;
-      for (i=mTables.begin(); i!=mTables.end(); ++i)
-      {
-        (*i)->save(fph,type);
-      }
+	  if ( !mTables.empty() )
+	  {
+		  NxU32 tcount = mTables.size();
+		  _HtmlTable **tables = &mTables[0];
+          SortTables st( tcount, tables );
+		  HtmlTableVector::iterator i;
+		  for (i=mTables.begin(); i!=mTables.end(); ++i)
+		  {
+			(*i)->save(fph,type);
+		  }
+	  }
 
       switch ( type )
       {
@@ -2799,9 +2843,9 @@ public:
           break;
         case HST_CPP:
 #if USE_CPP
-          fi_fprintf(fph,"%s\r\n","  testSave(document,\"table.txt\",  HTML_TABLE::HST_TEXT );");
-          fi_fprintf(fph,"%s\r\n","  testSave(document,\"table.html\", HTML_TABLE::HST_SIMPLE_HTML );");
-          fi_fprintf(fph,"%s\r\n","  testSave(document,\"table.cpp\",  HTML_TABLE::HST_CPP );");
+          fi_fprintf(fph,"%s\r\n","  testSave(document,\"table.txt\",  NVSHARE::HST_TEXT );");
+          fi_fprintf(fph,"%s\r\n","  testSave(document,\"table.html\", NVSHARE::HST_SIMPLE_HTML );");
+          fi_fprintf(fph,"%s\r\n","  testSave(document,\"table.cpp\",  NVSHARE::HST_CPP );");
           fi_fprintf(fph,"%s\r\n","");
           fi_fprintf(fph,"%s\r\n","");
           fi_fprintf(fph,"%s\r\n","");
@@ -2852,9 +2896,9 @@ public:
   {
     bool ret = false;
 
-    USER_STL::string dest_name;
-    USER_STL::string base_name;
-    USER_STL::string root_dir;
+    std::string dest_name;
+    std::string base_name;
+    std::string root_dir;
 
 
     char scratch[512];
@@ -2880,7 +2924,9 @@ public:
           base_name = bname;
           root_dir = scratch;
           sprintf(temp,"%s%s_files",scratch,bname);
+#ifdef WIN32
           _mkdir(temp);
+#endif
         }
       }
       else
@@ -2890,7 +2936,9 @@ public:
         base_name = scratch;
         char temp[512];
         sprintf(temp,"%s_files", scratch );
+#ifdef WIN32
         _mkdir(temp);
+#endif
       }
     }
 
@@ -2899,7 +2947,7 @@ public:
     return ret;
   }
 
-  void saveExcel(const USER_STL::string &dest_name,const USER_STL::string &base_name,USER_STL::string &root_dir)
+  void saveExcel(const std::string &dest_name,const std::string &base_name,std::string &root_dir)
   {
 #if USE_EXCEL
 
@@ -3523,10 +3571,36 @@ public:
 
 
 private:
-  USER_STL::string      mDocumentName;
+	NxU32 mDisplayOrder;
+  std::string      mDocumentName;
   HtmlTableVector  mTables;
   HtmlTableInterface *mInterface;
 };
+
+  _HtmlTable::_HtmlTable(const char *heading,HtmlDocument *parent)
+  {
+//    gTableCount++;
+//    printf("Constructed _HtmlTable(%08X) Count:%d\r\n", this,gTableCount );
+
+    _HtmlDocument *hd = static_cast< _HtmlDocument *>(parent);
+    mDisplayOrder = hd->getDisplayOrder();
+
+    mHeaderColor = 0x00FFFF;
+    mFooterColor = 0xCCFFFF;
+    mBodyColor   = 0xCCFFCC;
+
+    mParent = parent;
+    if ( heading )
+    {
+      mHeading = heading;
+    }
+    mComputeTotals = false;
+
+    mCurrent = 0;
+    mParser.ClearHardSeparator(32);
+    mParser.ClearHardSeparator(9);
+    mParser.SetHard(',');
+  }
 
 
 class MyHtmlTableInterface : public HtmlTableInterface
@@ -3552,6 +3626,11 @@ public:
 
 }; //
 
+}; // end of namespace
+
+namespace NVSHARE
+{
+using namespace HTMLTABLE_NVSHARE;
 
 static MyHtmlTableInterface gInterface;
 
@@ -3566,4 +3645,3 @@ NxI32                 getHtmlMemoryUsage(void)
 }
 
 }; // end of namespace
-

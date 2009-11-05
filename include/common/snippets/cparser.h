@@ -31,14 +31,18 @@
 #include "inparser.h"       // include the in-place file parser
 #include "stringdict.h"     // include the string dictionary
 #include "timedevent.h"
+#include <vector>
+#include <map>
 
+namespace NVSHARE
+{
 #if defined(LINUX)
 #define _vsnprintf vsnprintf
 #endif
 
 class TokenTag;
 
-typedef USER_STL::map<StringRef, TokenTag> TokenMap;
+typedef std::map<StringRef, TokenTag> TokenMap;
 
 
 //==================================================================================
@@ -73,7 +77,7 @@ private:
 };
 
 
-typedef USER_STL::vector< CommandParserInterface * > CommandParserInterfaceVector;
+typedef std::vector< CommandParserInterface * > CommandParserInterfaceVector;
 
 //==================================================================================
 //==================================================================================
@@ -98,11 +102,11 @@ class RootCommands; // handles root commands.
 
 //==================================================================================
 //==================================================================================
-class TheCommandParser : public InPlaceParserInterface, public TIMED_EVENT::TimedEventInterface
+class TheCommandParser : public InPlaceParserInterface, public TimedEventInterface, public Memalloc
 {
 public:
 	TheCommandParser(bool timedEventFactory=false);
-	~TheCommandParser(void);
+	virtual ~TheCommandParser(void);
 
 	NxI32 Parse(const char *fmt, ...);
 
@@ -150,7 +154,7 @@ private:
 	TokenMap        mTokens; // JWR  token id's organized based on ascii name.
 	CommandParserInterfaceVector mFallbacks;
 	NxI32 mLineNo;
-  TIMED_EVENT::TimedEventFactory *mTimedEventFactory; // handles timed event calls
+  TimedEventFactory *mTimedEventFactory; // handles timed event calls
 };
 
 //==================================================================================
@@ -172,11 +176,13 @@ private:
 	char **mArgs;
 };
 
-typedef USER_STL::vector< CommandCapture * > CommandCaptureVector;
+typedef std::vector< CommandCapture * > CommandCaptureVector;
 
 extern TheCommandParser *gTheCommandParser;
 
 #define PARSE(x) gTheCommandParser->Parse(x)
 #define CPARSER (*gTheCommandParser)
+
+}; // end of namespace
 
 #endif

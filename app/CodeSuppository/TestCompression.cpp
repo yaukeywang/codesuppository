@@ -5,7 +5,7 @@
 
 #include "TestCompression.h"
 
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 
 void testCompression(void)
 {

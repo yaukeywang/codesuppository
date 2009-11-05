@@ -67,7 +67,7 @@ namespace LOCK_FREE_Q
     NxU32                           count;
   };
 
-  class MyLockFreeQ : public LockFreeQ
+  class MyLockFreeQ : public LockFreeQ, public NVSHARE::Memalloc
   {
   public:
 

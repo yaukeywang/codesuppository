@@ -77,7 +77,7 @@ class ExternalEffectInterface;
 class ExternalMaterialSpec;
 
 
-namespace PD3D
+namespace NVSHARE
 {
 
 enum CullMode
@@ -97,7 +97,7 @@ public:
 };
 
 
-class Pd3dGraphicsVertex
+class Pd3dGraphicsVertex : public NVSHARE::Memalloc
 {
 public:
   NxF32	       mPos[3];
@@ -358,6 +358,6 @@ public:
 
 #define PD3D_VERSION 6  // version 0.01
 
-extern PD3D::Pd3d *gPd3d;
+extern NVSHARE::Pd3d *gPd3d;
 
 #endif

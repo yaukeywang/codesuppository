@@ -2,7 +2,6 @@
 #include "UserMemAlloc.h"
 #include "MeshImport.h"
 #include "ImportOgre.h"
-#include "SystemServices.h"
 
 #ifdef WIN32
 #ifdef MESHIMPORTOGRE_EXPORTS
@@ -20,19 +19,19 @@ bool doShutdown(void);
 
 extern "C"
 {
-MESHIMPORTOGRE_API MESHIMPORT::MeshImporter * getInterface(int version_number,SYSTEM_SERVICES::SystemServices *services);
+MESHIMPORTOGRE_API NVSHARE::MeshImporter * getInterface(int version_number,NVSHARE::SystemServices *services);
 };
 
-namespace MESHIMPORT
+namespace NVSHARE
 {
-class MyMeshImportOgre : public MeshImporter
+class MyMeshImportOgre : public MeshImporter, public Memalloc
 {
 public:
   MyMeshImportOgre(void)
   {
   }
 
-  ~MyMeshImportOgre(void)
+  virtual ~MyMeshImportOgre(void)
   {
   }
 
@@ -60,16 +59,16 @@ public:
 //      return "Ogre3d XML Skeleton Files";
   }
 
-  virtual bool importMesh(const char *meshName,const void *data,unsigned int dlen,MESHIMPORT::MeshImportInterface *callback,const char *options,MeshImportApplicationResource *appResource)
+  virtual bool importMesh(const char *meshName,const void *data,unsigned int dlen,NVSHARE::MeshImportInterface *callback,const char *options,MeshImportApplicationResource *appResource)
   {
     bool ret = false;
 
-    MESHIMPORT::MeshImporter *mi = MESHIMPORT::createMeshImportOgre();
+    NVSHARE::MeshImporter *mi = NVSHARE::createMeshImportOgre();
 
     if ( mi )
     {
       ret = mi->importMesh(meshName,data,dlen,callback,options,appResource);
-      MESHIMPORT::releaseMeshImportOgre(mi);
+      NVSHARE::releaseMeshImportOgre(mi);
     }
 
     return ret;
@@ -88,7 +87,7 @@ enum MeshImportOgreAPI
 };  // End of Namespace
 
 
-using namespace MESHIMPORT;
+using namespace NVSHARE;
 
 
 static MyMeshImportOgre *gInterface=0;
@@ -96,14 +95,14 @@ static MyMeshImportOgre *gInterface=0;
 extern "C"
 {
 #ifdef PLUGINS_EMBEDDED
-  MeshImporter * getInterfaceMeshImportOgre(int version_number,SYSTEM_SERVICES::SystemServices *services)
+  MeshImporter * getInterfaceMeshImportOgre(int version_number,NVSHARE::SystemServices *services)
 #else
-MESHIMPORTOGRE_API MeshImporter * getInterface(int version_number,SYSTEM_SERVICES::SystemServices *services)
+MESHIMPORTOGRE_API MeshImporter * getInterface(int version_number,NVSHARE::SystemServices *services)
 #endif
 {
   if ( services )
   {
-    SYSTEM_SERVICES::gSystemServices = services;
+    NVSHARE::gSystemServices = services;
   }
   assert( gInterface == 0 );
   if ( gInterface == 0 && version_number == MESHIMPORT_VERSION )
@@ -117,7 +116,7 @@ MESHIMPORTOGRE_API MeshImporter * getInterface(int version_number,SYSTEM_SERVICE
 
 #ifndef PLUGINS_EMBEDDED
 
-using namespace MESHIMPORT;
+using namespace NVSHARE;
 
 bool doShutdown(void)
 {
@@ -131,7 +130,7 @@ bool doShutdown(void)
   return ret;
 }
 
-using namespace MESHIMPORT;
+using namespace NVSHARE;
 
 #ifdef WIN32
 

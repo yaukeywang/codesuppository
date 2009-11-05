@@ -22,9 +22,10 @@
 #include "ImportHeightMap.h"
 #include "erode.h"
 #include "NxFoundation.h"
-#include "common/compression/compression.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
 #include "MeshImport.h"
+
+using namespace NVSHARE;
 
 #pragma warning(disable:4100)
 
@@ -204,7 +205,7 @@ public:
           const NxF32 *p3 = &mr->mVertices[i3*3];
           mRobustMesh->addTriangle(p1,p2,p3,0);
         }
-		MESHIMPORT::MeshSystem *msh = ms->getMeshSystem();
+		NVSHARE::MeshSystem *msh = ms->getMeshSystem();
 		mPlane[0] = msh->mPlane[0];
 		mPlane[1] = msh->mPlane[1];
 		mPlane[2] = msh->mPlane[2];
@@ -727,19 +728,6 @@ public:
 
   void testCompression(void)
   {
-    const char *test = "this is a test string to test for compression testing stuff";
-    size_t len = strlen(test);
-
-    NxI32 outlen;
-    void *mem = COMPRESSION::compressData(test,len+1,outlen,COMPRESSION::CT_GZIP,COMPRESSION::CL_BEST_COMPRESSION);
-
-    NxI32 olen;
-    const char *c = (const char *)COMPRESSION::decompressData(mem,outlen,olen);
-    if ( c )
-    {
-      printf("%s\r\n", c );
-    }
-
   }
 
   void testPerlin4(void)
@@ -1005,7 +993,7 @@ public:
     mProject[2] = 0;
 
 
-    typedef USER_STL::vector< fm_LineSegment > LineSegmentVector;
+    typedef std::vector< fm_LineSegment > LineSegmentVector;
 
     SPLIT_MESH::VertexPool *vpool = SPLIT_MESH::Vl_createVertexPool(DEFAULT_GRANULARITY,true);
 

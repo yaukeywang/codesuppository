@@ -4,6 +4,9 @@
 
 #include "UserMemAlloc.h"
 
+namespace NVSHARE
+{
+
 class MeshConsolidateOutput
 {
 public:
@@ -32,6 +35,9 @@ public:
   virtual bool addTriangle(const NxF32 *p1,
                            const NxF32 *p2,
                            const NxF32 *p3,
+                           const NxF32 *uv1,
+                           const NxF32 *uv2,
+                           const NxF32 *uv3,
                            NxU32 id,
                            NxU32 subMesh) = 0;
 
@@ -42,5 +48,7 @@ public:
 
 MeshConsolidate * createMeshConsolidate(NxF32 epsilon);
 void              releaseMeshConsolidate(MeshConsolidate *cm);
+
+}; // end of namespace
 
 #endif

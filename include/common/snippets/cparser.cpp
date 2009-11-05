@@ -59,7 +59,8 @@
 #include "gauss.h"
 #include "filesystem.h"
 
-
+namespace NVSHARE
+{
 
 TheCommandParser *gTheCommandParser=0;
 
@@ -72,7 +73,7 @@ enum CommandParserCommand
 
 //==================================================================================
 //==================================================================================
-class RootCommands : public CommandParserInterface
+class RootCommands : public CommandParserInterface, public Memalloc
 {
 public:
 	RootCommands(void)
@@ -113,7 +114,7 @@ TheCommandParser::TheCommandParser(bool timedEventFactory)
 	gTheCommandParser = this;
 
   if ( timedEventFactory )
-    mTimedEventFactory = TIMED_EVENT::createTimedEventFactory();
+    mTimedEventFactory = createTimedEventFactory();
   else
     mTimedEventFactory = false;
 
@@ -126,7 +127,7 @@ TheCommandParser::~TheCommandParser(void)
 {
 	delete mRoot;
   if ( mTimedEventFactory )
-    TIMED_EVENT::releaseTimedEventFactory(mTimedEventFactory);
+    releaseTimedEventFactory(mTimedEventFactory);
 }
 
 //==================================================================================
@@ -252,7 +253,7 @@ bool TheCommandParser::preParse(const char *fmt,...)
       {
         char *cmd = (char *)MEMALLOC_MALLOC(len+1);
         strcpy(cmd,temp);
-        TIMED_EVENT::postTimedEvent(mTimedEventFactory,this,duetime,repeat_count,repeat_time,cmd,0); // post this as a timed event command!
+        postTimedEvent(mTimedEventFactory,this,duetime,repeat_count,repeat_time,cmd,0); // post this as a timed event command!
       }
       ret = true;
     }
@@ -510,7 +511,7 @@ NxI32 TheCommandParser::Batch(const char *data,NxU32 len) // from a block of mem
 
 void TheCommandParser::process(NxF32 dtime) // give up a time slice to the command parser to process outstanding timed events.
 {
-  TIMED_EVENT::process(mTimedEventFactory,dtime);
+  timed_event_process(mTimedEventFactory,dtime);
 }
 
 void TheCommandParser::deleteEventCallback(void *user_data,NxI32 /* user_id */) //true if supposed to continue, false if done.
@@ -528,3 +529,5 @@ bool TheCommandParser::timedEventCallback(void *user_data,NxI32 /* user_id */,bo
 
   return ret;
 }
+
+}; // end of namespace

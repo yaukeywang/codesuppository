@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="RenderDebugPd3d"
 	ProjectGUID="{927C6EE0-5C40-F724-89D8-0D807A3C22B4}"
+	RootNamespace="RenderDebugPd3d"
 	>
 	<Platforms>
 		<Platform
@@ -187,14 +188,6 @@
 				</File>
 				<File
 					RelativePath="..\..\include\common\snippets\FloatMath.inl"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\SystemServices.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\SystemServices.h"
 					>
 				</File>
 			</Filter>

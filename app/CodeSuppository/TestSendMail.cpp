@@ -5,7 +5,7 @@
 
 #include "TestSendMail.h"
 
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 
 void testSendMail(void)
 {

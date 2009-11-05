@@ -4,7 +4,7 @@
 
 #include "UserMemAlloc.h"
 
-namespace PD3D
+namespace NVSHARE
 {
   class Pd3dTexture;
 };
@@ -16,7 +16,7 @@ void          pt_releasePlotTexture(PlotTexture *p);
 void          pt_plotPixel(PlotTexture *p,NxU32 x,NxU32 y,NxU32 color);
 NxU32  pt_getPixel(PlotTexture *p,NxU32 x,NxU32 y);
 void          pt_renderScreenQuad(PlotTexture *p,NxU32 x,NxU32 y,NxU32 wid,NxU32 hit,NxU32 color);
-PD3D::Pd3dTexture * pt_getTexture(PlotTexture *p); // return the device renderable texture.
+NVSHARE::Pd3dTexture * pt_getTexture(PlotTexture *p); // return the device renderable texture.
 
 void          pt_adjustImage(PlotTexture *p,NxI32 dx,NxI32 dy);
 

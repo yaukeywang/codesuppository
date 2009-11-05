@@ -5965,7 +5965,7 @@ NX_INLINE void NxBounds3::fatten(NxReal distance)
 #define NULL 0
 #endif
 
-#define USER_STL std
+#define std:: std
 #define USER_STL_EXT stdext
 
 #define MEMALLOC_NEW(x) new x

@@ -1,51 +1,54 @@
+
+
+
 cd include
 cd MeshImport
-copy \p4\trunk\APEX\shared\external\include\MeshImport.h
-copy \p4\trunk\APEX\shared\external\src\MeshImport.cpp
+copy \p4\sw\legacy\physx\externals\shared_source\public\include\MeshImport.h
+copy \p4\sw\legacy\physx\externals\shared_source\public\src\MeshImport.cpp
 cd ..
 cd ..
 
 cd src
 
 cd MeshImport
-copy \p4\trunk\APEX\tools\MeshImport\*.h
-copy \p4\trunk\APEX\tools\MeshImport\*.cpp
+copy \p4\sw\legacy\physx\externals\shared_source\public\app\MeshImport\*.h
+copy \p4\sw\legacy\physx\externals\shared_source\public\app\MeshImport\*.cpp
 cd ..
 
 cd MeshImportEZM
-copy \p4\trunk\APEX\tools\MeshImportEZM\*.h
-copy \p4\trunk\APEX\tools\MeshImportEZM\*.cpp
+copy \p4\sw\legacy\physx\externals\shared_source\public\app\MeshImportEZM\*.h
+copy \p4\sw\legacy\physx\externals\shared_source\public\app\MeshImportEZM\*.cpp
 cd ..
 
 
 cd MeshImportFBX
-copy \p4\trunk\APEX\tools\MeshImportFBX\*.h
-copy \p4\trunk\APEX\tools\MeshImportFBX\*.cpp
+copy \p4\sw\legacy\physx\externals\shared_source\public\app\MeshImportFBX\*.h
+copy \p4\sw\legacy\physx\externals\shared_source\public\app\MeshImportFBX\*.cpp
 cd ..
 
 cd MeshImportObj
-copy \p4\trunk\APEX\tools\MeshImportObj\*.h
-copy \p4\trunk\APEX\tools\MeshImportObj\*.cpp
+copy \p4\sw\legacy\physx\externals\shared_source\public\app\MeshImportObj\*.h
+copy \p4\sw\legacy\physx\externals\shared_source\public\app\MeshImportObj\*.cpp
 cd ..
 
 
 cd MeshImportOgre
-copy \p4\trunk\APEX\tools\MeshImportOgre\*.h
-copy \p4\trunk\APEX\tools\MeshImportOgre\*.cpp
+copy \p4\sw\legacy\physx\externals\shared_source\public\app\MeshImportOgre\*.h
+copy \p4\sw\legacy\physx\externals\shared_source\public\app\MeshImportOgre\*.cpp
 cd ..
 
 
 cd MeshImportPSK
-copy \p4\trunk\APEX\tools\MeshImportPSK\*.h
-copy \p4\trunk\APEX\tools\MeshImportPSK\*.cpp
+copy \p4\sw\legacy\physx\externals\shared_source\public\app\MeshImportPSK\*.h
+copy \p4\sw\legacy\physx\externals\shared_source\public\app\MeshImportPSK\*.cpp
 cd ..
 
 cd ..
 
 cd app
 cd MeshConvert
-copy \p4\trunk\APEX\tools\MeshConvert\*.h
-copy \p4\trunk\APEX\tools\MeshConvert\*.cpp
+copy \p4\sw\legacy\physx\externals\shared_source\public\app\MeshConvert\*.h
+copy \p4\sw\legacy\physx\externals\shared_source\public\app\MeshConvert\*.cpp
 cd ..
 cd ..
 
@@ -54,49 +57,19 @@ cd common
 cd snippets
 
 
-REM AutoGeometry.h
-REM AutoGeometry.cpp
-REM MeshConsolidate.h
-REM MeshConsolidate.cpp
-REM MeshIslandGeneration.h
-REM MeshIslandGeneration.cpp
-REM RemoveTjunctions.h
-REM RemoveTjunctions.cpp
+copy \p4\sw\legacy\physx\externals\shared_source\public\include\AutoGeometry.h
+copy \p4\sw\legacy\physx\externals\shared_source\public\include\MeshConsolidate.h
+copy \p4\sw\legacy\physx\externals\shared_source\public\include\MeshIslandGeneration.h
+copy \p4\sw\legacy\physx\externals\shared_source\public\include\RemoveTjunctions.h
 
-copy \p4\trunk\APEX\shared\external\include\asc2bin.h
-copy \p4\trunk\APEX\shared\external\include\FastXml.h
-copy \p4\trunk\APEX\shared\external\include\FileInterface.h
-copy \p4\trunk\APEX\shared\external\include\filesystem.h
-copy \p4\trunk\APEX\shared\external\include\FloatMath.h
-copy \p4\trunk\APEX\shared\external\include\inparser.h
-copy \p4\trunk\APEX\shared\external\include\keyvalue.h
-copy \p4\trunk\APEX\shared\external\include\KeyValueIni.h
-copy \p4\trunk\APEX\shared\external\include\stable.h
-copy \p4\trunk\APEX\shared\external\include\StanHull.h
-copy \p4\trunk\APEX\shared\external\include\stringdict.h
-copy \p4\trunk\APEX\shared\external\include\sutil.h
-copy \p4\trunk\APEX\shared\external\include\SystemServices.h
-copy \p4\trunk\APEX\shared\external\include\targa.h
-copy \p4\trunk\APEX\shared\external\include\telnet.h
-copy \p4\trunk\APEX\shared\external\include\UserMemAlloc.h
-copy \p4\trunk\APEX\shared\external\include\winmsg.h
+copy \p4\sw\legacy\physx\externals\shared_source\public\src\aAutoGeometry.cpp
+copy \p4\sw\legacy\physx\externals\shared_source\public\src\aMeshConsolidate.cpp
+copy \p4\sw\legacy\physx\externals\shared_source\public\src\aMeshIslandGeneration.cpp
+copy \p4\sw\legacy\physx\externals\shared_source\public\src\aRemoveTjunctions.cpp
 
-copy \p4\trunk\APEX\shared\external\src\asc2bin.cpp
-copy \p4\trunk\APEX\shared\external\src\FastXml.cpp
-copy \p4\trunk\APEX\shared\external\src\FileInterface.cpp
-copy \p4\trunk\APEX\shared\external\src\filesystem.cpp
-copy \p4\trunk\APEX\shared\external\src\FloatMath.inl
-copy \p4\trunk\APEX\shared\external\src\FloatMath.cpp
-copy \p4\trunk\APEX\shared\external\src\inparser.cpp
-copy \p4\trunk\APEX\shared\external\src\keyvalue.cpp
-copy \p4\trunk\APEX\shared\external\src\KeyValueIni.cpp
-copy \p4\trunk\APEX\shared\external\src\StanHull.cpp
-copy \p4\trunk\APEX\shared\external\src\stringdict.cpp
-copy \p4\trunk\APEX\shared\external\src\sutil.cpp
-copy \p4\trunk\APEX\shared\external\src\SystemServices.cpp
-copy \p4\trunk\APEX\shared\external\src\targa.cpp
-copy \p4\trunk\APEX\shared\external\src\telnet.cpp
-copy \p4\trunk\APEX\shared\external\src\winmsg.cpp
+copy \p4\sw\legacy\physx\externals\shared_source\public\include\*.h
+
+copy \p4\sw\legacy\physx\externals\shared_source\public\src\*.cpp
 
 cd ..
 cd ..

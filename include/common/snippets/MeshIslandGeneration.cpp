@@ -2,29 +2,20 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-#include <hash_map>
-
-#pragma warning(disable:4100 4288)
 
 #include "UserMemAlloc.h"
-#include <vector>
-#include <queue>
 
+#pragma warning(disable:4100 4288)
 #include "MeshIslandGeneration.h"
 #include "FloatMath.h"
-
-#define SHOW_DEBUG 0
+#include "NvArray.h"
+#include "NvHashMap.h"
 #include "NxSimpleTypes.h"
 
-#if SHOW_DEBUG
-#include "RenderDebug/RenderDebug.h"
-//#include "log.h"
-#endif
-
-namespace MESH_ISLAND_GENERATION
+namespace NVSHARE
 {
 
-typedef USER_STL::vector< size_t > size_tVector;
+typedef NVSHARE::Array< NxU32 > NxU32Vector;
 
 class Edge;
 class Island;
@@ -68,7 +59,7 @@ public:
     if ( (NxF32)p[2] > box.mMax[2] ) box.mMax[2] = (NxF32)p[2];
   }
 
-  void buildBox(const NxF32 *vertices_f,const NxF64 *vertices_d,size_t id);
+  void buildBox(const NxF32 *vertices_f,const NxF64 *vertices_d,NxU32 id);
 
   void render(NxU32 color)
   {
@@ -77,7 +68,7 @@ public:
 
   void getTriangle(NxF32 *tri,const NxF32 *vertices_f,const NxF64 *vertices_d);
 
-  size_t    mHandle;
+  NxU32    mHandle;
   bool      mConsumed;
   Edge     *mEdges[3];
   Island   *mIsland;   // identifies which island it is a member of
@@ -100,7 +91,7 @@ public:
     mNextTriangleEdge = 0;
   }
 
-  void init(size_t i1,size_t i2,Triangle *parent)
+  void init(NxU32 i1,NxU32 i2,Triangle *parent)
   {
     assert( i1 < 65536 );
     assert( i2 < 65536 );
@@ -114,10 +105,10 @@ public:
     mParent = parent;
   }
 
-  size_t  mI1;
-  size_t  mI2;
-  size_t  mHash;
-  size_t  mReverseHash;
+  NxU32  mI1;
+  NxU32  mI2;
+  NxU32  mHash;
+  NxU32  mReverseHash;
 
   Edge     *mNext;
   Edge     *mPrevious;
@@ -125,8 +116,8 @@ public:
   Triangle *mParent;
 };
 
-typedef USER_STL_EXT::hash_map< size_t, Edge * > EdgeHashMap;
-typedef USER_STL::vector< Triangle * > TriangleVector;
+typedef NVSHARE::HashMap< NxU32, Edge * > EdgeHashMap;
+typedef NVSHARE::Array< Triangle * > TriangleVector;
 
 class EdgeCheck
 {
@@ -141,7 +132,7 @@ public:
   Edge      *mEdge;
 };
 
-typedef std::queue< EdgeCheck > EdgeCheckQueue;
+typedef NVSHARE::Array< EdgeCheck > EdgeCheckQueue;
 
 class Island 
 {
@@ -151,7 +142,7 @@ public:
     mVerticesFloat = 0;
     mVerticesDouble = 0;
     t->mIsland = this;
-    mTriangles.push_back(t);
+    mTriangles.pushBack(t);
     mCoplanar = false;
     fm_initMinMax(mMin,mMax);
   }
@@ -159,16 +150,16 @@ public:
   void add(Triangle *t,Triangle *root)
   {
     t->mIsland = this;
-    mTriangles.push_back(t);
+    mTriangles.pushBack(t);
   }
 
   void merge(Island &isl)
   {
-    TriangleVector::iterator i;
+    TriangleVector::Iterator i;
     for (i=isl.mTriangles.begin(); i!=isl.mTriangles.end(); ++i)
     {
       Triangle *t = (*i);
-      mTriangles.push_back(t);
+      mTriangles.pushBack(t);
     }
     isl.mTriangles.clear();
   }
@@ -190,14 +181,6 @@ public:
   }
 
 
-#if SHOW_DEBUG
-  void debugTri(const NxF32 *t,NxU32 color)
-  {
-    gRenderDebug->DebugSolidTri(t,t+3,t+6,color,60.0f);
-    gRenderDebug->DebugTri(t,t+3,t+6,color,60.0f);
-  }
-#endif
-
   void SAP_DeletePair(const void* object0, const void* object1, void* user_data, void* pair_user_data)
   {
   }
@@ -205,7 +188,7 @@ public:
   void render(NxU32 color)
   {
 //    gRenderDebug->DebugBound(mMin,mMax,color,60.0f);
-    TriangleVector::iterator i;
+    TriangleVector::Iterator i;
     for (i=mTriangles.begin(); i!=mTriangles.end(); ++i)
     {
       Triangle *t = (*i);
@@ -226,9 +209,9 @@ public:
 
 void Triangle::getTriangle(NxF32 *tri,const NxF32 *vertices_f,const NxF64 *vertices_d)
 {
-  size_t i1 = mEdges[0]->mI1;
-  size_t i2 = mEdges[1]->mI1;
-  size_t i3 = mEdges[2]->mI1;
+  NxU32 i1 = mEdges[0]->mI1;
+  NxU32 i2 = mEdges[1]->mI1;
+  NxU32 i3 = mEdges[2]->mI1;
   if ( vertices_f )
   {
     const NxF32 *p1 = &vertices_f[i1*3];
@@ -249,12 +232,12 @@ void Triangle::getTriangle(NxF32 *tri,const NxF32 *vertices_f,const NxF64 *verti
   }
 }
 
-void Triangle::buildBox(const NxF32 *vertices_f,const NxF64 *vertices_d,size_t id)
+void Triangle::buildBox(const NxF32 *vertices_f,const NxF64 *vertices_d,NxU32 id)
 {
   mId = (unsigned short)id;
-  size_t i1 = mEdges[0]->mI1;
-  size_t i2 = mEdges[1]->mI1;
-  size_t i3 = mEdges[2]->mI1;
+  NxU32 i1 = mEdges[0]->mI1;
+  NxU32 i2 = mEdges[1]->mI1;
+  NxU32 i3 = mEdges[2]->mI1;
 
   if ( vertices_f )
   {
@@ -300,7 +283,7 @@ void Triangle::buildBox(const NxF32 *vertices_f,const NxF64 *vertices_d,size_t i
 }
 
 
-typedef USER_STL::vector< Island * > IslandVector;
+typedef NVSHARE::Array< Island * > IslandVector;
 
 class MyMeshIslandGeneration : public MeshIslandGeneration
 {
@@ -325,7 +308,7 @@ public:
     mTriangles = 0;
     mEdges = 0;
     mTriangleEdges.clear();
-    IslandVector::iterator i;
+    IslandVector::Iterator i;
     for (i=mIslands.begin(); i!=mIslands.end(); ++i)
     {
       Island *_i = (*i);
@@ -334,23 +317,23 @@ public:
     mIslands.clear();
   }
 
-  size_t islandGenerate(size_t tcount,const size_t *indices,const NxF64 *vertices)
+  NxU32 islandGenerate(NxU32 tcount,const NxU32 *indices,const NxF64 *vertices)
   {
     mVerticesDouble = vertices;
     mVerticesFloat  = 0;
     return islandGenerate(tcount,indices);
   }
 
-  size_t islandGenerate(size_t tcount,const size_t *indices,const NxF32 *vertices)
+  NxU32 islandGenerate(NxU32 tcount,const NxU32 *indices,const NxF32 *vertices)
   {
     mVerticesDouble = 0;
     mVerticesFloat  = vertices;
     return islandGenerate(tcount,indices);
   }
 
-  size_t islandGenerate(size_t tcount,const size_t *indices)
+  NxU32 islandGenerate(NxU32 tcount,const NxU32 *indices)
   {
-    size_t ret = 0;
+    NxU32 ret = 0;
 
     reset();
 
@@ -359,13 +342,13 @@ public:
     mEdges     = new Edge[tcount*3];
     Edge *e = mEdges;
 
-    for (size_t i=0; i<tcount; i++)
+    for (NxU32 i=0; i<tcount; i++)
     {
       Triangle &t = mTriangles[i];
 
-      size_t i1 = *indices++;
-      size_t i2 = *indices++;
-      size_t i3 = *indices++;
+      NxU32 i1 = *indices++;
+      NxU32 i2 = *indices++;
+      NxU32 i3 = *indices++;
 
       t.mEdges[0] = e;
       t.mEdges[1] = e+1;
@@ -378,30 +361,17 @@ public:
     }
 
     // while there are still edges to process...
-#if SHOW_DEBUG
-    NxF32 offset = 0;
-#endif
-
-    while ( !mTriangleEdges.empty() )
+    while ( mTriangleEdges.size() != 0 )
     {
 
-#if SHOW_DEBUG
-      NxU32 color = gRenderDebug->getDebugColor();
-//      offset+=2;
-#endif
+      EdgeHashMap::Iterator iter = mTriangleEdges.getIterator();
 
-      EdgeHashMap::iterator found = mTriangleEdges.begin();
-
-      Triangle *t = (*found).second->mParent;
+      Triangle *t = iter->second->mParent;
 
       Island *i = new Island(t,mTriangles);  // the initial triangle...
       removeTriangle(t); // remove this triangle from the triangle-edges hashmap
 
-#if SHOW_DEBUG
-      debugTriangle(t,color,offset);
-#endif
-
-      mIslands.push_back(i);
+      mIslands.pushBack(i);
 
       // now keep adding to this island until we can no longer walk any shared edges..
       addEdgeCheck(t,t->mEdges[0]);
@@ -411,8 +381,7 @@ public:
       while ( !mEdgeCheckQueue.empty() )
       {
 
-        EdgeCheck e = mEdgeCheckQueue.front();
-        mEdgeCheckQueue.pop();
+        EdgeCheck e = mEdgeCheckQueue.popBack();
 
         // Process all triangles which share this edge
         Edge *edge = locateSharedEdge(e.mEdge);
@@ -423,10 +392,6 @@ public:
           assert(!t->mConsumed);
           i->add(t,mTriangles);
           removeTriangle(t); // remove this triangle from the triangle-edges hashmap
-
-#if SHOW_DEBUG
-          debugTriangle(t,color,offset);
-#endif
 
           // now keep adding to this island until we can no longer walk any shared edges..
 
@@ -451,27 +416,27 @@ public:
       }
     }
 
-    ret = mIslands.size();
+    ret = (NxU32)mIslands.size();
 
     return ret;
   }
 
-  size_t *   getIsland(size_t index,size_t &otcount)
+  NxU32 *   getIsland(NxU32 index,NxU32 &otcount)
   {
-    size_t *ret  = 0;
+    NxU32 *ret  = 0;
 
     mIndices.clear();
     if ( index < mIslands.size() )
     {
       Island *i = mIslands[index];
-      otcount = i->mTriangles.size();
-      TriangleVector::iterator j;
+      otcount = (NxU32)i->mTriangles.size();
+      TriangleVector::Iterator j;
       for (j=i->mTriangles.begin(); j!=i->mTriangles.end(); ++j)
       {
         Triangle *t = (*j);
-        mIndices.push_back(t->mEdges[0]->mI1);
-        mIndices.push_back(t->mEdges[1]->mI1);
-        mIndices.push_back(t->mEdges[2]->mI1);
+        mIndices.pushBack(t->mEdges[0]->mI1);
+        mIndices.pushBack(t->mEdges[1]->mI1);
+        mIndices.pushBack(t->mEdges[2]->mI1);
       }
       ret = &mIndices[0];
     }
@@ -480,70 +445,6 @@ public:
   }
 
 private:
-
-#if SHOW_DEBUG
-  void debugEdge(Edge *e,const NxF32 *vertices,NxU32 color)
-  {
-    const NxF32 *p1 = &vertices[e->mI1*3];
-    const NxF32 *p2 = &vertices[e->mI2*3];
-    gRenderDebug->DebugRay(p1,p2,0.001f,0xFFFFFF,0xFF0000,10.0f);
-  }
-
-  void debugEdge(Edge *e,const NxF64 *vertices,NxU32 color)
-  {
-    const NxF64 *p1 = &vertices[e->mI1*3];
-    const NxF64 *p2 = &vertices[e->mI2*3];
-    gRenderDebug->DebugRay(p1,p2,0.001f,0xFFFFFF,0xFF0000,10.0f);
-  }
-
-
-
-  void debugTriangle(Triangle *t,NxU32 color,NxF32 offset)
-  {
-    size_t i1 = t->mEdges[0]->mI2;
-    size_t i2 = t->mEdges[1]->mI2;
-    size_t i3 = t->mEdges[2]->mI2;
-
-    if ( mVerticesFloat )
-    {
-      const NxF32 *_p1 = &mVerticesFloat[i1*3];
-      const NxF32 *_p2 = &mVerticesFloat[i2*3];
-      const NxF32 *_p3 = &mVerticesFloat[i3*3];
-      NxF32 p1[3];
-      NxF32 p2[3];
-      NxF32 p3[3];
-
-      fm_copy3(_p1,p1);
-      fm_copy3(_p2,p2);
-      fm_copy3(_p3,p3);
-
-      p1[0]+=offset;
-      p2[0]+=offset;
-      p3[0]+=offset;
-
-      gRenderDebug->DebugSolidTri(p1,p2,p3,color,10.0f);
-
-      debugEdge(t->mEdges[0],mVerticesFloat,color);
-      debugEdge(t->mEdges[1],mVerticesFloat,color);
-      debugEdge(t->mEdges[2],mVerticesFloat,color);
-    }
-    else if ( mVerticesDouble )
-    {
-      const NxF64 *p1 = &mVerticesDouble[i1*3];
-      const NxF64 *p2 = &mVerticesDouble[i2*3];
-      const NxF64 *p3 = &mVerticesDouble[i3*3];
-
-      gRenderDebug->DebugSolidTri(p1,p2,p3,color,10.0f);
-
-      debugEdge(t->mEdges[0],mVerticesDouble,color);
-      debugEdge(t->mEdges[1],mVerticesDouble,color);
-      debugEdge(t->mEdges[2],mVerticesDouble,color);
-    }
-
-
-
-  }
-#endif
 
   void removeTriangle(Triangle *t)
   {
@@ -560,9 +461,8 @@ private:
   {
     Edge *ret = 0;
 
-    EdgeHashMap::iterator found;
-    found = mTriangleEdges.find( e->mReverseHash );
-    if ( found != mTriangleEdges.end() )
+    const EdgeHashMap::Entry *found = mTriangleEdges.find( e->mReverseHash );
+    if ( found != NULL )
     {
       ret = (*found).second;
       assert( ret->mHash == e->mReverseHash );
@@ -572,10 +472,9 @@ private:
 
   void removeEdge(Edge *e)
   {
-    EdgeHashMap::iterator found;
-    found = mTriangleEdges.find( e->mHash );
+    const EdgeHashMap::Entry *found = mTriangleEdges.find( e->mHash );
 
-    if ( found != mTriangleEdges.end() )
+    if ( found != NULL )
     {
       Edge *prev = 0;
       Edge *scan = (*found).second;
@@ -591,11 +490,12 @@ private:
         {
           if ( scan->mNextTriangleEdge )
           {
-            (*found).second = scan->mNextTriangleEdge;
+            mTriangleEdges.erase(e->mHash);
+            mTriangleEdges[e->mHash] = scan->mNextTriangleEdge;
           }
           else
           {
-            mTriangleEdges.erase(found); // no more polygons have an edge here
+            mTriangleEdges.erase(e->mHash); // no more polygons have an edge here
           }
         }
         else
@@ -615,14 +515,13 @@ private:
   }
 
 
-  Edge * addEdge(Edge *e,Triangle *t,size_t i1,size_t i2)
+  Edge * addEdge(Edge *e,Triangle *t,NxU32 i1,NxU32 i2)
   {
 
     e->init(i1,i2,t);
 
-    EdgeHashMap::iterator found;
-    found = mTriangleEdges.find(e->mHash);
-    if ( found == mTriangleEdges.end() )
+    const EdgeHashMap::Entry *found = mTriangleEdges.find(e->mHash);
+    if ( found == NULL )
     {
       mTriangleEdges[ e->mHash ] = e;
     }
@@ -630,7 +529,8 @@ private:
     {
       Edge *pn = (*found).second;
       e->mNextTriangleEdge = pn;
-      (*found).second = e;
+      mTriangleEdges.erase(e->mHash);
+      mTriangleEdges[e->mHash] = e;
     }
 
     e++;
@@ -641,17 +541,17 @@ private:
   void addEdgeCheck(Triangle *t,Edge *e)
   {
     EdgeCheck ec(t,e);
-    mEdgeCheckQueue.push(ec);
+    mEdgeCheckQueue.pushBack(ec);
   }
 
-  size_t mergeCoplanarIslands(const NxF32 *vertices)
+  NxU32 mergeCoplanarIslands(const NxF32 *vertices)
   {
     mVerticesFloat = vertices;
     mVerticesDouble = 0;
     return mergeCoplanarIslands();
   }
 
-  size_t mergeCoplanarIslands(const NxF64 *vertices)
+  NxU32 mergeCoplanarIslands(const NxF64 *vertices)
   {
     mVerticesDouble = vertices;
     mVerticesFloat = 0;
@@ -663,7 +563,7 @@ private:
   {
     Island *touching = 0;
 
-    IslandVector::iterator i;
+    IslandVector::Iterator i;
     for (i=mIslands.begin(); i!=mIslands.end(); ++i)
     {
       Island *_i = (*i);
@@ -677,24 +577,24 @@ private:
     }
   }
 
-  size_t mergeCoplanarIslands(void)
+  NxU32 mergeCoplanarIslands(void)
   {
-    size_t  ret = 0;
+    NxU32  ret = 0;
 
     if ( !mIslands.empty() )
     {
 
 
-      size_t  cp_count  = 0;
-      size_t  npc_count = 0;
+      NxU32  cp_count  = 0;
+      NxU32  npc_count = 0;
 
-      size_t  count = mIslands.size();
+      NxU32  count = (NxU32)mIslands.size();
 
-      for (size_t i=0; i<count; i++)
+      for (NxU32 i=0; i<count; i++)
       {
 
-        size_t otcount;
-        const size_t *oindices = getIsland(i,otcount);
+        NxU32 otcount;
+        const NxU32 *oindices = getIsland(i,otcount);
 
         if ( otcount )
         {
@@ -730,8 +630,8 @@ private:
           IslandVector temp = mIslands;
           mIslands.clear();
           Island *isl = mIslands[0];
-          mIslands.push_back(isl);
-          for (size_t i=1; i<cp_count; i++)
+          mIslands.pushBack(isl);
+          for (NxU32 i=1; i<cp_count; i++)
           {
             Island *_i = mIslands[i];
             isl->merge(*_i);
@@ -743,13 +643,13 @@ private:
 
 
           Triangle *t = mTriangles;
-          for (size_t i=0; i<mTcount; i++)
+          for (NxU32 i=0; i<mTcount; i++)
           {
             t->buildBox(mVerticesFloat,mVerticesDouble,i);
             t++;
           }
 
-          IslandVector::iterator i;
+          IslandVector::Iterator i;
           for (i=mIslands.begin(); i!=mIslands.end(); ++i)
           {
             Island *isl = (*i);
@@ -776,10 +676,10 @@ private:
             }
             else
             {
-              mIslands.push_back(isl);
+              mIslands.pushBack(isl);
             }
           }
-          ret = mIslands.size();
+          ret = (NxU32)mIslands.size();
         }
       }
       else
@@ -792,21 +692,21 @@ private:
     return ret;
   }
 
-  size_t mergeTouchingIslands(const NxF32 *vertices)
+  NxU32 mergeTouchingIslands(const NxF32 *vertices)
   {
-    size_t ret = 0;
+    NxU32 ret = 0;
 
     return ret;
   }
 
-  size_t mergeTouchingIslands(const NxF64 *vertices)
+  NxU32 mergeTouchingIslands(const NxF64 *vertices)
   {
-    size_t ret = 0;
+    NxU32 ret = 0;
 
     return ret;
   }
 
-  size_t           mTcount;
+  NxU32           mTcount;
   Triangle        *mTriangles;
   Edge            *mEdges;
   EdgeHashMap      mTriangleEdges;
@@ -814,12 +714,9 @@ private:
   EdgeCheckQueue   mEdgeCheckQueue;
   const NxF64    *mVerticesDouble;
   const NxF32     *mVerticesFloat;
-  size_tVector     mIndices;
+  NxU32Vector     mIndices;
 };
 
-}; // end of namespace
-
-using namespace MESH_ISLAND_GENERATION;
 
 MeshIslandGeneration * createMeshIslandGeneration(void)
 {
@@ -832,4 +729,6 @@ void                   releaseMeshIslandGeneration(MeshIslandGeneration *cm)
   MyMeshIslandGeneration *mig = static_cast< MyMeshIslandGeneration *>(cm);
   delete mig;
 }
+
+}; // end of namespace
 

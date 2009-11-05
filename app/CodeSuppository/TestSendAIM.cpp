@@ -5,7 +5,7 @@
 
 #include "TestSendAIM.h"
 
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 
 void testSendAIM(void)
 {

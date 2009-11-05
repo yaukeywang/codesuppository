@@ -56,7 +56,7 @@ public:
 // Name: class CSound
 // Desc: Encapsulates functionality of a DirectSound buffer.
 //-----------------------------------------------------------------------------
-class CSound
+class CSound :  public NVSHARE::Memalloc
 {
 protected:
     LPDIRECTSOUNDBUFFER* m_apDSBuffer;
@@ -113,7 +113,7 @@ public:
 // Name: class CWaveFile
 // Desc: Encapsulates reading or writing sound data to or from a wave file
 //-----------------------------------------------------------------------------
-class CWaveFile
+class CWaveFile :  public NVSHARE::Memalloc
 {
 public:
     WAVEFORMATEX* m_pwfx;        // Pointer to WAVEFORMATEX structure

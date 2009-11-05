@@ -7,7 +7,9 @@
 #include "Pd3d/pd3d.h"
 #include "UserMemAlloc.h"
 
-class PlotTexture
+using namespace NVSHARE;
+
+class PlotTexture : public NVSHARE::Memalloc
 {
 public:
   PlotTexture(const char *fname,NxU32 width,NxU32 height)
@@ -25,7 +27,7 @@ public:
     if ( mTexture )
     {
       mPixels = (NxU8 *)gPd3d->lockTexture(mTexture,width,height,mPitch);
-      mBackBuffer = MEMALLOC_NEW(NxU8)[height*mPitch];
+      mBackBuffer = (NxU8 *)MEMALLOC_MALLOC(sizeof(NxU8)*height*mPitch);
     }
   }
 
@@ -80,7 +82,7 @@ public:
     }
   }
 
-  PD3D::Pd3dTexture *getTexture(void)
+  NVSHARE::Pd3dTexture *getTexture(void)
   {
     gPd3d->unlockTexture(mTexture);
     gPd3d->copyTexture(mTexture,mVideoTexture);
@@ -150,8 +152,8 @@ private:
   NxU8 *mPixels;
   NxU8 *mBackBuffer;
 
-  PD3D::Pd3dTexture *mTexture;
-  PD3D::Pd3dTexture *mVideoTexture;
+  NVSHARE::Pd3dTexture *mTexture;
+  NVSHARE::Pd3dTexture *mVideoTexture;
 };
 
 PlotTexture * pt_createPlotTexture(const char *fname,NxU32 width,NxU32 height)
@@ -180,7 +182,7 @@ NxU32 pt_getPixel(PlotTexture *p,NxU32 x,NxU32 y)
   return p->getPixel(x,y);
 }
 
-PD3D::Pd3dTexture * pt_getTexture(PlotTexture *p) // return the device renderable texture.
+NVSHARE::Pd3dTexture * pt_getTexture(PlotTexture *p) // return the device renderable texture.
 {
   return p->getTexture();
 }

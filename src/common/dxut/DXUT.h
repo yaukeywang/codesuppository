@@ -9,6 +9,8 @@
 
 #include "UserMemAlloc.h"
 
+using namespace NVSHARE;
+
 #ifndef UNICODE
 #error "DXUT requires a Unicode build. See the nearby comments for details"
 //

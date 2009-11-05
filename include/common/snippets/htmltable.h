@@ -7,7 +7,7 @@
 
 #include "UserMemAlloc.h"
 
-namespace HTML_TABLE
+namespace NVSHARE
 {
 
 enum HtmlSaveType
@@ -35,6 +35,7 @@ public:
   virtual void                addColumn(NxF32 v) = 0 ;               // will add this floating point number, nicely formatted
   virtual void                addColumn(NxI32 v) = 0;                 // will add this integer number nicely formatted.
   virtual void                addColumn(NxU32 v) = 0;                 // will add this integer number nicely formatted.
+  virtual void                addColumnHex(NxU32 v) = 0;                 // will add this as a hex string.
   virtual void                addCSV(bool newRow,const char *fmt,...) = 0;       // add this line of data as a set of columns, using the comma character as a seperator.
   virtual void                nextRow(void) = 0;                         // advance to the next row.
   virtual HtmlDocument       *getDocument(void) = 0;                     // return the parent document.
@@ -43,6 +44,7 @@ public:
   virtual void                excludeTotals(NxU32 column) = 0; // Column's are 1 base indexing.  Specifies a column to *excude* from totals, even if it contains numeric data.
   virtual void                addSort(const char *sort_name,NxU32 primary_key,bool primary_ascending,NxU32 secondary_key,bool secondary_ascending) = 0; // adds a sorted result.  You can set up mulitple sort requests for a single table.
   virtual NxU32               getColor(NxU32 column,bool isHeader,bool isFooter)= 0; // returns color for this column, or header, or footer
+  virtual void                setOrder(NxU32 order) = 0;
 };
 
 class HtmlDocument
@@ -67,6 +69,6 @@ HtmlTableInterface *getHtmlTableInterface(void);
 NxI32                 getHtmlMemoryUsage(void);
 
 
-}; // end of namespace HTML_TABLE
+}; // end of namespace
 
 #endif

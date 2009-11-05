@@ -10,6 +10,8 @@
 
 #pragma warning(disable:4996)
 
+using namespace NVSHARE;
+
 namespace BLOB_IO
 {
 
@@ -54,7 +56,7 @@ static inline bool getHexValue(char c1,char c2,NxU8 &v)
     return ret;
 }
 
-class Blob
+class Blob : public Memalloc
 {
 public:
   Blob(const char *blobType,NxU32 client,NxU32 blobId,NxU32 olen,const char *data)
@@ -123,7 +125,7 @@ public:
 
 typedef std::list< Blob * > BlobList;
 
-class MyBlobIO : public BlobIO, public FastXmlInterface
+class MyBlobIO : public BlobIO, public FastXmlInterface, public Memalloc
 {
 public:
   MyBlobIO(BlobIOInterface *iface)

@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <float.h>
 #include <math.h>
+#include <algorithm>
 
 #include "UserMemAlloc.h"
 #include "ConvexDecomposition.h"
@@ -30,7 +31,7 @@ static const NxF64 EPSILON=0.0001;
 
 using namespace ConvexDecomposition;
 
-typedef USER_STL::vector< NxU32 > UintVector;
+typedef std::vector< NxU32 > UintVector;
 
 
 namespace ConvexDecomposition
@@ -154,7 +155,7 @@ public:
   NxF64           mWeight;
 };
 
-typedef USER_STL::vector< Wpoint > WpointVector;
+typedef std::vector< Wpoint > WpointVector;
 
 
 class CTri
@@ -395,7 +396,7 @@ public:
   NxI32             mProcessed; // already been added...
 };
 
-typedef USER_STL::vector< CTri > CTriVector;
+typedef std::vector< CTri > CTriVector;
 
 bool featureMatch(CTri &m,const CTriVector &tris,ConvexDecompInterface * /* callback */,const CTriVector & /* input_mesh */)
 {
@@ -768,7 +769,7 @@ class CHullSort
 };
 
 
-typedef USER_STL::vector< CHull * > CHullVector;
+typedef std::vector< CHull * > CHullVector;
 
 
 class ConvexBuilder : public ConvexDecompInterface
@@ -993,7 +994,7 @@ public:
       size_t tcount               = desc.mTcount;
 
       RemoveTjunctions *rt = 0;
-
+#if 0
       if ( desc.mRemoveTjunctions )
       {
         rt = createRemoveTjunctions();
@@ -1006,7 +1007,7 @@ public:
         indices = rdesc.mIndicesOut;
         tcount = rdesc.mTcountOut;
       }
-
+#endif
 
       if ( desc.mInitialIslandGeneration )
       {
@@ -1180,7 +1181,7 @@ public:
 
 	void sortChulls(CHullVector &hulls)
 	{
-		USER_STL::sort( hulls.begin(), hulls.end(), CHullSort() );
+		std::sort( hulls.begin(), hulls.end(), CHullSort() );
 	}
 
   bool addTri(fm_VertexIndex *vl,
@@ -1496,7 +1497,7 @@ NxU32 performConvexDecomposition(const DecompDesc &_desc)
   // so we must re-index it here!
 
   fm_VertexIndex *vindex = fm_createVertexIndex( (NxF64) SPLIT_EPSILON, false );
-  typedef USER_STL::vector< size_t > size_tVector;
+  typedef std::vector< size_t > size_tVector;
 
   size_tVector indices;
 

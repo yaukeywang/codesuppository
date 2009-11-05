@@ -57,8 +57,7 @@
          snippets/KdTree.h
          snippets/filesystem.cpp
          snippets/filesystem.h
-         snippets/SystemServices.h
-         snippets/SystemServices.cpp
+         snippets/nvstl.cpp
          snippets/Foundation/*.h
 				</Files>
 				<Files name="Common Source Files" root="../../src/common" type="header">

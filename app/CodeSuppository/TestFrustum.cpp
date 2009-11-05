@@ -5,7 +5,7 @@
 
 #include "TestFrustum.h"
 
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 
 void testFrustum(void)
 {

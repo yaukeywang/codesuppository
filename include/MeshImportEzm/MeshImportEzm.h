@@ -17,7 +17,7 @@ namespace MESHIMPORTEZM
 	* \see
 	* Separate items with the '|' character.
 	*/
-  class MeshImportEzm : public MESHIMPORT::MeshImporter
+  class MeshImportEzm : public NVSHARE::MeshImporter
 {
 public:
 };

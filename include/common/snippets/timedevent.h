@@ -31,12 +31,10 @@
 		THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------*/
 
-#include "UserMemAlloc.h"
+namespace NVSHARE
+{
 
 class Gauss;
-
-namespace TIMED_EVENT
-{
 
 class TimedEvent;
 
@@ -75,7 +73,7 @@ NxI32 postTimedEvent(TimedEventFactory *factory,
 									 NxI32   user_id);
 
 
-NxI32 process(TimedEventFactory *factory,NxF32 dtime); // process timed events based on this delta time since the last time we were called. returns the number of events that got fired.
+NxI32 timed_event_process(TimedEventFactory *factory,NxF32 dtime); // process timed events based on this delta time since the last time we were called. returns the number of events that got fired.
 
 NxI32 cancelAll(TimedEventFactory *factory,TimedEventInterface *callback); // cancel all events that are pending with this callback.
 bool cancelTimedEvent(TimedEventFactory *factory,NxI32 id); // cancel a specific timed event based on its id number.

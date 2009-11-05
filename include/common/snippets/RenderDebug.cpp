@@ -4,6 +4,8 @@
 #include <assert.h>
 #include <float.h>
 #include <math.h>
+#include <hash_map>
+#include <vector>
 #include <new>
 
 
@@ -15,24 +17,22 @@
 
 #include "RenderDebug.h"
 
-#if USE_AS_SNIPPET
-
-#include "Foundation.inl"
-
-#else
 #include <NxVec3.h>
 #include <NxPlane.h>
 #include <NxMat34.h>
 #include <NxQuat.h>
 #include <NxBounds3.h>
-#include "SortedSet.h"
-#include "SimplePool.h"
-#include "HashSet.h"
-#endif
 
+#define RENDER_DEBUG_NVSHARE RENDER_DEBUG_##NVSHARE
 
-namespace RENDER_DEBUG
+using namespace NVSHARE;
+
+namespace RENDER_DEBUG_NVSHARE
 {
+
+class BlockInfo;
+
+typedef stdext::hash_map< NxU32, BlockInfo * > BlockInfoHash;
 
 	//   font info:
 	//
@@ -776,7 +776,7 @@ inline void fm_rotationArc(const NxF32 *v0,const NxF32 *v1,NxF32 *quat)
 
 }
 
-class MPoolExtra 
+class MPoolExtra : public Memalloc
 {
 public:
 	MPoolExtra(size_t mlen,const char *poolType,const char *file,NxI32 lineno)
@@ -865,7 +865,7 @@ public:
 
 		if ( mStartCount > 0 )
 		{
-			mData =  new MPoolExtra(sizeof(Type)*mStartCount,mPoolType,mFile,mLineNo);
+			mData =  MEMALLOC_NEW(MPoolExtra)(sizeof(Type)*mStartCount,mPoolType,mFile,mLineNo);
 			Type *data = (Type *) mData->mData;
 			{
 				Type *t = (Type *)mData->mData;
@@ -1041,7 +1041,7 @@ public:
 		if ( ret == 0 && (mCurrentCount+mGrowCount) < mMaxItems && mGrowCount > 0 ) // ok..we are allowed to allocate some more...
 		{
 			MPoolExtra *pe = mData; // the old one...
-			mData  = new MPoolExtra(sizeof(Type)*mGrowCount,mPoolType,mFile,mLineNo);
+			mData  = MEMALLOC_NEW(MPoolExtra)(sizeof(Type)*mGrowCount,mPoolType,mFile,mLineNo);
 			{
 				Type *t = (Type *)mData->mData;
 				for (NxI32 i=0; i<mGrowCount; i++)
@@ -1197,6 +1197,7 @@ public:
   {
     mText = 0;
     mBlock = 0;
+
     mTransform.id();
 	mLifeTime = 0.0f;
     mVisible = true;
@@ -1601,7 +1602,7 @@ public:
 	NxI32                 mBlock;
 };
 
-class BlockInfo
+class BlockInfo : public NVSHARE::Memalloc
 {
 public:
   BlockInfo(void)
@@ -1627,7 +1628,7 @@ public:
   bool	   mScreenSpace;
 };
 
-class MyRenderDebug : public RenderDebug
+class MyRenderDebug : public RenderDebug, public Memalloc
 {
 public:
 	MyRenderDebug(void)
@@ -1882,9 +1883,10 @@ public:
 					{
 						if ( tri->mBlock != 0 )
 						{
-							BlockInfo *b;
-							if ( mBlocksHash.exists((NxU32)tri->mBlock,b) )
+							BlockInfoHash::iterator found = mBlocksHash.find( (NxU32)tri->mBlock );
+							if ( found != mBlocksHash.end() )
 							{
+								BlockInfo *b = (*found).second;
 								if ( b->mSolidTri == tri )
 								{
 									b->mSolidTri = tri->GetNext();
@@ -1914,9 +1916,10 @@ public:
 					{
 						if ( tri->mBlock != 0 )
 						{
-							BlockInfo *b;
-							if ( mBlocksHash.exists((NxU32)tri->mBlock,b) )
+							BlockInfoHash::iterator found = mBlocksHash.find( (NxU32)tri->mBlock );
+							if ( found != mBlocksHash.end() )
 							{
+								BlockInfo *b = (*found).second;
 								if ( b->mSolidTri == tri )
 								{
 									b->mSolidTri = tri->GetNext();
@@ -2042,9 +2045,10 @@ public:
 					{
 						if ( tri->mBlock != 0 )
 						{
-							BlockInfo *b;
-							if ( mBlocksHash.exists((NxU32)tri->mBlock,b) )
+							BlockInfoHash::iterator found = mBlocksHash.find( (NxU32)tri->mBlock );
+							if ( found != mBlocksHash.end() )
 							{
+								BlockInfo *b = (*found).second;
 								if ( b->mLineTri == tri )
 								{
 									b->mLineTri = tri->GetNext();
@@ -2073,9 +2077,10 @@ public:
 					{
 						if ( tri->mBlock != 0 )
 						{
-							BlockInfo *b;
-							if ( mBlocksHash.exists((NxU32)tri->mBlock,b) )
+							BlockInfoHash::iterator found = mBlocksHash.find( (NxU32)tri->mBlock );
+							if ( found != mBlocksHash.end() )
 							{
+								BlockInfo *b = (*found).second;
 								if ( b->mLineTri == tri )
 								{
 									b->mLineTri = tri->GetNext();
@@ -2184,7 +2189,7 @@ public:
     			mBoundsChanged = true;
                 NxU32 flags = mCurrentState.isUseZ() ?  LTF_USEZ : LTF_NONE;
                 flags|= mCurrentState.isScreen() ? LTF_SCREEN : 0;
-    			tri->Set(p1,p2,p3,mCurrentState.mColor,mCurrentState.getDisplayTime(),(RENDER_DEBUG::LineTriFlag)flags, mCurrentState.mRenderScale, mUseBlock ); // set condition of the triangle
+    			tri->Set(p1,p2,p3,mCurrentState.mColor,mCurrentState.getDisplayTime(),(RENDER_DEBUG_NVSHARE::LineTriFlag)flags, mCurrentState.mRenderScale, mUseBlock ); // set condition of the triangle
     			if ( mCurrentBlock )
     			{
     				tri->transform(mCurrentBlock->mPose);
@@ -2292,7 +2297,7 @@ public:
 			NxU32 flags = mCurrentState.isUseZ() ?  LTF_USEZ : LTF_NONE;
 			flags|= mCurrentState.isScreen() ? LTF_SCREEN : 0;
 			NxF32 displayTime = mCurrentState.getDisplayTime();
-			tri->Set(p1,p2,0, mCurrentState.mColor | 0xFF000000, displayTime,(RENDER_DEBUG::LineTriFlag)flags, mCurrentState.mRenderScale, mUseBlock  ); // set condition of the triangle
+			tri->Set(p1,p2,0, mCurrentState.mColor | 0xFF000000, displayTime,(RENDER_DEBUG_NVSHARE::LineTriFlag)flags, mCurrentState.mRenderScale, mUseBlock  ); // set condition of the triangle
 			if ( mCurrentBlock )
 			{
 				tri->transform(mCurrentBlock->mPose);
@@ -2647,9 +2652,10 @@ public:
 
         if ( blockIndex > 0 ) // reseting a specific block!
         {
-            BlockInfo *b;
-            if ( mBlocksHash.exists((NxU32)blockIndex,b) )
+			BlockInfoHash::iterator found = mBlocksHash.find( (NxU32)blockIndex );
+            if ( found != mBlocksHash.end() )
             {
+				BlockInfo *b = (*found).second;
                 SolidTri *t = b->mSolidTri;
                 while ( t && t->getBlock() == blockIndex )
                 {
@@ -2672,8 +2678,8 @@ public:
 					mPrintText.Release(pt);
                     pt = n;
                 }
-                mBlocksHash.remove(b);
-                mBlocks.destroy(b);
+				mBlocksHash.erase(found);
+				delete b;
             }
         }
         else
@@ -3384,11 +3390,11 @@ public:
 
 		mBlockIndex++;
 		mUseBlock = mBlockIndex;
-        mCurrentBlock = mBlocks.construct();
+        mCurrentBlock = MEMALLOC_NEW(BlockInfo);
         mCurrentBlock->mHashValue = mBlockIndex;
 		mCurrentBlock->mPose = pose;
 
-        mBlocksHash.insert(mCurrentBlock);
+		mBlocksHash[ mBlockIndex ] = mCurrentBlock;
 
 		return mBlockIndex;
 	}
@@ -3402,9 +3408,10 @@ public:
 
 	virtual void  setDrawGroupVisible(NxI32 blockId,bool state)
 	{
-		BlockInfo *b;
-		if ( mBlocksHash.exists((NxU32)blockId,b) )
+		BlockInfoHash::iterator found = mBlocksHash.find( (NxU32)blockId );
+		if ( found != mBlocksHash.end() )
 		{
+			BlockInfo *b = (*found).second;
 			if ( b->mVisibleState != state )
 			{
 				b->mVisibleState = state;
@@ -3441,9 +3448,10 @@ public:
 
 	virtual void  setDrawGroupPose(NxI32 blockId,const NxMat34 &pose)
 	{
-        BlockInfo *b;
-        if ( mBlocksHash.exists((NxU32)blockId,b) )
+		BlockInfoHash::iterator found = mBlocksHash.find( (NxU32) blockId );
+        if ( found != mBlocksHash.end() )
         {
+			BlockInfo *b = (*found).second;
             if ( memcmp(&pose,&b->mPose,sizeof(NxMat34)) != 0 ) // if the pose has changed...
             {
                 NxMat34 inverse;
@@ -4008,8 +4016,7 @@ private:
 
 	NxBounds3                         mBounds;
     BlockInfo                        *mCurrentBlock;
-    HashSet< BlockInfo *>             mBlocksHash;
-    SimplePool< BlockInfo >           mBlocks;
+    BlockInfoHash                     mBlocksHash;
 
     NxU32                             mStackIndex;
     RenderState                       mCurrentState;
@@ -4025,7 +4032,10 @@ private:
 
 };  // end of namespace
 
-using namespace RENDER_DEBUG;
+using namespace RENDER_DEBUG_NVSHARE;
+
+namespace NVSHARE
+{
 
 RenderDebug *gRenderDebug=0;
 
@@ -4040,3 +4050,5 @@ void          releaseRenderDebug(RenderDebug *rd)
     MyRenderDebug *m = static_cast< MyRenderDebug *>(rd);
     delete m;
 }
+
+}; // end of namespace

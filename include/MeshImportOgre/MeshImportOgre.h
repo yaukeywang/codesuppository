@@ -17,7 +17,7 @@ namespace MESHIMPORTOGRE
 	* \see
 	* Separate items with the '|' character.
 	*/
-  class MeshImportOgre : public MESHIMPORT::MeshImporter
+  class MeshImportOgre : public NVSHARE::MeshImporter
 {
 public:
 };

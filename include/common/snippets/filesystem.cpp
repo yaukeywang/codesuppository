@@ -51,8 +51,8 @@
 
 */
 
-FileSystem *gFileSystem=0;
-
+namespace NVSHARE
+{
 
 DefaultFileSystem::DefaultFileSystem(const char *relativePath)
 {
@@ -131,3 +131,5 @@ const char * DefaultFileSystem::FileOpenString(const char *fname,bool readAccess
 
   return ret;
 }
+
+}; // end of namespace

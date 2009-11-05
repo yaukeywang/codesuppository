@@ -2,19 +2,17 @@
 #define __RENDER_DEBUG_H__
 
 
-#define USE_AS_SNIPPET 1 // This is true if we are building in 'snippet' form, meaning only *one* CPP and header file.
-
-#if USE_AS_SNIPPET
 #include "UserMemAlloc.h"
-#else
-#include "NxSimpleTypes.h"
+
 class NxVec3;
 class NxMat34;
 class NxMat33;
 class NxQuat;
 class NxPlane;
 class NxBounds3;
-#endif
+
+namespace NVSHARE
+{
 
 class RenderDebugSolidVertex
 {
@@ -191,7 +189,6 @@ public:
 
 // These versions uses the Nx classes.  Not available in the snippet only form.
 
-#if !USE_AS_SNIPPET
 	virtual void  debugPolygon(NxU32 pcount,const NxVec3 *points) = 0;
 
 	virtual void  debugLine(const NxVec3 &p1,const NxVec3 &p2) = 0;
@@ -256,8 +253,6 @@ public:
 
 	virtual void  setPose(const NxMat34 &pose) = 0;
 
-#endif
-
 protected:
 
 	virtual ~RenderDebug(void) { };
@@ -268,5 +263,7 @@ RenderDebug * createRenderDebug(void);
 void          releaseRenderDebug(RenderDebug *rd);
 
 extern RenderDebug *gRenderDebug;
+
+}; // end of namespace
 
 #endif // __RENDER_DEBUG_H__

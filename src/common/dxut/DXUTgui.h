@@ -97,7 +97,7 @@ struct DXUTBlendColor
 //-----------------------------------------------------------------------------
 // Contains all the display tweakables for a sub-control
 //-----------------------------------------------------------------------------
-class CDXUTElement
+class CDXUTElement :  public NVSHARE::Memalloc
 {
 public:
     void SetTexture( UINT iTexture, RECT* prcTexture, D3DCOLOR defaultTextureColor = D3DCOLOR_ARGB(255, 255, 255, 255) );
@@ -120,7 +120,7 @@ public:
 // All controls must be assigned to a dialog, which handles
 // input and rendering for the controls.
 //-----------------------------------------------------------------------------
-class CDXUTDialog
+class CDXUTDialog :  public NVSHARE::Memalloc
 {
     friend class CDXUTDialogResourceManager;
 
@@ -306,7 +306,7 @@ private:
 //--------------------------------------------------------------------------------------
 // Structs for shared resources
 //--------------------------------------------------------------------------------------
-struct DXUTTextureNode
+struct DXUTTextureNode : public NVSHARE::Memalloc
 {
     bool bFileSource;  // True if this texture is loaded from a file. False if from resource.
     HMODULE hResourceModule;
@@ -454,7 +454,7 @@ protected:
 //-----------------------------------------------------------------------------
 // Contains all the display information for a given control type
 //-----------------------------------------------------------------------------
-struct DXUTElementHolder
+struct DXUTElementHolder :  public NVSHARE::Memalloc
 {
     UINT nControlType;
     UINT iElement;
@@ -466,7 +466,7 @@ struct DXUTElementHolder
 //-----------------------------------------------------------------------------
 // Static control
 //-----------------------------------------------------------------------------
-class CDXUTStatic : public CDXUTControl
+class CDXUTStatic : public CDXUTControl,  public NVSHARE::Memalloc
 {
 public:
     CDXUTStatic( CDXUTDialog *pDialog = NULL );
@@ -613,7 +613,7 @@ protected:
 //-----------------------------------------------------------------------------
 // ListBox control
 //-----------------------------------------------------------------------------
-struct DXUTListBoxItem
+struct DXUTListBoxItem :  public NVSHARE::Memalloc
 {
     WCHAR strText[256];
     void*  pData;
@@ -622,7 +622,7 @@ struct DXUTListBoxItem
     bool  bSelected;
 };
 
-class CDXUTListBox : public CDXUTControl
+class CDXUTListBox : public CDXUTControl,  public NVSHARE::Memalloc
 {
 public:
     CDXUTListBox( CDXUTDialog *pDialog = NULL );
@@ -677,7 +677,7 @@ protected:
 //-----------------------------------------------------------------------------
 // ComboBox control
 //-----------------------------------------------------------------------------
-struct DXUTComboBoxItem
+struct DXUTComboBoxItem :  public NVSHARE::Memalloc
 {
     WCHAR strText[256];
     void*  pData;
@@ -751,7 +751,7 @@ protected:
 //-----------------------------------------------------------------------------
 // Slider control
 //-----------------------------------------------------------------------------
-class CDXUTSlider : public CDXUTControl
+class CDXUTSlider : public CDXUTControl,  public NVSHARE::Memalloc
 {
 public:
     CDXUTSlider( CDXUTDialog *pDialog = NULL );
@@ -859,7 +859,7 @@ private:
 //-----------------------------------------------------------------------------
 // EditBox control
 //-----------------------------------------------------------------------------
-class CDXUTEditBox : public CDXUTControl
+class CDXUTEditBox : public CDXUTControl,  public NVSHARE::Memalloc
 {
 public:
     CDXUTEditBox( CDXUTDialog *pDialog = NULL );

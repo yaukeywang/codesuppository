@@ -5,7 +5,7 @@
 
 #include "TestClipper.h"
 
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 
 void testClipper(void)
 {

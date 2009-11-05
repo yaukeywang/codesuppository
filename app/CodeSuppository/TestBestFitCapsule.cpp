@@ -5,7 +5,7 @@
 
 #include "TestBestFitCapsule.h"
 
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 #include "RenderDebug.h"
 #include "FloatMath.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"

@@ -6,7 +6,6 @@
 
 #include "UserMemAlloc.h"
 #include "fmem.h"
-#include "SendTextMessage.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
 #include "CodeSuppository.h"
 #include "MeshImport.h"
@@ -50,9 +49,11 @@
 #include "SplitMeshApp.h"
 #include "JobSwarm.h"
 
+using namespace NVSHARE;
+
 CodeSuppository *gCodeSuppository=0;
 
-class MyCodeSuppository : public CodeSuppository
+class MyCodeSuppository : public CodeSuppository, public NVSHARE::Memalloc
 {
 public:
   MyCodeSuppository(void)
@@ -76,7 +77,7 @@ public:
     mRemoveTjunctions = false;
     mInitialIslandGeneration = false;
     mIslandGeneration = false;
-    if ( gMeshImport )
+	if ( NVSHARE::gMeshImport )
     {
         //mCommLayer = gMeshImport->createCommLayerTelent();
 		mCommLayer = gMeshImport->createCommLayerWindowsMessage("CodeSuppository","ClothingTool");
@@ -410,7 +411,7 @@ private:
   bool mInitialIslandGeneration;
   bool mIslandGeneration;
   TestAutoGeometry *mTestAutoGeometry;
-  MESHIMPORT::CommLayer *mCommLayer;
+  NVSHARE::CommLayer *mCommLayer;
 };
 
 CodeSuppository * createCodeSuppository(void)

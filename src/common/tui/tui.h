@@ -7,10 +7,12 @@
 #include "stringdict.h"
 #include "cparser.h"
 
+using namespace NVSHARE;
+
 enum  TuiType;
 class TuiElement;
-typedef USER_STL::vector< TuiElement * > TuiElementVector;
-typedef USER_STL::vector<StringRefVector *> StringRefVectorVct;
+typedef std::vector< TuiElement * > TuiElementVector;
+typedef std::vector<StringRefVector *> StringRefVectorVct;
 
 class TuiSaveCallback
 {
@@ -87,7 +89,7 @@ private:
 	bool      mState;
 };
 
-typedef USER_STL::vector< TuiChoice > TuiChoiceVector;
+typedef std::vector< TuiChoice > TuiChoiceVector;
 
 class TextUserInterface;
 
@@ -141,7 +143,7 @@ public:
 
 //==================================================================================
 //==================================================================================
-class TuiElement
+class TuiElement : public NVSHARE::Memalloc
 {
 public:
 	TuiElement(const StringRef &key,TuiType type,NxI32 count,const char **commands);
@@ -380,11 +382,11 @@ inline NxU32 TuiElement::GetTextColor( void ) const
 	return mTextColor;
 }
 
-typedef USER_STL::map<StringRef, TuiElement*> TuiElementMap;
+typedef std::map<StringRef, TuiElement*> TuiElementMap;
 
 //==================================================================================
 //==================================================================================
-class TextUserInterface : public CommandParserInterface
+class TextUserInterface : public CommandParserInterface, public NVSHARE::Memalloc
 {
 public:
 	TextUserInterface(const char *startup);

@@ -31,7 +31,7 @@ enum EquationType
   MF_LAST
 };
 
-class Equation
+class Equation : public NVSHARE::Memalloc
 {
 public:
   Equation(EquationType type,NxF32 constant,NxF32 scaler,NxF32 minv=-256,NxF32 maxv=256);
@@ -73,7 +73,7 @@ enum EnvelopeType
   ET_LAST
 };
 
-class Envelopes
+class Envelopes : public NVSHARE::Memalloc
 {
 public:
   Envelopes(void);
@@ -371,7 +371,7 @@ EnvelopeType Envelopes::Get(const char *str)
 
 #define MAXTERMS 32
 
-class Perlin
+class Perlin : public NVSHARE::Memalloc
 {
 public:
 
@@ -639,7 +639,7 @@ Perlin::Perlin(NxI32 octaves,NxF32 freq,NxF32 amp,NxI32 seed)
   mStart = true;
 }
 
-class MyPerlin4 : public Perlin4
+class MyPerlin4 : public Perlin4, public NVSHARE::Memalloc
 {
 public:
 

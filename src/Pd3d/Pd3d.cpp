@@ -1,3 +1,4 @@
+#define NOMINMAX
 #include <d3d9.h>
 #include <d3dx9.h>
 #include <d3d9types.h>
@@ -13,7 +14,6 @@
 #include "zvidcap.h"
 #include "AgScreenPipe.h"
 #include "stringdict.h"
-#include "SystemServices.h"
 
 #include <map>
 
@@ -84,7 +84,7 @@
 #include "ResourceInterface.h"
 
 RESOURCE_INTERFACE::ResourceInterface *gResourceInterface=0;
-PD3D::Pd3d *gPd3d=0;
+NVSHARE::Pd3d *gPd3d=0;
 
 #ifdef WIN32
 #ifdef PD3D_EXPORTS
@@ -98,7 +98,7 @@ PD3D::Pd3d *gPd3d=0;
 
 bool doShutdown(void);
 
-namespace PD3D
+namespace NVSHARE
 {
 
   enum EmbedTexture
@@ -124,7 +124,7 @@ void DejaDescriptor(const Pd3dTexture &obj);
 void DejaDescriptor(const MyPd3d &obj);
 
 
-class Pd3dTexture : public AgScreenPipe
+class Pd3dTexture : public AgScreenPipe, public Memalloc
 {
 public:
   Pd3dTexture(const StringRef &name,NxU32 width,NxU32 height,NxI32 depth,bool systemRam)
@@ -149,9 +149,9 @@ public:
 
     mIsOk = false;
 
-    static StringRef wood = "wood.dds";
-    static StringRef water = "water.dds";
-    static StringRef terrain = "terrain.dds";
+    static StringRef wood = SGET("wood.dds");
+    static StringRef water = SGET("water.dds");
+    static StringRef terrain = SGET("terrain.dds");
     if ( mName == wood )
     {
       mHandle = getEmbedHandle(ET_WOOD);
@@ -455,7 +455,7 @@ void *Pd3dTexture::mWoodHandle = 0;
 void *Pd3dTexture::mWaterHandle = 0;
 void *Pd3dTexture::mTerrainHandle = 0;
 
-typedef USER_STL::map<StringRef, Pd3dTexture  *>      Pd3dTextureMap;
+typedef std::map<StringRef, Pd3dTexture  *>      Pd3dTextureMap;
 
 static void __cdecl MyMessageBox(const char *fmt, ...)
 {
@@ -479,7 +479,7 @@ static void __cdecl MyMessageBox(const char *fmt, ...)
 }
 
 // A Pimple class (pointer to implementation) to keep from polluting the public header file
-class MyPd3d : public Pd3d
+class MyPd3d : public Pd3d, public Memalloc
 {
 public:
   MyPd3d(void)
@@ -1399,7 +1399,7 @@ public:
     found = mTextures.find(ref);
     if ( found == mTextures.end() )
     {
-      ret = MEMALLOC_NEW(Pd3dTexture)(fname);
+      ret = MEMALLOC_NEW(Pd3dTexture)(SGET(fname));
       mTextures[ref] = ret;
     }
     else
@@ -1604,19 +1604,19 @@ static MyPd3d *gInterface=0;
 
 };
 
-using namespace PD3D;
+using namespace NVSHARE;
 
 #define MEGABYTE (1024*1024)
 
 extern "C"
 {
-  PD3D_API Pd3d * getInterface(NxI32 version_number,SYSTEM_SERVICES::SystemServices *services)
+  PD3D_API Pd3d * getInterface(NxI32 version_number,NVSHARE::SystemServices *services)
 {
   Pd3d *ret = 0;
 
   if ( services )
   {
-    SYSTEM_SERVICES::gSystemServices = services;
+    NVSHARE::gSystemServices = services;
   }
 
   assert( gInterface == 0 );

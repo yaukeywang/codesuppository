@@ -64,6 +64,8 @@
 #include "FloatMath.h"
 #include <hash_map>
 
+using namespace NVSHARE;
+
 #if SHOW_DEBUG
 #include "RenderDebug/RenderDebug.h"
 #endif
@@ -76,7 +78,7 @@
 namespace MESH_CLEANUP
 {
 
-typedef USER_STL_EXT::hash_map< NxU64, NxU32 >IntInt;
+typedef stdext::hash_map< NxU64, NxU32 >IntInt;
 
 #define POW21 (1<<21)
 
@@ -217,7 +219,7 @@ public:
   }
 #endif
 
-  void performProject(fm_VertexIndex *vlook,const NxF32 *vertices,QuickTri *join,USER_STL::vector< NxU32 > &indices,NxF32 projectDistance,RENDER_DEBUG::RenderDebug * /* debug */)
+  void performProject(fm_VertexIndex *vlook,const NxF32 *vertices,QuickTri *join,std::vector< NxU32 > &indices,NxF32 projectDistance,RENDER_DEBUG::RenderDebug * /* debug */)
   {
 
     const NxF32 *p1 = &vertices[mI[0]*3];
@@ -371,7 +373,7 @@ bool meshCleanup(MeshCleanupDesc &desc,NxF32 weldDistance,NxF32 projectDistance,
 {
   bool ret = false;
 
-  NxF32 *vertices = MEMALLOC_NEW(NxF32)[desc.inputVcount*3];
+  NxF32 *vertices = (NxF32 *)MEMALLOC_MALLOC(sizeof(NxF32)*desc.inputVcount*3);
   const char *scan = (const char *) desc.inputVertices;
   NxF32 *dest = vertices;
 
@@ -388,7 +390,7 @@ bool meshCleanup(MeshCleanupDesc &desc,NxF32 weldDistance,NxF32 projectDistance,
 
   const char *indices = (const char *)desc.inputIndices;
 
-  USER_STL::vector< QuickTri > triangles;
+  std::vector< QuickTri > triangles;
 
   IntInt edgeList;
 
@@ -458,9 +460,9 @@ bool meshCleanup(MeshCleanupDesc &desc,NxF32 weldDistance,NxF32 projectDistance,
 
     fm_VertexIndex *vlook = fm_createVertexIndex(weldDistance,false);
 
-    USER_STL::vector< NxU32 > indices;
+    std::vector< NxU32 > indices;
 
-    USER_STL::vector< QuickTri >::iterator i;
+    std::vector< QuickTri >::iterator i;
     for (i=triangles.begin(); i!=triangles.end(); ++i)
     {
 
@@ -481,13 +483,13 @@ bool meshCleanup(MeshCleanupDesc &desc,NxF32 weldDistance,NxF32 projectDistance,
     }
 
     NxU32 icount = indices.size();
-    desc.outputIndices = MEMALLOC_NEW(NxU32)[icount];
+    desc.outputIndices = (NxU32 *)MEMALLOC_MALLOC(sizeof(NxU32)*icount);
     memcpy(desc.outputIndices,&indices[0],sizeof(NxU32)*icount);
     desc.outputTcount = indices.size()/3;
 
 
     desc.outputVcount   = vlook->getVcount();
-    desc.outputVertices = MEMALLOC_NEW(NxF32)[desc.outputVcount*3];
+    desc.outputVertices = (NxF32 *)MEMALLOC_MALLOC(sizeof(NxF32)*desc.outputVcount*3);
     memcpy(desc.outputVertices,vlook->getVerticesFloat(),sizeof(NxF32)*desc.outputVcount*3);
 
     fm_releaseVertexIndex(vlook);

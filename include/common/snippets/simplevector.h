@@ -10,7 +10,7 @@
 #define USE_MALLOC_FREE 0
 
 /**
- \brief Simple 'USER_STL::vector' style template container.
+ \brief Simple 'std::vector' style template container.
 
  if no NxUserAllocator is specified, the NxDefaultAllocator is used.
 

@@ -15,6 +15,8 @@
 
 #define TSCALE 0.001f
 
+using namespace NVSHARE;
+
 class MyTerrain : public Terrain
 {
 public:
@@ -137,10 +139,10 @@ public:
 
       NxU32 vcount = vertices.size();
 
-      PD3D::Pd3dGraphicsVertex *gv = new PD3D::Pd3dGraphicsVertex[vcount];
+      NVSHARE::Pd3dGraphicsVertex *gv = new NVSHARE::Pd3dGraphicsVertex[vcount];
       for (NxU32 i=0; i<vcount; i++)
       {
-        PD3D::Pd3dGraphicsVertex *dest = &gv[i];
+        NVSHARE::Pd3dGraphicsVertex *dest = &gv[i];
         const NxVec3 &source           = vertices[i];
         dest->mPos[0] = source.x;
         dest->mPos[1] = source.y;
@@ -149,7 +151,7 @@ public:
         dest->mTexel[1] = source.z*TSCALE;
       }
 
-      fm_computeMeanNormals(vcount,gv->mPos,sizeof(PD3D::Pd3dGraphicsVertex),gv->mNormal,sizeof(PD3D::Pd3dGraphicsVertex),indices.size()/3,&indices[0]);
+      fm_computeMeanNormals(vcount,gv->mPos,sizeof(NVSHARE::Pd3dGraphicsVertex),gv->mNormal,sizeof(NVSHARE::Pd3dGraphicsVertex),indices.size()/3,&indices[0]);
       mVertexBuffer = gPd3d->createVertexBuffer(vcount,gv);
       delete []gv;
 
@@ -171,7 +173,7 @@ private:
   NxF32              *mData;
   NxU32               mVcount;
   NxU32               mTcount;
-  PD3D::Pd3dMaterial  mMaterial;
+  NVSHARE::Pd3dMaterial  mMaterial;
   void               *mVertexBuffer;
   void               *mIndexBuffer;
   TerrainInterface   *mInterface;

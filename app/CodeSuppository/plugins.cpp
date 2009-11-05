@@ -5,12 +5,13 @@
 #include "RenderDebug.h"
 #include "MeshImport.h"
 #include "ResourceInterface.h"
-#include "SystemServices.h"
 #include "pd3d/pd3d.h"
 #include "JobSwarm.h"
 #include "CodeSuppository.h"
 
-PD3D::Pd3d                 *gPd3d=0;
+using namespace NVSHARE;
+
+NVSHARE::Pd3d                 *gPd3d=0;
 
 bool loadPlugins(void)
 {
@@ -24,11 +25,11 @@ bool loadPlugins(void)
   MEMALLOC::setMaxFixedMemorySize(0);
 #endif
 
-  gPd3d        = (PD3D::Pd3d *)getBindingInterface("pd3d.dll","pd3d",PD3D_VERSION,SYSTEM_SERVICES::gSystemServices,0);
+  gPd3d        = (NVSHARE::Pd3d *)getBindingInterface("pd3d.dll","pd3d",PD3D_VERSION,NVSHARE::gSystemServices,0);
 	gRenderDebug = createRenderDebug();
   if ( gPd3d && gRenderDebug )
     ok = true;
-  gMeshImport            = loadMeshImporters(0,SYSTEM_SERVICES::gSystemServices);
+  gMeshImport            = loadMeshImporters(0,NVSHARE::gSystemServices);
 
   gPd3d->setResourceInterface(gResourceInterface);
 

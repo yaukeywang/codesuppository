@@ -12,15 +12,17 @@
 #include "sutil.h"
 #include "log.h"
 
+using namespace NVSHARE;
+
 TextUserInterface *gTui=0;
 
 static NxI32 gSaveFrame=0;
 
-const StringRef sShow  = "show";
-const StringRef sHide  = "hide";
-const StringRef sFalse = "false";
-const StringRef sZero  = "zero";
-const StringRef sTrue  = "true";
+const StringRef sShow  = SGET("show");
+const StringRef sHide  = SGET("hide");
+const StringRef sFalse = SGET("false");
+const StringRef sZero  = SGET("zero");
+const StringRef sTrue  = SGET("true");
 
 enum TuiCommand
 {
@@ -593,13 +595,13 @@ NxI32 TextUserInterface::CommandCallback(NxI32 token,NxI32 count,const char **ar
 		case TUI_PAGE:
 			if ( count == 2 )
 			{
-				mPage = Locate( arglist[1] );
+				mPage = Locate( SGET(arglist[1]) );
 			}
 			break;
     case TUI_PAGE_EXECUTE:
       if ( count == 2 )
       {
-        TuiElement *page = Locate(arglist[1]);
+        TuiElement *page = Locate(SGET(arglist[1]));
         if ( page )
         {
           page->ExecuteCommands();
@@ -830,7 +832,7 @@ NxI32 TextUserInterface::CommandCallback(NxI32 token,NxI32 count,const char **ar
 		case TUI_NAME:
 			if ( count == 2 && mCurrent )
 			{
-				mCurrent->SetName( arglist[1] );
+				mCurrent->SetName( SGET(arglist[1]) );
 			}
 			break;
 
@@ -1017,7 +1019,7 @@ NxI32 TextUserInterface::SlashCommand(const char *key,NxI32 count,const char **a
 	{
 		if ( count >= 2 )
 		{
-			TuiElement *te = Locate( arglist[0] );
+			TuiElement *te = Locate( SGET(arglist[0]) );
 			if ( te )
 			{
 				te->AddChoice(count-1, &arglist[1] );
@@ -1200,7 +1202,7 @@ TuiElement::TuiElement(const StringRef &key,TuiType type,NxI32 count,const char 
 		const char *cmd = commands[i];
 		assert( strlen(cmd) );
 		StringRef ref = SGET( cmd );
-		mCommands.push_back(ref);
+		mCommands.pushBack(ref);
 	}
 }
 
@@ -1228,7 +1230,7 @@ void TuiElement::SetTokens(NxI32 count,const char **args)
 	for (NxI32 i=0; i<count; ++i)
 	{
 		StringRef cmd = SGET( args[i] );
-		mTokens.push_back(cmd);
+		mTokens.pushBack(cmd);
 	}
 }
 
@@ -1238,7 +1240,7 @@ void TuiElement::SetDescription(NxI32 count,const char **args)
 	for (NxI32 i=0; i<count; ++i)
 	{
 		StringRef cmd = SGET( args[i] );
-		mDescription.push_back(cmd);
+		mDescription.pushBack(cmd);
 	}
 }
 
@@ -1247,7 +1249,7 @@ void TuiElement::SetText( const char *text )
 {
 	if ( text )
 	{
-		mText = text;
+		mText = SGET(text);
 	}
 }
 
@@ -1269,7 +1271,7 @@ void TuiElement::AddOnCheckShow( NxI32 count, const char **name )
  			StringRefVector *p = 0;
  			if ( !mOnCheckShow.size() )
  			{
- 				p = MEMALLOC_NEW(StringRefVector);
+ 				p = new StringRefVector;
  			}
  
  			if ( p )
@@ -1277,21 +1279,21 @@ void TuiElement::AddOnCheckShow( NxI32 count, const char **name )
  				for ( NxI32 i = 0; i < count; ++i )
  				{
  					StringRef ref = SGET( name[i] );
- 					p->push_back( ref );
+ 					p->pushBack( ref );
  				}
  				mOnCheckShow.push_back( p );
  			}
  		}
  		else if ( type == TT_COMBO )
  		{
- 			StringRefVector *p = MEMALLOC_NEW(StringRefVector);
+ 			StringRefVector *p = new StringRefVector;
  
  			if ( p )
  			{
  				for ( NxI32 i = 0; i < count; ++i )
  				{
  					StringRef ref = SGET( name[i] );
- 					p->push_back( ref );
+ 					p->pushBack( ref );
  				}
  				mOnCheckShow.push_back( p );
  			}
@@ -1308,14 +1310,14 @@ void TuiElement::AddOnCheckRescript( NxI32 count, const char **script )
  
  		if ( type == TT_COMBO )
  		{
- 			StringRefVector *p = MEMALLOC_NEW(StringRefVector);
+ 			StringRefVector *p = new StringRefVector;
  
  			if ( p )
  			{
  				for ( NxI32 i = 0; i < count; ++i )
  				{
  					StringRef ref = SGET( script[i] );
- 					p->push_back( ref );
+ 					p->pushBack( ref );
  				}
  				mOnCheckRescript.push_back( p );
  			}
@@ -1403,7 +1405,7 @@ void TuiElement::ShowHelp(NxI32 indent,bool detailed,NxI32 index,bool showhelp)
 
 		if ( detailed && mTokens.size() > 1 )
 		{
-			StringRefVector::iterator i;
+			StringRefVector::Iterator i;
 			bool first = true;
 			for (i=mTokens.begin(); i!=mTokens.end(); ++i)
 			{
@@ -1422,7 +1424,7 @@ void TuiElement::ShowHelp(NxI32 indent,bool detailed,NxI32 index,bool showhelp)
 		if ( detailed & !mDescription.empty() )
 		{
 			gLog->Display("\r\n");
-			StringRefVector::iterator i;
+			StringRefVector::Iterator i;
 			for (i=mDescription.begin(); i!=mDescription.end(); ++i)
 			{
 				Indent(indent+1);
@@ -1470,7 +1472,7 @@ bool TuiElement::ShowHelp(const char *str)
 
 	if ( !mTokens.empty() )
 	{
-		StringRefVector::iterator i;
+		StringRefVector::Iterator i;
 		for (i=mTokens.begin(); i!=mTokens.end(); ++i)
 		{
 			if ( stricmp(str,(*i).Get() ) == 0 )
@@ -1495,7 +1497,7 @@ TuiElement * TuiElement::Command(const StringRef &c,NxI32 count,const char **arg
 		execute = true;
 	else
 	{
-	  StringRefVector::iterator i;
+	  StringRefVector::Iterator i;
 	  for (i=mTokens.begin(); i!=mTokens.end(); ++i)
 	  {
 		  if ( stricmp(c,(*i)) == 0 )
@@ -1624,7 +1626,7 @@ void TuiElement::Execute(NxI32 count,const char **arglist,TuiElement *parent,Tex
 		{
 			if ( i < (NxI32)mArgs.size() )
 			{
-				mArgs[i] = arglist[i];
+				mArgs[i] = SGET(arglist[i]);
 			}
 		}
 	}
@@ -1643,7 +1645,7 @@ void TuiElement::Execute(NxI32 count,const char **arglist,TuiElement *parent,Tex
 			char scratch[2048];
 			scratch[0] = 0;
 
-			StringRefVector::iterator i;
+			StringRefVector::Iterator i;
 			for (i=mCommands.begin(); i!=mCommands.end(); ++i)
 			{
 				strcat( scratch, GetCommand( (*i), count, arglist, parent, tui,toggleOk) );
@@ -1739,7 +1741,7 @@ void  TuiElement::AddArg(NxI32 count,const char **arglist)
   	for (NxI32 i=0; i<count; ++i)
   	{
   		StringRef ref = SGET(arglist[i]);
-  		mArgs.push_back(ref);
+  		mArgs.pushBack(ref);
   	}
   }
 }
@@ -1760,7 +1762,7 @@ void TuiElement::AddFiles(NxI32 count,const char **arglist)
 	for (NxI32 i=0; i<count; ++i)
 	{
 		const char *spec = arglist[i];
-		mFileSpecs.push_back( SGET(spec) );
+		mFileSpecs.pushBack( SGET(spec) );
 	}
 }
 
@@ -1893,7 +1895,7 @@ const char * TuiElement::ArgumentLookup(const char *name)
 
 	if ( ret == 0 )
 	{
-		StringRefVector::iterator i;
+		StringRefVector::Iterator i;
 		for (i=mTokens.begin(); i!=mTokens.end(); ++i)
 		{
 			const char *token = (*i).Get();
@@ -2152,7 +2154,7 @@ void TuiElement::Refresh(void)
 		if ( mChoices.size() )
 		{
 			mArgs.clear();
-			mArgs.push_back( mChoices[0].GetChoice() );
+			mArgs.pushBack( mChoices[0].GetChoice() );
 		}
 		return;
 	}
@@ -2164,7 +2166,7 @@ void TuiElement::Refresh(void)
     
 		// add all of the files!
 		StringRefVector files;
-		StringRefVector::const_iterator i;
+		StringRefVector::ConstIterator i;
 		for (i=mFileSpecs.begin(); i!=mFileSpecs.end(); ++i)
 		{
 //			const StringRef &ref = (*i);
@@ -2184,7 +2186,7 @@ void TuiElement::Refresh(void)
 		std::sort(files.begin(), files.end(), StringSortRef() );
 
 		{
-  			StringRefVector::iterator i;
+  			StringRefVector::Iterator i;
   			for (i=files.begin(); i!=files.end(); ++i)
   			{
   				const StringRef &ref = (*i);
@@ -2196,7 +2198,7 @@ void TuiElement::Refresh(void)
 		if ( mChoices.size() )
 		{
 			mArgs.clear();
-			mArgs.push_back( mChoices[0].GetChoice() );
+			mArgs.pushBack( mChoices[0].GetChoice() );
 		}
 	}
 }
@@ -2252,7 +2254,7 @@ void TuiElement::DetermineVisibleElements( const char *selectedItem, NxI32 id )
  					if ( showOnClick.size() == 1 )
  					{
  						TuiElementVector::iterator j;
- 						StringRefVector::const_iterator k;
+ 						StringRefVector::ConstIterator k;
  						TuiElementVector& elements = GetElements();
  
  						// check for items we should show/hide
@@ -2298,7 +2300,7 @@ void TuiElement::DetermineVisibleElements( const char *selectedItem, NxI32 id )
  								StringRefVector *p = (*z);
  								if ( p && p->size() )
  								{
- 									StringRefVector::const_iterator i = p->begin();
+ 									StringRefVector::ConstIterator i = p->begin();
  									const StringRef &name = (*i);
  									if ( !stricmp( arg, name.Get() ) )
  									{
@@ -2317,7 +2319,7 @@ void TuiElement::DetermineVisibleElements( const char *selectedItem, NxI32 id )
  							// check for items we should show/hide
  							bool state = true;
  
- 							StringRefVector::const_iterator i = srvPntr->begin();
+ 							StringRefVector::ConstIterator i = srvPntr->begin();
  							for ( ; i != srvPntr->end(); ++i )
  							{
  								const StringRef &item = (*i);
@@ -2398,7 +2400,7 @@ void TuiElement::DetermineRescriptedItems( const char * /*selectedItem*/, NxI32 
  								StringRefVector *p = (*z);
  								if ( p && p->size() )
  								{
- 									StringRefVector::const_iterator i = p->begin();
+ 									StringRefVector::ConstIterator i = p->begin();
  									const StringRef &name = (*i);
  									if ( !stricmp( arg, name.Get() ) )
  									{
@@ -2416,7 +2418,7 @@ void TuiElement::DetermineRescriptedItems( const char * /*selectedItem*/, NxI32 
  
  							// check for items we should rescript and rescript them
  
- 							StringRefVector::const_iterator i = srvPntr->begin();
+ 							StringRefVector::ConstIterator i = srvPntr->begin();
  							NxU32 cnt = 0;
  							NxU32 size = (NxU32)srvPntr->size();
  							for ( ; i != srvPntr->end(); ++i, ++cnt )
@@ -2486,7 +2488,7 @@ void TuiElement::AddExecuteOnLoad( const char **args, NxI32 count )
 		}
 	}
 	StringRef command = SGET( buff );
-	mOnLoadCommands.push_back( command );
+	mOnLoadCommands.pushBack( command );
 }
 
 //==================================================================================
@@ -2506,7 +2508,7 @@ void TuiElement::AddExecuteOnExit( const char **args, NxI32 count )
 		}
 	}
 	StringRef command = SGET( buff );
-	mOnExitCommands.push_back( command );
+	mOnExitCommands.pushBack( command );
 }
 
 //==================================================================================
@@ -2531,7 +2533,7 @@ void TuiElement::OnLoad( TuiElement *loadingPage )
 	else if ( !loadingPage )
 	{
 		// we are part of the loading page, so we execute any "on load" scripts
-		for ( StringRefVector::iterator i = mOnLoadCommands.begin(); i != mOnLoadCommands.end(); ++i )
+		for ( StringRefVector::Iterator i = mOnLoadCommands.begin(); i != mOnLoadCommands.end(); ++i )
 		{
 			StringRef &command = (*i);
 			char buff[512];
@@ -2563,7 +2565,7 @@ void TuiElement::OnExit( TuiElement *exitingPage )
 	else if ( !exitingPage )
 	{
 		// we are part of the exiting page, so execute any "on exit" scripts
-		for ( StringRefVector::iterator i = mOnExitCommands.begin(); i != mOnExitCommands.end(); ++i )
+		for ( StringRefVector::Iterator i = mOnExitCommands.begin(); i != mOnExitCommands.end(); ++i )
 		{
 			StringRef &command = (*i);
 			char buff[512];

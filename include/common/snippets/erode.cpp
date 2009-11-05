@@ -10,6 +10,8 @@
 #include "ImportHeightMap.h"
 #include "UserMemAlloc.h"
 
+using namespace NVSHARE;
+
 #pragma warning(disable:4996)
 
 #pragma warning(disable:4996)
@@ -193,7 +195,7 @@ private:
 };
 
 
-class MyErode : public Erode
+class MyErode : public Erode, public NVSHARE::Memalloc
 {
 public:
   MyErode(const ErodeDesc &desc)

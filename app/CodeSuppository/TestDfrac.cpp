@@ -5,7 +5,7 @@
 
 #include "TestDfrac.h"
 
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 
 void testDfrac(void)
 {

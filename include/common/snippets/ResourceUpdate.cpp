@@ -11,10 +11,12 @@
 #include <map>
 #include <string>
 
+using namespace NVSHARE;
+
 namespace RESOURCE_INTERFACE
 {
 
-typedef USER_STL::list< ResourceInterfaceCallback * > ResourceInterfaceList;
+typedef std::list< ResourceInterfaceCallback * > ResourceInterfaceList;
 
 class MyResourceUpdate
 {
@@ -71,7 +73,7 @@ public:
     }
   }
 
-  void notify(const USER_STL::string &str)
+  void notify(const std::string &str)
   {
     ResourceInterfaceList temp = mInterfaces;
     ResourceInterfaceList::iterator i;
@@ -86,9 +88,9 @@ public:
 
 
 
-typedef USER_STL::map< USER_STL::string, MyResourceUpdate > ResourceUpdateMap;
+typedef std::map< std::string, MyResourceUpdate > ResourceUpdateMap;
 
-class ResourceUpdateSystem
+class ResourceUpdateSystem : public NVSHARE::Memalloc
 {
 public:
   ResourceUpdateSystem(void)
@@ -103,7 +105,7 @@ public:
   {
     char fqn[512];
     normalizeFQN(_fqn,fqn);
-    USER_STL::string str = fqn;
+    std::string str = fqn;
     ResourceUpdateMap::iterator found = mResources.find(str);
     if ( found != mResources.end() )
     {
@@ -152,7 +154,7 @@ public:
   {
     char fqn[512];
     normalizeFQN(_fqn,fqn);
-    USER_STL::string str = fqn;
+    std::string str = fqn;
     ResourceUpdateMap::iterator found = mResources.find(str);
     if ( found != mResources.end() )
     {

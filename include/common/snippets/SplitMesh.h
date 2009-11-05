@@ -14,7 +14,10 @@
 #define SPLIT_EPSILON 0.00000001f
 #define CLOSURE_ID 0xFFFFFFFF
 
+namespace NVSHARE
+{
 class fm_VertexIndex;
+};
 
 namespace SPLIT_MESH
 {
@@ -277,13 +280,13 @@ public:
   virtual bool getSimpleMeshDouble(SimpleMeshDouble &simpleMesh) = 0;
   virtual bool saveObj(const char *fname) = 0;
 
-  virtual fm_VertexIndex * getVertexIndex(void) = 0;
+  virtual NVSHARE::fm_VertexIndex * getVertexIndex(void) = 0;
 
   virtual void addTriangle(size_t i1,size_t i2,size_t i3,size_t id) = 0;
   virtual void addTriangles(size_t tcount,const size_t *indices,size_t id) = 0;
 };
 
-RobustMesh * createRobustMesh(fm_VertexIndex *vindex);
+RobustMesh * createRobustMesh(NVSHARE::fm_VertexIndex *vindex);
 void         releaseRobustMesh(RobustMesh *mesh);
 
 
@@ -309,7 +312,7 @@ public:
 };
 
 
-RingSystem *createRingSystem(fm_VertexIndex *vindex);
+RingSystem *createRingSystem(NVSHARE::fm_VertexIndex *vindex);
 void        releaseRingSystem(RingSystem *rs);
 
 
@@ -326,7 +329,7 @@ public:
 
 };
 
-SplitMesh * createSplitMesh(fm_VertexIndex *vindex);
+SplitMesh * createSplitMesh(NVSHARE::fm_VertexIndex *vindex);
 void        releaseSplitMesh(SplitMesh *sm);
 
 
@@ -337,8 +340,8 @@ void        releaseSplitMesh(SplitMesh *sm);
 #include "UserMemAlloc.h"
 #include "FloatMath.h"
 
-
-typedef USER_STL::vector< size_t > size_tVector;
+using namespace NVSHARE;
+typedef std::vector< size_t > size_tVector;
 
 class EdgeWalk
 {
@@ -391,14 +394,14 @@ private:
 
 };
 
-typedef USER_STL::vector< EdgeWalk >   EdgeWalkVector;
-typedef USER_STL::vector< EdgeWalk * > EdgeWalkPtrVector;
+typedef std::vector< EdgeWalk >   EdgeWalkVector;
+typedef std::vector< EdgeWalk * > EdgeWalkPtrVector;
 
 class EdgeWalker
 {
 public:
 
-  EdgeWalker(size_t vcount,fm_VertexIndex *vindex,bool save)
+	EdgeWalker(size_t vcount,NVSHARE::fm_VertexIndex *vindex,bool save)
   {
     mSave = save;
     mVertexIndex = vindex;
@@ -1099,7 +1102,7 @@ private:
   EdgeWalk            *mJunkPile; // fragment edges that don't build polygons
   size_tVector         mIndices;
   size_tVector         mPolygons;
-  fm_VertexIndex      *mVertexIndex;
+  NVSHARE::fm_VertexIndex      *mVertexIndex;
   bool                 mSave;
 };
 

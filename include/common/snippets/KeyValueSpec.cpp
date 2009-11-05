@@ -10,11 +10,17 @@
 #include "stringdict.h"
 #include "sutil.h"
 
+#include <string>
+#include <map>
+#include <vector>
+
 #include "KeyValueSpec.h"
 
 #pragma warning(disable:4189)
 
-class MyKeyValue : public KeyValueDataItem
+using namespace NVSHARE;
+
+class MyKeyValue : public KeyValueDataItem, public NVSHARE::Memalloc
 {
 public:
   MyKeyValue(NxU32 index,const char *name)
@@ -270,9 +276,9 @@ public:
   NxU32         mIndex;
 };
 
-typedef USER_STL::map< StringRef, MyKeyValue * > MyKeyValueMap;
+typedef std::map< StringRef, MyKeyValue * > MyKeyValueMap;
 
-class MyKeyValueSpec : public KeyValueSpec, public InPlaceParserInterface
+class MyKeyValueSpec : public KeyValueSpec, public InPlaceParserInterface, public NVSHARE::Memalloc
 {
 public:
 friend class MyKeyValueData;
@@ -536,9 +542,9 @@ private:
   NxU32             mDefaultData;
 };
 
-typedef USER_STL::map< StringRef, MyKeyValueSpec * > MyKeyValueSpecMap;
+typedef std::map< StringRef, MyKeyValueSpec * > MyKeyValueSpecMap;
 
-class KeyData
+class KeyData : public NVSHARE::Memalloc
 {
 public:
   KeyData(void)
@@ -647,7 +653,7 @@ public:
 
 };
 
-class MyKeyValueData : public KeyValueData
+class MyKeyValueData : public KeyValueData, public NVSHARE::Memalloc
 {
 public:
   MyKeyValueData(MyKeyValueSpec *spec,const char * data)
@@ -1085,11 +1091,11 @@ public:
   std::string          mStringData; // the data as a key/value pair CSV string.
 };
 
-typedef USER_STL::map< NxU32, MyKeyValueData * > MyKeyValueDataMap;
-typedef USER_STL::vector< StringRef > StringRefVector;
-typedef USER_STL::vector< KeyValueData * > KeyValueDataVector;
+typedef std::map< NxU32, MyKeyValueData * > MyKeyValueDataMap;
+typedef std::vector< StringRef > MyStringRefVector;
+typedef std::vector< KeyValueData * > KeyValueDataVector;
 
-class MyKeyValueSpecFactory : public KeyValueSpecFactory
+class MyKeyValueSpecFactory : public KeyValueSpecFactory, public NVSHARE::Memalloc
 {
 public:
 
@@ -1297,7 +1303,7 @@ private:
   StringDict        mDictionary;
   MyKeyValueDataMap mData;
   MyKeyValueSpecMap mSpecs;
-  StringRefVector   mSpecList;
+  MyStringRefVector   mSpecList;
   KeyValueDataVector mDataList;
 };
 

@@ -91,7 +91,7 @@ namespace LOCK_FREE_Q
       m_Read = 0;
       m_Write = 0;
       m_Size = size;
-      m_Data = MEMALLOC_NEW(T)[size];
+      m_Data = (T *)MEMALLOC_MALLOC(sizeof(T)*size);
     }
 
     //push a new element in the circular queue

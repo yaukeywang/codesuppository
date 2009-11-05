@@ -8,12 +8,14 @@
 #include "HashFunction.h"
 #include "HashSet.h"
 
+using namespace NVSHARE;
+
 #define DEBUG_SHOW 0
 #define VALIDATION 0
 
 #if DEBUG_SHOW
 #include "RenderDebug/RenderDebug.h"
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 #endif
 
 namespace HE_ASTAR
@@ -104,7 +106,7 @@ private:
   AstarNode *mPrevious;
 };
 
-class HeAstarAllocator
+class HeAstarAllocator : public NVSHARE::Memalloc
 {
 public:
   HeAstarAllocator(void)

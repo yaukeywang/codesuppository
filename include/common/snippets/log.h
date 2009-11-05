@@ -72,9 +72,9 @@ public:
   virtual void logMessage(const char *str) = 0;
 };
 
-typedef USER_STL::queue< std::string > StringQueue;
+typedef std::queue< std::string > StringQueue;
 
-class Log
+class Log : public NVSHARE::Memalloc
 {
 public:
 

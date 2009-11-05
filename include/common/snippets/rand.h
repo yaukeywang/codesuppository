@@ -95,7 +95,10 @@
 
 #include "UserMemAlloc.h"
 
-class Rand
+namespace NVSHARE
+{
+
+class Rand : public Memalloc
 {
 public:
 
@@ -130,13 +133,13 @@ private:
 	NxI32 mCurrent;
 };
 
-class RandPool
+class RandPool : public Memalloc
 {
 public:
   RandPool(NxI32 size,NxI32 seed)  // size of random number bool.
   {
     mRand.setSeed(seed);       // init random number generator.
-    mData = MEMALLOC_NEW(NxI32)[size]; // allocate memory for random number bool.
+    mData = (NxI32 *)MEMALLOC_MALLOC(sizeof(NxI32)*size); // allocate memory for random number bool.
     mSize = size;
     mTop  = mSize;
     for (NxI32 i=0; i<mSize; i++) mData[i] = i;
@@ -144,7 +147,7 @@ public:
 
   ~RandPool(void)
   {
-    delete [] mData;
+    MEMALLOC_FREE(mData);
   };
 
   // pull a number from the random number pool, will never return the
@@ -180,5 +183,7 @@ private:
 
 NxF32 ranf(void);
 NxF32 ranf(NxF32 low,NxF32 high);
+
+};
 
 #endif

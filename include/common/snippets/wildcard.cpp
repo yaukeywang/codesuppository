@@ -8,6 +8,8 @@
 #include "wildcard.h"
 #include "regexp.h"
 
+using namespace NVSHARE;
+
 /*!  
 ** 
 ** Copyright (c) 2007 by John W. Ratcliff mailto:jratcliff@infiniplex.net
@@ -67,6 +69,7 @@
 #include <string>
 #include <vector>
 
+using namespace NVSHARE;
 typedef std::string String;
 
 class RegularExpression;
@@ -74,9 +77,9 @@ class RegularExpression;
 // Performs a conventional DOS style wildcard compare, with
 // ? and * notation, by converting it into a regular expression match.
 
-typedef USER_STL::vector< RegularExpression *> RegularExpressionVector;
+typedef std::vector< RegularExpression *> RegularExpressionVector;
 
-class WildCard
+class WildCard : public NVSHARE::Memalloc
 {
 public:
   WildCard(const char *wild);

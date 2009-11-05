@@ -66,7 +66,7 @@
 
 struct regexp;
 
-class RegularExpression
+class RegularExpression : public NVSHARE::Memalloc
 {
 public:
   RegularExpression(const char *expression);

@@ -5,6 +5,8 @@
 #include "ImportHeightMap.h"
 #include "UserMemAlloc.h"
 
+using namespace NVSHARE;
+
 namespace IMPORT_HEIGHTMAP
 {
 
@@ -679,7 +681,7 @@ NxI32	LevHF_Write(const LEV_HF* pHF, const char* pszFile, NxI32 ver)
 
 
 
-class MyImportHeightMap : public ImportHeightMap
+class MyImportHeightMap : public ImportHeightMap, public NVSHARE::Memalloc
 {
 public:
   MyImportHeightMap(void)

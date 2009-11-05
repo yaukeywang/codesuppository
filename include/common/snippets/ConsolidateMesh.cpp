@@ -7,6 +7,8 @@
 
 #include "ConsolidateMesh.h"
 #include "FloatMath.h"
+#include <vector>
+#include <hash_map>
 
 #pragma warning(disable:4100)
 
@@ -18,6 +20,8 @@
 #endif
 
 #include "UserMemAlloc.h"
+
+using namespace NVSHARE;
 
 namespace CONSOLIDATE_MESH
 {
@@ -590,8 +594,8 @@ static void removePolyPoint(Edge *p,Edge **polyPoints)
 
 #define SPLIT_EPSILON 0.000001f
 
-typedef USER_STL::vector< NxU32 > HeU32Vector;
-typedef USER_STL_EXT::hash_map< NxU32, Polygon * > PolygonHashMap;
+typedef std::vector< NxU32 > HeU32Vector;
+typedef stdext::hash_map< NxU32, Polygon * > PolygonHashMap;
 
 class MyConsolidateMesh : public ConsolidateMesh
 {

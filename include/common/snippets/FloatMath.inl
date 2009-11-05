@@ -66,6 +66,10 @@
 #pragma warning(disable:4996)
 
 #include "UserMemAlloc.h"
+#include "NvArray.h"
+
+namespace NVSHARE
+{
 
 void fm_inverseRT(const REAL matrix[16],const REAL pos[3],REAL t[3]) // inverse rotate translate the point.
 {
@@ -1650,6 +1654,34 @@ bool fm_computeBestFitPlane(NxU32 vcount,
 }
 
 
+bool fm_colinear(const REAL a1[3],const REAL a2[3],const REAL b1[3],const REAL b2[3],REAL epsilon)  // true if these two line segments are co-linear.
+{
+  bool ret = false;
+
+  REAL dir1[3];
+  REAL dir2[3];
+
+  dir1[0] = (a2[0] - a1[0]);
+  dir1[1] = (a2[1] - a1[1]);
+  dir1[2] = (a2[2] - a1[2]);
+
+  dir2[0] = (b2[0]-a1[0]) - (b1[0]-a1[0]);
+  dir2[1] = (b2[1]-a1[1]) - (b1[1]-a1[1]);
+  dir2[2] = (b2[2]-a2[2]) - (b1[2]-a2[2]);
+
+  fm_normalize(dir1);
+  fm_normalize(dir2);
+
+  REAL dot = fm_dot(dir1,dir2);
+
+  if ( dot >= epsilon )
+  {
+    ret = true;
+  }
+
+
+  return ret;
+}
 
 bool fm_colinear(const REAL *p1,const REAL *p2,const REAL *p3,REAL epsilon)
 {
@@ -2232,7 +2264,7 @@ namespace VERTEX_INDEX
 
 class KdTreeNode;
 
-typedef USER_STL::vector< KdTreeNode * > KdTreeNodeVector;
+typedef NVSHARE::Array< KdTreeNode * > KdTreeNodeVector;
 
 enum Axes
 {
@@ -2696,7 +2728,7 @@ private:
 
 #define MAX_BUNDLE_SIZE 1024  // 1024 nodes at a time, to minimize memory allocation and guarentee that pointers are persistent.
 
-class KdTreeNodeBundle
+class KdTreeNodeBundle : public Memalloc
 {
 public:
 
@@ -2725,10 +2757,10 @@ public:
 };
 
 
-typedef USER_STL::vector< NxF64 > DoubleVector;
-typedef USER_STL::vector< NxF32 >  FloatVector;
+typedef NVSHARE::Array< NxF64 > DoubleVector;
+typedef NVSHARE::Array< NxF32 >  FloatVector;
 
-class KdTree : public KdTreeInterface
+class KdTree : public KdTreeInterface, public Memalloc
 {
 public:
   KdTree(void)
@@ -2739,7 +2771,7 @@ public:
     mUseDouble = false;
   }
 
-  ~KdTree(void)
+  virtual ~KdTree(void)
   {
     reset();
   }
@@ -2796,9 +2828,9 @@ public:
   {
     assert(mUseDouble);
     NxU32 ret = mVcount;
-    mVerticesDouble.push_back(x);
-    mVerticesDouble.push_back(y);
-    mVerticesDouble.push_back(z);
+    mVerticesDouble.pushBack(x);
+    mVerticesDouble.pushBack(y);
+    mVerticesDouble.pushBack(z);
     mVcount++;
     KdTreeNode *node = getNewNode(ret);
     if ( mRoot )
@@ -2816,9 +2848,9 @@ public:
   {
     assert(!mUseDouble);
     NxU32 ret = mVcount;
-    mVerticesFloat.push_back(x);
-    mVerticesFloat.push_back(y);
-    mVerticesFloat.push_back(z);
+    mVerticesFloat.pushBack(x);
+    mVerticesFloat.pushBack(y);
+    mVerticesFloat.pushBack(z);
     mVcount++;
     KdTreeNode *node = getNewNode(ret);
     if ( mRoot )
@@ -2923,7 +2955,7 @@ private:
 
 }; // end of namespace VERTEX_INDEX
 
-class MyVertexIndex : public fm_VertexIndex
+class MyVertexIndex : public fm_VertexIndex, public Memalloc
 {
 public:
   MyVertexIndex(NxF64 granularity,bool snapToGrid)
@@ -2943,6 +2975,12 @@ public:
     mUseDouble         = false;
     mKdTree.setUseDouble(false);
   }
+
+  virtual ~MyVertexIndex(void)
+  {
+
+  }
+
 
   NxF64 snapToGrid(NxF64 p)
   {
@@ -3180,7 +3218,8 @@ void          fm_releaseVertexIndex(fm_VertexIndex *vindex)
 //**********************************************************
 //**********************************************************
 
-#ifndef LINE_SWEEP_H
+//#ifndef LINE_SWEEP_H
+#if 0
 
 #define LINE_SWEEP_H
 
@@ -3296,7 +3335,7 @@ nextone:
 }
 
 
-typedef USER_STL::vector< fm_LineSegment > LineSegmentVector;
+typedef NVSHARE::Array< fm_LineSegment > LineSegmentVector;
 
 static inline void setMinMax(NxF64 &vmin,NxF64 &vmax,NxF64 v1,NxF64 v2)
 {
@@ -3337,9 +3376,9 @@ public:
 };
 
 
-typedef USER_STL::list< Intersection > IntersectionList;
+typedef NVSHARE::Array< Intersection > IntersectionList;
 
-class MyLineSegment : public fm_LineSegment
+class MyLineSegment : public fm_LineSegment, public Memalloc
 {
 public:
 
@@ -3451,11 +3490,11 @@ public:
     {
       if ( mIntersections.empty() )
       {
-        mIntersections.push_back(intersect);
+        mIntersections.pushBack(intersect);
       }
       else
       {
-        IntersectionList::iterator i;
+        IntersectionList::Iterator i;
         for (i=mIntersections.begin(); i!=mIntersections.end(); ++i)
         {
           Intersection &it = (*i);
@@ -3468,14 +3507,14 @@ public:
           {
             if ( it.mTime > time )
             {
-              mIntersections.insert(i,intersect);
+//*** TODO TODO TODO              mIntersections.insert(i,intersect);
               break;
             }
           }
         }
         if ( i==mIntersections.end() )
         {
-          mIntersections.push_back(intersect);
+          mIntersections.pushBack(intersect);
         }
       }
     }
@@ -3490,12 +3529,12 @@ public:
       {
         swap(seg.mE1,seg.mE2);
       }
-      results.push_back(seg);
+      results.pushBack(seg);
     }
     else
     {
       NxU32 prev = mE1;
-      IntersectionList::iterator i;
+      IntersectionList::Iterator i;
       for (i=mIntersections.begin(); i!=mIntersections.end(); ++i)
       {
         Intersection &it = (*i);
@@ -3504,7 +3543,7 @@ public:
         {
           swap(seg.mE1,seg.mE2);
         }
-        results.push_back(seg);
+        results.pushBack(seg);
         prev = it.mIndex;
       }
       fm_LineSegment seg(prev,mE2);
@@ -3512,7 +3551,7 @@ public:
       {
         swap(seg.mE1,seg.mE2);
       }
-      results.push_back(seg);
+      results.pushBack(seg);
     }
   }
 
@@ -3531,11 +3570,15 @@ public:
   IntersectionList mIntersections;
 };
 
-typedef USER_STL::vector< MyLineSegment > MyLineSegmentVector;
+typedef NVSHARE::Array< MyLineSegment > MyLineSegmentVector;
 
-class MyLineSweep : public fm_LineSweep, public fm_quickSort
+class MyLineSweep : public fm_LineSweep, public fm_quickSort, public Memalloc
 {
 public:
+  virtual ~MyLineSweep(void)
+  {
+
+  }
   fm_LineSegment * performLineSweep(const fm_LineSegment *segments,NxU32 icount,const NxF64 *planeEquation,fm_VertexIndex *pool,NxU32 &scount)
   {
     fm_LineSegment *ret = 0;
@@ -3565,7 +3608,7 @@ public:
     scount = 0;
 
     MyLineSegment *mls   = MEMALLOC_NEW(MyLineSegment)[icount];
-    MyLineSegment **mptr = MEMALLOC_NEW(MyLineSegment *)[icount];
+    MyLineSegment **mptr = (MyLineSegment **)MEMALLOC_MALLOC(sizeof(MyLineSegment *)*icount);
 
     for (NxU32 i=0; i<icount; i++)
     {
@@ -3601,7 +3644,7 @@ public:
 
 
     delete []mls;
-    delete []mptr;
+    MEMALLOC_FREE(mptr);
 
     if ( !mResults.empty() )
     {
@@ -4239,11 +4282,11 @@ NxU32  fm_copyUniqueVertices(NxU32 vcount,const REAL *input_vertices,REAL *outpu
 {
   NxU32 ret = 0;
 
-  REAL *vertices = MEMALLOC_NEW(REAL)[vcount*3];
+  REAL *vertices = (REAL *)MEMALLOC_MALLOC(sizeof(REAL)*vcount*3);
   memcpy(vertices,input_vertices,sizeof(REAL)*vcount*3);
   REAL *dest = output_vertices;
 
-  NxU32 *reindex = MEMALLOC_NEW(NxU32)[vcount];
+  NxU32 *reindex = (NxU32 *)MEMALLOC_MALLOC(sizeof(NxU32)*vcount);
   memset(reindex,0xFF,sizeof(NxU32)*vcount);
 
   NxU32 icount = tcount*3;
@@ -4270,8 +4313,8 @@ NxU32  fm_copyUniqueVertices(NxU32 vcount,const REAL *input_vertices,REAL *outpu
       *output_indices++ = reindex[index];
     }
   }
-  delete []vertices;
-  delete []reindex;
+  MEMALLOC_FREE(vertices);
+  MEMALLOC_FREE(reindex);
   return ret;
 }
 
@@ -4347,11 +4390,15 @@ void  fm_initMinMax(REAL bmin[3],REAL bmax[3])
 
 #define TESSELATE_H
 
-typedef USER_STL::vector< NxU32 > UintVector;
+typedef NVSHARE::Array< NxU32 > UintVector;
 
-class Myfm_Tesselate : public fm_Tesselate
+class Myfm_Tesselate : public fm_Tesselate, public Memalloc
 {
 public:
+  virtual ~Myfm_Tesselate(void)
+  {
+
+  }
 
   const NxU32 * tesselate(fm_VertexIndex *vindex,NxU32 tcount,const NxU32 *indices,NxF32 longEdge,NxU32 maxDepth,NxU32 &outcount)
   {
@@ -4365,7 +4412,7 @@ public:
     if ( mVertices->isDouble() )
     {
       NxU32 vcount = mVertices->getVcount();
-      NxF64 *vertices = MEMALLOC_NEW(NxF64)[vcount*3];
+      NxF64 *vertices = (NxF64 *)MEMALLOC_MALLOC(sizeof(NxF64)*vcount*3);
       memcpy(vertices,mVertices->getVerticesDouble(),sizeof(NxF64)*vcount*3);
 
       for (NxU32 i=0; i<tcount; i++)
@@ -4381,12 +4428,12 @@ public:
         tesselate(p1,p2,p3,0);
 
       }
-      delete []vertices;
+      MEMALLOC_FREE(vertices);
     }
     else
     {
       NxU32 vcount = mVertices->getVcount();
-      NxF32 *vertices = MEMALLOC_NEW(NxF32)[vcount*3];
+      NxF32 *vertices = (NxF32 *)MEMALLOC_MALLOC(sizeof(NxF32)*vcount*3);
       memcpy(vertices,mVertices->getVerticesFloat(),sizeof(NxF32)*vcount*3);
 
 
@@ -4403,7 +4450,7 @@ public:
         tesselate(p1,p2,p3,0);
 
       }
-      delete []vertices;
+      MEMALLOC_FREE(vertices);
     }
 
     outcount = (NxU32)(mIndices.size()/3);
@@ -4477,9 +4524,9 @@ public:
       NxU32 i2 = mVertices->getIndex(p2,newp);
       NxU32 i3 = mVertices->getIndex(p3,newp);
 
-      mIndices.push_back(i1);
-      mIndices.push_back(i2);
-      mIndices.push_back(i3);
+      mIndices.pushBack(i1);
+      mIndices.pushBack(i2);
+      mIndices.pushBack(i3);
     }
 
   }
@@ -4548,9 +4595,9 @@ public:
       NxU32 i2 = mVertices->getIndex(p2,newp);
       NxU32 i3 = mVertices->getIndex(p3,newp);
 
-      mIndices.push_back(i1);
-      mIndices.push_back(i2);
-      mIndices.push_back(i3);
+      mIndices.pushBack(i1);
+      mIndices.pushBack(i2);
+      mIndices.pushBack(i3);
     }
 
   }
@@ -5054,8 +5101,8 @@ public:
   NxF64 z;
 };
 
-typedef USER_STL::vector< TVec >  TVecVector;
-typedef USER_STL::vector< TU32 >  TU32Vector;
+typedef NVSHARE::Array< TVec >  TVecVector;
+typedef NVSHARE::Array< TU32 >  TU32Vector;
 
 class CTriangulator
 {
@@ -5064,7 +5111,7 @@ public:
     CTriangulator();
 
     ///     Default destructor
-    ~CTriangulator();
+    virtual ~CTriangulator();
 
     ///     Triangulates the contour
     void triangulate(TU32Vector &indices);
@@ -5098,7 +5145,7 @@ public:
             if ( y > mMax.y ) mMax.y = y;
             if ( z > mMax.z ) mMax.z = z;
         }
-        mInputPoints.push_back(v);
+        mInputPoints.pushBack(v);
     }
 
     // Triangulation happens in 2d.  We could inverse transform the polygon around the normal direction, or we just use the two most signficant axes
@@ -5167,7 +5214,7 @@ public:
           for (NxU32 i=0; i<pcount; i++)
           {
             TVec v( points[i1], points[i2], points[i3] );
-            mPoints.push_back(v);
+            mPoints.pushBack(v);
             points+=3;
           }
 
@@ -5231,7 +5278,7 @@ void CTriangulator::_process(TU32Vector &indices)
     const NxI32 n = (const NxI32)mPoints.size();
     if (n < 3)
         return;
-    NxI32 *V = MEMALLOC_NEW(NxI32)[n];
+    NxI32 *V = (NxI32 *)MEMALLOC_MALLOC(sizeof(NxI32)*n);
 
 	bool flipped = false;
 
@@ -5272,15 +5319,15 @@ void CTriangulator::_process(TU32Vector &indices)
             c = V[w];
 			if ( flipped )
 			{
-				indices.push_back(a);
-				indices.push_back(b);
-				indices.push_back(c);
+				indices.pushBack(a);
+				indices.pushBack(b);
+				indices.pushBack(c);
 			}
 			else
 			{
-				indices.push_back(c);
-				indices.push_back(b);
-				indices.push_back(a);
+				indices.pushBack(c);
+				indices.pushBack(b);
+				indices.pushBack(a);
 			}
             m++;
             for (s = v, t = v + 1; t < nv; s++, t++)
@@ -5290,7 +5337,7 @@ void CTriangulator::_process(TU32Vector &indices)
         }
     }
 
-    delete []V;
+    MEMALLOC_FREE(V);
 }
 
 ///     Returns the area of the contour
@@ -5350,7 +5397,7 @@ bool CTriangulator::_insideTriangle(const TVec& A, const TVec& B, const TVec& C,
     return ((aCROSSbp >= 0.0f) && (bCROSScp >= 0.0f) && (cCROSSap >= 0.0f));
 }
 
-class Triangulate : public fm_Triangulate
+class Triangulate : public fm_Triangulate, public Memalloc
 {
 public:
   Triangulate(void)
@@ -5359,14 +5406,14 @@ public:
     mPointsDouble = 0;
   }
 
-  ~Triangulate(void)
+  virtual ~Triangulate(void)
   {
     reset();
   }
   void reset(void)
   {
-    delete []mPointsFloat;
-    delete []mPointsDouble;
+    MEMALLOC_FREE(mPointsFloat);
+    MEMALLOC_FREE(mPointsDouble);
     mPointsFloat = 0;
     mPointsDouble = 0;
   }
@@ -5380,7 +5427,7 @@ public:
   {
     reset();
 
-    NxF64 *points = MEMALLOC_NEW(NxF64)[pcount*3];
+    NxF64 *points = (NxF64 *)MEMALLOC_MALLOC(sizeof(NxF64)*pcount*3);
     if ( consolidate )
     {
       pcount = fm_consolidatePolygon(pcount,_points,vstride,points,1-epsilon);
@@ -5412,7 +5459,7 @@ public:
       if ( indices )
       {
         tcount = _tcount;
-        mPointsDouble = MEMALLOC_NEW(NxF64)[tcount*3*3];
+        mPointsDouble = (NxF64 *)MEMALLOC_MALLOC(sizeof(NxF64)*tcount*3*3);
         NxF64 *dest = mPointsDouble;
         for (NxU32 i=0; i<tcount; i++)
         {
@@ -5438,7 +5485,7 @@ public:
         }
       }
     }
-    delete []points;
+    MEMALLOC_FREE(points);
 
     return mPointsDouble;
   }
@@ -5452,7 +5499,7 @@ public:
   {
     reset();
 
-    NxF64 *temp = MEMALLOC_NEW(NxF64)[pcount*3];
+    NxF64 *temp = (NxF64 *)MEMALLOC_MALLOC(sizeof(NxF64)*pcount*3);
     NxF64 *dest = temp;
     for (NxU32 i=0; i<pcount; i++)
     {
@@ -5466,16 +5513,16 @@ public:
     if ( results )
     {
       NxU32 fcount = tcount*3*3;
-      mPointsFloat = MEMALLOC_NEW(NxF32)[tcount*3*3];
+      mPointsFloat = (NxF32 *)MEMALLOC_MALLOC(sizeof(NxF32)*tcount*3*3);
       NxF32 *dest = mPointsFloat;
       for (NxU32 i=0; i<fcount; i++)
       {
         dest[i] = (NxF32) results[i];
       }
-      delete []mPointsDouble;
+      MEMALLOC_FREE(mPointsDouble);
       mPointsDouble = 0;
     }
-    delete []temp;
+    MEMALLOC_FREE(temp);
 
     return mPointsFloat;
   }
@@ -5566,3 +5613,4 @@ void  fm_multiplyQuat(const REAL *left,const REAL *right,REAL *quat)
 	quat[2] = d;
 }
 
+}; // end of namespace

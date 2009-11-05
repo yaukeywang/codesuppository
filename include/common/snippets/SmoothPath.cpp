@@ -8,7 +8,9 @@
 #include "NxFoundation.h"
 #include <vector>
 
-class BsplineNode
+using namespace NVSHARE;
+
+class BsplineNode : public NVSHARE::Memalloc
 {
 public:
   NxF32 x;              // 4 time/distance x-axis component.
@@ -21,7 +23,7 @@ public:
   NxF32 inverseD;       // 32
 };
 
-typedef USER_STL::vector< BsplineNode > BsplineNodeVector;
+typedef std::vector< BsplineNode > BsplineNodeVector;
 
 class Bspline
 {
@@ -191,7 +193,7 @@ private:
 
 
 
-class SmoothPath
+class SmoothPath : public NVSHARE::Memalloc
 {
 public:
 

@@ -25,8 +25,9 @@
 #include "RenderDebug.h"
 #include "Pd3d/Pd3d.h"
 #include "CodeSuppository.h"
-#include "SendTextMessage.h"
 #include <direct.h>
+
+using namespace NVSHARE;
 
 enum MenuOptions
 {
@@ -63,9 +64,9 @@ public:
   bool  mState;
 };
 
-typedef USER_STL::vector< std::string > StringVector;
+typedef std::vector< std::string > StringVector;
 
-class MyMenu : public FileSystem, public CommandParserInterface
+class MyMenu : public FileSystem, public CommandParserInterface, public NVSHARE::Memalloc
 {
 public:
   MyMenu(void)

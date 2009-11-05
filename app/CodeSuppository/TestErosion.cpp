@@ -5,7 +5,7 @@
 
 #include "TestErosion.h"
 
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 
 void testErosion(void)
 {

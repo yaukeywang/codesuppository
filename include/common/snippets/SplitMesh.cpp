@@ -3,7 +3,7 @@
 #include <string.h>
 #include <math.h>
 #include <assert.h>
-#pragma warning(disable:4702)
+#pragma warning(disable:4702 4100)
 #include <vector>
 #include <hash_map>
 
@@ -32,6 +32,8 @@
 #include "FloatMath.h"
 #include "RemoveTjunctions.h"
 
+using namespace NVSHARE;
+
 namespace SPLIT_MESH
 {
 
@@ -52,7 +54,7 @@ static NxF32 ranf(void)
 //************************************************************************************
 //************************************************************************************
 
-typedef USER_STL::vector< size_t > size_tVector;
+typedef std::vector< size_t > size_tVector;
 
 class MyRobustMesh : public RobustMesh
 {
@@ -276,7 +278,7 @@ void         releaseRobustMesh(RobustMesh *mesh)
 //************************************************************************************
 
 
-typedef USER_STL::vector< NxF64 >  doubleVector;
+typedef std::vector< NxF64 >  doubleVector;
 
 class Edge
 {
@@ -294,12 +296,12 @@ public:
 
 };
 
-typedef USER_STL::vector< Edge > EdgeVector;
-typedef USER_STL::vector< Edge *> EdgePtrVector;
+typedef std::vector< Edge > EdgeVector;
+typedef std::vector< Edge *> EdgePtrVector;
 
-typedef USER_STL_EXT::hash_map<size_t, Edge *> EdgeIndexMap;
-typedef USER_STL::vector< size_t > SizeTVector;
-typedef USER_STL::vector< NxI32 > intVector;
+typedef stdext::hash_map<size_t, Edge *> EdgeIndexMap;
+typedef std::vector< size_t > SizeTVector;
+typedef std::vector< NxI32 > intVector;
 
 
 class Ring
@@ -516,7 +518,7 @@ public:
   SizeTVector mPoints;
 };
 
-typedef USER_STL::vector< Ring > RingVector;
+typedef std::vector< Ring > RingVector;
 
 class LineSegment
 {
@@ -594,7 +596,7 @@ public:
   NxF64  mP2[3];
 };
 
-typedef USER_STL::vector< LineSegment > LineSegmentVector;
+typedef std::vector< LineSegment > LineSegmentVector;
 
 class MyRingSystem : public RingSystem
 {
@@ -689,6 +691,10 @@ public:
 
   size_t buildPolygons(bool collapseColinear,bool edgeIntersect,bool saveResults)
   {
+	  assert(0);
+#if 1 // TODO
+	  return 0;
+#else
     size_t count = mEdges.size();
     if ( count )
     {
@@ -774,6 +780,7 @@ public:
       }
     }
     return mRings.size();
+#endif
   }
 
   size_t getPolygonCount(void) // report the number of rings.
@@ -1316,7 +1323,7 @@ bool splitMesh(const SimpleMesh &inputMesh,SimpleMesh &leftMesh,SimpleMesh &righ
     {
       RemoveTjunctionsDesc desc;
       desc.mVcount = leftMesh.mVcount;
-      desc.mVerticesF = leftMesh.mVertices;
+      desc.mVertices = leftMesh.mVertices;
       desc.mTcount = leftMesh.mTcount;
       desc.mIndices = leftMesh.mIndices;
       desc.mIds      = leftMesh.mIds;
@@ -1335,7 +1342,7 @@ bool splitMesh(const SimpleMesh &inputMesh,SimpleMesh &leftMesh,SimpleMesh &righ
     {
       RemoveTjunctionsDesc desc;
       desc.mVcount = rightMesh.mVcount;
-      desc.mVerticesF = rightMesh.mVertices;
+      desc.mVertices = rightMesh.mVertices;
       desc.mTcount = rightMesh.mTcount;
       desc.mIndices = rightMesh.mIndices;
       desc.mIds      = rightMesh.mIds;
@@ -1536,7 +1543,7 @@ bool splitMesh(const SimpleMeshDouble &inputMesh,SimpleMeshDouble &leftMesh,Simp
     {
       RemoveTjunctionsDesc desc;
       desc.mVcount = leftMesh.mVcount;
-      desc.mVerticesD = leftMesh.mVertices;
+//** TODO      desc.mVerticesD = leftMesh.mVertices;
       desc.mTcount = leftMesh.mTcount;
       desc.mIndices = leftMesh.mIndices;
       desc.mIds      = leftMesh.mIds;
@@ -1554,7 +1561,7 @@ bool splitMesh(const SimpleMeshDouble &inputMesh,SimpleMeshDouble &leftMesh,Simp
     {
       RemoveTjunctionsDesc desc;
       desc.mVcount = rightMesh.mVcount;
-      desc.mVerticesD = rightMesh.mVertices;
+//** TODO      desc.mVerticesD = rightMesh.mVertices;
       desc.mTcount = rightMesh.mTcount;
       desc.mIndices = rightMesh.mIndices;
       desc.mIds      = rightMesh.mIds;

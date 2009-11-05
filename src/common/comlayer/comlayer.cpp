@@ -104,7 +104,8 @@
 #pragma warning(disable:4100)
 #pragma warning(disable:4189)
 
-SendTextMessage        *gSendTextMessage=0;
+namespace NVSHARE
+{
 
 bool gBadState=false;
 
@@ -177,3 +178,4 @@ NxI32 ComLayer::CommandCallback(NxI32 token,NxI32 /* count */,const char ** /* a
 
 
 
+}; // end of namespace

@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <set>
 
 #include "UserMemAlloc.h"
 #include "timedevent.h"
@@ -37,14 +38,12 @@
 #include "gauss.h"
 #pragma warning(disable:4786)
 
-#include <set>
-
-namespace TIMED_EVENT
+namespace NVSHARE
 {
 
 //==================================================================================
 //==================================================================================
-class TimedEvent
+	class TimedEvent : public Memalloc
 {
 public:
 	TimedEvent( TimedEventInterface *callback,
@@ -104,14 +103,14 @@ public:
 
 
 #if HE_USE_MEMORY_TRACKING
-typedef USER_STL::set< TimedEvent *, USER_STL::GlobalMemoryPool, TimedEventLess > TimedEventSet;
+typedef std::set< TimedEvent *, std::GlobalMemoryPool, TimedEventLess > TimedEventSet;
 #else
-typedef USER_STL::set< TimedEvent *, TimedEventLess > TimedEventSet;
+typedef std::set< TimedEvent *, TimedEventLess > TimedEventSet;
 #endif
 
 //==================================================================================
 //==================================================================================
-class TimedEventFactory
+class TimedEventFactory : public Memalloc
 {
 public:
 	TimedEventFactory(void);
@@ -346,7 +345,7 @@ NxI32 postTimedEvent(TimedEventFactory *factory,
 }
 
 
-NxI32 process(TimedEventFactory *factory,NxF32 dtime) // process timed events based on this delta time since the last time we were called.
+NxI32 timed_event_process(TimedEventFactory *factory,NxF32 dtime) // process timed events based on this delta time since the last time we were called.
 {
   NxI32 ret  = 0;
 

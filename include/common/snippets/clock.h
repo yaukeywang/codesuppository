@@ -63,12 +63,12 @@ public:
     mTotalFrames = 0;
     mFrameCount = frames;
     mFrameNo    = 0;
-    mTimes = MEMALLOC_NEW(NxF32)[frames];
+    mTimes = (NxF32 *)MEMALLOC_MALLOC(sizeof(NxF32)*frames);
   }
 
   ~TimeTracker(void)
   {
-    delete mTimes;
+    MEMALLOC_FREE(mTimes);
   }
 
   void markBegin(void)

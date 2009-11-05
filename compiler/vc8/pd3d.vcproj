@@ -990,6 +990,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\common\snippets\nvstl.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\common\snippets\stable.h"
 					>
 				</File>
@@ -1007,14 +1011,6 @@
 				</File>
 				<File
 					RelativePath="..\..\include\common\snippets\sutil.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\SystemServices.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\SystemServices.h"
 					>
 				</File>
 				<File

@@ -5,7 +5,6 @@
 		<Export platform="win32" tool="vc8">../vc8</Export>
 		<Import root=".\" file="MeshConvert.xpj"/>
 		<Import root=".\" file="Pd3d.xpj"/>
-		<Import root=".\" file="RenderDebugPd3d.xpj"/>
 		<Import root=".\" file="MeshImport.xpj"/>
 		<Import root=".\" file="MeshImportEzm.xpj"/>
 		<Import root=".\" file="MeshImportObj.xpj"/>

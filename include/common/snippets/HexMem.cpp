@@ -89,7 +89,7 @@ NxU8 * getHexMem(const char *str,size_t len,size_t &count)
   if ( count > 0 )
   {
 
-    NxU8 *dest = MEMALLOC_NEW(NxU8)[count];
+    NxU8 *dest = (NxU8 *) MEMALLOC_MALLOC(sizeof(NxU8)*count);
     ret = dest;
 
     for (size_t i=0; i<count; i++)
@@ -124,7 +124,7 @@ NxU8 * getHexMem(const wchar_t *str,size_t size_in,size_t &count)
   if ( count > 0 )
   {
 
-    NxU8 *dest = MEMALLOC_NEW(NxU8)[count];
+    NxU8 *dest = (NxU8 *)MEMALLOC_MALLOC(sizeof(NxU8)*count);
     ret = dest;
 
     for (size_t i=0; i<count; i++)

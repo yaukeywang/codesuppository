@@ -7,6 +7,9 @@
 
 #include "gauss.h"
 
+namespace NVSHARE
+{
+
 #define DEFAULT_MIN_MAX 1e10
 
 Gauss::Gauss(void)
@@ -283,3 +286,4 @@ void Gauss::srand(void)
 }
 
 
+};

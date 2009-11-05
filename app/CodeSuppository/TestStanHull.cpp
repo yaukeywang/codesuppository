@@ -8,7 +8,7 @@
 #include "RenderDebug.h"
 #include "wavefront.h"
 #include "stanhull.h"
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 #include "shared/MeshSystem/MeshSystemHelper.h"
 
 void testStanHull(MeshSystemHelper *ms)
@@ -24,14 +24,14 @@ void testStanHull(MeshSystemHelper *ms)
     {
       SEND_TEXT_MESSAGE(0,"Generating convex hull for input mesh with %d vertices.\r\n", mr->mVcount );
       // now generate the convex hull.
-      STAN_HULL::HullDesc desc((STAN_HULL::HullFlag)(STAN_HULL::QF_TRIANGLES | STAN_HULL::QF_SKIN_WIDTH),mr->mVcount,mr->mVertices,sizeof(NxF32)*3);
+      NVSHARE::HullDesc desc((NVSHARE::HullFlag)(NVSHARE::QF_TRIANGLES | NVSHARE::QF_SKIN_WIDTH),mr->mVcount,mr->mVertices,sizeof(NxF32)*3);
       desc.mMaxVertices = 64;
       desc.mSkinWidth = 0.1f;
 
-      STAN_HULL::HullLibrary h;
-      STAN_HULL::HullResult result;
-      STAN_HULL::HullError e = h.CreateConvexHull(desc,result);
-      if ( e == STAN_HULL::QE_OK )
+      NVSHARE::HullLibrary h;
+      NVSHARE::HullResult result;
+      NVSHARE::HullError e = h.CreateConvexHull(desc,result);
+      if ( e == NVSHARE::QE_OK )
       {
         SEND_TEXT_MESSAGE(0,"Output Hull contains %d triangle faces.\r\n", result.mNumFaces );
         SEND_TEXT_MESSAGE(0,"Fly the camera inside the hull to see the mesh details.\r\n");

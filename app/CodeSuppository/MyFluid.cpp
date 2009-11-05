@@ -3,7 +3,7 @@
 #ifdef PHYSX
 
 #include "RenderDebug/RenderDebug.h"
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 
 /**
 Note: There is no error handling code for simplicity. If any SDK code fails, an assert is hit.

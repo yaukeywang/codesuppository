@@ -7,7 +7,7 @@
 
 #include "TestAutoGeometry.h"
 
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 #include "AutoGeometry.h"
 #include "MeshImport.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
@@ -19,7 +19,7 @@
 
 #pragma warning(disable:4100)
 
-
+#if 0
 class MyTestAutoGeometry : public TestAutoGeometry
 {
 public:
@@ -28,25 +28,25 @@ public:
     mAutoGeometry = 0;
     mHelper = h;
 
-    MESHIMPORT::MeshSystem *ms = h->getMeshSystem();
+    NVSHARE::MeshSystem *ms = h->getMeshSystem();
     if ( ms )
     {
       if ( ms->mSkeletonCount && ms->mMeshCount )
       {
-        MESHIMPORT::MeshSkeleton *sk = ms->mSkeletons[0];
-        MESHIMPORT::MeshSkeletonInstance *msk = gMeshImport->createMeshSkeletonInstance(*sk); // create a world-space instance of the skeleton.
+        NVSHARE::MeshSkeleton *sk = ms->mSkeletons[0];
+        NVSHARE::MeshSkeletonInstance *msk = gMeshImport->createMeshSkeletonInstance(*sk); // create a world-space instance of the skeleton.
         if ( msk )
         {
-          AUTO_GEOMETRY::AutoGeometry *ag = AUTO_GEOMETRY::createAutoGeometry();
+          NVSHARE::AutoGeometry *ag = NVSHARE::createAutoGeometry();
           mAutoGeometry = ag;
 
-          MESHIMPORT::MeshBoneInstance *binst = msk->mBones;
+          NVSHARE::MeshBoneInstance *binst = msk->mBones;
           for (NxI32 i=0; i<msk->mBoneCount; i++)
           {
-            AUTO_GEOMETRY::SimpleBone b;
+            NVSHARE::SimpleBone b;
 
-            if ( stristr(binst->mBoneName,"finger") ) b.mOption = AUTO_GEOMETRY::BO_COLLAPSE;
-            if ( stristr(binst->mBoneName,"toe") )    b.mOption = AUTO_GEOMETRY::BO_COLLAPSE;
+            if ( stristr(binst->mBoneName,"finger") ) b.mOption = NVSHARE::BO_COLLAPSE;
+            if ( stristr(binst->mBoneName,"toe") )    b.mOption = NVSHARE::BO_COLLAPSE;
 
             b.mParentIndex = binst->mParentIndex;
             b.mBoneName = binst->mBoneName;
@@ -56,20 +56,20 @@ public:
             binst++;
           }
 
-          typedef USER_STL::vector< NxU32 > UintVector;
-          typedef USER_STL::vector< AUTO_GEOMETRY::SimpleSkinnedVertex > SimpleSkinnedVertexVector;
+          typedef std::vector< NxU32 > UintVector;
+          typedef std::vector< NVSHARE::SimpleSkinnedVertex > SimpleSkinnedVertexVector;
 
           UintVector indices;
           SimpleSkinnedVertexVector vertices;
 
           for (NxU32 k=0; k<ms->mMeshCount; k++)
           {
-            MESHIMPORT::Mesh *m = ms->mMeshes[k];
+            NVSHARE::Mesh *m = ms->mMeshes[k];
             NxU32 base_index = vertices.size();
             for (NxU32 i=0; i<m->mVertexCount; i++)
             {
-              MESHIMPORT::MeshVertex &v = m->mVertices[i];
-              AUTO_GEOMETRY::SimpleSkinnedVertex s;
+              NVSHARE::MeshVertex &v = m->mVertices[i];
+              NVSHARE::SimpleSkinnedVertex s;
               s.mPos[0]    = v.mPos[0];
               s.mPos[1]    = v.mPos[1];
               s.mPos[2]    = v.mPos[2];
@@ -86,7 +86,7 @@ public:
 
             for (NxU32 i=0; i<m->mSubMeshCount; i++)
             {
-              MESHIMPORT::SubMesh *sm = m->mSubMeshes[i];
+              NVSHARE::SubMesh *sm = m->mSubMeshes[i];
 
               if ( stristr(sm->mMaterialName,"__cloth") == 0 ) // if not cloth
               {
@@ -96,9 +96,9 @@ public:
                   NxU32 i2 = sm->mIndices[j*3+1]+base_index;
                   NxU32 i3 = sm->mIndices[j*3+2]+base_index;
 
-                  const AUTO_GEOMETRY::SimpleSkinnedVertex &v1 = vertices[i1];
-                  const AUTO_GEOMETRY::SimpleSkinnedVertex &v2 = vertices[i2];
-                  const AUTO_GEOMETRY::SimpleSkinnedVertex &v3 = vertices[i3];
+                  const NVSHARE::SimpleSkinnedVertex &v1 = vertices[i1];
+                  const NVSHARE::SimpleSkinnedVertex &v2 = vertices[i2];
+                  const NVSHARE::SimpleSkinnedVertex &v3 = vertices[i3];
                   ag->addSimpleSkinnedTriangle(v1,v2,v3);
                 }
               }
@@ -139,34 +139,34 @@ public:
     {
       NxU32 geom_count;
       bool ready;
-      AUTO_GEOMETRY::SimpleHull **hulls = mAutoGeometry->getResults(geom_count,ready);
+      NVSHARE::SimpleHull **hulls = mAutoGeometry->getResults(geom_count,ready);
       if ( ready )
       {
         if ( hulls )
         {
-          MESHIMPORT::MeshSystemContainer *msc = mHelper->getMeshSystemContainer();
-          MESHIMPORT::MeshImportInterface *iface = gMeshImport->getMeshImportInterface(msc);
+          NVSHARE::MeshSystemContainer *msc = mHelper->getMeshSystemContainer();
+          NVSHARE::MeshImportInterface *iface = gMeshImport->getMeshImportInterface(msc);
           iface->importCollisionRepresentation("ClothCollision",0);
           for (NxU32 i=0; i<geom_count; i++)
           {
-            AUTO_GEOMETRY::SimpleHull *h = hulls[i];
+            NVSHARE::SimpleHull *h = hulls[i];
 
-            MESHIMPORT::MeshCollisionType t = MESHIMPORT::MCT_CAPSULE;
+            NVSHARE::MeshCollisionType t = NVSHARE::MCT_CAPSULE;
 
             if ( (h->mSphereVolume*0.9f) < h->mOBBVolume )
             {
-              t = MESHIMPORT::MCT_SPHERE;
+              t = NVSHARE::MCT_SPHERE;
             }
             else if ( (h->mOBBVolume*0.95f) < h->mCapsuleVolume )
             {
-              t = MESHIMPORT::MCT_BOX;
+              t = NVSHARE::MCT_BOX;
             }
 
-            t = MESHIMPORT::MCT_CONVEX;
+            t = NVSHARE::MCT_CONVEX;
 
             switch ( t )
             {
-              case MESHIMPORT::MCT_SPHERE:
+              case NVSHARE::MCT_SPHERE:
                 {
                   NxF32 matrix[16];
                   fm_identity(matrix);
@@ -175,11 +175,11 @@ public:
                   SEND_TEXT_MESSAGE(0,"Generated sphere for bone: %s Volume: %0.6f\r\n", h->mBoneName, h->mMeshVolume );
                 }
                 break;
-              case MESHIMPORT::MCT_BOX:
+              case NVSHARE::MCT_BOX:
                 iface->importOBB("ClothCollision", h->mBoneName, h->mOBBTransform, h->mOBBSides );
                 SEND_TEXT_MESSAGE(0,"Generated OBB for bone: %s Volume: %0.6f\r\n", h->mBoneName, h->mMeshVolume );
                 break;
-              case MESHIMPORT::MCT_CAPSULE:
+              case NVSHARE::MCT_CAPSULE:
                 {
                   const NxF32 capsuleScale = 1.0f;
                   if ( h->mCapsuleHeight <= 0 )
@@ -194,14 +194,14 @@ public:
                   }
                 }
                 break;
-              case MESHIMPORT::MCT_CONVEX:
+              case NVSHARE::MCT_CONVEX:
                 iface->importConvexHull("ClothCollision", h->mBoneName, h->mConvexTransform, h->mVertexCount, h->mVertices, h->mTriCount, h->mIndices );
                 SEND_TEXT_MESSAGE(0,"Generated hull for bone: %s Volume: %0.6f\r\n", h->mBoneName, h->mMeshVolume );
                 break;
             }
           }
           gMeshImport->gather(msc);
-          AUTO_GEOMETRY::releaseAutoGeometry(mAutoGeometry);
+          NVSHARE::releaseAutoGeometry(mAutoGeometry);
           mAutoGeometry = 0;
         }
       }
@@ -215,7 +215,7 @@ public:
 
 private:
   MeshSystemHelper            *mHelper;
-  AUTO_GEOMETRY::AutoGeometry *mAutoGeometry;
+  NVSHARE::AutoGeometry *mAutoGeometry;
 };
 
 
@@ -231,3 +231,17 @@ void               releaseTestAutoGeometry(TestAutoGeometry *t)
   MyTestAutoGeometry *m = static_cast< MyTestAutoGeometry *>(t);
   delete m;
 }
+
+#else
+
+TestAutoGeometry * createTestAutoGeometry(MeshSystemHelper *h)
+{
+	return 0;
+}
+
+void               releaseTestAutoGeometry(TestAutoGeometry *t)
+{
+}
+
+
+#endif

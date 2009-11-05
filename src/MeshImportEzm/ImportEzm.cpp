@@ -63,7 +63,6 @@
 #include "UserMemAlloc.h"
 #include "MeshImport.h"
 #include "ImportEZM.h"
-#include "SendTextMessage.h"
 #include "StringDict.h"
 #include "sutil.h"
 #include "stable.h"
@@ -74,7 +73,7 @@
 #pragma warning(disable:4100)
 #pragma warning(disable:4996)
 
-namespace MESHIMPORT
+namespace NVSHARE
 {
 
 #define DEBUG_LOG 0
@@ -140,7 +139,7 @@ enum AttributeType
 	AT_LAST
 };
 
-class MeshImportEZM : public MeshImporter, public FastXmlInterface
+class MeshImportEZM : public MeshImporter, public FastXmlInterface, public Memalloc
 {
 public:
 	MeshImportEZM(void)
@@ -231,6 +230,11 @@ public:
     mMeshCollisionConvex = 0;
 
 	}
+
+  virtual ~MeshImportEZM(void)
+  {
+
+  }
 
   const NxU8 * getVertex(const NxU8 *src,MeshVertex &v,const char **types,NxI32 tcount)
   {
@@ -547,7 +551,7 @@ public:
         if ( mMeshCollisionRepresentation )
         {
           mCallback->importCollisionRepresentation( mMeshCollisionRepresentation->mName, mMeshCollisionRepresentation->mInfo );
-          mCollisionRepName = mMeshCollisionRepresentation->mName;
+          mCollisionRepName = SGET(mMeshCollisionRepresentation->mName);
           delete mMeshCollisionRepresentation;
           mMeshCollisionRepresentation = 0;
         }
@@ -597,7 +601,7 @@ public:
                   mAnimation->mFrameCount = framecount;
                   mAnimation->mDuration = duration;
                   mAnimation->mDtime = dtime;
-                  mAnimation->mTracks = MEMALLOC_NEW(MeshAnimTrack *)[mAnimation->mTrackCount];
+                  mAnimation->mTracks = (MeshAnimTrack **)MEMALLOC_MALLOC(sizeof(MeshAnimTrack *)*mAnimation->mTrackCount);
                   for (NxI32 i=0; i<mAnimation->mTrackCount; i++)
                   {
                     MeshAnimTrack *track = MEMALLOC_NEW(MeshAnimTrack);
@@ -799,7 +803,7 @@ public:
   				{
               if ( mMeshCollisionConvex )
               {
-                NxF32 *vertices = MEMALLOC_NEW(NxF32)[mVertexCount*3];
+                NxF32 *vertices = (NxF32 *)MEMALLOC_MALLOC(sizeof(NxF32)*mVertexCount*3);
                 NxF32 *dest = vertices;
                 for (NxI32 i=0; i<mVertexCount; i++)
                 {
@@ -857,22 +861,26 @@ public:
       case AT_ASSET_INFO:
         mAssetInfo = mStrings.Get(savalue);
         break;
-			case AT_POSITION:
-				if ( mType == NT_BONE && mBone )
+	  case AT_SCALE:
+		  if ( mType == NT_BONE && mBone )
+		  {
+			  Asc2Bin(savalue,1,"fff", mBone->mScale );
+		  }
+		  break;
+		case AT_POSITION:
+			if ( mType == NT_BONE && mBone )
+			{
+				Asc2Bin(savalue,1,"fff", mBone->mPosition );
+				mBoneIndex++;
+				if ( mBoneIndex == mSkeleton->GetBoneCount() )
 				{
-					Asc2Bin(savalue,1,"fff", mBone->mPosition );
-					mBoneIndex++;
-
-					if ( mBoneIndex == mSkeleton->GetBoneCount() )
-					{
-						mCallback->importSkeleton(*mSkeleton);
-						delete mSkeleton;
-						mSkeleton = 0;
-						mBoneIndex = 0;
-					}
-
+					mCallback->importSkeleton(*mSkeleton);
+					delete mSkeleton;
+					mSkeleton = 0;
+					mBoneIndex = 0;
 				}
-				break;
+			}
+			break;
 			case AT_ORIENTATION:
 				if ( mType == NT_BONE && mBone )
 				{

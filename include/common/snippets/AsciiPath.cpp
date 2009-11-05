@@ -5,11 +5,12 @@
 
 #include "AsciiPath.h"
 #include "UserMemAlloc.h"
+#include <vector>
 
 
-typedef USER_STL::vector< NxF32 > HeF32Vector;
+typedef std::vector< NxF32 > HeF32Vector;
 
-class MyAsciiPath : public AsciiPath
+class MyAsciiPath : public AsciiPath, public NVSHARE::Memalloc
 {
 public:
   MyAsciiPath(void)

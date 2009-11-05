@@ -9,14 +9,25 @@
 #include "FloatMath.h"
 #include <Nx.h>
 #include <NxVec3.h>
+#include <NxMat34.h>
+#include "NvArray.h"
+#include "NvHashMap.h"
 
 #pragma warning(disable:4100)
 
-#include <vector>
-#include <hash_map>
 #include "UserMemAlloc.h"
 
-namespace MESH_CONSOLIDATE
+#define DEBUG_SHOW 0
+
+#if DEBUG_SHOW
+#include "RenderDebug.h"
+#endif
+
+#define MESH_CONSOLIDATE_NVSHARE MESH_CONSOLIDATE_##NVSHARE
+
+using namespace NVSHARE;
+
+namespace MESH_CONSOLIDATE_NVSHARE
 {
 
 class Edge;
@@ -26,12 +37,22 @@ class MyMeshConsolidate;
 static void addPolyPoint(Edge *p,Edge **polyPoints,Polygon *parent);
 static void removePolyPoint(Edge *p,Edge **polyPoints);
 
-class TempTri
+class TempTri //: public Memalloc TODO TODO TODO
 {
 public:
+  TempTri(void)
+  {
+	  mI1 = mI2 = mI3 = 0;
+	  mUV1 = mUV2 = mUV3 = 0;
+	  mId = mSubMesh = 0;
+	  mNormal.set(0,0,0);
+  }
   NxU32     mI1;
   NxU32     mI2;
   NxU32     mI3;
+  NxU32     mUV1;
+  NxU32     mUV2;
+  NxU32     mUV3;
   NxU32     mId;
   NxU32     mSubMesh;
   NxVec3    mNormal;
@@ -39,13 +60,15 @@ public:
 
 class Polygon;
 
-class Edge
+class Edge : public Memalloc
 {
 public:
   Edge(void)
   {
     mI1 = 0;
     mI2 = 0;
+    mUV1 = 0;
+    mUV2 = 0;
     mParent = 0;
     mNext = 0;
     mPrev = 0;
@@ -53,10 +76,12 @@ public:
     mNextPolyPoint = 0;
   }
 
-  void init(Polygon *p,NxU32 i1,NxU32 i2)
+  void init(Polygon *p,NxU32 i1,NxU32 i2,NxU32 uv1,NxU32 uv2)
   {
     mI1 = i1;
     mI2 = i2;
+    mUV1 = uv1;
+    mUV2 = uv2;
     mParent = p;
     mNext = 0;
     mPrev = 0;
@@ -66,9 +91,67 @@ public:
   NxU32 getHash(void) const { return (mI2<<16)|mI1; };
   NxU32 getInverseHash(void) const { return (mI1<<16)|mI2; };
 
+#if DEBUG_SHOW
+  void debugRender(fm_VertexIndex *vertices)
+  {
+    const NxF32 *v1 = vertices->getVertexFloat(mI1);
+    const NxF32 *v2 = vertices->getVertexFloat(mI2);
+	gRenderDebug->DebugSphere(v1,0.003f);
+    gRenderDebug->DebugRay(v1,v2);
+  }
+#endif
+
+  bool collinear(const Edge *e,const fm_VertexIndex *fm) const
+  {
+    const NxF32 *p1 = fm->getVertexFloat(mI1);
+    const NxF32 *p2 = fm->getVertexFloat(mI2);
+    const NxF32 *p3 = fm->getVertexFloat(e->mI1);
+    const NxF32 *p4 = fm->getVertexFloat(e->mI2);
+	return NVSHARE::fm_colinear(p1,p2,p3,p4);
+  }
+
+  bool sharedUV(const Edge *e) const
+  {
+    bool ret = true;
+
+    if ( mI1 == e->mI1 )
+    {
+        if ( mUV1 != e->mUV1 )
+        {
+            ret = false;
+        }
+    }
+    else if ( mI1 == e->mI2 )
+    {
+        if ( mUV1 != e->mUV2 )
+        {
+            ret = false;
+        }
+    }
+
+    if ( mI2 == e->mI2 )
+    {
+        if ( mUV2 != e->mUV2 )
+        {
+            ret = false;
+        }
+    }
+    else if ( mI2 == e->mI1 )
+    {
+        if ( mUV2 != e->mUV1 )
+        {
+            ret = false;
+        }
+    }
+    return ret;
+  }
+
 
   NxU32    mI1;
   NxU32    mI2;
+  NxU32    mUV1;
+  NxU32    mUV2;
+
   Polygon *mParent;
 
   Edge    *mNext;             // linked list pointers inside a specific polygon
@@ -78,7 +161,7 @@ public:
   Edge    *mNextPolyPoint;   // the polygon-point linked list.
 };
 
-class Polygon
+class Polygon : public Memalloc
 {
 public:
   Polygon(void)
@@ -241,6 +324,61 @@ public:
 
 
   Edge * mergePolygon(Polygon *merge,Edge *e,Edge **polyPoints,MyMeshConsolidate *mmc);
+#if DEBUG_SHOW
+  void debugRender(fm_VertexIndex *vertices)
+  {
+    if ( !mRemoved )
+    {
+        Edge *e = mHead;
+		Edge *prev = 0;
+        while ( e )
+        {
+			if ( prev )
+			{
+				assert( prev->mI2 == e->mI1 );
+			}
+            e->debugRender(vertices);
+			prev = e;
+            e = e->mNext;
+        }
+		assert( prev->mI2 == mHead->mI1 );
+    }
+  }
+#endif
+
+  void consolidate(fm_VertexIndex *fm)
+  {
+    if ( !mRemoved )
+    {
+
+        Edge *e    = mHead;
+        Edge *p    = mTail;
+
+        while ( e && e->collinear(p,fm) )
+        {
+            p = e;
+            e = e->mNext;
+        }
+
+        Edge *new_head = e; // this is the new head...
+        Edge *n = e->mNext ? e->mNext : mHead;
+        do
+        {
+          while ( e->collinear(n,fm) )
+          {
+			  n = n->mNext ? n->mNext : mHead;
+          }
+		  e->mI2 = n->mI1;
+          e->mNext = n;
+          p = e;
+          e = n;
+        } while ( e != new_head );
+        p->mI2 = e->mI1;
+        p->mNext = 0;
+        mTail = p;
+        mHead = new_head;
+    }
+  }
 
   NxU32   mId;
   NxU32   mSubMesh;
@@ -319,9 +457,9 @@ static void removePolyPoint(Edge *p,Edge **polyPoints)
 
 }
 
-typedef USER_STL::vector< TempTri > TempTriVector;
-typedef stdext::hash_map< NxU32, Edge * > EdgeHashMap;
-typedef USER_STL::vector< NxU32 > NxU32Vector;
+typedef NVSHARE::Array< TempTri > TempTriVector;
+typedef NVSHARE::HashMap< NxU32, Edge * > EdgeHashMap;
+typedef NVSHARE::Array< NxU32 > NxU32Vector;
 
 class MyMeshConsolidate : public MeshConsolidate
 {
@@ -330,6 +468,7 @@ public:
   MyMeshConsolidate(NxF32 epsilon)
   {
     mWeldEpsilon = epsilon;
+    mTexels = fm_createVertexIndex(0.002f,false);
     mVertices = fm_createVertexIndex(mWeldEpsilon,false);
 	mVertexOutput = fm_createVertexIndex(mWeldEpsilon,false);
     mPolygons = 0;
@@ -346,19 +485,27 @@ public:
 
   void release(void)
   {
+    if ( mTexels )
+    {
+        fm_releaseVertexIndex(mTexels);
+        mTexels = 0;
+    }
     if ( mVertices )
     {
         fm_releaseVertexIndex(mVertices);
 		mVertices = 0;
     }
+
 	if ( mVertexOutput )
 	{
 		fm_releaseVertexIndex(mVertexOutput);
 		mVertexOutput = 0;
 	}
+
     delete []mPolygons;
     delete []mEdges;
     delete []mPolyPoints;
+
     mPolygons = 0;
     mEdges = 0;
     mPolyCount = 0;
@@ -366,9 +513,19 @@ public:
     mPolyPoints = 0;
   }
 
+  NxU32 getTexel(const NxF32 *uv) const
+  {
+    float p[3] = { uv[0], uv[1], 0 };
+    bool np;
+    return mTexels->getIndex(p,np);
+  }
+
   virtual bool addTriangle(const NxF32 *p1,
                            const NxF32 *p2,
                            const NxF32 *p3,
+                           const NxF32 *uv1,
+                           const NxF32 *uv2,
+                           const NxF32 *uv3,
                            NxU32 id,
                            NxU32 subMesh)
   {
@@ -376,20 +533,29 @@ public:
 
 	bool np;
 	TempTri t;
-	t.mI1 = (NxU32)mVertices->getIndex(p1,np);
-	t.mI2 = (NxU32)mVertices->getIndex(p2,np);
-	t.mI3 = (NxU32)mVertices->getIndex(p3,np);
+
+	t.mI1 = mVertices->getIndex(p1,np);
+	t.mI2 = mVertices->getIndex(p2,np);
+	t.mI3 = mVertices->getIndex(p3,np);
+
+    if ( uv1 ) t.mUV1 = getTexel(uv1);
+    if ( uv2 ) t.mUV2 = getTexel(uv2);
+    if ( uv3 ) t.mUV3 = getTexel(uv3);
+
 	t.mId = id;
 	t.mSubMesh = subMesh;
+
 	if ( t.mI1 == t.mI2 || t.mI1 == t.mI3 || t.mI2 == t.mI3 )
 	{
+        assert(0);
 	}
 	else
 	{
 		fm_computePlane(p1,p2,p3,&t.mNormal.x);
 		ret = true;
-		mInputTriangles.push_back(t);
+		mInputTriangles.pushBack(t);
 	}
+
     return ret;
   }
 
@@ -409,16 +575,16 @@ public:
         Edge *e = mEdges;
         Polygon *p = mPolygons;
         mVcount = (NxU32)mVertices->getVcount();
-        mPolyPoints = MEMALLOC_NEW(Edge *)[mVcount];
+        mPolyPoints = (Edge **)MEMALLOC_MALLOC(sizeof(Edge *)*mVcount);
 		memset(mPolyPoints,0,sizeof(Edge *)*mVcount);
         for (NxU32 i=0; i<mPolyCount; i++)
         {
             p->mId = tri->mId;
             p->mSubMesh = tri->mSubMesh;
             p->mNormal  = tri->mNormal;
-            e = initEdge(p,e,tri->mI1,tri->mI2);
-            e = initEdge(p,e,tri->mI2,tri->mI3);
-            e = initEdge(p,e,tri->mI3,tri->mI1);
+            e = initEdge(p,e,tri->mI1,tri->mI2,tri->mUV1,tri->mUV2);
+            e = initEdge(p,e,tri->mI2,tri->mI3,tri->mUV2,tri->mUV3);
+            e = initEdge(p,e,tri->mI3,tri->mI1,tri->mUV3,tri->mUV1);
             p++;
 			tri++;
         }
@@ -432,6 +598,9 @@ public:
             consolidate(p);
             p++;
         }
+#if DEBUG_SHOW
+        debugRender();
+#endif        
     }
 
 
@@ -530,9 +699,9 @@ public:
     return ret;
   }
 
-  Edge * initEdge(Polygon *p,Edge *e,NxU32 i1,NxU32 i2)
+  Edge * initEdge(Polygon *p,Edge *e,NxU32 i1,NxU32 i2,NxU32 uv1,NxU32 uv2)
   {
-    e->init(p,i1,i2);
+    e->init(p,i1,i2,uv1,uv2);
     addEdge(e);
     p->addEdge(e,mPolyPoints);
     e++;
@@ -542,8 +711,8 @@ public:
   void addEdge(Edge *e)
   {
     NxU32 hash = e->getHash();
-    EdgeHashMap::iterator found = mEdgeHash.find( hash );
-    if ( found == mEdgeHash.end() )
+    const EdgeHashMap::Entry *found = mEdgeHash.find( hash );
+    if ( found == NULL )
     {
         mEdgeHash[hash] = e;
     }
@@ -551,7 +720,8 @@ public:
     {
         Edge *next = (*found).second;
         e->mNextPolygonEdge = next;
-        (*found).second = e;
+        mEdgeHash.erase(hash); // erase the old one..
+        mEdgeHash[hash] = e;   // assign the new one
     }
   }
 
@@ -561,18 +731,18 @@ public:
     NxU32 i1 = (NxU32)mVertexOutput->getIndex(p1,np);
     NxU32 i2 = (NxU32)mVertexOutput->getIndex(p2,np);
     NxU32 i3 = (NxU32)mVertexOutput->getIndex(p3,np);
-    mOutputIndices.push_back(i1);
-    mOutputIndices.push_back(i2);
-    mOutputIndices.push_back(i3);
-    mOutputIds.push_back(p->mId);
-    mOutputSubMeshes.push_back(p->mSubMesh);
+    mOutputIndices.pushBack(i1);
+    mOutputIndices.pushBack(i2);
+    mOutputIndices.pushBack(i3);
+    mOutputIds.pushBack(p->mId);
+    mOutputSubMeshes.pushBack(p->mSubMesh);
   }
 
   void removeEdge(Edge *e)
   {
     NxU32 hash = e->getHash();
-    EdgeHashMap::iterator found = mEdgeHash.find(hash);
-    if ( found == mEdgeHash.end() )
+    const EdgeHashMap::Entry *found = mEdgeHash.find(hash);
+    if ( found == NULL )
     {
 //        assert(0);
     }
@@ -583,11 +753,12 @@ public:
       {
         if ( e->mNext )
         {
-          (*found).second = e->mNextPolygonEdge;
+          mEdgeHash.erase(hash);
+          mEdgeHash[hash] = e->mNextPolygonEdge;
         }
         else
         {
-          mEdgeHash.erase(found);
+          mEdgeHash.erase(hash);
         }
       }
       else
@@ -622,8 +793,8 @@ public:
   Edge * locateSharedEdge(NxU32 hash,Polygon *p)
   {
     Edge *ret = 0;
-    EdgeHashMap::iterator found = mEdgeHash.find(hash);
-    if ( found != mEdgeHash.end() )
+    const EdgeHashMap::Entry *found = mEdgeHash.find(hash);
+    if ( found != NULL )
     {
         Edge *e = (*found).second;
         while ( e )
@@ -643,18 +814,28 @@ public:
   //
   void consolidate(Polygon *p)
   {
+
     if ( !p->mRemoved ) // if it has not already been removed..
     {
        removeEdges(p); // removes the edges..
 
        Edge *e = p->mHead;
+
        while ( e ) // find as many triangles we can possibly collapse
        {
          Edge *emerge = locateSharedEdge( e->getInverseHash(), p );
+
+         if ( emerge && !emerge->sharedUV(e) )
+         {
+            emerge = 0;
+         }
+
 		 Polygon *merge = emerge ? emerge->mParent : 0;
          if ( merge )
          {
+
            Edge *insertion_point = p->determineInsertionPoint(merge,e,mPolyPoints);
+
            if ( insertion_point )
            {
              NxU32 new_point = insertion_point->mI2;
@@ -663,6 +844,7 @@ public:
                merge = 0;
              }
            }
+
            if ( merge )
            {
              removeEdges(merge);
@@ -680,6 +862,27 @@ public:
          }
        }
     }
+
+    // Collapse colinear points and re-order the polygon
+	if ( !p->mRemoved )
+	{
+		p->consolidate(mVertices);
+	}
+
+#if DEBUG_SHOW
+	if ( !p->mRemoved )
+	{
+		static float d = 0.0f;
+		d+=1;
+		NxMat34 pose;
+		pose.t.set(d,0,1);
+		gRenderDebug->beginDrawGroup(pose);
+		gRenderDebug->setCurrentArrowSize(0.01f);
+		p->debugRender(mVertices);
+		gRenderDebug->endDrawGroup();
+	}
+#endif
+
   }
 
   void remove(Polygon *p)
@@ -702,7 +905,22 @@ public:
     removePolyPoint(e2,mPolyPoints);
     removePolyPoint(e3,mPolyPoints);
   }
-
+#if DEBUG_SHOW
+  void debugRender(void)
+  {
+    NxMat34 pose;
+    pose.t.set(1,0,0);
+    gRenderDebug->beginDrawGroup(pose);
+	gRenderDebug->setCurrentArrowSize(0.01f);
+    for (NxU32 i=0; i<mPolyCount; i++)
+    {
+		NxU32 color = gRenderDebug->getDebugColor();
+		gRenderDebug->setCurrentColor(color,color);
+        mPolygons[i].debugRender(mVertices);
+    }
+    gRenderDebug->endDrawGroup();
+  }
+#endif
   NxF32           mEpsilon;
   NxF32           mWeldEpsilon;
   NxU32           mPolyCount;
@@ -716,6 +934,7 @@ public:
   NxU32Vector     mOutputIds;
   NxU32Vector     mOutputSubMeshes;
 
+  fm_VertexIndex *mTexels;
   fm_VertexIndex *mVertices;
   fm_VertexIndex *mVertexOutput;
   TempTriVector   mInputTriangles;
@@ -882,9 +1101,12 @@ Edge * Polygon::mergePolygon(Polygon *merge,Edge *e,Edge **polyPoints,MyMeshCons
   return ret;
 }
 
-};
+};  // end of namepsace
 
-using namespace MESH_CONSOLIDATE;
+using namespace MESH_CONSOLIDATE_NVSHARE;
+
+namespace NVSHARE
+{
 
 MeshConsolidate * createMeshConsolidate(NxF32 epsilon)
 {
@@ -897,4 +1119,6 @@ void              releaseMeshConsolidate(MeshConsolidate *cm)
   MyMeshConsolidate *mcm = static_cast< MyMeshConsolidate *>(cm);
   delete mcm;
 }
+
+}; // end of namespace
 

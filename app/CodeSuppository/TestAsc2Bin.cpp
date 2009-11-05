@@ -5,7 +5,7 @@
 
 #include "TestAsc2Bin.h"
 
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 
 void testAsc2Bin(void)
 {

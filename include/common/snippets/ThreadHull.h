@@ -5,6 +5,8 @@
 #include "UserMemAlloc.h"
 #include "StanHull.h"
 
+using namespace NVSHARE;
+
 namespace JOB_SWARM
 {
 class JobSwarmContext;

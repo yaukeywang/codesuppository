@@ -5,7 +5,7 @@
 
 #include "TestMapPal.h"
 
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 
 void testMapPal(void)
 {

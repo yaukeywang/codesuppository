@@ -17,7 +17,7 @@
 // Name: class CDXUTMesh
 // Desc: Class for loading and rendering file-based meshes
 //-----------------------------------------------------------------------------
-class CDXUTMesh
+class CDXUTMesh :  public NVSHARE::Memalloc
 {
 public:
     WCHAR                   m_strName[512];
@@ -84,7 +84,7 @@ public:
 // Name: class CDXUTMeshFrame
 // Desc: Class for loading and rendering file-based meshes
 //-----------------------------------------------------------------------------
-class CDXUTMeshFrame
+class CDXUTMeshFrame :  public NVSHARE::Memalloc
 {
 public:
     WCHAR      m_strName[512];

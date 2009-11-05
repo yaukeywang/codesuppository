@@ -9,6 +9,8 @@ class CDXUTDialogResourceManager;
 
 #include "cparser.h"
 
+using namespace NVSHARE;
+
 #define CONSOLE_LINES			100
 
 class ConsoleMessage
@@ -32,7 +34,7 @@ private:
 
 //==================================================================================
 //==================================================================================
-class GuiTui : public CommandParserInterface
+class GuiTui : public CommandParserInterface, public NVSHARE::Memalloc
 {
 public:
 	GuiTui(void *device,void *hwnd,void *instance,CDXUTDialogResourceManager *pManager);

@@ -5,7 +5,7 @@
 
 #include "TestWildCard.h"
 
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 
 void testWildCard(void)
 {

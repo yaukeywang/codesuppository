@@ -65,9 +65,12 @@
 #include "UserMemAlloc.h"
 #include "wavefront.h"
 #include "FloatMath.h"
+#include <vector>
 
-typedef USER_STL::vector< NxI32 > IntVector;
-typedef USER_STL::vector< NxF32 > FloatVector;
+typedef std::vector< NxI32 > IntVector;
+typedef std::vector< NxF32 > FloatVector;
+
+using namespace NVSHARE;
 
 namespace WAVEFRONT
 {

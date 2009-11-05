@@ -13,7 +13,7 @@
 namespace STAN_HULL
 {
 
-class MyThreadHull : public ThreadHull, public JOB_SWARM::JobSwarmInterface
+	class MyThreadHull : public ThreadHull, public JOB_SWARM::JobSwarmInterface, public NVSHARE::Memalloc
 {
 public:
 
@@ -23,7 +23,7 @@ public:
     mRet = QE_NOT_READY;
     mDesc.mFlags         = desc.mFlags;
     mDesc.mVcount        = desc.mVcount;
-    mDesc.mVertices      = MEMALLOC_NEW(NxF32)[mDesc.mVcount*3];
+    mDesc.mVertices      = (NxF32 *)MEMALLOC_MALLOC(sizeof(NxF32)*mDesc.mVcount*3);
     mDesc.mVertexStride  = sizeof(NxF32)*3;
     if ( mDesc.mVertexStride == desc.mVertexStride )
     {

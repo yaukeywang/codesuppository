@@ -5,7 +5,7 @@
 
 #include "TestPlaneTri.h"
 
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 
 void testPlaneTri(void)
 {

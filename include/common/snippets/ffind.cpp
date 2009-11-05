@@ -67,7 +67,7 @@
 #include "ffind.h"
 #include "wildcard.h"
 
-class InternalFind
+class InternalFind : public NVSHARE::Memalloc
 {
 public:
 #ifdef WIN32
@@ -96,7 +96,7 @@ FileFind::~FileFind(void)
 }
 
 
-bool FileFind::FindFirst(USER_STL::string &name)
+bool FileFind::FindFirst(std::string &name)
 {
 #ifdef WIN32
   mInternalFind->hFindNext = FindFirstFileA(mSearchName, &mInternalFind->finddata);
@@ -218,7 +218,7 @@ NxI32 deleteFiles(const String &str)
 void FileFind::GetFiles(StringVector &list)  // get all files.
 {
 
-	USER_STL::string str;
+	std::string str;
   if ( FindFirst(str) )
   {
     list.push_back(str);

@@ -75,7 +75,10 @@
 #pragma warning(push)
 #pragma warning(disable:4100)
 
-class MPoolExtra
+namespace NVSHARE
+{
+
+class MPoolExtra : public Memalloc
 {
 public:
   MPoolExtra(size_t mlen,const char *poolType,const char *file,NxI32 lineno)
@@ -394,6 +397,7 @@ public:
   NxI32         mLineNo;
 };
 
+}; // end of namespace
 
 #pragma warning(pop)
 

@@ -37,6 +37,7 @@
 
 #include <float.h>
 #include <assert.h>
+#include <vector>
 
 
 enum BoundingVolumeFlag
@@ -96,7 +97,7 @@ private:
 
 class BoundingVolumeSystem;
 
-typedef USER_STL::vector< BoundingVolume * > BoundingVolumeVector;
+typedef std::vector< BoundingVolume * > BoundingVolumeVector;
 
 class BoundingVolumeAABV
 {

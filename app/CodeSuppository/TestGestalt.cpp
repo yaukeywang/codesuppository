@@ -5,7 +5,7 @@
 
 #include "TestGestalt.h"
 
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 
 void testGestalt(void)
 {

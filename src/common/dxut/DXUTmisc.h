@@ -563,7 +563,7 @@ public:
     HRESULT RemoveAllLines();
 
 protected:
-    struct LINE_NODE
+	struct LINE_NODE :  public NVSHARE::Memalloc
     {
         NxI32      nLineID;
         D3DCOLOR Color;

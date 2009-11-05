@@ -3,6 +3,8 @@
 #include "RenderDebug.h"
 #include "NxVec3.h"
 
+using namespace NVSHARE;
+
 class TestVectorFont : public VectorFontInterface
 {
 public:

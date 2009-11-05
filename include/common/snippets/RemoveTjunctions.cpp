@@ -3,22 +3,18 @@
 #include <string.h>
 #include <assert.h>
 #pragma warning(disable:4702)
+#pragma warning(disable:4127) //conditional expression is constant (because _HAS_EXCEPTIONS=0)
 #include <vector>
 #include <hash_map>
 #include "UserMemAlloc.h"
-
+#include "NvArray.h"
+#include "NvHashMap.h"
 #include "RemoveTjunctions.h"
 #include "FloatMath.h"
-#include "NxSimpleTypes.h"
 
-#pragma warning(disable:4127)
 #pragma warning(disable:4189)
 
-#define DEBUG_SHOW 0
-
-#if DEBUG_SHOW
-#include "RenderDebug/RenderDebug.h"
-#endif
+using namespace NVSHARE;
 
 namespace REMOVE_TJUNCTIONS
 {
@@ -31,11 +27,9 @@ public:
 };
 
 bool gDebug=false;
-size_t gCount=0;
+NxU32 gCount=0;
 
-const NxF64 EPSILON = 0.001f;
-
-typedef USER_STL::vector< size_t > size_tVector;
+typedef NVSHARE::Array< NxU32 > NxU32Vector;
 
 class Triangle
 {
@@ -48,14 +42,14 @@ public:
     mId = 0;
   }
 
-  Triangle(size_t i1,size_t i2,size_t i3,const NxF64 *vertices,size_t id)
+  Triangle(NxU32 i1,NxU32 i2,NxU32 i3,const float *vertices,NxU32 id)
   {
     mPending = false;
     init(i1,i2,i3,vertices,id);
     mSplit = false;
   }
 
-  void init(size_t i1,size_t i2,size_t i3,const NxF64 *vertices,size_t id)
+  void init(NxU32 i1,NxU32 i2,NxU32 i3,const float *vertices,NxU32 id)
   {
     mSplit = false;
     mI1 = i1;
@@ -63,14 +57,14 @@ public:
     mI3 = i3;
     mId = id;
 
-    const NxF64 *p1 = &vertices[mI1*3];
-    const NxF64 *p2 = &vertices[mI2*3];
-    const NxF64 *p3 = &vertices[mI3*3];
+    const float *p1 = &vertices[mI1*3];
+    const float *p2 = &vertices[mI2*3];
+    const float *p3 = &vertices[mI3*3];
 
     initMinMax(p1,p2,p3);
   }
 
-  void initMinMax(const NxF64 *p1,const NxF64 *p2,const NxF64 *p3)
+  void initMinMax(const float *p1,const float *p2,const float *p3)
   {
     fm_copy3(p1,mBmin);
     fm_copy3(p1,mBmax);
@@ -78,7 +72,7 @@ public:
     fm_minmax(p3,mBmin,mBmax);
   }
 
-  void init(const size_t *idx,const NxF64 *vertices,size_t id)
+  void init(const NxU32 *idx,const float *vertices,NxU32 id)
   {
     mSplit = false;
     mI1 = idx[0];
@@ -86,48 +80,24 @@ public:
     mI3 = idx[2];
     mId = id;
 
-    const NxF64 *p1 = &vertices[mI1*3];
-    const NxF64 *p2 = &vertices[mI2*3];
-    const NxF64 *p3 = &vertices[mI3*3];
+    const float *p1 = &vertices[mI1*3];
+    const float *p2 = &vertices[mI2*3];
+    const float *p3 = &vertices[mI3*3];
 
     initMinMax(p1,p2,p3);
 
   }
 
-#if DEBUG_SHOW
-  void debug(NxU32 color,const NxF64 *vertices,NxF64 pass=0) const
-  {
-    const NxF64 *_p1 = &vertices[mI1*3];
-    const NxF64 *_p2 = &vertices[mI2*3];
-    const NxF64 *_p3 = &vertices[mI3*3];
-    NxF64 p1[3];
-    NxF64 p2[3];
-    NxF64 p3[3];
-    fm_copy3(_p1,p1);
-    fm_copy3(_p2,p2);
-    fm_copy3(_p3,p3);
-
-    p1[1]+=pass;
-    p2[1]+=pass;
-    p3[1]+=pass;
-
-    gRenderDebug->DebugSolidTri(p1,p2,p3,color,30.0f);
-    gRenderDebug->DebugTri(p1,p2,p3,0xFFFFFF,30.0f);
-    gRenderDebug->DebugSphere(p1,0.002f,0xFFFF00,30.0f);
-    gRenderDebug->DebugSphere(p2,0.002f,0xFFFF00,30.0f);
-    gRenderDebug->DebugSphere(p3,0.002f,0xFFFF00,30.0f);
-  }
-#endif
-
-
-  bool intersects(const NxF64 *pos,const NxF64 *p1,const NxF64 *p2) const
+  bool intersects(const float *pos,const float *p1,const float *p2,float epsilon) const
   {
     bool ret = false;
 
-    NxF64 sect[3];
+    float sect[3];
     LineSegmentType type;
-    NxF64 dist = fm_distancePointLineSegment(pos,p1,p2,sect,type,EPSILON);
-    if ( type == LS_MIDDLE && dist < EPSILON )
+
+    float dist = fm_distancePointLineSegment(pos,p1,p2,sect,type,epsilon);
+
+    if ( type == LS_MIDDLE && dist < epsilon )
     {
       ret = true;
     }
@@ -135,23 +105,23 @@ public:
     return ret;
   }
 
-  bool intersects(size_t i,const NxF64 *vertices,size_t &edge) const
+  bool intersects(NxU32 i,const float *vertices,NxU32 &edge,float epsilon) const
   {
     bool ret = true;
 
-    const NxF64 *pos = &vertices[i*3];
-    const NxF64 *p1  = &vertices[mI1*3];
-    const NxF64 *p2  = &vertices[mI2*3];
-    const NxF64 *p3  = &vertices[mI3*3];
-    if ( intersects(pos,p1,p2) )
+    const float *pos = &vertices[i*3];
+    const float *p1  = &vertices[mI1*3];
+    const float *p2  = &vertices[mI2*3];
+    const float *p3  = &vertices[mI3*3];
+    if ( intersects(pos,p1,p2,epsilon) )
     {
       edge = 0;
     }
-    else if ( intersects(pos,p2,p3) )
+    else if ( intersects(pos,p2,p3,epsilon) )
     {
       edge = 1;
     }
-    else if ( intersects(pos,p3,p1) )
+    else if ( intersects(pos,p3,p1,epsilon) )
     {
       edge = 2;
     }
@@ -162,26 +132,26 @@ public:
     return ret;
   }
 
-  bool intersects(const Triangle *t,const NxF64 *vertices,size_t &intersection_index,size_t &edge)
+  bool intersects(const Triangle *t,const float *vertices,NxU32 &intersection_index,NxU32 &edge,float epsilon)
   {
     bool ret = false;
 
     if ( fm_intersectAABB(mBmin,mBmax,t->mBmin,t->mBmax) ) // only if the AABB's of the two triangles intersect...
     {
 
-      if ( t->intersects(mI1,vertices,edge) )
+      if ( t->intersects(mI1,vertices,edge,epsilon) )
       {
         intersection_index = mI1;
         ret = true;
       }
 
-      if ( t->intersects(mI2,vertices,edge) )
+      if ( t->intersects(mI2,vertices,edge,epsilon) )
       {
         intersection_index = mI2;
         ret = true;
       }
 
-      if ( t->intersects(mI3,vertices,edge) )
+      if ( t->intersects(mI3,vertices,edge,epsilon) )
       {
         intersection_index = mI3;
         ret = true;
@@ -194,13 +164,12 @@ public:
 
   bool    mSplit:1;
   bool    mPending:1;
-  size_t  mI1;
-  size_t  mI2;
-  size_t  mI3;
-  size_t  mId;
-
-  NxF64   mBmin[3];
-  NxF64   mBmax[3];
+  NxU32   mI1;
+  NxU32   mI2;
+  NxU32   mI3;
+  NxU32   mId;
+  float   mBmin[3];
+  float   mBmax[3];
 };
 
 class Edge
@@ -213,12 +182,12 @@ public:
     mHash = 0;
   }
 
-  size_t init(Triangle *t,size_t i1,size_t i2)
+  NxU32 init(Triangle *t,NxU32 i1,NxU32 i2)
   {
     mTriangle = t;
     mNextEdge = 0;
-    assert( i1 < 65536 );
-    assert( i2 < 65536 );
+    NX_ASSERT( i1 < 65536 );
+    NX_ASSERT( i2 < 65536 );
     if ( i1 < i2 )
     {
       mHash = (i1<<16)|i2;
@@ -231,72 +200,86 @@ public:
   }
   Edge     *mNextEdge;
   Triangle *mTriangle;
-  size_t    mHash;
+  NxU32    mHash;
 };
 
 
-typedef USER_STL::vector< Triangle * > TriangleVector;
-typedef USER_STL_EXT::hash_map< size_t, Edge * > EdgeMap;
+typedef NVSHARE::Array< Triangle * > TriangleVector;
+typedef NVSHARE::HashMap< NxU32, Edge * > EdgeMap;
 
 class MyRemoveTjunctions : public RemoveTjunctions
 {
 public:
-
-  virtual size_t removeTjunctions(RemoveTjunctionsDesc &desc)
+  MyRemoveTjunctions(void)
   {
-    size_t ret = 0;
+    mInputTriangles = 0;
+    mEdges = 0;
+    mVcount = 0;
+    mVertices = 0;
+    mEdgeCount = 0;
+  }
+  ~MyRemoveTjunctions(void)
+  {
+    release();
+  }
 
-    if ( desc.mVerticesF )
-    {
-      desc.mIndicesOut = removeTjunctions(desc.mVcount, desc.mVerticesF, desc.mTcount, desc.mIndices, desc.mTcountOut, desc.mIds);
-    }
-    else if ( desc.mVerticesD )
-    {
-      desc.mIndicesOut = removeTjunctions(desc.mVcount, desc.mVerticesD, desc.mTcount, desc.mIndices, desc.mTcountOut, desc.mIds );
-    }
+  virtual NxU32 removeTjunctions(RemoveTjunctionsDesc &desc)
+  {
+    NxU32 ret = 0;
+
+	mEpsilon = desc.mEpsilon;
+
+	size_t TcountOut;
+
+    desc.mIndicesOut = removeTjunctions(desc.mVcount, desc.mVertices, desc.mTcount, desc.mIndices, TcountOut, desc.mIds);
+
+#ifdef WIN32
+#	pragma warning(push)
+#	pragma warning(disable:4267)
+#endif
+
+	NX_ASSERT( TcountOut < UINT_MAX );
+	desc.mTcountOut = TcountOut;
+
+#ifdef WIN32
+#	pragma warning(pop)
+#endif
 
     if ( !mIds.empty() )
     {
-      desc.mIds = &mIds[0];
+      desc.mIdsOut = &mIds[0];
     }
 
     ret = desc.mTcountOut;
 
-    return ret;
-  }
-
-  size_t * removeTjunctions(size_t vcount,
-                            const NxF32 *vertices,
-                            size_t tcount,
-                            const size_t *indices,
-                            size_t &tcount_out,
-                            const size_t *ids)
-  {
-    NxF64 *dvertices = new NxF64[vcount*3];
-    const NxF32 *source = vertices;
-    NxF64 *dest        = dvertices;
-    for (size_t i=0; i<vcount; i++)
+    bool check = ret != desc.mTcount;
+#if 0
+    while ( check )
     {
-      dest[0] = source[0];
-      dest[1] = source[1];
-      dest[2] = source[2];
-      dest+=3;
-      source+=3;
+        NxU32 tcount = ret;
+        NxU32 *indices  = new NxU32[tcount*3];
+        NxU32 *ids      = new NxU32[tcount];
+        memcpy(indices,desc.mIndicesOut,sizeof(NxU32)*ret*3);
+        memcpy(ids,desc.mIdsOut,sizeof(NxU32)*ret);
+        desc.mIndicesOut = removeTjunctions(desc.mVcount, desc.mVertices, tcount, indices, desc.mTcountOut, ids );
+        if ( !mIds.empty() )
+        {
+          desc.mIdsOut = &mIds[0];
+        }
+        ret = desc.mTcountOut;
+        delete []indices;
+        delete []ids;
+        check = ret != tcount;
     }
-
-    size_t *ret = removeTjunctions(vcount,dvertices,tcount,indices,tcount_out,ids);
-
-    delete []dvertices;
-
+#endif
     return ret;
   }
 
-  Edge * addEdge(Triangle *t,Edge *e,size_t i1,size_t i2)
+  Edge * addEdge(Triangle *t,Edge *e,NxU32 i1,NxU32 i2)
   {
-    size_t hash = e->init(t,i1,i2);
-    EdgeMap::iterator found;
-    found = mEdgeMap.find(hash);
-    if ( found == mEdgeMap.end() )
+    NxU32 hash = e->init(t,i1,i2);
+    const EdgeMap::Entry *found = mEdgeMap.find(hash);
+    if ( found == NULL )
     {
       mEdgeMap[hash] = e;
     }
@@ -304,14 +287,15 @@ public:
     {
       Edge *old_edge = (*found).second;
       e->mNextEdge = old_edge;
-      (*found).second = e;
+      mEdgeMap.erase(hash);
+      mEdgeMap[hash] = e;
     }
     e++;
     mEdgeCount++;
     return e;
   }
 
-  Edge * init(Triangle *t,const size_t *indices,const NxF64 *vertices,Edge *e,size_t id)
+  Edge * init(Triangle *t,const NxU32 *indices,const float *vertices,Edge *e,NxU32 id)
   {
     t->init(indices,vertices,id);
     e = addEdge(t,e,t->mI1,t->mI2);
@@ -320,32 +304,50 @@ public:
     return e;
   }
 
-  virtual size_t * removeTjunctions(size_t vcount,
-                                    const NxF64 *vertices,
-                                    size_t tcount,
-                                    const size_t *indices,
-                                    size_t &tcount_out,
-                                    const size_t * ids)
+  void release(void)
   {
-    size_t *ret  = 0;
+    mIds.clear();
+    mEdgeMap.clear();
+    mIndices.clear();
+    mSplit.clear();
+    delete []mInputTriangles;
+    delete []mEdges;
+    mInputTriangles = 0;
+    mEdges = 0;
+    mVcount = 0;
+    mVertices = 0;
+    mEdgeCount = 0;
+
+  }
+
+  virtual NxU32 * removeTjunctions(NxU32 vcount,
+                                    const float *vertices,
+                                    size_t tcount,
+                                    const NxU32 *indices,
+                                    size_t &tcount_out,
+                                    const NxU32 * ids)
+  {
+    NxU32 *ret  = 0;
+
+    release();
 
     mVcount   = vcount;
     mVertices = vertices;
-    mTcount   = tcount;
+    mTcount   = (NxU32)tcount;
     tcount_out = 0;
 
-    mTcount         = tcount;
-    mMaxTcount      = tcount*2;
+    mTcount         = (NxU32)tcount;
+    mMaxTcount      = (NxU32)tcount*2;
     mInputTriangles = new Triangle[mMaxTcount];
     Triangle *t     = mInputTriangles;
 
     mEdges          = new Edge[mMaxTcount*3];
     mEdgeCount      = 0;
 
-    size_t id = 0;
+    NxU32 id = 0;
 
     Edge *e = mEdges;
-    for (size_t i=0; i<tcount; i++)
+    for (NxU32 i=0; i<tcount; i++)
     {
       if ( ids ) id = *ids++;
       e =init(t,indices,vertices,e,id);
@@ -353,27 +355,27 @@ public:
       t++;
     }
 
-
     {
       TriangleVector test;
 
-      EdgeMap::iterator i;
-      for (i=mEdgeMap.begin(); i!=mEdgeMap.end(); ++i)
+      EdgeMap::Iterator i = mEdgeMap.getIterator();
+      for (; !i.done(); ++i)
       {
         Edge *e = (*i).second;
         if ( e->mNextEdge == 0 ) // open edge!
         {
           Triangle *t = e->mTriangle;
-          if ( t->mPending == false )
+          if ( !t->mPending )
           {
-            test.push_back(t);
+            test.pushBack(t);
             t->mPending = true;
           }
         }
       }
+
       if ( !test.empty() )
       {
-        TriangleVector::iterator i;
+        TriangleVector::Iterator i;
         for (i=test.begin(); i!=test.end(); ++i)
         {
           Triangle *t = (*i);
@@ -387,7 +389,7 @@ public:
     {
       TriangleVector scan = mSplit;
       mSplit.clear();
-      TriangleVector::iterator i;
+      TriangleVector::Iterator i;
       for (i=scan.begin(); i!=scan.end(); ++i)
       {
         Triangle *t = (*i);
@@ -396,23 +398,16 @@ public:
     }
 
 
-
     mIndices.clear();
     mIds.clear();
 
     t = mInputTriangles;
-    for (size_t i=0; i<mTcount; i++)
+    for (NxU32 i=0; i<mTcount; i++)
     {
-      mIndices.push_back(t->mI1);
-      mIndices.push_back(t->mI2);
-      mIndices.push_back(t->mI3);
-      mIds.push_back(t->mId);
-#if DEBUG_SHOW
-      if ( t->mSplit )
-        t->debug(0xFF0000,mVertices);
-      else
-        t->debug(0xFF00FF,mVertices);
-#endif
+      mIndices.pushBack(t->mI1);
+      mIndices.pushBack(t->mI2);
+      mIndices.pushBack(t->mI3);
+      mIds.pushBack(t->mId);
       t++;
     }
 
@@ -423,8 +418,21 @@ public:
    delete []mInputTriangles;
    mInputTriangles = 0;
    tcount_out = mIndices.size()/3;
-   ret = &mIndices[0];
-
+   ret = tcount_out ? &mIndices[0] : 0;
+#ifdef _DEBUG
+   if ( ret )
+   {
+	   const NxU32 *scan = ret;
+	   for (NxU32 i=0; i<tcount_out; i++)
+	   {
+		   NxU32 i1 = scan[0];
+		   NxU32 i2 = scan[1];
+		   NxU32 i3 = scan[2];
+		   assert( i1 != i2 && i1 != i3 && i2 != i3 );
+		   scan+=3;
+	   }
+   }
+#endif
     return ret;
   }
 
@@ -432,30 +440,118 @@ public:
   {
     Triangle *ret = 0;
 
-    size_t t1 = (size_t)(scan-mInputTriangles);
-    size_t t2 = (size_t)(t-mInputTriangles);
+    NxU32 t1 = (NxU32)(scan-mInputTriangles);
+    NxU32 t2 = (NxU32)(t-mInputTriangles);
 
-    assert( t1 < mTcount );
-    assert( t2 < mTcount );
+    NX_ASSERT( t1 < mTcount );
+    NX_ASSERT( t2 < mTcount );
 
-    assert( scan->mI1 < mVcount );
-    assert( scan->mI2 < mVcount );
-    assert( scan->mI3 < mVcount );
+    NX_ASSERT( scan->mI1 < mVcount );
+    NX_ASSERT( scan->mI2 < mVcount );
+    NX_ASSERT( scan->mI3 < mVcount );
 
-    assert( t->mI1 < mVcount );
-    assert( t->mI2 < mVcount );
-    assert( t->mI3 < mVcount );
+    NX_ASSERT( t->mI1 < mVcount );
+    NX_ASSERT( t->mI2 < mVcount );
+    NX_ASSERT( t->mI3 < mVcount );
 
 
-    size_t intersection_index;
-    size_t edge;
+    NxU32 intersection_index;
+    NxU32 edge;
 
-    if ( scan != t && scan->intersects(t,mVertices,intersection_index,edge) )
+    if ( scan != t && scan->intersects(t,mVertices,intersection_index,edge,mEpsilon) )
+    {
+
+	  if ( t->mI1 == intersection_index || t->mI2 == intersection_index || t->mI3 == intersection_index )
+	  {
+	  }
+	  else
+	  {
+		  // here is where it intersects!
+		  NxU32 i1,i2,i3;
+		  NxU32 j1,j2,j3;
+		  NxU32 id = t->mId;
+
+		  switch ( edge )
+		  {
+			case 0:
+			  i1 = t->mI1;
+			  i2 = intersection_index;
+			  i3 = t->mI3;
+			  j1 = intersection_index;
+			  j2 = t->mI2;
+			  j3 = t->mI3;
+			  break;
+			case 1:
+			  i1 = t->mI2;
+			  i2 = intersection_index;
+			  i3 = t->mI1;
+			  j1 = intersection_index;
+			  j2 = t->mI3;
+			  j3 = t->mI1;
+			  break;
+			case 2:
+			  i1 = t->mI3;
+			  i2 = intersection_index;
+			  i3 = t->mI2;
+			  j1 = intersection_index;
+			  j2 = t->mI1;
+			  j3 = t->mI2;
+			  break;
+			default:
+			  NX_ASSERT(0);
+			  i1 = i2 = i3 = 0;
+			  j1 = j2 = j3 = 0;
+			  break;
+		  }
+
+		  if ( mTcount < mMaxTcount )
+		  {
+			t->init(i1,i2,i3,mVertices,id);
+			Triangle *newt = &mInputTriangles[mTcount];
+			newt->init(j1,j2,j3,mVertices,id);
+			mTcount++;
+			t->mSplit = true;
+			newt->mSplit = true;
+
+			mSplit.pushBack(t);
+			mSplit.pushBack(newt);
+			ret = scan;
+		  }
+	    }
+    }
+    return ret;
+  }
+
+  Triangle * testIntersection(Triangle *scan,Triangle *t)
+  {
+    Triangle *ret = 0;
+
+    NxU32 t1 = (NxU32)(scan-mInputTriangles);
+    NxU32 t2 = (NxU32)(t-mInputTriangles);
+
+    NX_ASSERT( t1 < mTcount );
+    NX_ASSERT( t2 < mTcount );
+
+    NX_ASSERT( scan->mI1 < mVcount );
+    NX_ASSERT( scan->mI2 < mVcount );
+    NX_ASSERT( scan->mI3 < mVcount );
+
+    NX_ASSERT( t->mI1 < mVcount );
+    NX_ASSERT( t->mI2 < mVcount );
+    NX_ASSERT( t->mI3 < mVcount );
+
+
+    NxU32 intersection_index;
+    NxU32 edge;
+
+    assert( scan != t );
+
+    if ( scan->intersects(t,mVertices,intersection_index,edge,mEpsilon) )
     {
       // here is where it intersects!
-      size_t i1,i2,i3;
-      size_t j1,j2,j3;
-      size_t id = t->mId;
+      NxU32 i1,i2,i3;
+      NxU32 j1,j2,j3;
+      NxU32 id = t->mId;
 
       switch ( edge )
       {
@@ -484,7 +580,7 @@ public:
           j3 = t->mI2;
           break;
         default:
-          assert(0);
+          NX_ASSERT(0);
           i1 = i2 = i3 = 0;
           j1 = j2 = j3 = 0;
           break;
@@ -499,13 +595,8 @@ public:
         t->mSplit = true;
         newt->mSplit = true;
 
-#if DEBUG_SHOW
-        const NxF64 *point = &mVertices[intersection_index*3];
-        gRenderDebug->DebugSphere(point,0.01f,0xFFFF00,60.0f);
-#endif
-
-        mSplit.push_back(t);
-        mSplit.push_back(newt);
+        mSplit.pushBack(t);
+        mSplit.pushBack(newt);
         ret = scan;
       }
     }
@@ -518,7 +609,7 @@ public:
 
     Triangle *scan = mInputTriangles;
 
-    for (size_t i=0; i<mTcount; i++)
+    for (NxU32 i=0; i<mTcount; i++)
     {
       ret = locateIntersection(scan,t);
       if ( ret )
@@ -529,18 +620,18 @@ public:
   }
 
 
-  TriangleVector        mPairs;
   Triangle             *mInputTriangles;
-  size_t                mVcount;
-  size_t                mMaxTcount;
-  size_t                mTcount;
-  const NxF64          *mVertices;
-  size_tVector          mIndices;
-  size_tVector          mIds;
+  NxU32                mVcount;
+  NxU32                mMaxTcount;
+  NxU32                mTcount;
+  const float          *mVertices;
+  NxU32Vector          mIndices;
+  NxU32Vector          mIds;
   TriangleVector        mSplit;
-  size_t                mEdgeCount;
+  NxU32                mEdgeCount;
   Edge                 *mEdges;
   EdgeMap               mEdgeMap;
+  NxF32                 mEpsilon;
 };
 
 }; // end of namespace

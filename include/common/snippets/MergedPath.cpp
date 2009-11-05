@@ -12,6 +12,8 @@
 #include "FloatMath.h"
 #include "UserMemAlloc.h"
 
+using namespace NVSHARE;
+
 #if DEBUG_PATH
 #include "timelog.h"
 
@@ -22,10 +24,10 @@ static TimeLog gLog;
 namespace MERGED_PATH
 {
 
-typedef USER_STL::vector< NxF32 > HeF32Vector;
+typedef std::vector< NxF32 > HeF32Vector;
 
 
-class MyMergedPath : public MergedPath
+class MyMergedPath : public MergedPath, public NVSHARE::Memalloc
 {
 public:
 

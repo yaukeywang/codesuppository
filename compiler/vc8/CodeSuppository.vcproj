@@ -895,6 +895,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\common\snippets\Geometry.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\common\snippets\gestalt.cpp"
 					>
 				</File>
@@ -1047,6 +1051,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\common\snippets\MeshImport.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\MeshImport.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\common\snippets\MeshIslandGeneration.cpp"
 					>
 				</File>
@@ -1055,11 +1067,143 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\common\snippets\MicroAllocator.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\MicroAllocator.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\common\snippets\MyMessageBox.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\..\include\common\snippets\MyMessageBox.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvAlignedMalloc.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvAllocator.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvArray.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvAtomic.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvBasicTemplates.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvBitUtils.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvFastMemory.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvHash.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvHashInternals.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvHashMap.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvHashSet.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvInlineAllocator.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvIntrinsics_ps3.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvIntrinsics_Windows.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvIntrinsics_xbox360.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvMutex.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvNoCopy.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvPool.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvSList.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvSort.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvSortInternals.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvSpinMutex.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\nvstl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvStrideIterator.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvSync.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvThread.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvTime.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvTiming.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvTiming.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvUserAllocated.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NvUtilities.h"
 					>
 				</File>
 				<File
@@ -1168,6 +1312,10 @@
 				</File>
 				<File
 					RelativePath="..\..\include\common\snippets\NxStream.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\NxUserAllocator.h"
 					>
 				</File>
 				<File
@@ -1295,10 +1443,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\include\common\snippets\SendTextMessage.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\include\common\snippets\SimpleMesh.h"
 					>
 				</File>
@@ -1368,14 +1512,6 @@
 				</File>
 				<File
 					RelativePath="..\..\include\common\snippets\systemcall.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\SystemServices.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\SystemServices.h"
 					>
 				</File>
 				<File
@@ -1476,106 +1612,6 @@
 				</File>
 				<File
 					RelativePath="..\..\include\common\snippets\winmsg.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="compression"
-				>
-				<File
-					RelativePath="..\..\include\common\compression\adler32.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\compression\compress.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\compression\compression.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\compression\compression.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\compression\crc32.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\compression\crc32.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\compression\deflate.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\compression\deflate.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\compression\gzio.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\compression\infback.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\compression\inffast.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\compression\inffast.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\compression\inffixed.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\compression\inflate.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\compression\inflate.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\compression\inftrees.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\compression\inftrees.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\compression\trees.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\compression\trees.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\compression\uncompr.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\compression\zconf.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\compression\zlib.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\compression\zutil.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\compression\zutil.h"
 					>
 				</File>
 			</Filter>

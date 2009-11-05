@@ -23,10 +23,12 @@
 // **  30:5<10:40> (Means 30, stdev +/-5, min value 10 max value 40)
 // ** !30:5        (Means 30, +/-5 using a straight linear function!
 
-#include <string>
-
 #include "UserMemAlloc.h"
 #include "rand.h"
+#include <string>
+
+namespace NVSHARE
+{
 
 typedef std::string String;
 
@@ -141,5 +143,7 @@ private:
 };
 
 NxF32 ranfloat(void);
+
+};
 
 #endif

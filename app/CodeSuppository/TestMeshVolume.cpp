@@ -5,7 +5,7 @@
 
 #include "TestMeshVolume.h"
 
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 
 void testMeshVolume(void)
 {

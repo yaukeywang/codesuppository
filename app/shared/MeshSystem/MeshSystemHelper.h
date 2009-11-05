@@ -4,13 +4,13 @@
 
 #include "UserMemAlloc.h"
 
-namespace MESHIMPORT
+namespace NVSHARE
 {
 class MeshSystem;
 class MeshSystemContainer;
 };
 
-class MeshSystemRaw
+class MeshSystemRaw : public NVSHARE::Memalloc
 {
 public:
   MeshSystemRaw(void)
@@ -36,8 +36,8 @@ public:
                            bool showCollision,
                            bool flipWinding) = 0;
 
-  virtual MESHIMPORT::MeshSystem * getMeshSystem(void) const = 0;
-  virtual MESHIMPORT::MeshSystemContainer * getMeshSystemContainer(void) = 0;
+  virtual NVSHARE::MeshSystem * getMeshSystem(void) const = 0;
+  virtual NVSHARE::MeshSystemContainer * getMeshSystemContainer(void) = 0;
   virtual bool importMesh(const char *fname) = 0;
   virtual void advanceAnimation(NxF32 dtime,NxF32 rate) = 0;
   virtual bool exportEZM(void) = 0;

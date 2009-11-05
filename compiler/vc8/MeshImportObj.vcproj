@@ -214,6 +214,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\common\snippets\nvstl.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\common\snippets\Nx.h"
 					>
 				</File>
@@ -322,6 +326,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\common\snippets\NxUserAllocator.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\common\snippets\NxUtilities.h"
 					>
 				</File>
@@ -355,14 +363,6 @@
 				</File>
 				<File
 					RelativePath="..\..\include\common\snippets\sutil.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\SystemServices.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\SystemServices.h"
 					>
 				</File>
 			</Filter>

@@ -57,6 +57,8 @@
 #pragma warning(push)
 #pragma warning(disable:4100)
 
+namespace NVSHARE
+{
 extern bool gBadState;
 extern const char *gBadFile;
 extern NxU32 gBadLine;
@@ -104,6 +106,8 @@ protected:
   bool          mProcessed;
   StringRef     mDescription;
 };
+
+}; // end of namespace
 
 #pragma warning(pop)
 

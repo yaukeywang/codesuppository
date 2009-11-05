@@ -5,7 +5,7 @@
 
 #include "TestKeyValueIni.h"
 
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 
 void testKeyValueIni(void)
 {

@@ -5,13 +5,13 @@
 
 #include "TestConvexDecomposition.h"
 
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 
 
 #include "RenderDebug.h"
 #include "wavefront.h"
 #include "ConvexDecomposition.h"
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 #include "FloatMath.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
 

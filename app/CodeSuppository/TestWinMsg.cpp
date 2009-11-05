@@ -5,7 +5,7 @@
 
 #include "TestWinMsg.h"
 
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 
 void testWinMsg(void)
 {

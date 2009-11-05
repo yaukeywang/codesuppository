@@ -5,7 +5,7 @@
 
 #include "TestMeshCleanup.h"
 
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 
 void testMeshCleanup(void)
 {

@@ -5,7 +5,7 @@
 
 #include "TestFileInterface.h"
 
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 
 void testFileInterface(void)
 {

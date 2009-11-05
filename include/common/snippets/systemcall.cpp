@@ -61,6 +61,8 @@
 #include <windows.h>
 #endif
 
+#include "UserMemAlloc.h"
+
 NxI32 systemCall(const char* strFunct,const char* strstrParams,bool hideWindow)
 {
   NxI32 rc = 1;

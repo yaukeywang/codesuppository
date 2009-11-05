@@ -42,6 +42,8 @@
 
 #include "UserMemAlloc.h"
 
+using namespace NVSHARE;
+
 DEFINE_GUID( CLSID_Vidcap_Filter, 0x17d93618, 0xe0a3, 0x4dde, 0x9b, 0x64, 0xea, 0x50, 0xa6, 0xfe, 0xa, 0x31);
 	// The GUID for our DirectShow filter which grabs the frame
 // SDK includes:
@@ -85,7 +87,7 @@ CRITICAL_SECTION vidcapCriticalSection;
 // copy memory from the input pin into a system buffer!
 //------------------------------------------------------------------------------------------
 
-class ZVidcapPin : public IMemInputPin, public IPin {
+class ZVidcapPin : public IMemInputPin, public IPin, public Memalloc {
 	class ZVidcapFilter *receiver;
   public:
 	IPin *connected_to;
@@ -128,7 +130,7 @@ class ZVidcapPin : public IMemInputPin, public IPin {
 	IPin *GetConnected();
 };
 
-class ZVidcapFilter : public IBaseFilter {
+class ZVidcapFilter : public IBaseFilter, public Memalloc {
   public:
 	ZVidcapFilter();
 	~ZVidcapFilter();
@@ -178,7 +180,7 @@ inline HRESULT vidcapGetInterface(IUnknown *unknown, void **result) {
 	return NOERROR;
 }
 
-class ZVidcapMediaTypeEnumerator : public IEnumMediaTypes {
+class ZVidcapMediaTypeEnumerator : public IEnumMediaTypes, public Memalloc {
 	NxI32 index;
 	ZVidcapPin *my_pin;
 	LONG version;
@@ -555,7 +557,7 @@ STDMETHODIMP ZVidcapMediaTypeEnumerator::Reset() {
 }
 
 
-class ZVidcapPinEnumerator : public IEnumPins {
+class ZVidcapPinEnumerator : public IEnumPins, public Memalloc {
   public:
 	ZVidcapPinEnumerator(ZVidcapFilter *receiver, ZVidcapPinEnumerator *enumerator_to_copy);
 	virtual ~ZVidcapPinEnumerator();
@@ -697,8 +699,8 @@ HRESULT ZVidcapFilter::SetMediaType(const AM_MEDIA_TYPE *media_type) {
 	if( incoming_image_buffers[1] ) {
 		delete incoming_image_buffers[1];
 	}
-	incoming_image_buffers[0] = MEMALLOC_NEW(char)[width * height * depth];
-	incoming_image_buffers[1] = MEMALLOC_NEW(char)[width * height * depth];
+	incoming_image_buffers[0] = (char *)MEMALLOC_MALLOC(width * height * depth);
+	incoming_image_buffers[1] = (char *)MEMALLOC_MALLOC(width * height * depth);
 
 	locks[0] = 0;
 	locks[1] = 0;
@@ -810,7 +812,7 @@ STDMETHODIMP ZVidcapFilter::JoinFilterGraph(IFilterGraph *graph, LPCWSTR desired
 
 	if (desired_name) {
 		DWORD len = lstrlenW(desired_name)+1;
-		name = MEMALLOC_NEW(WCHAR)[len];
+		name = (WCHAR *)MEMALLOC_MALLOC(sizeof(WCHAR)*len);
 		assert(name);
 
 		if (name) memcpy(name, desired_name, len * sizeof(WCHAR));

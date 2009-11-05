@@ -30,8 +30,9 @@
 #include "SplitMeshApp.h"
 #include "SplitMeshMain.h"
 #include "CodeSuppository.h"
-#include "SendTextMessage.h"
 #include "FloatMath.h"
+
+using namespace NVSHARE;
 
 #ifndef OPEN_SOURCE
 #include "HeGrDriver/HeGrDriver.h"
@@ -43,7 +44,6 @@ extern NxI32 gWINDOW_TALL;
 static NxU32 gScreenWidth=1024;
 static NxU32 gScreenHeight=768;
 
-SendTextMessage *gSendTextMessage=0;
 JOB_SWARM::JobSwarmContext *gJobSwarmContext=0;
 RESOURCE_INTERFACE::ResourceInterface *gResourceInterface=0;
 
@@ -54,20 +54,19 @@ RESOURCE_INTERFACE::ResourceInterface *gResourceInterface=0;
 LPDIRECT3DDEVICE9 GlobalD3DDevice=0;
 
 
-class SimpleSendTextMessage : public SendTextMessage
+class SimpleSendTextMessage : public NVSHARE::SendTextMessage
 {
 public:
   SimpleSendTextMessage(void)
   {
-    gSendTextMessage = this;
+	  NVSHARE::gSendTextMessage = this;
   }
-  bool         sendTextMessage(NxU32 priority,const char * fmt,...) 
+  void         sendTextMessage(NxU32 priority,const char * fmt,...) 
   {
     char wbuff[8192];
     wbuff[8191] = 0;
     _vsnprintf(wbuff,8191, fmt, (char *)(&fmt+1));
     gLog->Display("%s", wbuff );
-    return true;
   }
 };
 
@@ -187,7 +186,7 @@ public:
         gPd3d->setViewProjectionMatrix(identity,identity);
     }
 
-	gPd3d->renderLines( lcount, (const PD3D::Pd3dLineVertex *)vertices, useZ );
+	gPd3d->renderLines( lcount, (const NVSHARE::Pd3dLineVertex *)vertices, useZ );
 
     if ( isScreenSpace )
     {
@@ -209,7 +208,7 @@ public:
 		gPd3d->setViewProjectionMatrix(identity,identity);
     }
 
-    gPd3d->renderSolid( tcount, (const PD3D::Pd3dSolidVertex *)vertices );
+	gPd3d->renderSolid( tcount, (const NVSHARE::Pd3dSolidVertex *)vertices );
 
     if ( isScreenSpace )
     {
@@ -530,12 +529,12 @@ HRESULT LoadMesh( IDirect3DDevice9* pd3dDevice, WCHAR* strFileName, ID3DXMesh** 
     // so when rendering the mesh's triangle list the vertices will
     // cache hit more often so it won't have to re-execute the vertex shader
     // on those vertices so it will improve perf.
-    rgdwAdjacency = MEMALLOC_NEW(DWORD)[pMesh->GetNumFaces() * 3];
+    rgdwAdjacency = (DWORD *)MEMALLOC_MALLOC(sizeof(DWORD)*pMesh->GetNumFaces() * 3);
     if( rgdwAdjacency == NULL )
         return E_OUTOFMEMORY;
     V( pMesh->GenerateAdjacency(1e-6f,rgdwAdjacency) );
     V( pMesh->OptimizeInplace(D3DXMESHOPT_VERTEXCACHE, rgdwAdjacency, NULL, NULL, NULL) );
-    delete []rgdwAdjacency;
+    MEMALLOC_FREE(rgdwAdjacency);
 
     *ppMesh = pMesh;
 
@@ -763,7 +762,7 @@ void CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, NxF64 fTime, NxF32 fE
 
     gRenderDebug->drawGrid(false);
 
-		PD3D::Pd3dTexture *texture = 	gPd3d->locateTexture("white.dds");
+		NVSHARE::Pd3dTexture *texture = 	gPd3d->locateTexture("white.dds");
 
 
     //ok..now let's render the debug visualization data.

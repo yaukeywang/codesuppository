@@ -5,7 +5,7 @@
 
 #include "TestSplitMesh.h"
 
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 
 void testSplitMesh(void)
 {

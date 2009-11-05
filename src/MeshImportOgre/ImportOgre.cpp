@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <assert.h>
+#include <vector>
 
 #pragma warning(disable:4702) // disabling a warning that only shows up when building VC7
 
@@ -11,16 +12,17 @@
 #include "stringdict.h"
 #include "sutil.h"
 #include "FastXml.h"
+#include "UserMemAlloc.h"
 
 #pragma warning(disable:4100)
 #pragma warning(disable:4996)
 
 #define DEBUG_LOG 1
 
-namespace MESHIMPORT
+namespace NVSHARE
 {
 
-class MyKeyFrame
+class MyKeyFrame : public Memalloc
 {
 public:
   MyKeyFrame(NxF32 t)
@@ -78,9 +80,9 @@ public:
   NxF32  mScale[3];
 };
 
-typedef USER_STL::vector< MyKeyFrame *> MyKeyFrameVector;
+typedef std::vector< MyKeyFrame *> MyKeyFrameVector;
 
-class MyAnimTrack
+class MyAnimTrack : public Memalloc
 {
 public:
   MyAnimTrack(const char *name)
@@ -134,10 +136,10 @@ public:
   NxF32            mDuration;
 };
 
-typedef USER_STL::vector< MeshBone > MeshBoneVector;
-typedef USER_STL::vector< MyAnimTrack * > MyAnimTrackVector;
+typedef std::vector< MeshBone > MeshBoneVector;
+typedef std::vector< MyAnimTrack * > MyAnimTrackVector;
 
-class Face
+class Face : public Memalloc
 {
 public:
   NxI32 v1;
@@ -145,7 +147,7 @@ public:
   NxI32 v3;
 };
 
-class MySubMesh
+class MySubMesh : public Memalloc
 {
 public:
   MySubMesh(NxI32 fcount,const StringRef &material)
@@ -184,7 +186,7 @@ public:
   Face     *mFaces;
 };
 
-typedef USER_STL::vector< MySubMesh *> MySubMeshVector;
+typedef std::vector< MySubMesh *> MySubMeshVector;
 
 enum OperationType
 {
@@ -267,7 +269,7 @@ enum NodeAttribute
 };
 
 
-class MeshImportOgre : public MeshImporter, public FastXmlInterface
+class MeshImportOgre : public MeshImporter, public FastXmlInterface, public Memalloc
 {
 public:
   MeshImportOgre(void)
@@ -362,7 +364,7 @@ public:
 
   }
 
-  ~MeshImportOgre(void)
+  virtual ~MeshImportOgre(void)
   {
     release();
   }
@@ -502,7 +504,7 @@ public:
       mAnimation->mTrackCount = mAnimTracks.size();
       if ( !mAnimTracks.empty() )
       {
-        mAnimation->mTracks = MEMALLOC_NEW(MeshAnimTrack *)[mAnimation->mTrackCount];
+        mAnimation->mTracks = (MeshAnimTrack **)MEMALLOC_MALLOC(sizeof(MeshAnimTrack *)*mAnimation->mTrackCount);
         for (NxI32 i=0; i<mAnimation->mTrackCount; i++)
         {
           MyAnimTrack *mat = mAnimTracks[i];
@@ -513,7 +515,7 @@ public:
 
       mCallback->importAnimation(*mAnimation);
 
-      delete []mAnimation->mTracks;
+      MEMALLOC_FREE(mAnimation->mTracks);
 
     }
     delete mAnimation;

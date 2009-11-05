@@ -5,7 +5,7 @@
 
 #include "TestInPlaceParser.h"
 
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 
 void testInPlaceParser(void)
 {

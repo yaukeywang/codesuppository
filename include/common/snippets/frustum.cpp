@@ -49,7 +49,7 @@
 #include <assert.h>
 
 #include "frustum.h"
-
+using namespace NVSHARE;
 
 enum PlaneBit
 {
@@ -65,7 +65,7 @@ public:
 	NxF32 mElement[4][4];
 };
 
-class FrustumPlane
+class FrustumPlane : public NVSHARE::Memalloc
 {
 public:
 

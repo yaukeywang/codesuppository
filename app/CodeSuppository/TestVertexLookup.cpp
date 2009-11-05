@@ -5,7 +5,7 @@
 
 #include "TestVertexLookup.h"
 
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 
 void testVertexLookup(void)
 {

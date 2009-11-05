@@ -5,8 +5,6 @@
 
 #include "TestArrowHead.h"
 
-#include "SendTextMessage.h"
-
 void testArrowHead(void)
 {
   SEND_TEXT_MESSAGE(0,"Demonstrates how to use the arrowhead tool, originally published on May 21, 2008\r\n");

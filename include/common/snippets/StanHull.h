@@ -31,7 +31,7 @@
 		THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -----------------------------------------------------------------------*/
 
-namespace STAN_HULL
+namespace NVSHARE
 {
 
 class HullResult
@@ -168,6 +168,6 @@ private:
 													NxF32 *scale);
 };
 
-}; // end of STAN_HULL namespace
+}; // end of namespace
 
 #endif

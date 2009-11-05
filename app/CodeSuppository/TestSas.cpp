@@ -5,7 +5,7 @@
 
 #include "TestSas.h"
 
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 
 void testSas(void)
 {

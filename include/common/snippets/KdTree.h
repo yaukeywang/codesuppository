@@ -6,7 +6,7 @@
 
 class KdTreeNode;
 
-typedef USER_STL::vector< KdTreeNode * > KdTreeNodeVector;
+typedef std::vector< KdTreeNode * > KdTreeNodeVector;
 
 enum Axes
 {

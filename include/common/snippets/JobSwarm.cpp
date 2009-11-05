@@ -50,12 +50,14 @@
 #include "LockFreeQ.h"
 #include "pool.h"
 
+using namespace NVSHARE;
+
 //JOB_SWARM::JobSwarmContext *gJobSwarmContext=0;
 
 namespace JOB_SWARM
 {
 
-  class SwarmJob : public LOCK_FREE_Q::node_t
+	class SwarmJob : public LOCK_FREE_Q::node_t, public NVSHARE::Memalloc
   {
   public:
     SwarmJob(void)
@@ -124,7 +126,7 @@ namespace JOB_SWARM
 
 #define MAX_COMPLETION 4096
 
-  class ThreadWorker : public THREAD_CONFIG::ThreadInterface
+  class ThreadWorker : public THREAD_CONFIG::ThreadInterface, public NVSHARE::Memalloc
   {
   public:
 
@@ -191,7 +193,7 @@ namespace JOB_SWARM
     LOCK_FREE_Q::CQueue< SwarmJob * > mFinished;     // jobs that have been completed and may be reported back to the application.
   };
 
-  class JobScheduler : public JobSwarmContext
+  class JobScheduler : public JobSwarmContext, public NVSHARE::Memalloc
   {
   public:
 
@@ -204,6 +206,8 @@ namespace JOB_SWARM
       mWaitFinish = false;
 
       mJobs.Set(100,100,100000000,"JobScheduler->mJobs",__FILE__,__LINE__);
+	  mJobs.Release();
+	  mJobs.Set(100,100,100000000,"JobScheduler->mJobs",__FILE__,__LINE__);
 
       mMaxThreadCount = maxThreadCount;
 

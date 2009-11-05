@@ -190,14 +190,6 @@
 				Name="snippets"
 				>
 				<File
-					RelativePath="..\..\include\common\snippets\SystemServices.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\SystemServices.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\include\common\snippets\UserMemAlloc.h"
 					>
 				</File>

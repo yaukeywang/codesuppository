@@ -5,7 +5,7 @@
 
 #include "TestFastAstar.h"
 
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 
 void testFastAstar(void)
 {

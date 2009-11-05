@@ -9,7 +9,7 @@
 #include "rand.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
 
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 
 void testBestFitPlane(MeshSystemHelper *ms)
 {

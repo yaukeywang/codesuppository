@@ -5,7 +5,7 @@
 
 #include "TestTjunctions.h"
 #include "MeshImport.h"
-#include "SendTextMessage.h"
+using namespace NVSHARE;
 #include "RemoveTjunctions.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
 #include "RenderDebug.h"
@@ -22,7 +22,7 @@ void testTjunctions(MeshSystemHelper * ms)
         {
             RemoveTjunctions *rt = createRemoveTjunctions();
             desc.mVcount = mr->mVcount;
-            desc.mVerticesF = mr->mVertices;
+            desc.mVertices = mr->mVertices;
             desc.mTcount    = mr->mTcount;
             desc.mIndices   = mr->mIndices;
             desc.mIds       = 0;
@@ -39,9 +39,9 @@ void testTjunctions(MeshSystemHelper * ms)
                     size_t i1 = desc.mIndicesOut[i*3+0];
                     size_t i2 = desc.mIndicesOut[i*3+1];
                     size_t i3 = desc.mIndicesOut[i*3+2];
-                    const NxF32 *p1 = &desc.mVerticesF[i1*3];
-                    const NxF32 *p2 = &desc.mVerticesF[i2*3];
-                    const NxF32 *p3 = &desc.mVerticesF[i3*3];
+                    const NxF32 *p1 = &desc.mVertices[i1*3];
+                    const NxF32 *p2 = &desc.mVertices[i2*3];
+                    const NxF32 *p3 = &desc.mVertices[i3*3];
                     gRenderDebug->DebugTri(p1,p2,p3);
                 }
 				gRenderDebug->popRenderState();

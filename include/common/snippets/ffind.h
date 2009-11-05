@@ -56,9 +56,12 @@
 #include <string>
 
 #include "UserMemAlloc.h"
+#include <vector>
 
-typedef USER_STL::string String;
-typedef USER_STL::vector< String > StringVector;
+using namespace NVSHARE;
+
+typedef std::string String;
+typedef std::vector< String > StringVector;
 
 class WildCard;
 class InternalFind; // holds windows specific data structures.

@@ -22,8 +22,8 @@ TopoRtin::TopoRtin(const HeightData *hfield)
   mDistanceThreshold = 8; // default distance threshold.
 
   mField = hfield;
-  HeI32 wid = mField->GetWidth();
-  HeI32 hit = mField->GetHeight();
+  NxI32 wid = mField->GetWidth();
+  NxI32 hit = mField->GetHeight();
   mFieldSize = wid;
   if ( hit > wid ) mFieldSize = hit;
   initHier();
@@ -34,28 +34,28 @@ TopoRtin::TopoRtin(const HeightData *hfield)
 /**********************************************************************/
 
 /* SOUTH,WEST,NORTH,EAST,NW,SE,NE,SW */
-static HeI32 lorient[8] = {SE,SW,NW,NE,WEST,EAST,NORTH,SOUTH};
-static HeI32 rorient[8] = {SW,NW,NE,SE,NORTH,SOUTH,EAST,WEST};
-static HeI32 b1orient[8] = {EAST,SOUTH,WEST,NORTH,SW,NE,NW,SE};
-static HeI32 b2orient[8] = {WEST,NORTH,EAST,SOUTH,NE,SW,SE,NW};
-static HeI32 b3orient[8] = {NORTH,EAST,SOUTH,WEST,SE,NW,SW,NE};
+static NxI32 lorient[8] = {SE,SW,NW,NE,WEST,EAST,NORTH,SOUTH};
+static NxI32 rorient[8] = {SW,NW,NE,SE,NORTH,SOUTH,EAST,WEST};
+static NxI32 b1orient[8] = {EAST,SOUTH,WEST,NORTH,SW,NE,NW,SE};
+static NxI32 b2orient[8] = {WEST,NORTH,EAST,SOUTH,NE,SW,SE,NW};
+static NxI32 b3orient[8] = {NORTH,EAST,SOUTH,WEST,SE,NW,SW,NE};
 
 /* NW,SE,NE,SW (parity of x determines row) */
-static HeI32 porient1[8] = {WEST,SOUTH,NORTH,WEST,NORTH,EAST,EAST,SOUTH};
+static NxI32 porient1[8] = {WEST,SOUTH,NORTH,WEST,NORTH,EAST,EAST,SOUTH};
 /* SOUTH,WEST,NORTH,EAST (parity of x+y determines row) */
-static HeI32 porient0[8] = {SE,NW,NW,SE,SW,SW,NE,NE};
+static NxI32 porient0[8] = {SE,NW,NW,SE,SW,SW,NE,NE};
 
 /* SOUTH,WEST,NORTH,EAST,NW,SE,NE,SW */
-static HeI32 lxinc[8]  = {0,0,1,1,0,0,0,0};
-static HeI32 lyinc[8]  = {0,1,1,0,0,0,0,0};
-static HeI32 rxinc[8]  = {1,0,0,1,0,0,0,0};
-static HeI32 ryinc[8]  = {0,0,1,1,0,0,0,0};
-static HeI32 b1xinc[8] = {0,0,0,0,0,0,+1,-1};
-static HeI32 b1yinc[8] = {0,0,0,0,+1,-1,0,0};
-static HeI32 b2xinc[8] = {0,0,0,0,-1,+1,0,0};
-static HeI32 b2yinc[8] = {0,0,0,0,0,0,+1,-1};
-static HeI32 b3xinc[8] = {0,-1,0,+1,0,0,0,0};
-static HeI32 b3yinc[8] = {-1,0,+1,0,0,0,0,0};
+static NxI32 lxinc[8]  = {0,0,1,1,0,0,0,0};
+static NxI32 lyinc[8]  = {0,1,1,0,0,0,0,0};
+static NxI32 rxinc[8]  = {1,0,0,1,0,0,0,0};
+static NxI32 ryinc[8]  = {0,0,1,1,0,0,0,0};
+static NxI32 b1xinc[8] = {0,0,0,0,0,0,+1,-1};
+static NxI32 b1yinc[8] = {0,0,0,0,+1,-1,0,0};
+static NxI32 b2xinc[8] = {0,0,0,0,-1,+1,0,0};
+static NxI32 b2yinc[8] = {0,0,0,0,0,0,+1,-1};
+static NxI32 b3xinc[8] = {0,-1,0,+1,0,0,0,0};
+static NxI32 b3yinc[8] = {-1,0,+1,0,0,0,0,0};
 
 #define S1(t) 2*(t.y*xmax[t.depth]+t.y+t.x)+(t.orient&1)+ntriabove[t.depth]
 #define S0(t) 4*(t.y*xmax[t.depth]+t.y+t.x)+t.orient+ntriabove[t.depth]
@@ -222,10 +222,10 @@ void TopoRtin::nbr3(TopoTriIndex &t, TopoTriIndex &n3)
 }
 
 
-HeI32 TopoRtin::init_ntriabove(HeI32 depth)
+NxI32 TopoRtin::init_ntriabove(NxI32 depth)
 /* initialize ntriabove[] and return size of needed physical address space */
 {
-  HeI32 d,xm,ym;
+  NxI32 d,xm,ym;
 
   /* initialize special Tri's */
   TopoTriIndex& rootL = mRootL;
@@ -273,11 +273,11 @@ HeI32 TopoRtin::init_ntriabove(HeI32 depth)
 /**********************************************************************/
 /*************START OF EMIT.CPP ***************************************/
 /**********************************************************************/
-static HeI32 surfType;		/* surface type: WIRE2D, WIRE3D, or FILL3D */
+static NxI32 surfType;		/* surface type: WIRE2D, WIRE3D, or FILL3D */
 
 
 /*  emitSurface( type) -- draw surface from triangle hierarchy  */
-HeU16 * TopoRtin::emitSurface(HeU16 *indices)
+NxU16 * TopoRtin::emitSurface(NxU16 *indices)
 {
   indices = emitDFS( mRootL, indices, sw, ne, nw, IT_PARTIAL);	/* NW corner of square */
   indices = emitDFS( mRootR, indices, ne, sw, se, IT_PARTIAL);	/* SE corner of square */
@@ -287,8 +287,8 @@ HeU16 * TopoRtin::emitSurface(HeU16 *indices)
 
 
 /*  emitDFS( t, p1, p2, p3) -- emit triangle, possibly subdivided  */
-HeU16 * TopoRtin::emitDFS(TopoTriIndex &t,
-                               HeU16 *indices,
+NxU16 * TopoRtin::emitDFS(TopoTriIndex &t,
+                               NxU16 *indices,
                                const Coord2d &p1,
                                const Coord2d &p2,
                                const Coord2d &p3,
@@ -332,13 +332,13 @@ HeU16 * TopoRtin::emitDFS(TopoTriIndex &t,
 
 
 /*  inROD(p1, p2, p3)  */
-HeI32 TopoRtin::inROD(Coord2d p1, Coord2d p2, Coord2d p3)
+NxI32 TopoRtin::inROD(Coord2d p1, Coord2d p2, Coord2d p3)
 {
-  HeI32 r;
-  HeI32 txmax = MAX(p1[0], MAX(p2[0], p3[0]));
-  HeI32 txmin = MIN(p1[0], MIN(p2[0], p3[0]));
-  HeI32 tymax = MAX(p1[1], MAX(p2[1], p3[1]));
-  HeI32 tymin = MIN(p1[1], MIN(p2[1], p3[1]));
+  NxI32 r;
+  NxI32 txmax = MAX(p1[0], MAX(p2[0], p3[0]));
+  NxI32 txmin = MIN(p1[0], MIN(p2[0], p3[0]));
+  NxI32 tymax = MAX(p1[1], MAX(p2[1], p3[1]));
+  NxI32 tymin = MIN(p1[1], MIN(p2[1], p3[1]));
 
   if (txmax > mFieldSize - 1)
   {
@@ -562,10 +562,10 @@ void TopoRtin::baseSurface(void)
 
 }
 
-HeF32 Dist2(Coord2d p1,Coord2d p2)
+NxF32 Dist2(Coord2d p1,Coord2d p2)
 {
-  HeF32 dx = HeF32( p1[0] - p2[0] );
-  HeF32 dy = HeF32( p1[1] - p2[1] );
+  NxF32 dx = NxF32( p1[0] - p2[0] );
+  NxF32 dy = NxF32( p1[1] - p2[1] );
   return dx*dx + dy*dy;
 }
 
@@ -579,36 +579,36 @@ bool TopoRtin::tooCoarse(TopoTriIndex &t,
 {
 
    {
-     HeF32 d1 = Dist2(p1,p2);
+     NxF32 d1 = Dist2(p1,p2);
      if ( d1 > LONGEST_EDGE ) return true;
 
-     HeF32 d2 = Dist2(p2,p3);
+     NxF32 d2 = Dist2(p2,p3);
      if ( d2 > LONGEST_EDGE ) return true;
 
-     HeF32 d3 = Dist2(p3,p1);
+     NxF32 d3 = Dist2(p3,p1);
      if ( d3 > LONGEST_EDGE ) return true;
   }
 
-  HeF32 d = 20; // default constant lod viewing distance.
+  NxF32 d = 20; // default constant lod viewing distance.
 
   /* Check error threshold */
-  HeI32 h = mErr[t.s];
+  NxI32 h = mErr[t.s];
 
-  HeF32 err = mFloatThreshold;
+  NxF32 err = mFloatThreshold;
 
   if ( mError )
   {
 
-    HeF32 s1 = mError->Get( p1[0], p1[1] );
-    HeF32 s2 = mError->Get( p2[0], p2[1] );
-    HeF32 s3 = mError->Get( p3[0], p3[2] );
+    NxF32 s1 = mError->Get( p1[0], p1[1] );
+    NxF32 s2 = mError->Get( p2[0], p2[1] );
+    NxF32 s3 = mError->Get( p3[0], p3[2] );
 
-    HeF32 scale = (s1+s2+s3)*0.333f;
+    NxF32 scale = (s1+s2+s3)*0.333f;
 
     err*=scale;
   }
 
-  HeI32 allow = HeI32(d*err);
+  NxI32 allow = NxI32(d*err);
 
   if ( h > allow )  return true;
 
@@ -651,17 +651,17 @@ void TopoRtin::errSurface(void)
 /*************START OF TRI.CPP     ************************************/
 /**********************************************************************/
 
-HeI32 TopoRtin::calcErr(Coord2d p1, Coord2d p2, Coord2d p3)
+NxI32 TopoRtin::calcErr(Coord2d p1, Coord2d p2, Coord2d p3)
 {
-  HeI32 x1, x2, x3, y1, y2, y3;
-  HeF32 z1, z2, z3;
-  HeF32 ystart, yend, xstart, xend;
-  HeF32 deltaxstart, deltaxend, deltaystart, deltayend;
-  HeI32 xmini, xmaxi, ymini, ymaxi;
-  HeF32 z, zstart, zend, deltazstart, deltazend, deltaz;
-  HeF32 max_eps, eps;
-  HeI32 x, y;
-  HeI32 xstarti, xendi, ystarti, yendi;
+  NxI32 x1, x2, x3, y1, y2, y3;
+  NxF32 z1, z2, z3;
+  NxF32 ystart, yend, xstart, xend;
+  NxF32 deltaxstart, deltaxend, deltaystart, deltayend;
+  NxI32 xmini, xmaxi, ymini, ymaxi;
+  NxF32 z, zstart, zend, deltazstart, deltazend, deltaz;
+  NxF32 max_eps, eps;
+  NxI32 x, y;
+  NxI32 xstarti, xendi, ystarti, yendi;
 
   x1 = p1[0];
   y1 = p1[1];
@@ -693,14 +693,14 @@ HeI32 TopoRtin::calcErr(Coord2d p1, Coord2d p2, Coord2d p3)
       ymini = y3;
       ymaxi = y1;
 
-      xstart = HeF32(x3);
+      xstart = NxF32(x3);
       xend = xstart;
       deltaxstart = -x_per_y;
       deltaxend = x_per_y;
       zstart = z3;
       zend = z3;
-      deltazstart = (z2 - zstart) / (HeF32)(y1 - y3);
-      deltazend = (z1 - zend) / (HeF32)(y1 - y3);
+      deltazstart = (z2 - zstart) / (NxF32)(y1 - y3);
+      deltazend = (z1 - zend) / (NxF32)(y1 - y3);
     }
     else
     {
@@ -709,14 +709,14 @@ HeI32 TopoRtin::calcErr(Coord2d p1, Coord2d p2, Coord2d p3)
       ymini = y1;
       ymaxi = y3;
 
-      xstart = HeF32(x1);
-      xend = HeF32(x2);
+      xstart = NxF32(x1);
+      xend = NxF32(x2);
       deltaxstart = x_per_y;
       deltaxend = -x_per_y;
       zstart = z1;
       zend = z2;
-      deltazstart = (z3 - zstart) / (HeF32)(y3 - y1);
-      deltazend = (z3 - zend) / (HeF32)(y3 - y1);
+      deltazstart = (z3 - zstart) / (NxF32)(y3 - y1);
+      deltazend = (z3 - zend) / (NxF32)(y3 - y1);
     }
 
     for (y = ymini; y <= ymaxi; ++y)
@@ -758,14 +758,14 @@ HeI32 TopoRtin::calcErr(Coord2d p1, Coord2d p2, Coord2d p3)
       	ymini = y2;
       	ymaxi = y1;
 
-      	ystart = HeF32(y2);
-      	yend = HeF32(y1);
+      	ystart = NxF32(y2);
+      	yend = NxF32(y1);
       	deltaystart = y_per_x;
       	deltayend = -y_per_x;
       	zstart = z2;
       	zend = z1;
-      	deltazstart = (z3 - zstart) / (HeF32)(x3 - x1);
-      	deltazend = (z3 - zend) / (HeF32)(x3 - x1);
+      	deltazstart = (z3 - zstart) / (NxF32)(x3 - x1);
+      	deltazend = (z3 - zend) / (NxF32)(x3 - x1);
       }
       else
       {
@@ -774,14 +774,14 @@ HeI32 TopoRtin::calcErr(Coord2d p1, Coord2d p2, Coord2d p3)
 	      ymini = y1;
   	    ymaxi = y2;
 
-	      ystart = HeF32(y3);
+	      ystart = NxF32(y3);
 	      yend = ystart;
 	      deltaystart = -y_per_x;
 	      deltayend = y_per_x;
 	      zstart = z3;
 	      zend = z3;
-	      deltazstart = (z1 - zstart) / (HeF32)(x1 - x3);
-	      deltazend = (z2 - zend) / (HeF32)(x1 - x3);
+	      deltazstart = (z1 - zstart) / (NxF32)(x1 - x3);
+	      deltazend = (z2 - zend) / (NxF32)(x1 - x3);
       }
     }
     else
@@ -795,14 +795,14 @@ HeI32 TopoRtin::calcErr(Coord2d p1, Coord2d p2, Coord2d p3)
       	  ymini = y2;
       	  ymaxi = y3;
 
-      	  ystart = HeF32(y1);
+      	  ystart = NxF32(y1);
       	  yend = ystart;
       	  deltaystart = -y_per_x;
       	  deltayend = 0.0;
       	  zstart = z1;
       	  zend = z1;
-      	  deltazstart = (z2 - zstart) / (HeF32)(x3 - x1);
-      	  deltazend = (z3 - zend) / (HeF32)(x3 - x1);
+      	  deltazstart = (z2 - zstart) / (NxF32)(x3 - x1);
+      	  deltazend = (z3 - zend) / (NxF32)(x3 - x1);
       	}
       	else
      	  {
@@ -811,14 +811,14 @@ HeI32 TopoRtin::calcErr(Coord2d p1, Coord2d p2, Coord2d p3)
       	  ymini = y1;
       	  ymaxi = y3;
 
-      	  ystart = HeF32(y1);
-      	  yend = HeF32(y3);
+      	  ystart = NxF32(y1);
+      	  yend = NxF32(y3);
       	  deltaystart = y_per_x;
       	  deltayend = 0.0;
        	  zstart = z1;
       	  zend = z3;
-      	  deltazstart = (z2 - zstart) / (HeF32)(x2 - x3);
-      	  deltazend = (z2 - zend) / (HeF32)(x2 - x3);
+      	  deltazstart = (z2 - zstart) / (NxF32)(x2 - x3);
+      	  deltazend = (z2 - zend) / (NxF32)(x2 - x3);
       	}
       }
       else
@@ -830,14 +830,14 @@ HeI32 TopoRtin::calcErr(Coord2d p1, Coord2d p2, Coord2d p3)
       	  ymini = y3;
       	  ymaxi = y1;
 
-      	  ystart = HeF32(y2);
+      	  ystart = NxF32(y2);
       	  yend = ystart;
       	  deltaystart = 0.0;
       	  deltayend = y_per_x;
       	  zstart = z2;
       	  zend = z2;
-      	  deltazstart = (z3 - zstart) / (HeF32)(x3 - x2);
-      	  deltazend = (z1 - zend) / (HeF32)(x3 - x2);
+      	  deltazstart = (z3 - zstart) / (NxF32)(x3 - x2);
+      	  deltazend = (z1 - zend) / (NxF32)(x3 - x2);
       	}
       	else
      	  {
@@ -846,14 +846,14 @@ HeI32 TopoRtin::calcErr(Coord2d p1, Coord2d p2, Coord2d p3)
       	  ymini = y3;
       	  ymaxi = y2;
 
-      	  ystart = HeF32(y3);
-      	  yend = HeF32(y2);
+      	  ystart = NxF32(y3);
+      	  yend = NxF32(y2);
       	  deltaystart = 0.0;
       	  deltayend = -y_per_x;
       	  zstart = z3;
       	  zend = z2;
-      	  deltazstart = (z1 - zstart) / (HeF32)(x1 - x3);
-      	  deltazend = (z1 - zend) / (HeF32)(x1 - x3);
+      	  deltazstart = (z1 - zstart) / (NxF32)(x1 - x3);
+      	  deltazend = (z1 - zend) / (NxF32)(x1 - x3);
       	}
       }
     }
@@ -905,10 +905,10 @@ void TopoRtin::MidPoint(const Coord2d &p1,const Coord2d &p2, Coord2d &m)
   m[1] = (p1[1] + p2[1]) / 2;
 }
 
-HeI32 TopoRtin::ceilingLog2(HeI32 x)
+NxI32 TopoRtin::ceilingLog2(NxI32 x)
 {
-  HeI32 m = 1;
-  HeI32 i = 0;
+  NxI32 m = 1;
+  NxI32 i = 0;
 
   while (m < x && m < INT_MAX)
   {
@@ -918,9 +918,9 @@ HeI32 TopoRtin::ceilingLog2(HeI32 x)
   return i;
 }
 
-HeI32 TopoRtin::next2Power(HeI32 x)
+NxI32 TopoRtin::next2Power(NxI32 x)
 {
-  HeI32 m = 1;
+  NxI32 m = 1;
   while (m < x && m < INT_MAX)
     m <<= 1;
   return m;
@@ -930,14 +930,14 @@ void TopoRtin::makeDFS(TopoTriIndex &t, Coord2d p1, Coord2d p2, Coord2d p3)
 {
   TopoTriIndex lt,rt;
   Coord2d mid;
-  HeI32 r;
+  NxI32 r;
 
   r = inROD(p1, p2, p3);
 
   if (t.s)
   {
 
-    mInfo[t.s] = (HeU8)r;
+    mInfo[t.s] = (NxU8)r;
 
     if (ISLEAF(t))
 	  {
@@ -946,9 +946,9 @@ void TopoRtin::makeDFS(TopoTriIndex &t, Coord2d p1, Coord2d p2, Coord2d p3)
   	else
 	  {
 
-      HeI32 err = calcErr(p1, p2, p3);
+      NxI32 err = calcErr(p1, p2, p3);
 
-      mErr[t.s] = (HeU16)err;
+      mErr[t.s] = (NxU16)err;
 
       midpoint(p1, p2, mid);
       leftChild(t,lt);
@@ -964,22 +964,22 @@ void TopoRtin::makeDFS(TopoTriIndex &t, Coord2d p1, Coord2d p2, Coord2d p3)
 /*  initHier() -- initialize triangle hierarchy  */
 void TopoRtin::initHier(void)
 {
-	HeI32 dim;
+	NxI32 dim;
 
 	x_per_y = 1;
 	y_per_x = 1;
 
-	HeF32 dz = 1;
+	NxF32 dz = 1;
 
 	{
-		HeF32 minz = 1e9;
-		HeF32 maxz = -1e9;
+		NxF32 minz = 1e9;
+		NxF32 maxz = -1e9;
 
-		for ( HeI32 y=0; y<mFieldSize; y++ )
+		for ( NxI32 y=0; y<mFieldSize; y++ )
 		{
-	  		for ( HeI32 x=0; x<mFieldSize; x++ )
+	  		for ( NxI32 x=0; x<mFieldSize; x++ )
 	  		{
-	  			HeF32 z = GetZ(x,y);
+	  			NxF32 z = GetZ(x,y);
 	  			if ( z < minz ) 
 					minz = z;
 	  			if ( z > maxz ) 
@@ -992,13 +992,13 @@ void TopoRtin::initHier(void)
 	if ( fabs(dz) <= 0.000001f )
 		dz = 1.0f;
 
-	errPerEm = (HeF32)MAXERR / dz;
+	errPerEm = (NxF32)MAXERR / dz;
 
 	dim = next2Power(MAX(mFieldSize, mFieldSize ) - 1) + 1;
 	mMaxDepth = 2*ceilingLog2(dim-1) + 1;
 	mSize = init_ntriabove(mMaxDepth);
 
-	HeI32 wid = dim-1;
+	NxI32 wid = dim-1;
 
 	if ( wid <= 64 )
 	{
@@ -1038,8 +1038,8 @@ void TopoRtin::initHier(void)
 		}
 	}
 
-	mErr    = MEMALLOC_NEW_ARRAY(HeU16,mSize)[mSize];
-	mInfo   = MEMALLOC_NEW_ARRAY(HeU8,mSize)[mSize];
+	mErr    = MEMALLOC_NEW_ARRAY(NxU16,mSize)[mSize];
+	mInfo   = MEMALLOC_NEW_ARRAY(NxU8,mSize)[mSize];
 
 	sw[0] = 0;
 	sw[1] = 0;
@@ -1066,14 +1066,14 @@ void TopoRtin::initHier(void)
 /**********************************************************************/
 /*************END OF   TRI.CPP     ************************************/
 /**********************************************************************/
-HeU16 * TopoRtin::getVerts(const Coord2d &p1,
+NxU16 * TopoRtin::getVerts(const Coord2d &p1,
                                 const Coord2d &p2,
                                 const Coord2d &p3,
-                                HeU16 *indices)
+                                NxU16 *indices)
 {
-  HeI32 i1 = (p3[1]-mBlockTop)*mBlockLen+(p3[0]-mBlockLeft);
-  HeI32 i2 = (p2[1]-mBlockTop)*mBlockLen+(p2[0]-mBlockLeft);
-  HeI32 i3 = (p1[1]-mBlockTop)*mBlockLen+(p1[0]-mBlockLeft);
+  NxI32 i1 = (p3[1]-mBlockTop)*mBlockLen+(p3[0]-mBlockLeft);
+  NxI32 i2 = (p2[1]-mBlockTop)*mBlockLen+(p2[0]-mBlockLeft);
+  NxI32 i3 = (p1[1]-mBlockTop)*mBlockLen+(p1[0]-mBlockLeft);
 
   assert( i1 >= 0 && i1 < ( mBlockLen*mBlockLen ) );
   assert( i2 >= 0 && i2 < ( mBlockLen*mBlockLen ) );
@@ -1082,9 +1082,9 @@ HeU16 * TopoRtin::getVerts(const Coord2d &p1,
   if ( mIgnoreSealevel )
   {
     // check to see if it's at sea level!
-    HeF32 z1 = GetZ( p1[0], p1[1] );
-    HeF32 z2 = GetZ( p2[0], p2[1] );
-    HeF32 z3 = GetZ( p3[0], p3[1] );
+    NxF32 z1 = GetZ( p1[0], p1[1] );
+    NxF32 z2 = GetZ( p2[0], p2[1] );
+    NxF32 z3 = GetZ( p3[0], p3[1] );
 
     if ( z1 <= mSealevel && z2 <= mSealevel && z3 <= mSealevel )
     {
@@ -1093,30 +1093,30 @@ HeU16 * TopoRtin::getVerts(const Coord2d &p1,
     }
   }
 
-  *indices++ = (HeU16)i1;
-  *indices++ = (HeU16)i2;
-  *indices++ = (HeU16)i3;
+  *indices++ = (NxU16)i1;
+  *indices++ = (NxU16)i2;
+  *indices++ = (NxU16)i3;
 
   return indices;
 }
 
-void TopoRtin::SetEye(HeI32 eyex,HeI32 eyey)
+void TopoRtin::SetEye(NxI32 eyex,NxI32 eyey)
 {
   eyeP[0] = eyex;
   eyeP[1] = eyey;
   errSurface(); // compute active rtin based on this error metric.
 }
 
-HeU16 * TopoRtin::BuildIndices(HeU16 *indices,
-                                    HeI32 left,
-                                    HeI32 top)
+NxU16 * TopoRtin::BuildIndices(NxU16 *indices,
+                                    NxI32 left,
+                                    NxI32 top)
 {
   mHasSea = false;
   mBlockLeft   = left;
   mBlockTop    = top;
   mBlockRight  = left+mBlockSize;
   mBlockBottom = top+mBlockSize;
-  HeU16 *istart = indices;
+  NxU16 *istart = indices;
   indices       = emitSurface(indices);
   if ( indices == istart ) return 0;
   return indices;
@@ -1168,7 +1168,7 @@ bool TopoRtin::IsEdge(Coord2d p)
 
 
 
-bool TopoRtin::IsEdge(HeI32 x,HeI32 y)
+bool TopoRtin::IsEdge(NxI32 x,NxI32 y)
 {
   if ( x == 0 ) return true;
   if ( y == 0 ) return true;

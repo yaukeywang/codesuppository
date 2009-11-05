@@ -13,17 +13,17 @@
 #include "common/snippets/floatmath.h"
 #include "common/snippets/log.h"
 
-const HeF32 YSCALE = 1.0f / 10.0f;
-const HeF32 XZSCALE = 400.0f;
+const NxF32 YSCALE = 1.0f / 10.0f;
+const NxF32 XZSCALE = 400.0f;
 
 static bool gShowNormals=false;
-static HeF32 gRotationSpeed=1;
+static NxF32 gRotationSpeed=1;
 
 class TerrainMesh
 {
 public:
 
-  TerrainMesh(HeU32 vcount,const GeometryVertex *vertices,HeU32 icount,const HeU16 *indices,PD3D::Pd3dTexture *texture,HeF32 meshScale)
+  TerrainMesh(NxU32 vcount,const GeometryVertex *vertices,NxU32 icount,const NxU16 *indices,PD3D::Pd3dTexture *texture,NxF32 meshScale)
   {
     mMaterial.mHandle = texture;
     mTcount           = icount/3;
@@ -34,7 +34,7 @@ public:
 
     PD3D::Pd3dGraphicsVertex *dest = mVertices;
 
-    for (HeU32 i=0; i<vcount; i++)
+    for (NxU32 i=0; i<vcount; i++)
     {
       dest->mPos[0] = vertices->mPos[0]*meshScale;
       dest->mPos[1] = vertices->mPos[1];
@@ -63,7 +63,7 @@ public:
     gPd3d->releaseIndexBuffer(mIndexBuffer);
   }
 
-  void render(bool wireframe,const HeF32 *matrix)
+  void render(bool wireframe,const NxF32 *matrix)
   {
 
     gPd3d->renderSection(&mMaterial,mVertexBuffer,mIndexBuffer,mVcount,mTcount);
@@ -78,16 +78,16 @@ public:
     if ( gShowNormals )
     {
       PD3D::Pd3dGraphicsVertex *vtx = mVertices;
-      for (HeU32 i=0; i<mVcount; i++)
+      for (NxU32 i=0; i<mVcount; i++)
       {
-        HeF32 pos[3];
+        NxF32 pos[3];
 
-        HeF32 epos[3];
+        NxF32 epos[3];
         epos[0] = vtx->mPos[0]+vtx->mNormal[0];
         epos[1] = vtx->mPos[1]+vtx->mNormal[1];
         epos[2] = vtx->mPos[2]+vtx->mNormal[2];
 
-        HeF32 npos[3];
+        NxF32 npos[3];
 
         fm_transform( matrix, vtx->mPos, pos );
         fm_transform( matrix, epos,      npos );
@@ -99,7 +99,7 @@ public:
 
   }
 
-  TerrainMesh(HeU32 vbase,HeU32 vcount,HeU32 tvcount,PD3D::Pd3dGraphicsVertex *vertices,HeU32 *indices,HeU32 tcount,PD3D::Pd3dTexture *texture)
+  TerrainMesh(NxU32 vbase,NxU32 vcount,NxU32 tvcount,PD3D::Pd3dGraphicsVertex *vertices,NxU32 *indices,NxU32 tcount,PD3D::Pd3dTexture *texture)
   {
     mMaterial.mHandle = texture;
 
@@ -108,20 +108,20 @@ public:
 
     memcpy(vtx,&vertices[vbase],sizeof(PD3D::Pd3dGraphicsVertex)*vcount);
 
-    HeU32 *extra = MEMALLOC_NEW_ARRAY(unsigned int,tvcount)[tvcount];
-    memset(extra,0xFF,sizeof(HeU32)*tvcount);
+    NxU32 *extra = MEMALLOC_NEW_ARRAY(unsigned int,tvcount)[tvcount];
+    memset(extra,0xFF,sizeof(NxU32)*tvcount);
 
-    HeU16 *dindices = MEMALLOC_NEW_ARRAY(unsigned short,tcount*3)[tcount*3];
-    const HeU32 *source = indices;
-    HeU16 *dest = dindices;
+    NxU16 *dindices = MEMALLOC_NEW_ARRAY(unsigned short,tcount*3)[tcount*3];
+    const NxU32 *source = indices;
+    NxU16 *dest = dindices;
 
-    HeU32 vend = vbase+vcount;
+    NxU32 vend = vbase+vcount;
 
-    for (HeU32 i=0; i<tcount; i++)
+    for (NxU32 i=0; i<tcount; i++)
     {
-      HeU32 i1 = source[0];
-      HeU32 i2 = source[1];
-      HeU32 i3 = source[2];
+      NxU32 i1 = source[0];
+      NxU32 i2 = source[1];
+      NxU32 i3 = source[2];
 
       bool b1 = i1 >= vbase && i1 < vend;
       bool b2 = i2 >= vbase && i2 < vend;
@@ -130,19 +130,19 @@ public:
       if ( b1 && b2 && b3 )
       {
 
-        dest[0] = (HeU16)(i1-vbase);
-        dest[1] = (HeU16)(i2-vbase);
-        dest[2] = (HeU16)(i3-vbase);
+        dest[0] = (NxU16)(i1-vbase);
+        dest[1] = (NxU16)(i2-vbase);
+        dest[2] = (NxU16)(i3-vbase);
 
         dest+=3;
       }
       else if ( b1 || b2 || b3 )
       {
-        HeU16 d1,d2,d3;
+        NxU16 d1,d2,d3;
 
         if ( b1 )
         {
-          d1 = (HeU16)(i1-vbase);
+          d1 = (NxU16)(i1-vbase);
         }
         else
         {
@@ -152,12 +152,12 @@ public:
             extra[i1] = vcount;
             vcount++;
           }
-          d1 = (HeU16)extra[i1];
+          d1 = (NxU16)extra[i1];
         }
 
         if ( b2 )
         {
-          d2 = (HeU16)(i2-vbase);
+          d2 = (NxU16)(i2-vbase);
         }
         else
         {
@@ -167,12 +167,12 @@ public:
             extra[i2] = vcount;
             vcount++;
           }
-          d2 = (HeU16)extra[i2];
+          d2 = (NxU16)extra[i2];
         }
 
         if ( b3 )
         {
-          d3 = (HeU16)(i3-vbase);
+          d3 = (NxU16)(i3-vbase);
         }
         else
         {
@@ -182,7 +182,7 @@ public:
             extra[i3] = vcount;
             vcount++;
           }
-          d3 = (HeU16)extra[i3];
+          d3 = (NxU16)extra[i3];
         }
         assert( vcount < 65536 );
         dest[0] = d1;
@@ -214,8 +214,8 @@ public:
   PD3D::Pd3dMaterial             mMaterial;
   void                          *mVertexBuffer;
   void                          *mIndexBuffer;
-  HeU32                   mVcount;
-  HeU32                   mTcount;
+  NxU32                   mVcount;
+  NxU32                   mTcount;
   PD3D::Pd3dGraphicsVertex     *mVertices; // backing store..
 
 };
@@ -227,7 +227,7 @@ class Terrain : public GeometryInterface
 {
 public:
 
-  Terrain(HeU32 wid,HeU32 hit,PD3D::Pd3dTexture *texture)
+  Terrain(NxU32 wid,NxU32 hit,PD3D::Pd3dTexture *texture)
   {
     mRebuild = false;
 		mClampLow = 0;
@@ -256,16 +256,16 @@ public:
 
     PD3D::Pd3dGraphicsVertex *dest = mVertices;
 
-    HeF32 recipx = 1.0f / (HeF32) mWidth;
-    HeF32 recipy = 1.0f / (HeF32) mHeight;
+    NxF32 recipx = 1.0f / (NxF32) mWidth;
+    NxF32 recipy = 1.0f / (NxF32) mHeight;
 
-    for (HeI32 y=0; y<(HeI32)mHeight; y++)
+    for (NxI32 y=0; y<(NxI32)mHeight; y++)
     {
-      HeF32 fy = (HeF32)(y);
+      NxF32 fy = (NxF32)(y);
 
-      for (HeI32 x=0; x<(HeI32)mWidth; x++)
+      for (NxI32 x=0; x<(NxI32)mWidth; x++)
       {
-        HeF32 fx = (HeF32)(x);
+        NxF32 fx = (NxF32)(x);
 
         dest->mPos[0]    = (fx*recipx-0.5f)*XZSCALE;
         dest->mPos[1]    = 0;
@@ -280,11 +280,11 @@ public:
       }
 		}
 
-    HeU32 *idx = mIndices;
+    NxU32 *idx = mIndices;
 
-    for (HeU32 y=0; y<(mHeight-1); y++)
+    for (NxU32 y=0; y<(mHeight-1); y++)
     {
-      for (HeU32 x=0; x<(mWidth-1); x++)
+      for (NxU32 x=0; x<(mWidth-1); x++)
       {
         idx = addTris(idx,x,y);
       }
@@ -355,7 +355,7 @@ public:
     }
   }
 
-  HeU32 getPower(HeU32 side)
+  NxU32 getPower(NxU32 side)
   {
     if ( side <= 256 )
       side = 256;
@@ -372,14 +372,14 @@ public:
   }
 
 
-  void NodeTriangleList(HeI32 vcount,const GeometryVertex *vertex,HeI32 icount,const HeU16 *indices)
+  void NodeTriangleList(NxI32 vcount,const GeometryVertex *vertex,NxI32 icount,const NxU16 *indices)
   {
-    TerrainMesh *tm = MEMALLOC_NEW(TerrainMesh)((HeU32)vcount,vertex,(HeU32)icount,indices,mTexture,mMeshScale);
+    TerrainMesh *tm = MEMALLOC_NEW(TerrainMesh)((NxU32)vcount,vertex,(NxU32)icount,indices,mTexture,mMeshScale);
     mMeshes.push_back(tm);
     mHaveMeshes = true;
   }
 
-  void render(bool wireframe,HeF32 dtime)
+  void render(bool wireframe,NxF32 dtime)
   {
 
     if ( mRebuild )
@@ -412,10 +412,10 @@ public:
 
       if ( mVcount > 60000 )
       {
-        HeU32 v;
+        NxU32 v;
         for (v=0; v<mVcount; v+=60000)
         {
-          HeU32 remainder = mVcount-v;
+          NxU32 remainder = mVcount-v;
           if ( remainder > 60000 ) remainder = 60000;
           TerrainMesh *tm = MEMALLOC_NEW(TerrainMesh)(v,remainder,mVcount,mVertices,mIndices,mTcount,mTexture);
           mSplitMeshes.push_back(tm);
@@ -431,7 +431,7 @@ public:
 
     mRotation+=(dtime*mRotationSpeed*gRotationSpeed);
 
-    HeF32 matrix[16];
+    NxF32 matrix[16];
     fm_eulerToMatrix(0,mRotation,0,matrix);
     gPd3d->setWorldMatrix(matrix);
 
@@ -477,12 +477,12 @@ public:
   }
 
 
-  HeU32 * addTris(HeU32 *idx,HeU32 x,HeU32 y) const
+  NxU32 * addTris(NxU32 *idx,NxU32 x,NxU32 y) const
   {
-    HeU32 i1 = (y*mWidth)+x;
-    HeU32 i2 = (y*mWidth)+(x+1);
-    HeU32 i3 = ((y+1)*mWidth)+(x+1);
-    HeU32 i4 = ((y+1)*mWidth)+x;
+    NxU32 i1 = (y*mWidth)+x;
+    NxU32 i2 = (y*mWidth)+(x+1);
+    NxU32 i3 = ((y+1)*mWidth)+(x+1);
+    NxU32 i4 = ((y+1)*mWidth)+x;
 
     idx[0] = i3;
     idx[1] = i2;
@@ -497,25 +497,25 @@ public:
     return idx;
   }
 
-  HeF32 GetHeight(HeU32 x,HeU32 y)
+  NxF32 GetHeight(NxU32 x,NxU32 y)
   {
     if ( x >= mWidth ) x = mWidth-1;
     if ( y >= mHeight ) y = mHeight-1;
-    HeU32 index = y*mWidth+x;
+    NxU32 index = y*mWidth+x;
     return mVertices[index].mPos[1];
   }
 
-  void plot(HeU32 x,HeU32 y,HeU32 iterCount)
+  void plot(NxU32 x,NxU32 y,NxU32 iterCount)
   {
     meshRelease();
-    HeF32 fv = (HeF32)(iterCount);
+    NxF32 fv = (NxF32)(iterCount);
 
-    HeU32 index = y*mWidth+x;
+    NxU32 index = y*mWidth+x;
     mVertices[index].mPos[1] = fv;
 
   }
 
-  void complete(const HeU32 * /*data*/)
+  void complete(const NxU32 * /*data*/)
   {
     meshRelease();
     mRebuild = true;
@@ -525,23 +525,23 @@ public:
   {
     meshRelease();
 
-    HeU32 side = mWidth;
+    NxU32 side = mWidth;
     if ( mHeight > side ) side = mHeight;
     side = getPower(side);
 
-    HeF32 *hf = MEMALLOC_NEW_ARRAY(float,side*side)[side*side];
-    memset(hf,0,sizeof(HeF32)*side);
+    NxF32 *hf = MEMALLOC_NEW_ARRAY(float,side*side)[side*side];
+    memset(hf,0,sizeof(NxF32)*side);
 
-    mMeshScale = (HeF32) XZSCALE / side;
+    mMeshScale = (NxF32) XZSCALE / side;
 
-		HeF32 vscale = 0.25f;
+		NxF32 vscale = 0.25f;
 
-    for (HeU32 y=0; y<mHeight; y++)
+    for (NxU32 y=0; y<mHeight; y++)
     {
-      for (HeU32 x=0; x<mWidth; x++)
+      for (NxU32 x=0; x<mWidth; x++)
       {
-        HeU32 index = y*mWidth+x;
-        HeF32 v = mVertices[index].mPos[1];
+        NxU32 index = y*mWidth+x;
+        NxF32 v = mVertices[index].mPos[1];
         if ( v < mClampLow )
           v = mClampLow;
         else if ( v > mClampHigh )
@@ -550,7 +550,7 @@ public:
         v-=mClampLow;
         v*=mClampScale;
 
-        HeU32 dindex = y*side+x;
+        NxU32 dindex = y*side+x;
 
         hf[dindex] = v*mMeshScale*vscale;
       }
@@ -560,9 +560,9 @@ public:
     delete []hf;
   }
 
-	void  clampRange(HeF32 clampLow,HeF32 clampHigh,HeF32 clampScale,HeU32 iterationCount)
+	void  clampRange(NxF32 clampLow,NxF32 clampHigh,NxF32 clampScale,NxU32 iterationCount)
 	{
-    HeF32 i = (HeF32)iterationCount;
+    NxF32 i = (NxF32)iterationCount;
     mClampLow  = i*clampLow;
     mClampHigh = i*clampHigh;
     if ( mClampLow > mClampHigh )
@@ -573,12 +573,12 @@ public:
 //		gLog->Display("ClampLow: %0.2f ClampHigh: %0.2f ClampScale: %0.2f\r\n", mClampLow, mClampHigh, mClampScale );
 	}
 
-  void getScaledPoint(HeF32 *dest,const HeF32 *source)
+  void getScaledPoint(NxF32 *dest,const NxF32 *source)
   {
     dest[0] = source[0];
     dest[2] = source[2];
 
-    HeF32 y = source[1];
+    NxF32 y = source[1];
     if ( y < mClampLow )
       y = mClampLow;
     else if ( y > mClampHigh )
@@ -591,33 +591,33 @@ public:
 
   void computeNormals(void)
   {
-    for (HeU32 i=0; i<mVcount; i++)
+    for (NxU32 i=0; i<mVcount; i++)
     {
       mVertices[i].mNormal[0] = 0;
       mVertices[i].mNormal[1] = 0;
       mVertices[i].mNormal[2] = 0;
     }
 
-    const HeU32 *indices = mIndices;
-    for (HeU32 i=0; i<mTcount; i++)
+    const NxU32 *indices = mIndices;
+    for (NxU32 i=0; i<mTcount; i++)
     {
-      HeU32 i1 = indices[0];
-      HeU32 i2 = indices[1];
-      HeU32 i3 = indices[2];
+      NxU32 i1 = indices[0];
+      NxU32 i2 = indices[1];
+      NxU32 i3 = indices[2];
 
       PD3D::Pd3dGraphicsVertex &v1 = mVertices[i1];
       PD3D::Pd3dGraphicsVertex &v2 = mVertices[i2];
       PD3D::Pd3dGraphicsVertex &v3 = mVertices[i3];
 
-      HeF32 p1[3];
-      HeF32 p2[3];
-      HeF32 p3[3];
+      NxF32 p1[3];
+      NxF32 p2[3];
+      NxF32 p3[3];
 
       getScaledPoint(p1,v1.mPos);
       getScaledPoint(p2,v2.mPos);
       getScaledPoint(p3,v3.mPos);
 
-      HeF32 normal[3];
+      NxF32 normal[3];
       fm_computePlane(p3,p2,p1,normal);
 
       v1.mNormal[0]+=normal[0];
@@ -637,36 +637,36 @@ public:
 
   }
 
-  HeF32 getRotation(void) const { return mRotation; };
-  void setRotation(HeF32 r) { mRotation = r; };
+  NxF32 getRotation(void) const { return mRotation; };
+  void setRotation(NxF32 r) { mRotation = r; };
 
   void reset(void)
   {
   }
 
-  HeF32 tap(HeI32 x,HeI32 y,const HeF32 *data,HeF32 s,HeF32 &t)
+  NxF32 tap(NxI32 x,NxI32 y,const NxF32 *data,NxF32 s,NxF32 &t)
   {
     t+=s;
     if ( x < 0 ) x = 0;
     if ( y < 0 ) y = 0;
-    if ( x >= (HeI32)(mWidth) ) x = mWidth-1;
-    if ( y >= (HeI32)(mHeight) ) y = mHeight-1;
-    HeU32 index = y*mWidth+x;
+    if ( x >= (NxI32)(mWidth) ) x = mWidth-1;
+    if ( y >= (NxI32)(mHeight) ) y = mHeight-1;
+    NxU32 index = y*mWidth+x;
     return data[index]*s;
   }
 
-  HeF32 tapFilter(HeU32 x,HeU32 y,const HeF32 *data)
+  NxF32 tapFilter(NxU32 x,NxU32 y,const NxF32 *data)
   {
-    HeI32 ix = (HeI32) x;
-    HeI32 iy = (HeI32) y;
+    NxI32 ix = (NxI32) x;
+    NxI32 iy = (NxI32) y;
 
     #define TAP1 5
     #define TAP2 3
     #define TAP3 1
 
-    HeF32 count=0;
+    NxF32 count=0;
 
-    HeF32 total = tap(ix,iy,data,TAP1,count);
+    NxF32 total = tap(ix,iy,data,TAP1,count);
     total+=tap(ix-1,iy,data,TAP2,count);
     total+=tap(ix+1,iy,data,TAP2,count);
     total+=tap(ix,iy-1,data,TAP2,count);
@@ -685,21 +685,21 @@ public:
 
     meshRelease();
 
-    HeF32 *data = MEMALLOC_NEW_ARRAY(float,mWidth*mHeight)[mWidth*mHeight];
-    for (HeU32 y=0; y<mHeight; y++)
+    NxF32 *data = MEMALLOC_NEW_ARRAY(float,mWidth*mHeight)[mWidth*mHeight];
+    for (NxU32 y=0; y<mHeight; y++)
     {
-      for (HeU32 x=0; x<mWidth; x++)
+      for (NxU32 x=0; x<mWidth; x++)
       {
-        HeU32 index = y*mWidth+x;
+        NxU32 index = y*mWidth+x;
         data[index] = mVertices[index].mPos[1];
       }
     }
 
-    for (HeU32 y=0; y<mHeight; y++)
+    for (NxU32 y=0; y<mHeight; y++)
     {
-      for (HeU32 x=0; x<mWidth; x++)
+      for (NxU32 x=0; x<mWidth; x++)
       {
-        HeU32 index = y*mWidth+x;
+        NxU32 index = y*mWidth+x;
         mVertices[index].mPos[1] = tapFilter(x,y,data);
       }
     }
@@ -714,25 +714,25 @@ private:
   TerrainMeshVector              mMeshes;
   TerrainMeshVector              mSplitMeshes;
 
-  HeU32                   mWidth;
-  HeU32                   mHeight;
-  HeU32                   mVcount;
-  HeU32                   mTcount;
+  NxU32                   mWidth;
+  NxU32                   mHeight;
+  NxU32                   mVcount;
+  NxU32                   mTcount;
   PD3D::Pd3dGraphicsVertex      *mVertices;
-  HeU32                  *mIndices;
+  NxU32                  *mIndices;
 
   void                          *mVertexBuffer;
   void                          *mIndexBuffer;
 
-	HeF32                          mClampLow;
-	HeF32                          mClampHigh;
-	HeF32                          mClampScale;
-  HeF32                          mRotation;
-	HeF32                          mRotationSpeed;
+	NxF32                          mClampLow;
+	NxF32                          mClampHigh;
+	NxF32                          mClampScale;
+  NxF32                          mRotation;
+	NxF32                          mRotationSpeed;
   bool                           mRebuild;
   bool                           mHaveMeshes;
 
-  HeF32                          mMeshScale; //
+  NxF32                          mMeshScale; //
 
 };
 
@@ -744,7 +744,7 @@ private:
 
 
 
-Terrain * createTerrain(HeU32 wid,HeU32 hit,PD3D::Pd3dTexture *texture)
+Terrain * createTerrain(NxU32 wid,NxU32 hit,PD3D::Pd3dTexture *texture)
 {
   Terrain *t=0;
   t = MEMALLOC_NEW(Terrain)(wid,hit,texture);
@@ -757,7 +757,7 @@ void      releaseTerrain(Terrain *t)
 }
 
 
-void      renderTerrain(Terrain *t,bool wireframe,HeF32 dtime)
+void      renderTerrain(Terrain *t,bool wireframe,NxF32 dtime)
 {
   if ( t )
     t->render(wireframe,dtime);
@@ -768,27 +768,27 @@ void      terrainReset(Terrain *t)
   t->reset();
 }
 
-void      plot(Terrain *t,HeU32 x,HeU32 y,HeU32 iterCount)
+void      plot(Terrain *t,NxU32 x,NxU32 y,NxU32 iterCount)
 {
   t->plot(x,y,iterCount);
 }
 
-void      terrainComplete(Terrain *t,const HeU32 *data) // the terrain is completed, it can now be copied to a static vertex buffer and index buffer and optimized.
+void      terrainComplete(Terrain *t,const NxU32 *data) // the terrain is completed, it can now be copied to a static vertex buffer and index buffer and optimized.
 {
   t->complete(data);
 }
 
-void  terrainClampRange(Terrain *t,HeF32 clampLow,HeF32 clampHigh,HeF32 clampScale,HeU32 iterationCount)
+void  terrainClampRange(Terrain *t,NxF32 clampLow,NxF32 clampHigh,NxF32 clampScale,NxU32 iterationCount)
 {
 	t->clampRange(clampLow,clampHigh,clampScale,iterationCount);
 }
 
-HeF32 getRotation(Terrain *t)
+NxF32 getRotation(Terrain *t)
 {
   return t->getRotation();
 }
 
-void  setRotation(Terrain *t,HeF32 rot)
+void  setRotation(Terrain *t,NxF32 rot)
 {
   t->setRotation(rot);
 }
@@ -811,7 +811,7 @@ void  setShowNormals(bool state)
   gShowNormals = state;
 }
 
-void  setRotationSpeed(HeF32 rspeed)
+void  setRotationSpeed(NxF32 rspeed)
 {
   gRotationSpeed = rspeed;
 }

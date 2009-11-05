@@ -20,19 +20,19 @@
 
 static HeU64 gMaxClockCycles=50000000;
 
-typedef std::vector< HeU32 > PixelVector;
+typedef std::vector< NxU32 > PixelVector;
 
 class Tfrac : public FractalInterface
 {
 public:
-  Tfrac(HeU32 screenWidth,HeU32 screenHeight,const TfracSettings &settings)
+  Tfrac(NxU32 screenWidth,NxU32 screenHeight,const TfracSettings &settings)
   {
 
     gJobSwarmContext = JOB_SWARM::createJobSwarmContext(6);
 
     _controlfp(_PC_64,_MCW_PC);
 
-    HeU32 size = screenWidth;
+    NxU32 size = screenWidth;
     if ( screenHeight > size ) size = screenHeight;
     size = (size/4)*4;
 
@@ -66,8 +66,8 @@ public:
     mPreviewTexture        = pt_createPlotTexture("preview_fractal",mPreviewSize,mPreviewSize);
     mTerrain               = createTerrain(mFractalSize,mFractalSize,pt_getTexture(mTexture));
     mPreviewTerrain        = createTerrain(mPreviewSize,mPreviewSize,pt_getTexture(mPreviewTexture));
-    mColorScale            = 1.0f / (HeF32)mIterationCount;
-    mPreviewColorScale     = 1.0f / (HeF32)mPreviewIterationCount;
+    mColorScale            = 1.0f / (NxF32)mIterationCount;
+    mPreviewColorScale     = 1.0f / (NxF32)mPreviewIterationCount;
 
     mFractal               = fc_create(this,mFractalSize,mScreenWidth,mScreenHeight,mIterationCount,settings.mXleft,settings.mXright,settings.mYtop,settings.mUseRectangleSubdivision);
     mPreviewFractal        = fc_create(mFractal,this,mPreviewSize,mPreviewIterationCount);
@@ -78,17 +78,17 @@ public:
     mPreview               = true;
     mMapPal                = 0;
 
-    for (HeU32 y=0; y<mFractalSize; y++)
+    for (NxU32 y=0; y<mFractalSize; y++)
     {
-      for (HeU32 x=0; x<mFractalSize; x++)
+      for (NxU32 x=0; x<mFractalSize; x++)
       {
         pt_plotPixel(mTexture,x,y,0);
       }
     }
 
-    for (HeU32 y=0; y<mPreviewSize; y++)
+    for (NxU32 y=0; y<mPreviewSize; y++)
     {
-      for (HeU32 x=0; x<mPreviewSize; x++)
+      for (NxU32 x=0; x<mPreviewSize; x++)
       {
         pt_plotPixel(mPreviewTexture,x,y,0);
       }
@@ -108,7 +108,7 @@ public:
     JOB_SWARM::releaseJobSwarmContext(gJobSwarmContext);
   }
 
-  void render(bool view3d,HeF32 dtime)
+  void render(bool view3d,NxF32 dtime)
   {
     if ( view3d )
     {
@@ -136,10 +136,10 @@ public:
       mActionWait--;
   }
 
-  virtual void fractalPixel(Fractal *f,HeU32 x,HeU32 y,HeU32 iterationCount)
+  virtual void fractalPixel(Fractal *f,NxU32 x,NxU32 y,NxU32 iterationCount)
   {
-    HeU32 ic = iterationCount&0xFF;
-    HeU32 color = (ic<<16)|(ic<<8)|ic;
+    NxU32 ic = iterationCount&0xFF;
+    NxU32 color = (ic<<16)|(ic<<8)|ic;
 
     if ( mMapPal )
     {
@@ -166,7 +166,7 @@ public:
 		}
   }
 
-  void process(HeF32 dtime)
+  void process(NxF32 dtime)
   {
 		_controlfp(_PC_64,_MCW_PC);
 
@@ -185,9 +185,9 @@ public:
         if ( mPreview == false && mPreviewOnly )
         {
           mFinished = true;
-          HeU32 wid,hit;
+          NxU32 wid,hit;
           terrainComplete(mPreviewTerrain, fc_getData(mPreviewFractal,wid,hit) );
-          HeF32 rot = getRotation(mPreviewTerrain);
+          NxF32 rot = getRotation(mPreviewTerrain);
           setRotation(mTerrain,rot);
         }
       }
@@ -198,13 +198,13 @@ public:
           bool morework = fc_process(mFractal,dtime);
           if ( !morework )
           {
-            HeU32 wid,hit;
+            NxU32 wid,hit;
             terrainComplete(mTerrain, fc_getData(mFractal,wid,hit) );
-            HeF32 rot = getRotation(mPreviewTerrain);
+            NxF32 rot = getRotation(mPreviewTerrain);
             setRotation(mTerrain,rot);
             mFinished = true;
-            HeF32 stopTime = CLOCK::getSystemTime();
-            HeF32 diff = stopTime-mStartTime;
+            NxF32 stopTime = CLOCK::getSystemTime();
+            NxF32 diff = stopTime-mStartTime;
             gLog->Display("Fractal took: %0.2f seconds to process.\r\n", diff );
           }
         }
@@ -230,10 +230,10 @@ public:
     }
   }
 
-  void action(FractalAction taction,bool astate,HeI32 mx,HeI32 my,HeI32 zoomFactor)
+  void action(FractalAction taction,bool astate,NxI32 mx,NxI32 my,NxI32 zoomFactor)
   {
 
-    HeI32 dx,dy;
+    NxI32 dx,dy;
 
     mPreview  = true;
     mFinished = false;
@@ -253,11 +253,11 @@ public:
     pt_adjustImage(mPreviewTexture,dx/4,dy/4);
 
     {
-      HeU32 wid,hit;
-      HeU32 *data = fc_getData(mPreviewFractal,wid,hit);
-      for (HeU32 y=0; y<hit; y++)
+      NxU32 wid,hit;
+      NxU32 *data = fc_getData(mPreviewFractal,wid,hit);
+      for (NxU32 y=0; y<hit; y++)
       {
-        for (HeU32 x=0; x<wid; x++)
+        for (NxU32 x=0; x<wid; x++)
         {
           plot(mPreviewTerrain,x,y,*data++);
         }
@@ -266,11 +266,11 @@ public:
 
 
     {
-      HeU32 wid,hit;
-      HeU32 *data = fc_getData(mFractal,wid,hit);
-      for (HeU32 y=0; y<hit; y++)
+      NxU32 wid,hit;
+      NxU32 *data = fc_getData(mFractal,wid,hit);
+      for (NxU32 y=0; y<hit; y++)
       {
-        for (HeU32 x=0; x<wid; x++)
+        for (NxU32 x=0; x<wid; x++)
         {
           plot(mTerrain,x,y,*data++);
         }
@@ -282,7 +282,7 @@ public:
 
   }
 
-  void    state(TfracState state,bool astate,HeI32 ivalue,HeF32 fvalue)
+  void    state(TfracState state,bool astate,NxI32 ivalue,NxF32 fvalue)
   {
     bool refresh = false;
 
@@ -425,40 +425,40 @@ public:
   }
 
 private:
-  HeI32          mActionWait;
+  NxI32          mActionWait;
   bool         mUseThreading;
   bool         mTextureOnly;
   bool         mWireframe;
   bool         mPreview;
   bool         mFinished;
   bool         mPreviewOnly;
-  HeU32 mClockCycles;
-  HeU32 mSmoothColor;
-  HeU32 mStep;
-  HeU32 mFractalSize;
-  HeU32 mIterationCount;
-  HeF32        mStartTime;
+  NxU32 mClockCycles;
+  NxU32 mSmoothColor;
+  NxU32 mStep;
+  NxU32 mFractalSize;
+  NxU32 mIterationCount;
+  NxF32        mStartTime;
   PlotTexture  *mTexture;
   Fractal      *mFractal;
   MapPal       *mMapPal;
-  HeF32         mColorScale;
-  HeF32         mPreviewColorScale;
-  HeF32         mClampLow;
-	HeF32         mClampHigh;
-  HeF32         mClampScale;
-  HeU32  mPreviewSize;
-  HeU32  mPreviewIterationCount;
+  NxF32         mColorScale;
+  NxF32         mPreviewColorScale;
+  NxF32         mClampLow;
+	NxF32         mClampHigh;
+  NxF32         mClampScale;
+  NxU32  mPreviewSize;
+  NxU32  mPreviewIterationCount;
   PlotTexture  *mPreviewTexture;
   Fractal      *mPreviewFractal;
   Terrain      *mTerrain;
   Terrain      *mPreviewTerrain;
-  HeU32  mScreenWidth;
-  HeU32  mScreenHeight;
+  NxU32  mScreenWidth;
+  NxU32  mScreenHeight;
   char          mPalette[256];
 };
 
 
-Tfrac * tf_create(HeU32 screenWidth,HeU32 screenHeight,const TfracSettings &settings)
+Tfrac * tf_create(NxU32 screenWidth,NxU32 screenHeight,const TfracSettings &settings)
 {
   Tfrac *ret = MEMALLOC_NEW(Tfrac)(screenWidth,screenHeight,settings);
   return ret;
@@ -469,12 +469,12 @@ void    tf_release(Tfrac *t)
   delete t;
 }
 
-void    tf_render(Tfrac *t,bool view3d,HeF32 dtime)
+void    tf_render(Tfrac *t,bool view3d,NxF32 dtime)
 {
   t->render(view3d,dtime);
 }
 
-void    tf_process(Tfrac *t,HeF32 dtime)
+void    tf_process(Tfrac *t,NxF32 dtime)
 {
   t->process(dtime);
 }
@@ -486,13 +486,13 @@ void    tf_setPal(Tfrac *f,const char *fname)
 }
 
 
-void    tf_action(Tfrac *f,FractalAction taction,bool astate,HeI32 mx,HeI32 my,HeI32 zoomFactor)
+void    tf_action(Tfrac *f,FractalAction taction,bool astate,NxI32 mx,NxI32 my,NxI32 zoomFactor)
 {
   f->action(taction,astate,mx,my,zoomFactor);
 }
 
 
-void    tf_state(Tfrac *f,TfracState state,bool astate,HeI32 ivalue,HeF32 fvalue)
+void    tf_state(Tfrac *f,TfracState state,bool astate,NxI32 ivalue,NxF32 fvalue)
 {
   f->state(state,astate,ivalue,fvalue);
 }

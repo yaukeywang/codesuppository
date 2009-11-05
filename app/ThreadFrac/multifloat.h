@@ -11,7 +11,7 @@
 #include "common/ttmath/ttmath.h"
 #include "fixedpoint.h"
 
-typedef HeF32                        SmallFloat;
+typedef NxF32                        SmallFloat;
 typedef HeF64                       MediumFloat;
 typedef ttmath::Big<1,3>             BigFloat;
 

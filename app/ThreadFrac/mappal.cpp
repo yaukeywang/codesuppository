@@ -29,9 +29,9 @@
 class Col
 {
   public:
-    HeU8 r;
-    HeU8 g;
-    HeU8 b;
+    NxU8 r;
+    NxU8 g;
+    NxU8 b;
 };
 
 typedef USER_STL::vector< Col > ColVector;
@@ -54,7 +54,7 @@ bool MapPal::readline(FILE *fph,char *inbuff)	/* read a line, strip the comment 
 
 MapPal::MapPal(const char *name)
 {
-  for (HeI32 i=0; i<SMOOTH_SIZE*3; i++) mEntries[i] = 1.0f;
+  for (NxI32 i=0; i<SMOOTH_SIZE*3; i++) mEntries[i] = 1.0f;
   Load(name);
 }
 
@@ -75,20 +75,20 @@ bool MapPal::Load(const char *name)
 
   ColVector list;
 
-  for (HeI32 i=0; i<256; i++)
+  for (NxI32 i=0; i<256; i++)
 	{
 	  bool eof = readline(fph,string);
     if (eof ) break;
-    HeI32 red,green,blue;
+    NxI32 red,green,blue;
     if ( *string != '#' )
     {
-  		HeI32 count = sscanf(string,"%d %d %d",&red,&green,&blue);
+  		NxI32 count = sscanf(string,"%d %d %d",&red,&green,&blue);
       if ( count == 3 )
       {
         Col c;
-        c.r = HeU8(red);
-        c.g = HeU8(green);
-        c.b = HeU8(blue);
+        c.r = NxU8(red);
+        c.g = NxU8(green);
+        c.b = NxU8(blue);
         list.push_back(c);
       }
     }
@@ -97,51 +97,51 @@ bool MapPal::Load(const char *name)
 
   {
 
-    HeI32 size = list.size();
+    NxI32 size = list.size();
     if ( !size ) return false;
 
-    for (HeI32 i=0; i<SMOOTH_SIZE; i++)
+    for (NxI32 i=0; i<SMOOTH_SIZE; i++)
     {
       // ok, compute the index...
-	    HeI32 scount = size-1;
+	    NxI32 scount = size-1;
 
-      HeI32 iloc1 = (scount*i) / SMOOTH_SIZE;
-      HeI32 iloc2 = iloc1+1;
+      NxI32 iloc1 = (scount*i) / SMOOTH_SIZE;
+      NxI32 iloc2 = iloc1+1;
 
       // current color...
       // next color..
       // now slerp between them...
 
-      HeF32 f0 = HeF32(i);
+      NxF32 f0 = NxF32(i);
 
-      HeF32 f1 = HeF32(SMOOTH_SIZE*(iloc1)) /  HeF32(scount);
-      HeF32 f2 = HeF32(SMOOTH_SIZE*(iloc2)) /  HeF32(scount);
+      NxF32 f1 = NxF32(SMOOTH_SIZE*(iloc1)) /  NxF32(scount);
+      NxF32 f2 = NxF32(SMOOTH_SIZE*(iloc2)) /  NxF32(scount);
 
       if ( iloc2 >= size ) iloc2 = size-1;
 
-      HeF32 r1,g1,b1;
-      HeF32 r2,g2,b2;
+      NxF32 r1,g1,b1;
+      NxF32 r2,g2,b2;
 
-      r1 = HeF32( list[iloc1].r ) * RATIO;
-      g1 = HeF32( list[iloc1].g ) * RATIO;
-      b1 = HeF32( list[iloc1].b ) * RATIO;
+      r1 = NxF32( list[iloc1].r ) * RATIO;
+      g1 = NxF32( list[iloc1].g ) * RATIO;
+      b1 = NxF32( list[iloc1].b ) * RATIO;
 
-      r2 = HeF32( list[iloc2].r ) * RATIO;
-      g2 = HeF32( list[iloc2].g ) * RATIO;
-      b2 = HeF32( list[iloc2].b ) * RATIO;
+      r2 = NxF32( list[iloc2].r ) * RATIO;
+      g2 = NxF32( list[iloc2].g ) * RATIO;
+      b2 = NxF32( list[iloc2].b ) * RATIO;
 
 
       // slerp along f1-f2
       f0-=f1;
       f1 = f2-f1;
-      HeF32 recip1 = f0 / f1;
-      HeF32 recip2 = 1.0f - recip1;
+      NxF32 recip1 = f0 / f1;
+      NxF32 recip2 = 1.0f - recip1;
 
-      HeF32 r = r1*recip2 + r2*recip1;
-      HeF32 g = g1*recip2 + g2*recip1;
-      HeF32 b = b1*recip2 + b2*recip1;
+      NxF32 r = r1*recip2 + r2*recip1;
+      NxF32 g = g1*recip2 + g2*recip1;
+      NxF32 b = b1*recip2 + b2*recip1;
 
-      HeI32 index = i*3;
+      NxI32 index = i*3;
 
       mEntries[index+0] = r;
       mEntries[index+1] = g;

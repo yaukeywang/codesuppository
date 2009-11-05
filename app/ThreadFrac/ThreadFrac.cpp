@@ -24,13 +24,13 @@
 #include "pd3d/pd3d.h"
 #include "RenderDebug/RenderDebug.h"
 
-extern HeI32 gWINDOW_WIDE;
-extern HeI32 gWINDOW_TALL;
+extern NxI32 gWINDOW_WIDE;
+extern NxI32 gWINDOW_TALL;
 
 #include "Tfrac.h"
 
-static HeU32 gScreenWidth=1024;
-static HeU32 gScreenHeight=768;
+static NxU32 gScreenWidth=1024;
+static NxU32 gScreenHeight=768;
 
 //#define DEBUG_VS   // Uncomment this line to debug vertex shaders
 //#define DEBUG_PS   // Uncomment this line to debug pixel shaders
@@ -44,7 +44,7 @@ static HeU32 gScreenHeight=768;
 ID3DXFont*              g_pFont = NULL;         // Font for drawing text
 ID3DXSprite*            g_pSprite = NULL;       // Sprite for batching draw text calls
 bool                    g_bShowHelp = false;     // If true, it renders the UI control text
-HeF32                   gDtime = 0.0f;
+NxF32                   gDtime = 0.0f;
 CFirstPersonCamera      g_Camera;               // A model viewing camera
 
 CDXUTDialogResourceManager g_DialogResourceManager; // manager for shared resources of dialogs
@@ -56,21 +56,21 @@ bool                    g_bEnablePreshader;     // if TRUE, then D3DXSHADER_NO_P
 D3DXMATRIXA16           g_mCenterWorld;
 HWND                    g_Hwnd;
 
-HeI32 gNumFrames=0;
-HeI32 gTotalNumFrames=0;
-HeF32 gStartTime=0;
-HeF32 gFPS=60.0f;
+NxI32 gNumFrames=0;
+NxI32 gTotalNumFrames=0;
+NxF32 gStartTime=0;
+NxF32 gFPS=60.0f;
 
 IDirect3DDevice9*    gDevice=0;
 HINSTANCE            gInstance=0;
 PD3D::Pd3d                 *gPd3d=0;
 RENDER_DEBUG::RenderDebug          *gRenderDebug=0;
 
-HeI32 mLastIndex=0;
-HeF32 mSpeed=2.0f;
-static HeI32 gMovieCapture=0;
-static HeI32 gScreenCapture=0;
-static HeI32 gMovieFrame=0;
+NxI32 mLastIndex=0;
+NxF32 mSpeed=2.0f;
+static NxI32 gMovieCapture=0;
+static NxI32 gScreenCapture=0;
+static NxI32 gMovieFrame=0;
 
 TfracSettings gSettings;
 Tfrac *gTfrac=0;
@@ -99,11 +99,11 @@ bool    CALLBACK IsDeviceAcceptable( D3DCAPS9* pCaps, D3DFORMAT AdapterFormat, D
 bool    CALLBACK ModifyDeviceSettings( DXUTDeviceSettings* pDeviceSettings, const D3DCAPS9* pCaps, void* pUserContext );
 HRESULT CALLBACK OnCreateDevice( IDirect3DDevice9* pd3dDevice, const D3DSURFACE_DESC* pBackBufferSurfaceDesc, void* pUserContext );
 HRESULT CALLBACK OnResetDevice( IDirect3DDevice9* pd3dDevice, const D3DSURFACE_DESC* pBackBufferSurfaceDesc, void* pUserContext );
-void    CALLBACK OnFrameMove( IDirect3DDevice9* pd3dDevice, HeF64 fTime, HeF32 fElapsedTime, void* pUserContext );
-void    CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, HeF64 fTime, HeF32 fElapsedTime, void* pUserContext );
+void    CALLBACK OnFrameMove( IDirect3DDevice9* pd3dDevice, HeF64 fTime, NxF32 fElapsedTime, void* pUserContext );
+void    CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, HeF64 fTime, NxF32 fElapsedTime, void* pUserContext );
 LRESULT CALLBACK MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool* pbNoFurtherProcessing, void* pUserContext );
 void    CALLBACK KeyboardProc( UINT nChar, bool bKeyDown, bool bAltDown, void* pUserContext );
-void    CALLBACK OnGUIEvent( UINT nEvent, HeI32 nControlID, CDXUTControl* pControl, void* pUserContext );
+void    CALLBACK OnGUIEvent( UINT nEvent, NxI32 nControlID, CDXUTControl* pControl, void* pUserContext );
 void    CALLBACK OnLostDevice( void* pUserContext );
 void    CALLBACK OnDestroyDevice( void* pUserContext );
 
@@ -121,7 +121,7 @@ void myOnDeviceReset(void *device)
 // Entry point to the program. Initializes everything and goes into a message processing
 // loop. Idle time is used to render the scene.
 //--------------------------------------------------------------------------------------
-INT WINAPI WinMain( HINSTANCE instance, HINSTANCE, LPSTR, HeI32 )
+INT WINAPI WinMain( HINSTANCE instance, HINSTANCE, LPSTR, NxI32 )
 {
 
 	char vcExePath[1024] = {0};
@@ -132,7 +132,7 @@ INT WINAPI WinMain( HINSTANCE instance, HINSTANCE, LPSTR, HeI32 )
 
 	PathRemoveFileSpecA(vcExePath);
 
-	HeI32 len = strlen(vcExePath);
+	NxI32 len = strlen(vcExePath);
 	const char *exeName = &vcExe[len];
 	if ( exeName[0] == '\\' || exeName[0] == '/' )
 		exeName++;
@@ -226,7 +226,7 @@ void InitApp()
   g_SettingsDlg.Init( &g_DialogResourceManager );
 #if USE_HUD
   g_HUD.Init( &g_DialogResourceManager );
-  g_HUD.SetCallback( OnGUIEvent ); HeI32 iY = 10;
+  g_HUD.SetCallback( OnGUIEvent ); NxI32 iY = 10;
   g_HUD.AddButton( IDC_TOGGLEFULLSCREEN, L"Toggle full screen", 35, iY, 125, 22 );
   g_HUD.AddButton( IDC_TOGGLEREF, L"Toggle REF (F3)", 35, iY += 24, 125, 22 );
   g_HUD.AddButton( IDC_CHANGEDEVICE, L"Change device (F2)", 35, iY += 24, 125, 22, VK_F2 );
@@ -452,7 +452,7 @@ HRESULT CALLBACK OnResetDevice( IDirect3DDevice9* pd3dDevice,
     V_RETURN( D3DXCreateSprite( pd3dDevice, &g_pSprite ) );
 
     // Setup the camera's projection parameters
-    HeF32 fAspectRatio = pBackBufferSurfaceDesc->Width / (FLOAT)pBackBufferSurfaceDesc->Height;
+    NxF32 fAspectRatio = pBackBufferSurfaceDesc->Width / (FLOAT)pBackBufferSurfaceDesc->Height;
     g_Camera.SetProjParams( D3DX_PI/3, fAspectRatio, 0.01f, 2000.0f );
 
 #if USE_HUD
@@ -474,7 +474,7 @@ HRESULT CALLBACK OnResetDevice( IDirect3DDevice9* pd3dDevice,
 // intended to contain actual rendering calls, which should instead be placed in the
 // OnFrameRender callback.
 //--------------------------------------------------------------------------------------
-void CALLBACK OnFrameMove( IDirect3DDevice9* pd3dDevice, HeF64 fTime, HeF32 fElapsedTime, void* pUserContext )
+void CALLBACK OnFrameMove( IDirect3DDevice9* pd3dDevice, HeF64 fTime, NxF32 fElapsedTime, void* pUserContext )
 {
 
   g_Camera.SetScalers(0.01f,mSpeed);
@@ -492,7 +492,7 @@ void CALLBACK OnFrameMove( IDirect3DDevice9* pd3dDevice, HeF64 fTime, HeF32 fEla
 
 	if( gStartTime > 0.2f )
 	{
-		gFPS = (HeF32)(1.0 / (gStartTime / gNumFrames));
+		gFPS = (NxF32)(1.0 / (gStartTime / gNumFrames));
 		gNumFrames = 0;
 		gStartTime = 0;
 	}
@@ -528,13 +528,13 @@ void CALLBACK OnFrameMove( IDirect3DDevice9* pd3dDevice, HeF64 fTime, HeF32 fEla
     g_Camera.FrameMove( fElapsedTime );
   }
 
-	HeF32 dtime = fElapsedTime;
+	NxF32 dtime = fElapsedTime;
 
 	if ( gMovieCapture == 2 ) dtime = 1.0f /60.0f;
 
 }
 
-void ScreenGrab(LPDIRECT3DDEVICE9 pDev,const char *_strNamePrefix,HeI32 frameNo,bool jpeg)
+void ScreenGrab(LPDIRECT3DDEVICE9 pDev,const char *_strNamePrefix,NxI32 frameNo,bool jpeg)
 {
 
 	HRESULT hr;
@@ -581,7 +581,7 @@ void ScreenGrab(LPDIRECT3DDEVICE9 pDev,const char *_strNamePrefix,HeI32 frameNo,
 // repainted. After this function has returned, DXUT will call
 // IDirect3DDevice9::Present to display the contents of the next buffer in the swap chain
 //--------------------------------------------------------------------------------------
-void CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, HeF64 fTime, HeF32 fElapsedTime, void* pUserContext )
+void CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, HeF64 fTime, NxF32 fElapsedTime, void* pUserContext )
 {
   // If the settings dialog is being shown, then
   // render it instead of rendering the app's scene
@@ -598,9 +598,9 @@ void CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, HeF64 fTime, HeF32 fE
   D3DXMATRIXA16 mProj;
 
   // Clear the render target and the zbuffer
-	HeF32 r = 133.0f / 255.0f;
-	HeF32 g = 153.0f / 255.0f;
-	HeF32 b = 181.0f / 255.0f;
+	NxF32 r = 133.0f / 255.0f;
+	NxF32 g = 153.0f / 255.0f;
+	NxF32 b = 181.0f / 255.0f;
 
   V( pd3dDevice->Clear(0, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, D3DXCOLOR(r,g,b,0.5f), 1.0f, 0) );
 
@@ -684,7 +684,7 @@ void RenderText( HeF64 fTime )
 
 
 // adjust the view frustum
-void adjustView(const HeF32 *bmin,const HeF32 *bmax)
+void adjustView(const NxF32 *bmin,const NxF32 *bmax)
 {
 }
 
@@ -730,18 +730,18 @@ LRESULT CALLBACK MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bo
 
       bool astate = false;
 
-  		HeI32 iMouseX = (HeI16)LOWORD(lParam);
-  		HeI32 iMouseY = (HeI16)HIWORD(lParam);
-      static HeI32 gLastMouseX = 512;
-      static HeI32 gLastMouseY = 378;
-      static HeI32 gLastCenterX = 512;
-      static HeI32 gLastCenterY = 376;
+  		NxI32 iMouseX = (HeI16)LOWORD(lParam);
+  		NxI32 iMouseY = (HeI16)HIWORD(lParam);
+      static NxI32 gLastMouseX = 512;
+      static NxI32 gLastMouseY = 378;
+      static NxI32 gLastCenterX = 512;
+      static NxI32 gLastCenterY = 376;
 
-      static HeI32 mDragX = 0;
-      static HeI32 mDragY = 0;
+      static NxI32 mDragX = 0;
+      static NxI32 mDragY = 0;
       static bool mDragging=false;
 
-			HeI32 zoomFactor = 1;
+			NxI32 zoomFactor = 1;
 
       if ( !g_bShowHelp )
       {
@@ -750,7 +750,7 @@ LRESULT CALLBACK MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bo
     		{
   				case WM_MOUSEWHEEL:
 			    {
-				    HeI32 iDelta        = ((HeI16)HIWORD(wParam));
+				    NxI32 iDelta        = ((HeI16)HIWORD(wParam));
 
 						if ( iDelta < 0 )
 						{
@@ -782,8 +782,8 @@ LRESULT CALLBACK MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bo
               POINT p;
               GetCursorPos(&p);
 
-              HeI32 dx = p.x - iMouseX;
-              HeI32 dy = p.y - iMouseY;
+              NxI32 dx = p.x - iMouseX;
+              NxI32 dy = p.y - iMouseY;
 
               SetCursorPos((gWINDOW_WIDE/2)+dx,(gWINDOW_TALL/2)+dy);
 
@@ -813,8 +813,8 @@ LRESULT CALLBACK MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bo
             gLastMouseY = iMouseY;
             if ( mDragging && tf_actionReady(gTfrac) )
             {
-							HeI32 mx = iMouseX;
-							HeI32 my = iMouseY;
+							NxI32 mx = iMouseX;
+							NxI32 my = iMouseY;
 
               iMouseX = mDragX -iMouseX;
               iMouseY = mDragY -iMouseY;
@@ -876,8 +876,8 @@ LRESULT CALLBACK MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bo
 
 		  case WM_COMMAND:
    				{
-						HeF32 bmin[3];
-						HeF32 bmax[3];
+						NxF32 bmin[3];
+						NxF32 bmax[3];
    			    bool resize = processMenu(hWnd, LOWORD(wParam), bmin, bmax );
    					if ( resize )
    					{
@@ -943,17 +943,17 @@ void CALLBACK KeyboardProc( UINT nChar, bool bKeyDown, bool bAltDown, void* pUse
     	case '8':
     	case '9':
     	  {
-    	  	HeI32 index = (nChar-'0')+1;
+    	  	NxI32 index = (nChar-'0')+1;
     	  	if ( index == mLastIndex )
     	  	{
     	  		if ( index == 1 )
     	  			mSpeed*=0.5f;
     	  		else
-      	  		mSpeed+=((HeF32)index);
+      	  		mSpeed+=((NxF32)index);
     	  	}
     	  	else
     	  	{
-    	  		mSpeed = (HeF32)index;
+    	  		mSpeed = (NxF32)index;
     	  	}
     	  	mLastIndex = index;
     	  	gLog->Display("Camera speed %0.2f meters per second\r\n", mSpeed );
@@ -1000,7 +1000,7 @@ void CALLBACK KeyboardProc( UINT nChar, bool bKeyDown, bool bAltDown, void* pUse
 //--------------------------------------------------------------------------------------
 // Handles the GUI events
 //--------------------------------------------------------------------------------------
-void CALLBACK OnGUIEvent( UINT nEvent, HeI32 nControlID, CDXUTControl* pControl, void* pUserContext )
+void CALLBACK OnGUIEvent( UINT nEvent, NxI32 nControlID, CDXUTControl* pControl, void* pUserContext )
 {
   switch( nControlID )
   {
@@ -1056,13 +1056,13 @@ void CALLBACK OnDestroyDevice( void* pUserContext )
 }
 
 
-void lookAt(const HeF32 *eye,const HeF32 *look)
+void lookAt(const NxF32 *eye,const NxF32 *look)
 {
   g_Camera.SetViewParams((D3DXVECTOR3 *)eye,(D3DXVECTOR3 *)look );
 }
 
 
-void getLookAt(HeF32 *_eye,HeF32 *_look)
+void getLookAt(NxF32 *_eye,NxF32 *_look)
 {
   const D3DXVECTOR3 *eye  = g_Camera.GetEyePt();
 	const D3DXVECTOR3 *look = g_Camera.GetLookAtPt();

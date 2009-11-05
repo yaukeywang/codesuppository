@@ -88,10 +88,10 @@ public:
 	void PrintTable(std::ostream & output) const
 	{
 		// how many columns there'll be
-		const HeI32 columns = 8;
+		const NxI32 columns = 8;
 
-		HeI32 c = 1;
-		for(HeI32 i=value_size-1 ; i>=0 ; --i)
+		NxI32 c = 1;
+		for(NxI32 i=value_size-1 ; i>=0 ; --i)
 		{
 			output	<< "0x" << std::setfill('0');
 			
@@ -3378,7 +3378,7 @@ public:
 	/*!
 		Postfix operator e.g variable++
 	*/
-	UInt<value_size> operator++(HeI32)
+	UInt<value_size> operator++(NxI32)
 	{
 	UInt<value_size> temp( *this );
 
@@ -3396,7 +3396,7 @@ public:
 	}
 
 
-	UInt<value_size> operator--(HeI32)
+	UInt<value_size> operator--(NxI32)
 	{
 	UInt<value_size> temp( *this );
 
@@ -3434,7 +3434,7 @@ public:
 	std::string ss;
 	
 	// char for operator>>
-	HeU8 z;
+	NxU8 z;
 	
 		// operator>> omits white characters if they're set for ommiting
 		s >> z;
@@ -3464,11 +3464,11 @@ private:
 
 public:
 	// these methods are for 64bit processors and are defined in 'ttmathuint64.h'
-	UInt<value_size> & operator=(HeU32 i);
-	UInt(HeU32 i);
-	UInt<value_size> & operator=(HeI32 i);
-	UInt(HeI32 i);
-	void SetFromTable(const HeU32 * temp_table, uint temp_table_len);	
+	UInt<value_size> & operator=(NxU32 i);
+	UInt(NxU32 i);
+	UInt<value_size> & operator=(NxI32 i);
+	UInt(NxI32 i);
+	void SetFromTable(const NxU32 * temp_table, uint temp_table_len);	
 	uint Add(const UInt<value_size> & ss2, uint c=0);
 	uint AddInt(uint value, uint index = 0);
 	uint AddTwoInts(uint x2, uint x1, uint index);

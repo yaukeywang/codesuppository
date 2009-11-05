@@ -1734,7 +1734,7 @@ namespace ttmath
 
 
 	template<class ValueType>
-	HeI32 FactorialMore(	const ValueType & x, ErrorCode * err,
+	NxI32 FactorialMore(	const ValueType & x, ErrorCode * err,
 						const volatile StopCalculating * stop,
 						ValueType & result)
 	{

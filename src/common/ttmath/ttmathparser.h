@@ -141,7 +141,7 @@ private:
 
 
 		Type GetType()     const { return type; }
-		HeI32  GetPriority() const { return priority; }
+		NxI32  GetPriority() const { return priority; }
 
 
 		void SetType(Type t)
@@ -194,7 +194,7 @@ private:
 	private:
 
 		Type type;
-		HeI32  priority;
+		NxI32  priority;
 
 	}; // end of MatOperator class
 
@@ -269,7 +269,7 @@ private:
 
 	if it's to small while parsing the stack will be automatically resized
 */
-const HeI32 default_stack_size;
+const NxI32 default_stack_size;
 
 
 
@@ -278,7 +278,7 @@ const HeI32 default_stack_size;
 	it's pointing on the place behind the last element
 	for example at the beginning of parsing its value is zero
 */
-HeU32 stack_index;
+NxU32 stack_index;
 
 
 /*!
@@ -298,7 +298,7 @@ const char * pstring;
 /*!
 	the base of the mathematic system (for example it may be '10')
 */
-HeI32 base;
+NxI32 base;
 
 
 /*!
@@ -351,7 +351,7 @@ std::set<std::string> visited_functions;
 	'amount_of_arg' tell us how many argument there are in our stack
 	'result' is the reference for result of function 
 */
-typedef void (Parser<ValueType>::*pfunction)(HeI32 pstack, HeI32 amount_of_arg, ValueType & result);
+typedef void (Parser<ValueType>::*pfunction)(NxI32 pstack, NxI32 amount_of_arg, ValueType & result);
 
 
 /*!
@@ -602,7 +602,7 @@ private:
 	'silnia' in polish language
 	result = 1 * 2 * 3 * 4 * .... * x
 */
-void Factorial(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void Factorial(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 1 )
 		Error( err_improper_amount_of_arguments );
@@ -619,7 +619,7 @@ void Factorial(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void Abs(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void Abs(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 1 )
 		Error( err_improper_amount_of_arguments );
@@ -627,7 +627,7 @@ void Abs(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 	result = ttmath::Abs(stack[sindex].value);
 }
 
-void Sin(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void Sin(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 1 )
 		Error( err_improper_amount_of_arguments );
@@ -635,7 +635,7 @@ void Sin(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 	result = ttmath::Sin(stack[sindex].value);
 }
 
-void Cos(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void Cos(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 1 )
 		Error( err_improper_amount_of_arguments );
@@ -643,7 +643,7 @@ void Cos(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 	result = ttmath::Cos(stack[sindex].value);
 }
 
-void Tan(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void Tan(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 1 )
 		Error( err_improper_amount_of_arguments );
@@ -655,7 +655,7 @@ void Tan(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 		Error( err );
 }
 
-void Cot(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void Cot(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 1 )
 		Error( err_improper_amount_of_arguments );
@@ -667,7 +667,7 @@ void Cot(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 		Error( err );
 }
 
-void Int(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void Int(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 1 )
 		Error( err_improper_amount_of_arguments );
@@ -676,7 +676,7 @@ void Int(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void Round(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void Round(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 1 )
 		Error( err_improper_amount_of_arguments );
@@ -685,7 +685,7 @@ void Round(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void Ln(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void Ln(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 1 )
 		Error( err_improper_amount_of_arguments );
@@ -697,7 +697,7 @@ void Ln(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 		Error( err );
 }
 
-void Log(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void Log(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 2 )
 		Error( err_improper_amount_of_arguments );
@@ -709,7 +709,7 @@ void Log(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 		Error( err );
 }
 
-void Exp(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void Exp(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 1 )
 		Error( err_improper_amount_of_arguments );
@@ -722,7 +722,7 @@ void Exp(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void Max(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void Max(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args == 0 )
 	{
@@ -733,7 +733,7 @@ void Max(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 
 	result = stack[sindex].value;
 
-	for(HeI32 i=1 ; i<amount_of_args ; ++i)
+	for(NxI32 i=1 ; i<amount_of_args ; ++i)
 	{
 		if( result < stack[sindex + i*2].value )
 			result = stack[sindex + i*2].value;
@@ -741,7 +741,7 @@ void Max(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void Min(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void Min(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args == 0 )
 	{
@@ -752,7 +752,7 @@ void Min(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 
 	result = stack[sindex].value;
 
-	for(HeI32 i=1 ; i<amount_of_args ; ++i)
+	for(NxI32 i=1 ; i<amount_of_args ; ++i)
 	{
 		if( result > stack[sindex + i*2].value )
 			result = stack[sindex + i*2].value;
@@ -760,7 +760,7 @@ void Min(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void ASin(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void ASin(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 1 )
 		Error( err_improper_amount_of_arguments );
@@ -773,7 +773,7 @@ void ASin(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void ACos(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void ACos(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 1 )
 		Error( err_improper_amount_of_arguments );
@@ -786,7 +786,7 @@ void ACos(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void ATan(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void ATan(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 1 )
 		Error( err_improper_amount_of_arguments );
@@ -795,7 +795,7 @@ void ATan(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void ACot(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void ACot(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 1 )
 		Error( err_improper_amount_of_arguments );
@@ -804,7 +804,7 @@ void ACot(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void Sgn(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void Sgn(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 1 )
 		Error( err_improper_amount_of_arguments );
@@ -813,7 +813,7 @@ void Sgn(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void Mod(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void Mod(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 2 )
 		Error( err_improper_amount_of_arguments );
@@ -829,7 +829,7 @@ void Mod(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void If(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void If(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 3 )
 		Error( err_improper_amount_of_arguments );
@@ -842,12 +842,12 @@ void If(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void Or(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void Or(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args < 2 )
 		Error( err_improper_amount_of_arguments );
 
-	for(HeI32 i=0 ; i<amount_of_args ; ++i)
+	for(NxI32 i=0 ; i<amount_of_args ; ++i)
 	{
 		if( !stack[sindex+i*2].value.IsZero() )
 		{
@@ -860,12 +860,12 @@ void Or(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void And(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void And(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args < 2 )
 		Error( err_improper_amount_of_arguments );
 
-	for(HeI32 i=0 ; i<amount_of_args ; ++i)
+	for(NxI32 i=0 ; i<amount_of_args ; ++i)
 	{
 		if( stack[sindex+i*2].value.IsZero() )
 		{
@@ -878,7 +878,7 @@ void And(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void Not(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void Not(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 1 )
 		Error( err_improper_amount_of_arguments );
@@ -891,7 +891,7 @@ void Not(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void DegToRad(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void DegToRad(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	ErrorCode err;
 
@@ -914,7 +914,7 @@ void DegToRad(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void RadToDeg(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void RadToDeg(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	ErrorCode err;
 
@@ -928,7 +928,7 @@ void RadToDeg(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void DegToDeg(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void DegToDeg(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 3 )
 		Error( err_improper_amount_of_arguments );
@@ -941,7 +941,7 @@ void DegToDeg(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 		Error( err );
 }
 
-void Ceil(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void Ceil(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 1 )
 		Error( err_improper_amount_of_arguments );
@@ -954,7 +954,7 @@ void Ceil(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void Floor(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void Floor(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 1 )
 		Error( err_improper_amount_of_arguments );
@@ -966,7 +966,7 @@ void Floor(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 		Error( err );
 }
 
-void Sqrt(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void Sqrt(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 1 )
 		Error( err_improper_amount_of_arguments );
@@ -979,7 +979,7 @@ void Sqrt(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void Sinh(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void Sinh(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 1 )
 		Error( err_improper_amount_of_arguments );
@@ -992,7 +992,7 @@ void Sinh(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void Cosh(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void Cosh(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 1 )
 		Error( err_improper_amount_of_arguments );
@@ -1005,7 +1005,7 @@ void Cosh(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void Tanh(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void Tanh(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 1 )
 		Error( err_improper_amount_of_arguments );
@@ -1018,7 +1018,7 @@ void Tanh(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void Coth(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void Coth(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 1 )
 		Error( err_improper_amount_of_arguments );
@@ -1031,7 +1031,7 @@ void Coth(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void Root(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void Root(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 2 )
 		Error( err_improper_amount_of_arguments );
@@ -1045,7 +1045,7 @@ void Root(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 
 
 
-void ASinh(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void ASinh(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 1 )
 		Error( err_improper_amount_of_arguments );
@@ -1058,7 +1058,7 @@ void ASinh(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void ACosh(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void ACosh(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 1 )
 		Error( err_improper_amount_of_arguments );
@@ -1071,7 +1071,7 @@ void ACosh(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void ATanh(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void ATanh(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 1 )
 		Error( err_improper_amount_of_arguments );
@@ -1084,7 +1084,7 @@ void ATanh(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void ACoth(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void ACoth(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 1 )
 		Error( err_improper_amount_of_arguments );
@@ -1097,7 +1097,7 @@ void ACoth(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void BitAnd(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void BitAnd(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 2 )
 		Error( err_improper_amount_of_arguments );
@@ -1117,7 +1117,7 @@ void BitAnd(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 	}
 }
 
-void BitOr(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void BitOr(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 2 )
 		Error( err_improper_amount_of_arguments );
@@ -1138,7 +1138,7 @@ void BitOr(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void BitXor(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void BitXor(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args != 2 )
 		Error( err_improper_amount_of_arguments );
@@ -1159,26 +1159,26 @@ void BitXor(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 }
 
 
-void Sum(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void Sum(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args == 0 )
 		Error( err_improper_amount_of_arguments );
 
 	result = stack[sindex].value;
 
-	for(HeI32 i=1 ; i<amount_of_args ; ++i )
+	for(NxI32 i=1 ; i<amount_of_args ; ++i )
 		if( result.Add( stack[ sindex + i*2 ].value ) )
 			Error( err_overflow );
 }	
 
-void Avg(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
+void Avg(NxI32 sindex, NxI32 amount_of_args, ValueType & result)
 {
 	if( amount_of_args == 0 )
 		Error( err_improper_amount_of_arguments );
 
 	result = stack[sindex].value;
 
-	for(HeI32 i=1 ; i<amount_of_args ; ++i )
+	for(NxI32 i=1 ; i<amount_of_args ; ++i )
 		if( result.Add( stack[ sindex + i*2 ].value ) )
 			Error( err_overflow );
 
@@ -1192,13 +1192,13 @@ void Avg(HeI32 sindex, HeI32 amount_of_args, ValueType & result)
 
 	(look at the description in 'CallFunction(...)')
 */
-bool GetValueOfUserDefinedFunction(const std::string & function_name, HeI32 amount_of_args, HeI32 sindex)
+bool GetValueOfUserDefinedFunction(const std::string & function_name, NxI32 amount_of_args, NxI32 sindex)
 {
 	if( !puser_functions )
 		return false;
 
 	const char * string_value;
-	HeI32 param;
+	NxI32 param;
 
 	if( puser_functions->GetValueAndParam(function_name, &string_value, &param) != err_ok )
 		return false;
@@ -1217,7 +1217,7 @@ bool GetValueOfUserDefinedFunction(const std::string & function_name, HeI32 amou
 		sprintf(buffer,"x");
 		local_variables.insert( std::make_pair(buffer, stack[sindex].value) );
 
-		for(HeI32 i=0 ; i<amount_of_args ; ++i)
+		for(NxI32 i=0 ; i<amount_of_args ; ++i)
 		{
 			sprintf(buffer,"x%d",i+1);
 			local_variables.insert( std::make_pair(buffer, stack[sindex + i*2].value) );
@@ -1243,7 +1243,7 @@ return true;
 	result will be stored in 'stack[sindex-1].value'
 	(we don't have to set the correct type of this element, it'll be set later)
 */
-void CallFunction(const std::string & function_name, HeI32 amount_of_args, HeI32 sindex)
+void CallFunction(const std::string & function_name, NxI32 amount_of_args, NxI32 sindex)
 {
 	if( GetValueOfUserDefinedFunction(function_name, amount_of_args, sindex) )
 		return;
@@ -1369,7 +1369,7 @@ void CreateVariablesTable()
 /*!
 	convert from a big letter to a small one
 */
-HeI32 ToLowerCase(HeI32 c)
+NxI32 ToLowerCase(NxI32 c)
 {
 	if( c>='A' && c<='Z' )
 		return c - 'A' + 'a';
@@ -1392,7 +1392,7 @@ return c;
 */
 bool ReadName(std::string & result)
 {
-HeI32 character;
+NxI32 character;
 
 
 	result.erase();
@@ -1491,7 +1491,7 @@ void ReadValue(Item & result)
 {
 const char * new_stack_pointer;
 
-	HeI32 carry = result.value.FromString(pstring, base, &new_stack_pointer);
+	NxI32 carry = result.value.FromString(pstring, base, &new_stack_pointer);
 	pstring   = new_stack_pointer;
 
 	if( carry )
@@ -1505,7 +1505,7 @@ const char * new_stack_pointer;
 
 	if the character is incorrect for this base the funcion will return -1
 */
-HeI32 CharToDigit(HeI32 c, HeI32 base)
+NxI32 CharToDigit(NxI32 c, NxI32 base)
 {
 	if( c>='0' && c<='9' )
 		c=c-'0';
@@ -1533,10 +1533,10 @@ return c;
 		1 - the end of the string (the item is not read)
 		2 - the final bracket ')'
 */
-HeI32 ReadValueVariableOrFunction(Item & result)
+NxI32 ReadValueVariableOrFunction(Item & result)
 {
 bool it_was_sign = false;
-HeI32  character;
+NxI32  character;
 
 
 	if( TestSign(result) )
@@ -1714,7 +1714,7 @@ typename OperatorsTable::iterator iter_old, iter_new;
 		0 - ok
 		1 - the string is finished
 */
-HeI32 ReadOperator(Item & result)
+NxI32 ReadOperator(Item & result)
 {
 	SkipWhiteCharacters();
 	
@@ -1749,7 +1749,7 @@ return 0;
 void MakeStandardMathematicOperation(ValueType & value1, typename MatOperator::Type mat_operator,
 									const ValueType & value2)
 {
-HeI32 res;
+NxI32 res;
 
 	switch( mat_operator )
 	{
@@ -1886,9 +1886,9 @@ void TryRollingUpStack()
 	this method is reading a value or a variable or a function
 	(the normal first bracket as well) and push it into the stack
 */
-HeI32 ReadValueVariableOrFunctionAndPushItIntoStack(Item & temp)
+NxI32 ReadValueVariableOrFunctionAndPushItIntoStack(Item & temp)
 {
-HeI32 kod = ReadValueVariableOrFunction( temp );
+NxI32 kod = ReadValueVariableOrFunction( temp );
 	
 	if( kod == 0 )
 	{
@@ -1919,7 +1919,7 @@ return kod;
 	'size' equals zero and 'index' pointing after the first bracket
 	(on non-existend element)
 */
-void HowManyParameters(HeI32 & size, HeI32 & index)
+void HowManyParameters(NxI32 & size, NxI32 & index)
 {
 	size  = 0;
 	index = stack_index;
@@ -1968,8 +1968,8 @@ void HowManyParameters(HeI32 & size, HeI32 & index)
 */
 void RollingUpFinalBracket()
 {
-HeI32 amount_of_parameters;
-HeI32 index;
+NxI32 amount_of_parameters;
+NxI32 index;
 
 	
 	if( stack_index<1 ||
@@ -2054,7 +2054,7 @@ void PushOperatorIntoStack(Item & temp)
 	this method is reading a operator and if it's a final bracket
 	it's calling RollingUpFinalBracket() and reading a operator again
 */
-HeI32 ReadOperatorAndCheckFinalBracket(Item & temp)
+NxI32 ReadOperatorAndCheckFinalBracket(Item & temp)
 {
 	do
 	{
@@ -2081,7 +2081,7 @@ return 0;
 */
 void CheckIntegrityOfStack()
 {
-	for(HeU32 i=0 ; i<stack_index; ++i)
+	for(NxU32 i=0 ; i<stack_index; ++i)
 	{
 		if( stack[i].type != Item::numerical_value &&
 			stack[i].type != Item::semicolon)
@@ -2104,7 +2104,7 @@ void CheckIntegrityOfStack()
 void Parse()
 {
 Item item;	
-HeI32 result_code;
+NxI32 result_code;
 
 
 	while( true )
@@ -2244,7 +2244,7 @@ Parser(const Parser<ValueType> & p): default_stack_size(p.default_stack_size)
 /*!
 	the new base of mathematic system		
 */
-void SetBase(HeI32 b)
+void SetBase(NxI32 b)
 {
 	if( b>=2 && b<=16 )
 		base = b;

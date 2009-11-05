@@ -5,15 +5,16 @@
 
 #include "TestBestFitOBB.h"
 
-#include "SendTextMessage.h"
 #include "RenderDebug.h"
 #include "FloatMath.h"
 #include "rand.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
+#include "SendTextMessage.h"
 
 void testBestFitOBB(MeshSystemHelper *ms)
 {
   gRenderDebug->reset();
+  gRenderDebug->pushRenderState();
   gRenderDebug->setCurrentDisplayTime(600.0f);
 
   SEND_TEXT_MESSAGE(0,"Demonstrating the best fit OBB algorithm, originally published on June 16, 2006\r\n");

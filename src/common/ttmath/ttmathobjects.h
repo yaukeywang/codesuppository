@@ -79,10 +79,10 @@ public:
 
 		// number of parameters required by the function
 		// (if there's a variable this 'param' is ignored)
-		HeI32 param;
+		NxI32 param;
 
 		Item() {}
-		Item(const std::string & v, HeI32 p) : value(v), param(p) {}
+		Item(const std::string & v, NxI32 p) : value(v), param(p) {}
 	};
 
 	// 'Table' is the type of our table
@@ -99,7 +99,7 @@ public:
 		if 'can_be_digit' is true that means when the 'c' is a digit this 
 		method returns true otherwise it returns false
 	*/
-	static bool CorrectCharacter(HeI32 c, bool can_be_digit)
+	static bool CorrectCharacter(NxI32 c, bool can_be_digit)
 	{
 		if( (c>='a' && c<='z') || (c>='A' && c<='Z') )
 			return true;
@@ -135,7 +135,7 @@ public:
 	/*!
 		this method adds one object (variable of function) into the table
 	*/
-	ErrorCode Add(const std::string & name, const std::string & value, HeI32 param = 0)
+	ErrorCode Add(const std::string & name, const std::string & value, NxI32 param = 0)
 	{
 		if( !IsNameCorrect(name) )
 			return err_incorrect_name;
@@ -192,7 +192,7 @@ public:
 	/*!
 		this method changes the value and the number of parameters for a specific object
 	*/
-	ErrorCode EditValue(const std::string & name, const std::string & value, HeI32 param = 0)
+	ErrorCode EditValue(const std::string & name, const std::string & value, NxI32 param = 0)
 	{
 		if( !IsNameCorrect(name) )
 			return err_incorrect_name;
@@ -308,7 +308,7 @@ public:
 		this method sets the value and the number of parameters
 		of a specific object
 	*/
-	ErrorCode GetValueAndParam(const std::string & name, std::string & value, HeI32 * param) const
+	ErrorCode GetValueAndParam(const std::string & name, std::string & value, NxI32 * param) const
 	{
 		if( !IsNameCorrect(name) )
 			return err_incorrect_name;
@@ -334,7 +334,7 @@ public:
 		of a specific object
 		(this version is used for not copying the whole string)
 	*/
-	ErrorCode GetValueAndParam(const std::string & name, const char ** value, HeI32 * param) const
+	ErrorCode GetValueAndParam(const std::string & name, const char ** value, NxI32 * param) const
 	{
 		if( !IsNameCorrect(name) )
 			return err_incorrect_name;

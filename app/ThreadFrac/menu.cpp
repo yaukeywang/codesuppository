@@ -106,8 +106,8 @@ public:
 
       fprintf(fph,"FractalCoordinates %s %s %s\r\n", str1, str2, str3 );
 
-      HeF32 eye[3];
-      HeF32 look[3];
+      NxF32 eye[3];
+      NxF32 look[3];
       getLookAt(eye,look);
       fprintf(fph,"PsLookAt %0.9f %0.9f %0.9f  %0.9f %0.9f %0.9f\r\n", eye[0], eye[1], eye[2], look[0], look[1], look[2] );
     }
@@ -275,7 +275,7 @@ public:
   	return ret;
 	}
 
-  bool processMenu(HWND hwnd,HeU32 cmd,HeF32 *bmin,HeF32 *bmax)
+  bool processMenu(HWND hwnd,NxU32 cmd,NxF32 *bmin,NxF32 *bmax)
   {
 
   	bool ret = false;
@@ -302,9 +302,9 @@ public:
     mr.fixedPoolReport(header,mservice);
   }
 
-  HeI32 CommandCallback(HeI32 token,HeI32 count,const char **arglist)
+  NxI32 CommandCallback(NxI32 token,NxI32 count,const char **arglist)
   {
-  	HeI32 ret = 0;
+  	NxI32 ret = 0;
 
     saveMenuState();
 
@@ -356,7 +356,7 @@ public:
       case MC_ROTATION_SPEED:
         if ( count == 2 )
         {
-          HeF32 rspeed = (HeF32)atof( arglist[1] );
+          NxF32 rspeed = (NxF32)atof( arglist[1] );
           setRotationSpeed(rspeed);
         }
         break;
@@ -388,21 +388,21 @@ public:
       case MC_CLAMP_LOW:
         if ( count == 2 && gTfrac )
         {
-          HeF32 c = (HeF32) atof( arglist[1] );
+          NxF32 c = (NxF32) atof( arglist[1] );
           tf_state(gTfrac,TS_CLAMP_LOW,false,0,c);
         }
         break;
       case MC_CLAMP_HIGH:
         if ( count == 2 && gTfrac )
         {
-          HeF32 c = (HeF32) atof( arglist[1] );
+          NxF32 c = (NxF32) atof( arglist[1] );
           tf_state(gTfrac,TS_CLAMP_HIGH,false,0,c);
         }
         break;
       case MC_CLAMP_SCALE:
         if ( count == 2 && gTfrac )
         {
-          HeF32 c = (HeF32) atof( arglist[1] );
+          NxF32 c = (NxF32) atof( arglist[1] );
           tf_state(gTfrac,TS_CLAMP_SCALE,false,0,c);
         }
         break;
@@ -419,8 +419,8 @@ public:
 					gView3d = getBool(arglist[1]);
           if ( gView3d )
           {
-            HeF32 eye[3];
-            HeF32 look[3];
+            NxF32 eye[3];
+            NxF32 look[3];
             look[0] = 0;
             look[1] = 0;
             look[2] = 0;
@@ -449,14 +449,14 @@ public:
 		  case MC_ITERATION_COUNT:
 				if ( count == 2 && gTfrac )
 				{
-					HeU32 icount = (HeU32)atoi(arglist[1]);
+					NxU32 icount = (NxU32)atoi(arglist[1]);
 					tf_state(gTfrac,TS_ITERATION_COUNT,false,icount);
 				}
 				break;
 		  case MC_CLOCK_CYCLES:
 				if ( count == 2 && gTfrac )
 				{
-					HeU32 icount = (HeU32)atoi(arglist[1]);
+					NxU32 icount = (NxU32)atoi(arglist[1]);
 					tf_state(gTfrac,TS_CLOCK_CYCLES,false,icount);
 				}
 				break;
@@ -471,7 +471,7 @@ public:
 			case MC_SMOOTH_COLOR:
 				if ( count == 2 && gTfrac )
 				{
-					HeI32 cscale  = atoi(arglist[1]);
+					NxI32 cscale  = atoi(arglist[1]);
 					tf_state(gTfrac,TS_SMOOTH_COLOR,false,cscale);
 				}
 				break;
@@ -495,16 +495,16 @@ public:
 				// Usage: PsLookAt <eyex> <eyey> <eyez> <lookx> <looky> <lookz>
 				if ( count == 7 )
 				{
-					HeF32 eye[3];
-					HeF32 look[3];
+					NxF32 eye[3];
+					NxF32 look[3];
 
-					eye[0] = (HeF32) atof( arglist[1] );
-					eye[1] = (HeF32) atof( arglist[2] );
-					eye[2] = (HeF32) atof( arglist[3] );
+					eye[0] = (NxF32) atof( arglist[1] );
+					eye[1] = (NxF32) atof( arglist[2] );
+					eye[2] = (NxF32) atof( arglist[3] );
 
-					look[0] = (HeF32) atof(arglist[4] );
-					look[1] = (HeF32) atof(arglist[5] );
-					look[2] = (HeF32) atof(arglist[6] );
+					look[0] = (NxF32) atof(arglist[4] );
+					look[1] = (NxF32) atof(arglist[5] );
+					look[2] = (NxF32) atof(arglist[6] );
 
 					lookAt(eye,look);
 
@@ -537,7 +537,7 @@ public:
   }
 
 
-  void createSlider(const char *title,HeI32 token,const char *cmd,HeF32 smin,HeF32 smax,HeF32 sdefault,bool isint)
+  void createSlider(const char *title,NxI32 token,const char *cmd,NxF32 smin,NxF32 smax,NxF32 sdefault,bool isint)
   {
   	AddToken(cmd,token);
   	CPARSER.Parse("TuiSliderBegin %s", cmd);
@@ -552,7 +552,7 @@ public:
   	CPARSER.Parse("TuiSliderEnd");
   }
 
-  void createCheckbox(const char *title,HeI32 token,const char *cmd,bool state)
+  void createCheckbox(const char *title,NxI32 token,const char *cmd,bool state)
   {
   	AddToken(cmd,token);
   	CPARSER.Parse("TuiCheckboxBegin %s", cmd);
@@ -565,7 +565,7 @@ public:
   	CPARSER.Parse("TuiCheckboxEnd");
   }
 
-  void createButton(const char *title,HeI32 token,const char *cmd)
+  void createButton(const char *title,NxI32 token,const char *cmd)
   {
     char scratch[512];
     strcpy(scratch,cmd);
@@ -580,7 +580,7 @@ public:
   	CPARSER.Parse("TuiCheckboxEnd");
   }
 
-  bool         sendTextMessage(HeU32 priority,const char * fmt,...)
+  bool         sendTextMessage(NxU32 priority,const char * fmt,...)
   {
     bool ret = false;
 
@@ -610,7 +610,7 @@ HMENU createMyMenu(void)
 
 
 
-bool  processMenu(HWND hwnd,HeU32 cmd,HeF32 *bmin,HeF32 *bmax)
+bool  processMenu(HWND hwnd,NxU32 cmd,NxF32 *bmin,NxF32 *bmax)
 {
 	bool ret = false;
 
@@ -624,7 +624,7 @@ bool  processMenu(HWND hwnd,HeU32 cmd,HeF32 *bmin,HeF32 *bmax)
 
 
 //==================================================================================
-void CALLBACK gOnUIPageEvent( UINT nEvent, HeI32 nControlID, CDXUTControl* pControl )
+void CALLBACK gOnUIPageEvent( UINT nEvent, NxI32 nControlID, CDXUTControl* pControl )
 {
 	CDXUTDialog *dialog = pControl->m_pDialog;
 
@@ -653,8 +653,8 @@ void CALLBACK gOnUIPageEvent( UINT nEvent, HeI32 nControlID, CDXUTControl* pCont
 							{
 								CDXUTListBox *pListBox = (CDXUTListBox *)pControl;
 								TuiChoiceVector &choices = ret->GetChoices();
-								HeI32 count = (HeI32)choices.size();
-								for (HeI32 i=0; i<count; i++)
+								NxI32 count = (NxI32)choices.size();
+								for (NxI32 i=0; i<count; i++)
 								{
 									DXUTListBoxItem *item = pListBox->GetItem(i);
 									TuiChoice  &choice = choices[i];
@@ -684,8 +684,8 @@ void CALLBACK gOnUIPageEvent( UINT nEvent, HeI32 nControlID, CDXUTControl* pCont
 				case TT_SLIDER:
 					{
 						CDXUTSlider *slider = (CDXUTSlider *) pControl;
-						HeI32 v = slider->GetValue();
-						HeF32 fv = ret->GetSliderValue(v);
+						NxI32 v = slider->GetValue();
+						NxF32 fv = ret->GetSliderValue(v);
 						char scratch[512];
   						sprintf(scratch,"%0.3f", fv );
 

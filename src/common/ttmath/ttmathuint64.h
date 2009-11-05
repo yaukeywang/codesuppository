@@ -77,7 +77,7 @@ namespace ttmath
 		it takes one argument of 32bit
 	*/
 	template<uint value_size>
-	UInt<value_size> & UInt<value_size>::operator=(HeU32 i)
+	UInt<value_size> & UInt<value_size>::operator=(NxU32 i)
 	{
 		FromUInt(uint(i));
 
@@ -92,7 +92,7 @@ namespace ttmath
 		it takes one argument of 32bit
 	*/
 	template<uint value_size>
-	UInt<value_size>::UInt(HeU32 i)
+	UInt<value_size>::UInt(NxU32 i)
 	{
 		FromUInt(uint(i));
 	}
@@ -107,7 +107,7 @@ namespace ttmath
 		look at the description of UInt::operator=(sint)
 	*/
 	template<uint value_size>
-	UInt<value_size> & UInt<value_size>::operator=(HeI32 i)
+	UInt<value_size> & UInt<value_size>::operator=(NxI32 i)
 	{
 		FromUInt(uint(i));
 
@@ -124,7 +124,7 @@ namespace ttmath
 		look at the description of UInt::operator=(sint)
 	*/
 	template<uint value_size>
-	UInt<value_size>::UInt(HeI32 i)
+	UInt<value_size>::UInt(NxI32 i)
 	{
 		FromUInt(uint(i));
 	}
@@ -150,7 +150,7 @@ namespace ttmath
 		warning: we're using 'temp_table' as a pointer at 32bit words
 	*/
 	template<uint value_size>
-	void UInt<value_size>::SetFromTable(const HeU32 * temp_table, uint temp_table_len)
+	void UInt<value_size>::SetFromTable(const NxU32 * temp_table, uint temp_table_len)
 	{
 		uint temp_table_index = 0;
 		sint i; // 'i' with a sign

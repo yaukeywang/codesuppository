@@ -39,7 +39,7 @@
 #ifndef headerfilettmathtypes
 #define headerfilettmathtypes
 
-#include "common/snippets/HeSimpleTypes.h"
+#include "common/snippets/UserMemAlloc.h"
 /*!
 	\file ttmathtypes.h
     \brief constants used in the library
@@ -118,8 +118,8 @@ namespace ttmath
 	/*!
 		on 32bit platforms one word (uint, sint) will be equal 32bits
 	*/
-	typedef HeU32 uint;
-	typedef HeI32 sint;
+	typedef NxU32 uint;
+	typedef NxI32 sint;
 
 	/*!
 		how many bits there are in the uint type
@@ -149,8 +149,8 @@ namespace ttmath
 	/*!
 		on 64bit platforms one word (uint, sint) will be equal 64bits
 	*/
-	typedef HeU32 uint;
-	typedef HeI32 sint;
+	typedef NxU32 uint;
+	typedef NxI32 sint;
 
 	/*!
 		how many bits there are in the uint type
@@ -280,11 +280,11 @@ namespace ttmath
 	class ExceptionInfo
 	{
 	const char * file;
-	HeI32 line;
+	NxI32 line;
 
 	public:
 		ExceptionInfo() : file(0), line(0) {}
-		ExceptionInfo(const char * f, HeI32 l) : file(f), line(l) {}
+		ExceptionInfo(const char * f, NxI32 l) : file(f), line(l) {}
 
 		std::string Where() const
 		{
@@ -334,7 +334,7 @@ namespace ttmath
 		{
 		}
 
-		ReferenceError(const char * f, HeI32 l) :
+		ReferenceError(const char * f, NxI32 l) :
 							std::logic_error ("reference error"), ExceptionInfo(f,l)
 		{
 		}
@@ -366,7 +366,7 @@ namespace ttmath
 		{
 		}
 
-		RuntimeError(const char * f, HeI32 l) :
+		RuntimeError(const char * f, NxI32 l) :
 						std::runtime_error ("internal error"), ExceptionInfo(f,l)
 		{
 		}

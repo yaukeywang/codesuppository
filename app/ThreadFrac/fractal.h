@@ -24,34 +24,34 @@ class Fractal;
 class FractalInterface
 {
 public:
-  virtual void fractalPixel(Fractal *f,HeU32 x,HeU32 y,HeU32 iterationCount) = 0;
+  virtual void fractalPixel(Fractal *f,NxU32 x,NxU32 y,NxU32 iterationCount) = 0;
 };
 
 
 
 Fractal * fc_create(FractalInterface *iface,
-                    HeU32 fractalSize,
-                    HeU32 swidth,
-                    HeU32 sheight,
-                    HeU32 maxIterations,
+                    NxU32 fractalSize,
+                    NxU32 swidth,
+                    NxU32 sheight,
+                    NxU32 maxIterations,
                     const BigFloat &xleft,
                     const BigFloat &xright,
                     const BigFloat &ytop,
                     bool useRectangleSubdivision);
 
-Fractal * fc_create(Fractal *f,FractalInterface *iface,HeU32 fractalSize,HeU32 maxIterations);
+Fractal * fc_create(Fractal *f,FractalInterface *iface,NxU32 fractalSize,NxU32 maxIterations);
 
 void      fc_release(Fractal *f);
 
-bool      fc_process(Fractal *f,HeF32 dtime); // returns true to keep processing, false if completed.
+bool      fc_process(Fractal *f,NxF32 dtime); // returns true to keep processing, false if completed.
 
-void      fc_action(Fractal *f,FractalAction action,bool astate,HeI32 mouseX,HeI32 mouseY,HeI32 zoomFactor,HeI32 &dx,HeI32 &dy);
+void      fc_action(Fractal *f,FractalAction action,bool astate,NxI32 mouseX,NxI32 mouseY,NxI32 zoomFactor,NxI32 &dx,NxI32 &dy);
 
-void      fc_copy(const Fractal *source,Fractal *dest,HeI32 mdx,HeI32 mdy);
+void      fc_copy(const Fractal *source,Fractal *dest,NxI32 mdx,NxI32 mdy);
 
 void      fc_useThreading(bool state);
 
-void      fc_setIterationCount(Fractal *f,HeU32 icount);
+void      fc_setIterationCount(Fractal *f,NxU32 icount);
 
 void      fc_useRectangleSubdivision(Fractal *f,bool state);
 
@@ -63,7 +63,7 @@ void      fc_getCoordinates(Fractal *f,BigFloat &xleft,BigFloat &xright,BigFloat
 
 void      fc_redraw(Fractal *f);
 
-HeU32 * fc_getData(Fractal *f,HeU32 &wid,HeU32 &hit);
+NxU32 * fc_getData(Fractal *f,NxU32 &wid,NxU32 &hit);
 
 void      fc_filter(Fractal *f);
 

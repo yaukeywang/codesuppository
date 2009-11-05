@@ -2,7 +2,7 @@
 
 #define TOPORTIN_H
 
-#include "common/snippets/HeSimpleTypes.h"
+#include "common/snippets/UserMemAlloc.h"
 /** @file toportin.h
  *  @brief This is the system that does the actual work of building the right-triangle integrated network.
  *
@@ -35,11 +35,11 @@ class ErrorHeuristic;
 class TopoTriIndex
 {
 public:
-  HeI32 x;        // x/y base co-ordinate.
-  HeI32 y;
-  HeI32 depth;		/* depth of triangle */
-  HeI32 orient;		/* orientation */
-  HeI32 s;		    /* physical address */
+  NxI32 x;        // x/y base co-ordinate.
+  NxI32 y;
+  NxI32 depth;		/* depth of triangle */
+  NxI32 orient;		/* orientation */
+  NxI32 s;		    /* physical address */
 };
 
 /* initial values */
@@ -76,7 +76,7 @@ public:
  * ============ Common Structures ============
  */
 
-typedef HeI32 Coord2d[2];
+typedef NxI32 Coord2d[2];
 
 // also 2^n + 1
 #define BLOCKSIZE 128
@@ -92,10 +92,10 @@ typedef HeI32 Coord2d[2];
 class HeightData
 {
 public:
-  virtual HeI32 GetWidth(void) const = 0;
-  virtual HeI32 GetHeight(void) const = 0;
+  virtual NxI32 GetWidth(void) const = 0;
+  virtual NxI32 GetHeight(void) const = 0;
 
-	virtual HeF32 Get(HeI32 x,HeI32 y) const = 0;
+	virtual NxF32 Get(NxI32 x,NxI32 y) const = 0;
 //	virtual float GetDZ(void) const = 0;
 //  virtual float GetScaledZ(int x,int y) const = 0;
 private:
@@ -129,23 +129,23 @@ public:
 
   TopoRtin(const HeightData *hfield);
 
-  void SetBlockSize(HeI32 blocksize)
+  void SetBlockSize(NxI32 blocksize)
   {
     mBlockSize = blocksize;
     mBlockLen  = blocksize+1;
   };
 
-  void SetEye(HeI32 eyex,HeI32 eyey); // actually causes the network to be rebuilt!
+  void SetEye(NxI32 eyex,NxI32 eyey); // actually causes the network to be rebuilt!
 
   void SetLod(bool lod)
   {
     mDoLod = lod;
   };
 
-  void SetErrorThreshold(HeI32 et)
+  void SetErrorThreshold(NxI32 et)
   {
     mErrorThreshold = et;
-    mFloatThreshold = HeF32(et);
+    mFloatThreshold = NxF32(et);
   };
 
   void SetErrorHeuristic(ErrorHeuristic *error)
@@ -153,20 +153,20 @@ public:
     mError = error;
   }
 
-  void SetDistanceThreshold(HeI32 dt)
+  void SetDistanceThreshold(NxI32 dt)
   {
     mDistanceThreshold = dt;
   }
 
   void SetEdges(bool e) { mEdges = e; };
   void SetIgnoreSealevel(bool i) { mIgnoreSealevel = i; };
-  void SetSeaLevel(HeF32 s) { mSealevel = s; };
+  void SetSeaLevel(NxF32 s) { mSealevel = s; };
 
   bool GetHasSea(void) const { return mHasSea; };
 
-  HeU16 * BuildIndices(HeU16 *indices,
-                                HeI32 left,
-                                HeI32 top);
+  NxU16 * BuildIndices(NxU16 *indices,
+                                NxI32 left,
+                                NxI32 top);
 
 
 private:
@@ -174,9 +174,9 @@ private:
 // General *private* support routines.
 //************************************************
    IntersectTest InBlock(const Coord2d &p1,const Coord2d &p2,const Coord2d &p3);
-   void BlockTest(const Coord2d &p,HeI32 &acode);
+   void BlockTest(const Coord2d &p,NxI32 &acode);
 
-  HeF32 GetZ(HeI32 x,HeI32 y) const
+  NxF32 GetZ(NxI32 x,NxI32 y) const
   {
 	  return mField->Get(x,y);
   };
@@ -185,7 +185,7 @@ private:
 // ********************************************
 // Part of addressing scheme in address.cpp
 // ********************************************
-   inline HeI32 init_ntriabove(HeI32 depth);
+   inline NxI32 init_ntriabove(NxI32 depth);
    inline void leftChild(TopoTriIndex &t, TopoTriIndex &lt);
    inline void rightChild(TopoTriIndex &t, TopoTriIndex &rt);
    inline void parent(TopoTriIndex &t, TopoTriIndex &p);
@@ -196,24 +196,24 @@ private:
    inline void nbr2(TopoTriIndex &t, TopoTriIndex &n2);
    inline void nbr3(TopoTriIndex &t, TopoTriIndex &n3);
 
-   HeU16 *getVerts(const Coord2d &p1,
+   NxU16 *getVerts(const Coord2d &p1,
                                   const Coord2d &p2,
                                   const Coord2d &p3,
-                                  HeU16 *indices);
+                                  NxU16 *indices);
 
 // ********************************************
 // Found in EMIT.CPP
 // ********************************************
-   HeU16 * emitSurface(HeU16 *indices);
+   NxU16 * emitSurface(NxU16 *indices);
 
-   HeU16 * emitDFS(TopoTriIndex &t,
-                                  HeU16 *indices,
+   NxU16 * emitDFS(TopoTriIndex &t,
+                                  NxU16 *indices,
                                   const Coord2d& p1,
                                   const Coord2d& p2,
                                   const Coord2d& p3,
                                   IntersectTest vstate);
 
-   HeI32 inROD(Coord2d p1, Coord2d p2, Coord2d p3);
+   NxI32 inROD(Coord2d p1, Coord2d p2, Coord2d p3);
 
 // ********************************************
 // Found in SPLIT.CPP
@@ -234,21 +234,21 @@ private:
 // ********************************************
 // Found in TRI.CPP
 // ********************************************
-   HeI32    calcErr(Coord2d p1, Coord2d p2, Coord2d p3);
+   NxI32    calcErr(Coord2d p1, Coord2d p2, Coord2d p3);
    void   midpoint(Coord2d p1,Coord2d p2,Coord2d m);
    void   MidPoint(const Coord2d &p1,const Coord2d &p2,Coord2d &m);
-   HeI32    ceilingLog2(HeI32 x);
-   HeI32    next2Power(HeI32 x);
+   NxI32    ceilingLog2(NxI32 x);
+   NxI32    next2Power(NxI32 x);
    void   makeDFS(TopoTriIndex &t, Coord2d p1, Coord2d p2, Coord2d p3);
    void   initHier(void);
 
 // These were macros, but have now been made methods.
-   HeI32 BORDER(TopoTriIndex &t)
+   NxI32 BORDER(TopoTriIndex &t)
   {
     return (mInfo[t.s] & PARTINROD);
   };
 
-   HeI32 INROD(TopoTriIndex &t)
+   NxI32 INROD(TopoTriIndex &t)
   {
     return (mInfo[t.s] & ALLINROD);
   };
@@ -258,12 +258,12 @@ private:
     mInfo[t.s] = (mInfo[t.s]&(ALLINROD|PARTINROD))|SURFACE;
   };
 
-   HeI32 ONSURFACE(TopoTriIndex &t)
+   NxI32 ONSURFACE(TopoTriIndex &t)
   {
     return (mInfo[t.s] & SURFACE);
   };
 
-  HeI32 ONSURFACE2(TopoTriIndex &t)
+  NxI32 ONSURFACE2(TopoTriIndex &t)
   {
     return (mInfo[t.s] & SURFACE);
   };
@@ -273,12 +273,12 @@ private:
     return (mInfo[t.s] & SMALLER1);
   };
 
-   HeI32 SMALLN2(TopoTriIndex &t)
+   NxI32 SMALLN2(TopoTriIndex &t)
   {
     return (mInfo[t.s] & SMALLER2);
   };
 
-   HeI32 BIGN3(TopoTriIndex &t)
+   NxI32 BIGN3(TopoTriIndex &t)
   {
     return (mInfo[t.s] & BIGGER3);
   };
@@ -297,24 +297,24 @@ private:
    void TRIEQUATE(TopoTriIndex &a,const TopoTriIndex &b) { a = b; };
 
   bool IsEdge(Coord2d p);
-	bool IsEdge(HeI32 x,HeI32 y);
+	bool IsEdge(NxI32 x,NxI32 y);
 
 // ********************************************
 // * Misc. data variables.
 // ********************************************
   Coord2d se, sw, ne, nw;
 
-  HeI32 xmax[64];
-  HeI32 ymax[64];
-  HeI32 ntriabove[64];
+  NxI32 xmax[64];
+  NxI32 ymax[64];
+  NxI32 ntriabove[64];
 
-  HeI32 hierDepth;
+  NxI32 hierDepth;
 
   Coord2d eyeP;
 
-  HeF32 x_per_y;
-  HeF32 y_per_x;
-  HeF32 errPerEm;
+  NxF32 x_per_y;
+  NxF32 y_per_x;
+  NxF32 errPerEm;
 
   TopoTriIndex mRootL;
   TopoTriIndex mRootR;
@@ -325,29 +325,29 @@ private:
 
   const HeightData *mField;
 
-  HeI32 mBlockLeft;
-  HeI32 mBlockTop;
-  HeI32 mBlockRight;
-  HeI32 mBlockBottom;
+  NxI32 mBlockLeft;
+  NxI32 mBlockTop;
+  NxI32 mBlockRight;
+  NxI32 mBlockBottom;
 
-  HeI32 mFieldSize;  // size of entire height field.
+  NxI32 mFieldSize;  // size of entire height field.
 // was in hier
-  HeI32 mMaxDepth;			      /* maximum depth */
-  HeI32 mSize;			        /* number of triangles in hierarchy */
-  HeU16 *mErr;	/* error of triangles */
-  HeU8 *mInfo;	/* surface,neighbor */
+  NxI32 mMaxDepth;			      /* maximum depth */
+  NxI32 mSize;			        /* number of triangles in hierarchy */
+  NxU16 *mErr;	/* error of triangles */
+  NxU8 *mInfo;	/* surface,neighbor */
   bool mDoLod;
-  HeI32  mErrorThreshold;
-  HeF32 mFloatThreshold;
-  HeI32  mDistanceThreshold;
+  NxI32  mErrorThreshold;
+  NxF32 mFloatThreshold;
+  NxI32  mDistanceThreshold;
   bool mEdges; // full resolution edges?
   bool mIgnoreSealevel;
-  HeI32 mMinDepth;
+  NxI32 mMinDepth;
   bool mHasSea;
-  HeF32 mSealevel;
+  NxF32 mSealevel;
   ErrorHeuristic *mError;
-  HeI32 mBlockSize;
-  HeI32 mBlockLen;
+  NxI32 mBlockSize;
+  NxI32 mBlockLen;
 };
 
 extern Coord2d se, sw, ne, nw;

@@ -3,7 +3,7 @@
 #define RTINOBJ_H
 
 
-#include "common/snippets/HeSimpleTypes.h"
+#include "common/snippets/UserMemAlloc.h"
 /*----------------------------------------------------------------------
     Copyright (c) 2004 Open Dynamics Framework Group
           www.physicstools.org
@@ -70,7 +70,7 @@ public:
     mNormal[2] = 0;
   }
 
-  void Add(const HeF32 *n)
+  void Add(const NxF32 *n)
   {
     mCount++;
     mNormal[0]+=n[0];
@@ -78,7 +78,7 @@ public:
     mNormal[2]+=n[2];
   }
 
-  const HeF32 * GetNormal(void) const { return mNormal; };
+  const NxF32 * GetNormal(void) const { return mNormal; };
 
   void ComputeMean(void)
   {
@@ -94,7 +94,7 @@ public:
         break;
       default:
         {
-          HeF32 recip = 1.0f / (HeF32) mCount;
+          NxF32 recip = 1.0f / (NxF32) mCount;
           mNormal[0]*=recip;
           mNormal[1]*=recip;
           mNormal[2]*=recip;
@@ -102,14 +102,14 @@ public:
         break;
     }
     // ok now need to re-normalize it.
-    HeF32 d = sqrtf( mNormal[0] * mNormal[0] + mNormal[1]*mNormal[1] + mNormal[2]*mNormal[2] );
-    HeF32 r = 1.0f / d; // compute reciprocol
+    NxF32 d = sqrtf( mNormal[0] * mNormal[0] + mNormal[1]*mNormal[1] + mNormal[2]*mNormal[2] );
+    NxF32 r = 1.0f / d; // compute reciprocol
     mNormal[0]*=r;
     mNormal[1]*=r;
     mNormal[2]*=r;
   }
 
-  void GetNormal(HeF32 *n)
+  void GetNormal(NxF32 *n)
   {
     n[0] = mNormal[0];
     n[1] = mNormal[1];
@@ -117,44 +117,44 @@ public:
   }
 
 
-  HeI32   mCount;
-  HeF32 mNormal[3]; // the accumulated mean vector normal.
+  NxI32   mCount;
+  NxF32 mNormal[3]; // the accumulated mean vector normal.
 };
 
-typedef std::map< HeI32 , MeanNormal > MeanNormalMap; // lookup table for mean vector normals.
+typedef USER_STL::map< NxI32 , MeanNormal > MeanNormalMap; // lookup table for mean vector normals.
 
 class TerrainVertex
 {
 public:
-  HeF32  mPos[3];
-  HeF32  mNormal[3];
-  HeF32  mTexel[2];
+  NxF32  mPos[3];
+  NxF32  mNormal[3];
+  NxF32  mTexel[2];
 };
 
 // converts a heightfield into a right-triangular irregular network.
 class RtinObj : public HeightData
 {
 public:
-  RtinObj(HeI32 width,HeI32 height,const HeF32 *data);
+  RtinObj(NxI32 width,NxI32 height,const NxF32 *data);
   ~RtinObj(void);
 
 
   void CreateRtin(const char *name,
-                  HeI32  err_thresh,
+                  NxI32  err_thresh,
                   bool zup,
-                  HeF32 scale,
+                  NxF32 scale,
                   GeometryInterface *iface,
                   const char *texture1,
                   const char *texture2,
-                  HeF32 water,
+                  NxF32 water,
                   bool absolute,
                   bool origin);
 
 
-  virtual HeI32 GetWidth(void) const { return mWidth; };
-  virtual HeI32 GetHeight(void) const { return mHeight; };
+  virtual NxI32 GetWidth(void) const { return mWidth; };
+  virtual NxI32 GetHeight(void) const { return mHeight; };
 
-	virtual HeF32 Get(HeI32 x,HeI32 y) const
+	virtual NxF32 Get(NxI32 x,NxI32 y) const
   {
 	  if ( x < 0 ) x = 0;
   	if ( x >= mWidth ) x = mWidth-1;
@@ -164,37 +164,37 @@ public:
     return mData[y*mWidth+x];
   };
 
-  void SaveBlock(const char *fname,GeometryInterface *iface,HeI32 x,HeI32 y);
+  void SaveBlock(const char *fname,GeometryInterface *iface,NxI32 x,NxI32 y);
 
-  void GetVertex(HeI32 index,HeF32 *vtx);
+  void GetVertex(NxI32 index,NxF32 *vtx);
 
 private:
-  void GetPos(HeF32 *pos,HeI32 idx,HeU16 *vbuffer);
+  void GetPos(NxF32 *pos,NxI32 idx,NxU16 *vbuffer);
 
-  HeI32 Translate(HeF32 *p); // translate into co-ordinate space and return table index.
-  void AddNormal(HeI32 index,const HeF32 *normal);
+  NxI32 Translate(NxF32 *p); // translate into co-ordinate space and return table index.
+  void AddNormal(NxI32 index,const NxF32 *normal);
 
-  HeI32             mBaseX;
-  HeI32             mBaseY;
-  HeI32             mWidth;
-  HeI32             mHeight;
-  const HeF32    *mData; // heightfield data.
+  NxI32             mBaseX;
+  NxI32             mBaseY;
+  NxI32             mWidth;
+  NxI32             mHeight;
+  const NxF32    *mData; // heightfield data.
   TopoRtin       *mRtin;
-  HeI32             mTotalVerts;
-  HeI32             mTotalFaces;
-  HeF32           mTexRecip;
+  NxI32             mTotalVerts;
+  NxI32             mTotalFaces;
+  NxF32           mTexRecip;
   ErrorHeuristic *mError;
-  HeI32             mErrThresh;
+  NxI32             mErrThresh;
   bool            mZup;
-  HeF32           mScale;
+  NxF32           mScale;
   bool            mVrml2;
   char            mTexture1[512];
   char            mTexture2[512];
-  HeF32           mWater;
+  NxF32           mWater;
   MeanNormalMap   mNormals;
   bool            mAbsolute;
   bool            mOrigin;
-  HeF32           mOffset;
+  NxF32           mOffset;
 };
 
 #endif

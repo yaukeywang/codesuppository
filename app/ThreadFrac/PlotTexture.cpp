@@ -10,7 +10,7 @@
 class PlotTexture
 {
 public:
-  PlotTexture(const char *fname,HeU32 width,HeU32 height)
+  PlotTexture(const char *fname,NxU32 width,NxU32 height)
   {
     mWidth = width;
     mHeight = height;
@@ -24,7 +24,7 @@ public:
     mBackBuffer = 0;
     if ( mTexture )
     {
-      mPixels = (HeU8 *)gPd3d->lockTexture(mTexture,width,height,mPitch);
+      mPixels = (NxU8 *)gPd3d->lockTexture(mTexture,width,height,mPitch);
       mBackBuffer = MEMALLOC_NEW_ARRAY(unsigned char,height*mPitch)[height*mPitch];
     }
   }
@@ -43,38 +43,38 @@ public:
     delete []mBackBuffer;
   }
 
-  void plotPixel(HeU32 x,HeU32 y,HeU32 color)
+  void plotPixel(NxU32 x,NxU32 y,NxU32 color)
   {
     if ( mPixels )
     {
-      HeU32 index = y*mPitch+(x*4);
-      HeU32 *dest = (HeU32 *) &mPixels[index];
+      NxU32 index = y*mPitch+(x*4);
+      NxU32 *dest = (NxU32 *) &mPixels[index];
       dest[0] = color;
     }
   }
 
-  HeU32 getPixel(HeU32 x,HeU32 y)
+  NxU32 getPixel(NxU32 x,NxU32 y)
   {
-    HeU32 color = 0;
+    NxU32 color = 0;
     if ( mPixels )
     {
-      HeU32 index = y*mPitch+(x*4);
-      HeU32 *dest = (HeU32 *) &mPixels[index];
+      NxU32 index = y*mPitch+(x*4);
+      NxU32 *dest = (NxU32 *) &mPixels[index];
       color = dest[0];
     }
     return color;
   }
 
 
-  void renderScreenQuad(HeU32 x1,HeU32 y1,HeU32 wid,HeU32 hit,HeU32 color)
+  void renderScreenQuad(NxU32 x1,NxU32 y1,NxU32 wid,NxU32 hit,NxU32 color)
   {
     if ( mTexture )
     {
       gPd3d->unlockTexture(mTexture);
       gPd3d->copyTexture(mTexture,mVideoTexture);
-      mPixels = (HeU8 *)gPd3d->lockTexture(mTexture,mWidth,mHeight,mPitch);
+      mPixels = (NxU8 *)gPd3d->lockTexture(mTexture,mWidth,mHeight,mPitch);
 
-      gPd3d->renderScreenQuad(mVideoTexture,(HeI32)x1,(HeI32)y1,1.0f,(HeI32)wid,(HeI32)hit,color);
+      gPd3d->renderScreenQuad(mVideoTexture,(NxI32)x1,(NxI32)y1,1.0f,(NxI32)wid,(NxI32)hit,color);
       gPd3d->flush();
 
     }
@@ -84,19 +84,19 @@ public:
   {
     gPd3d->unlockTexture(mTexture);
     gPd3d->copyTexture(mTexture,mVideoTexture);
-    mPixels = (HeU8 *)gPd3d->lockTexture(mTexture,mWidth,mHeight,mPitch);
+    mPixels = (NxU8 *)gPd3d->lockTexture(mTexture,mWidth,mHeight,mPitch);
     return mVideoTexture;
   };
 
-  HeU32 * getSurface(HeU32 &wid,HeU32 &hit,HeU32 &stride)
+  NxU32 * getSurface(NxU32 &wid,NxU32 &hit,NxU32 &stride)
   {
     wid = mWidth;
     hit = mHeight;
     stride = mPitch;
-    return (HeU32 *)mPixels;
+    return (NxU32 *)mPixels;
   }
 
-  void adjustImage(HeI32 dx,HeI32 dy)
+  void adjustImage(NxI32 dx,NxI32 dy)
   {
     if ( dx == 0 && dy == 0 )
     {
@@ -107,27 +107,27 @@ public:
       memcpy(mBackBuffer,mPixels,mHeight*mPitch);
 			memset(mPixels,0,mHeight*mPitch);
 
-      const HeU32 *source = (HeU32 *)mBackBuffer;
-      HeU32 *dest         = (HeU32 *)mPixels;
+      const NxU32 *source = (NxU32 *)mBackBuffer;
+      NxU32 *dest         = (NxU32 *)mPixels;
 
-      HeI32 wid                    = (HeI32) mWidth;
-      HeI32 hit                    = (HeI32) mHeight;
-      HeI32 pitch                  = (HeI32)mPitch/sizeof(HeU32);
+      NxI32 wid                    = (NxI32) mWidth;
+      NxI32 hit                    = (NxI32) mHeight;
+      NxI32 pitch                  = (NxI32)mPitch/sizeof(NxU32);
 
 			dx*=-1;
 			dy*=-1;
 
-      for (HeI32 y=0; y<hit; y++)
+      for (NxI32 y=0; y<hit; y++)
       {
-        HeI32 sy = y+dy;
+        NxI32 sy = y+dy;
 
 				if ( sy >=0 && sy < hit )
 				{
-					HeI32 sindex = y*pitch;
-    			HeI32 dindex = sy*pitch+dx;
-					HeI32 sx = dx;
+					NxI32 sindex = y*pitch;
+    			NxI32 dindex = sy*pitch+dx;
+					NxI32 sx = dx;
 
-          for (HeI32 x=0; x<wid; x++)
+          for (NxI32 x=0; x<wid; x++)
           {
             if ( sx >= 0 && sx < wid )
             {
@@ -144,17 +144,17 @@ public:
   }
 
 private:
-  HeU32 mWidth;
-  HeU32 mHeight;
-  HeU32 mPitch;
-  HeU8 *mPixels;
-  HeU8 *mBackBuffer;
+  NxU32 mWidth;
+  NxU32 mHeight;
+  NxU32 mPitch;
+  NxU8 *mPixels;
+  NxU8 *mBackBuffer;
 
   PD3D::Pd3dTexture *mTexture;
   PD3D::Pd3dTexture *mVideoTexture;
 };
 
-PlotTexture * pt_createPlotTexture(const char *fname,HeU32 width,HeU32 height)
+PlotTexture * pt_createPlotTexture(const char *fname,NxU32 width,NxU32 height)
 {
   PlotTexture *ret = MEMALLOC_NEW(PlotTexture)(fname,width,height);
   return ret;
@@ -165,17 +165,17 @@ void          pt_releasePlotTexture(PlotTexture *p)
   delete p;
 }
 
-void          pt_plotPixel(PlotTexture *p,HeU32 x,HeU32 y,HeU32 color)
+void          pt_plotPixel(PlotTexture *p,NxU32 x,NxU32 y,NxU32 color)
 {
   p->plotPixel(x,y,color);
 }
 
-void          pt_renderScreenQuad(PlotTexture *p,HeU32 x,HeU32 y,HeU32 wid,HeU32 hit,HeU32 color)
+void          pt_renderScreenQuad(PlotTexture *p,NxU32 x,NxU32 y,NxU32 wid,NxU32 hit,NxU32 color)
 {
   p->renderScreenQuad(x,y,wid,hit,color);
 }
 
-HeU32 pt_getPixel(PlotTexture *p,HeU32 x,HeU32 y)
+NxU32 pt_getPixel(PlotTexture *p,NxU32 x,NxU32 y)
 {
   return p->getPixel(x,y);
 }
@@ -185,12 +185,12 @@ PD3D::Pd3dTexture * pt_getTexture(PlotTexture *p) // return the device renderabl
   return p->getTexture();
 }
 
-HeU32 *pt_getSurface(PlotTexture *p,HeU32 &wid,HeU32 &hit,HeU32 &stride)
+NxU32 *pt_getSurface(PlotTexture *p,NxU32 &wid,NxU32 &hit,NxU32 &stride)
 {
   return p->getSurface(wid,hit,stride);
 }
 
-void          pt_adjustImage(PlotTexture *p,HeI32 dx,HeI32 dy)
+void          pt_adjustImage(PlotTexture *p,NxI32 dx,NxI32 dy)
 {
   p->adjustImage(dx,dy);
 }

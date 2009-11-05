@@ -78,20 +78,20 @@ public:
 
   void set(const BigFloat &x1,const BigFloat &y1,const BigFloat &x2,const BigFloat &y2,const BigFloat &fractalScale)
   {
-    mX1 = (HeF32)getDouble(x1);
-    mY1 = (HeF32)getDouble(y1);
-    mX2 = (HeF32)getDouble(x2);
-    mY2 = (HeF32)getDouble(y2);
-    mFractalScale = (HeF32)getDouble(fractalScale);
+    mX1 = (NxF32)getDouble(x1);
+    mY1 = (NxF32)getDouble(y1);
+    mX2 = (NxF32)getDouble(x2);
+    mY2 = (NxF32)getDouble(y2);
+    mFractalScale = (NxF32)getDouble(fractalScale);
   }
 
   MultiFloatType getType(void) const { return MFT_SMALL; };
 
-  HeF32   mX1;
-  HeF32   mY1;
-  HeF32   mX2;
-  HeF32   mY2;
-  HeF32   mFractalScale;
+  NxF32   mX1;
+  NxF32   mY1;
+  NxF32   mX2;
+  NxF32   mY2;
+  NxF32   mFractalScale;
 };
 
 class FrameBig : public Frame
@@ -121,7 +121,7 @@ class RectTask
 {
 public:
 
-  void set(HeU32 x1,HeU32 y1,HeU32 x2,HeU32 y2)
+  void set(NxU32 x1,NxU32 y1,NxU32 x2,NxU32 y2)
   {
     mX1 = x1;
     mY1 = y1;
@@ -129,10 +129,10 @@ public:
     mY2 = y2;
   }
 
-  HeU32 mX1;
-  HeU32 mX2;
-  HeU32 mY1;
-  HeU32 mY2;
+  NxU32 mX1;
+  NxU32 mX2;
+  NxU32 mY1;
+  NxU32 mY2;
 
 };
 
@@ -163,18 +163,18 @@ public:
 
   QueueTask  *mNextJob; // singly linked list..
 
-  HeU32 mX1;
-  HeU32 mX2;
-  HeU32 mY1;
-  HeU32 mY2;
+  NxU32 mX1;
+  NxU32 mX2;
+  NxU32 mY1;
+  NxU32 mY2;
 };
 
-static inline HeU32 MandelbrotPoint(HeU32 iterations,HeF32 real,HeF32 imaginary)
+static inline NxU32 MandelbrotPoint(NxU32 iterations,NxF32 real,NxF32 imaginary)
 {
-	HeF32 fx,fy,xs,ys;
-	HeU32 count;
+	NxF32 fx,fy,xs,ys;
+	NxU32 count;
 
-  HeF32 two(2.0);
+  NxF32 two(2.0);
 
 	fx = real;
 	fy = imaginary;
@@ -192,10 +192,10 @@ static inline HeU32 MandelbrotPoint(HeU32 iterations,HeF32 real,HeF32 imaginary)
 	return count;
 }
 
-static inline HeU32 MandelbrotPoint(HeU32 iterations,HeF64 real,HeF64 imaginary)
+static inline NxU32 MandelbrotPoint(NxU32 iterations,HeF64 real,HeF64 imaginary)
 {
 	HeF64 fx,fy,xs,ys;
-	HeU32 count;
+	NxU32 count;
 
   HeF64 two(2.0);
 
@@ -217,10 +217,10 @@ static inline HeU32 MandelbrotPoint(HeU32 iterations,HeF64 real,HeF64 imaginary)
 
 static BigFloat two(2);
 
-static inline HeU32 MandelbrotPoint(HeU32 iterations,const BigFloat &real,const BigFloat &imaginary)
+static inline NxU32 MandelbrotPoint(NxU32 iterations,const BigFloat &real,const BigFloat &imaginary)
 {
 	BigFloat fx,fy,xs,ys;
-	HeU32 count;
+	NxU32 count;
 
 
 	fx = real;
@@ -239,10 +239,10 @@ static inline HeU32 MandelbrotPoint(HeU32 iterations,const BigFloat &real,const 
 	return count;
 }
 
-static inline HeU32 MandelbrotPoint(HeU32 iterations,const Fixed32 &real,const Fixed32 &imaginary)
+static inline NxU32 MandelbrotPoint(NxU32 iterations,const Fixed32 &real,const Fixed32 &imaginary)
 {
   Fixed32 fx,fy,xs,ys;
-  HeU32 count;
+  NxU32 count;
 
   Fixed32 two = (HeF64)2.0;
   Fixed32 limit = (HeF64)4.0;
@@ -274,47 +274,47 @@ class FractalPixel
 {
 public:
 
-  virtual void solve(HeU32 maxiter) = 0;
-	virtual void set(HeU32 x,HeU32 y,Frame *frameReference) = 0;
+  virtual void solve(NxU32 maxiter) = 0;
+	virtual void set(NxU32 x,NxU32 y,Frame *frameReference) = 0;
 
-  HeU32  mX;
-  HeU32  mY;
-  HeU32  mIterationCount;
+  NxU32  mX;
+  NxU32  mY;
+  NxU32  mIterationCount;
 };
 
 class FractalPixelSmall : public FractalPixel
 {
 public:
 
-  void solve(HeU32 maxiter)
+  void solve(NxU32 maxiter)
   {
 		mIterationCount = MandelbrotPoint(maxiter,mFX,mFY);
   }
 
-	void set(HeU32 x,HeU32 y,Frame *frameReference)
+	void set(NxU32 x,NxU32 y,Frame *frameReference)
 	{
     FrameSmall *fs = (FrameSmall *)frameReference;
     mX = x;
     mY = y;
-    mFX = (HeF32)x*fs->mFractalScale + fs->mX1;
-    mFY = (HeF32)y*fs->mFractalScale + fs->mY1;
+    mFX = (NxF32)x*fs->mFractalScale + fs->mX1;
+    mFY = (NxF32)y*fs->mFractalScale + fs->mY1;
 		mIterationCount = 0;
 	}
 
-  HeF32         mFX;
-  HeF32         mFY;
+  NxF32         mFX;
+  NxF32         mFY;
 };
 
 class FractalPixelMedium : public FractalPixel
 {
 public:
 
-  void solve(HeU32 maxiter)
+  void solve(NxU32 maxiter)
   {
 		mIterationCount = MandelbrotPoint(maxiter,mFX,mFY);
   }
 
-	void set(HeU32 x,HeU32 y,Frame *frameReference)
+	void set(NxU32 x,NxU32 y,Frame *frameReference)
 	{
     FrameMedium *fs = (FrameMedium *)frameReference;
     mX = x;
@@ -332,12 +332,12 @@ class FractalPixelBig : public FractalPixel
 {
 public:
 
-  void solve(HeU32 maxiter)
+  void solve(NxU32 maxiter)
   {
 		mIterationCount = MandelbrotPoint(maxiter,mFX,mFY);
   }
 
-	void set(HeU32 x,HeU32 y,Frame *frameReference)
+	void set(NxU32 x,NxU32 y,Frame *frameReference)
 	{
     FrameBig *fs = (FrameBig *)frameReference;
     mX = x;
@@ -357,12 +357,12 @@ class FractalPixelFixed32 : public FractalPixel
 {
 public:
 
-  void solve(HeU32 maxiter)
+  void solve(NxU32 maxiter)
   {
 		mIterationCount = MandelbrotPoint(maxiter,mFX,mFY);
   }
 
-	void set(HeU32 x,HeU32 y,Frame *frameReference)
+	void set(NxU32 x,NxU32 y,Frame *frameReference)
 	{
     FrameFixed32 *fs = (FrameFixed32 *)frameReference;
     mX = x;
@@ -459,7 +459,7 @@ public:
   void            SetNext(FractalThread *f) { mNext = f; };
   void            SetPrevious(FractalThread *f) { mPrevious = f; };
 
-  bool add(HeU32 x,HeU32 y)
+  bool add(NxU32 x,NxU32 y)
   {
     switch ( mLastType )
     {
@@ -495,7 +495,7 @@ public:
     return mCount == PIXEL_PER;
   }
 
-  bool addRect(HeU32 x1,HeU32 y1,HeU32 x2,HeU32 y2)
+  bool addRect(NxU32 x1,NxU32 y1,NxU32 x2,NxU32 y2)
   {
     mRectangles[mRectCount].set(x1,y1,x2,y2);
     mRectCount++;
@@ -521,7 +521,7 @@ private:
   Frame                *mReferenceFrame;
   bool                  mCancelled;
   Fractal              *mParent;
-  HeU32                 mCount;
+  NxU32                 mCount;
   FractalPixelSmall    *mPixelsSmall;
   FractalPixelMedium   *mPixelsMedium;
   FractalPixelBig      *mPixelsBig;
@@ -529,7 +529,7 @@ private:
   JOB_SWARM::SwarmJob  *mSwarmJob;
 
   MultiFloatType        mLastType;
-  HeU32                 mRectCount;
+  NxU32                 mRectCount;
   RectTask              mRectangles[RECT_PER];
 };
 
@@ -538,7 +538,7 @@ private:
 class Fractal
 {
 public:
-  Fractal(FractalInterface *iface,HeU32 fractalSize,HeU32 swidth,HeU32 sheight,HeU32 maxIterations,const BigFloat &xleft,const BigFloat &xright,const BigFloat &ytop,bool useRectangleSubdivision)
+  Fractal(FractalInterface *iface,NxU32 fractalSize,NxU32 swidth,NxU32 sheight,NxU32 maxIterations,const BigFloat &xleft,const BigFloat &xright,const BigFloat &ytop,bool useRectangleSubdivision)
   {
 
     char scratch[512];
@@ -551,8 +551,8 @@ public:
     mScreenHeight = sheight;
     mMaxIterations = maxIterations;
 
-		HeF32 scale = (HeF32)mMaxIterations / (HeF32) MAX_DIFFICULTY;
-		mDifficultyScale = (HeU32)(scale*256);
+		NxF32 scale = (NxF32)mMaxIterations / (NxF32) MAX_DIFFICULTY;
+		mDifficultyScale = (NxU32)(scale*256);
 
     mX1 = xleft;
     mY1 = ytop;
@@ -573,15 +573,15 @@ public:
     mThreads.Set(256,256,10000000,"FractalThread",__FILE__,__LINE__);
     mQueueTasks.Set(256,256,10000000,"QueueTask",__FILE__,__LINE__);
 
-    mFractalBuffer     = MEMALLOC_NEW_ARRAY(HeU32,mFractalSize*mFractalSize)[mFractalSize*mFractalSize];
-    mFractalBackBuffer = MEMALLOC_NEW_ARRAY(HeU32,mFractalSize*mFractalSize)[mFractalSize*mFractalSize];
+    mFractalBuffer     = MEMALLOC_NEW_ARRAY(NxU32,mFractalSize*mFractalSize)[mFractalSize*mFractalSize];
+    mFractalBackBuffer = MEMALLOC_NEW_ARRAY(NxU32,mFractalSize*mFractalSize)[mFractalSize*mFractalSize];
 
     mActiveJobs = 0;
 
-    for (HeU32 i=0; i<MAX_DIFFICULTY; i++)
+    for (NxU32 i=0; i<MAX_DIFFICULTY; i++)
       mPending[i] = 0;
 
-    mMemSize = sizeof(HeU32)*mFractalSize*mFractalSize;
+    mMemSize = sizeof(NxU32)*mFractalSize*mFractalSize;
 
     memset(mFractalBuffer,0,mMemSize);
     memset(mFractalBackBuffer,0,mMemSize);
@@ -592,7 +592,7 @@ public:
       begin(0,0,mFractalSize-1,mFractalSize-1);
   }
 
-  Fractal(const Fractal &f,FractalInterface *iface,HeU32 fractalSize,HeU32 maxIterations)
+  Fractal(const Fractal &f,FractalInterface *iface,NxU32 fractalSize,NxU32 maxIterations)
   {
 
     char scratch[512];
@@ -625,15 +625,15 @@ public:
     mThreads.Set(256,256,1000000,"FractalThread",__FILE__,__LINE__);
     mQueueTasks.Set(256,256,1000000,"QueueTask",__FILE__,__LINE__);
 
-    mFractalBuffer     = MEMALLOC_NEW_ARRAY(HeU32,mFractalSize*mFractalSize)[mFractalSize*mFractalSize];
-    mFractalBackBuffer = MEMALLOC_NEW_ARRAY(HeU32,mFractalSize*mFractalSize)[mFractalSize*mFractalSize];
+    mFractalBuffer     = MEMALLOC_NEW_ARRAY(NxU32,mFractalSize*mFractalSize)[mFractalSize*mFractalSize];
+    mFractalBackBuffer = MEMALLOC_NEW_ARRAY(NxU32,mFractalSize*mFractalSize)[mFractalSize*mFractalSize];
 
-    mMemSize = sizeof(HeU32)*mFractalSize*mFractalSize;
+    mMemSize = sizeof(NxU32)*mFractalSize*mFractalSize;
 
     memset(mFractalBuffer,0,mMemSize);
     memset(mFractalBackBuffer,0,mMemSize);
 
-    for (HeU32 i=0; i<MAX_DIFFICULTY; i++)
+    for (NxU32 i=0; i<MAX_DIFFICULTY; i++)
       mPending[i] = 0;
 
     frameSetup();
@@ -648,18 +648,18 @@ public:
     delete []mFractalBackBuffer;
   }
 
-  bool process(HeF32 /*dtime*/)
+  bool process(NxF32 /*dtime*/)
   {
     bool ret = true; // by default continue processing..
 
     if ( mUseRectangleSubdivision )
     {
 
-      HeI32 count = mThreads.Begin(); // we cannot process rectangles unless all plotting is caught up.
+      NxI32 count = mThreads.Begin(); // we cannot process rectangles unless all plotting is caught up.
 
       if ( count == 0 )
       {
-        for (HeU32 i=0; i<MAX_DIFFICULTY; i++)
+        for (NxU32 i=0; i<MAX_DIFFICULTY; i++)
         {
           if ( mPending[i] ) // post the lowest priority ones first
           {
@@ -688,7 +688,7 @@ public:
     {
       if ( mSolveCount )
       {
-        for (HeU32 i=0; i<mSolvePer; i++)
+        for (NxU32 i=0; i<mSolvePer; i++)
         {
           add(mSolveX,mSolveY);
 
@@ -734,19 +734,19 @@ public:
     return ret;
   }
 
-	bool diffcolor(HeU32 x1,HeU32 y1,HeU32 x2,HeU32 y2,HeU32 &color)
+	bool diffcolor(NxU32 x1,NxU32 y1,NxU32 x2,NxU32 y2,NxU32 &color)
 	{
 		color = getPixel(x1,y1);
-		for (HeU32 x=x1; x<=x2; x++)
+		for (NxU32 x=x1; x<=x2; x++)
 		{
-			HeU32 c = getPixel(x,y1);
+			NxU32 c = getPixel(x,y1);
 			if ( c != color ) return true;
 			c = getPixel(x,y2);
 			if ( c != color ) return true;
 		}
-		for (HeU32 y=y1; y<=y2; y++)
+		for (NxU32 y=y1; y<=y2; y++)
 		{
-			HeU32 c = getPixel(x1,y);
+			NxU32 c = getPixel(x1,y);
 			if ( c != color ) return true;
 			c = getPixel(x2,y);
 			if ( c != color ) return true;
@@ -754,20 +754,20 @@ public:
 		return false;
 	}
 
-  void SplitRect(HeU32 x1,HeU32 y1,HeU32 x2,HeU32 y2)
+  void SplitRect(NxU32 x1,NxU32 y1,NxU32 x2,NxU32 y2)
   {
-    HeU32 color;
+    NxU32 color;
 
 
     if ( diffcolor(x1,y1,x2,y2,color) )
     {
-      HeU32 xwid = x2-x1;
-      HeU32 ywid = y2-y1;
+      NxU32 xwid = x2-x1;
+      NxU32 ywid = y2-y1;
       if ( xwid <= 5 || ywid <= 5 )
       {
-        for (HeU32 y=y1; y<=y2; y++)
+        for (NxU32 y=y1; y<=y2; y++)
         {
-          for (HeU32 x=x1; x<=x2; x++)
+          for (NxU32 x=x1; x<=x2; x++)
           {
             add(x,y); // add it to be computed...
           }
@@ -775,8 +775,8 @@ public:
       }
       else
       {
-  			HeU32 xc = x1+(xwid/2);
-        HeU32 yc = y1+(ywid/2);
+  			NxU32 xc = x1+(xwid/2);
+        NxU32 yc = y1+(ywid/2);
 
         if (xwid >= ywid)
         {
@@ -794,9 +794,9 @@ public:
     }
     else
     {
-      for (HeU32 y=y1; y<=y2; y++)
+      for (NxU32 y=y1; y<=y2; y++)
       {
-        for (HeU32 x=x1; x<=x2; x++)
+        for (NxU32 x=x1; x<=x2; x++)
         {
           mFractalBuffer[y*mFractalSize+x] = color;
           mCallback->fractalPixel(this,x,y,color);
@@ -805,7 +805,7 @@ public:
     }
   }
 
-  void action(FractalAction fa,bool /*astate*/,HeI32 _mx,HeI32 _my,HeI32 zoomFactor,HeI32 &mdx,HeI32 &mdy)
+  void action(FractalAction fa,bool /*astate*/,NxI32 _mx,NxI32 _my,NxI32 zoomFactor,NxI32 &mdx,NxI32 &mdy)
   {
     BigFloat mx = _mx;
     BigFloat my = _my;
@@ -967,23 +967,23 @@ public:
 
   }
 
-  void adjustBegin(HeI32 mdx,HeI32 mdy)
+  void adjustBegin(NxI32 mdx,NxI32 mdy)
   {
     memcpy(mFractalBackBuffer,mFractalBuffer,mMemSize);
 
-    for (HeU32 y=0; y<mFractalSize; y++)
+    for (NxU32 y=0; y<mFractalSize; y++)
     {
-      for (HeU32 x=0; x<mFractalSize; x++)
+      for (NxU32 x=0; x<mFractalSize; x++)
       {
 
-        HeI32 sx = (HeI32)x + mdx;
-        HeI32 sy = (HeI32)y + mdy;
+        NxI32 sx = (NxI32)x + mdx;
+        NxI32 sy = (NxI32)y + mdy;
 
-        HeU32 color = 0;
+        NxU32 color = 0;
 
-        if ( sx >= 0 && sx < (HeI32)mFractalSize && sy >= 0 && sy < (HeI32)mFractalSize )
+        if ( sx >= 0 && sx < (NxI32)mFractalSize && sy >= 0 && sy < (NxI32)mFractalSize )
         {
-          HeI32 index = sy*mFractalSize+sx;
+          NxI32 index = sy*mFractalSize+sx;
           color = mFractalBackBuffer[index];
         }
         mFractalBuffer[y*mFractalSize+x] = color;
@@ -991,7 +991,7 @@ public:
     }
   }
 
-  void copy(const Fractal &f,HeI32 mdx,HeI32 mdy)
+  void copy(const Fractal &f,NxI32 mdx,NxI32 mdy)
   {
     mX1 = f.mX1;
     mX2 = f.mX2;
@@ -1060,8 +1060,8 @@ public:
     }
 
     {
-      HeI32 count = mThreads.Begin();
-      for (HeI32 i=0; i<count; i++)
+      NxI32 count = mThreads.Begin();
+      for (NxI32 i=0; i<count; i++)
       {
         FractalThread *ft = mThreads.GetNext();
         if  ( !ft->isCancelled() )
@@ -1073,8 +1073,8 @@ public:
 
 
     {
-      HeI32 count = mQueueTasks.Begin();
-      for (HeI32 i=0; i<count; i++)
+      NxI32 count = mQueueTasks.Begin();
+      for (NxI32 i=0; i<count; i++)
       {
         QueueTask *t = mQueueTasks.GetNext();
         mQueueTasks.Release(t);
@@ -1082,20 +1082,20 @@ public:
     }
 
     {
-      for (HeU32 i=0; i<MAX_DIFFICULTY; i++)
+      for (NxU32 i=0; i<MAX_DIFFICULTY; i++)
         mPending[i] = 0;
     }
 
   }
 
-	void fractalPixel(HeU32 x,HeU32 y,HeU32 ic)
+	void fractalPixel(NxU32 x,NxU32 y,NxU32 ic)
 	{
-		HeU32 index = y*mFractalSize+x;
+		NxU32 index = y*mFractalSize+x;
 		mFractalBuffer[index] = ic;
 		mCallback->fractalPixel(this,x,y,ic);
 	}
 
-  void begin(HeU32 x1,HeU32 y1,HeU32 x2,HeU32 y2)
+  void begin(NxU32 x1,NxU32 y1,NxU32 x2,NxU32 y2)
   {
 
     if ( mUseRectangleSubdivision )
@@ -1132,63 +1132,63 @@ public:
   }
 
 
-  void FRAC_QueueTask(HeU32 x1,HeU32 y1,HeU32 x2,HeU32 y2)
+  void FRAC_QueueTask(NxU32 x1,NxU32 y1,NxU32 x2,NxU32 y2)
   {
     getCurrent();
     if ( mCurrent->addRect(x1,y1,x2,y2) )
       postCurrent();
   }
 
-  void FRAC_hline(HeU32 y,HeU32 x1,HeU32 x2)
+  void FRAC_hline(NxU32 y,NxU32 x1,NxU32 x2)
   {
-    for (HeU32 x=x1; x<=x2; x++)
+    for (NxU32 x=x1; x<=x2; x++)
     {
       add(x,y);
     }
   }
 
-	HeU32 getPixel(HeU32 x,HeU32 y )
+	NxU32 getPixel(NxU32 x,NxU32 y )
 	{
-		HeU32 index = y*mFractalSize+x;
+		NxU32 index = y*mFractalSize+x;
 		return mFractalBuffer[index];
 	}
 
-	HeU32 computeDifficulty(HeU32 x1,HeU32 y1,HeU32 x2,HeU32 y2)
+	NxU32 computeDifficulty(NxU32 x1,NxU32 y1,NxU32 x2,NxU32 y2)
 	{
-		HeU32 ret = 0;
+		NxU32 ret = 0;
 
-		HeU32 total=0;
-		HeU32 count = 0;
-		for (HeU32 x=x1; x<=x2; x++)
+		NxU32 total=0;
+		NxU32 count = 0;
+		for (NxU32 x=x1; x<=x2; x++)
 		{
 			total+=getPixel(x,y1);
 			total+=getPixel(x,y2);
 			count+=2;
 		}
-		for (HeU32 y=y1+1; y<=(y2-2); y++)
+		for (NxU32 y=y1+1; y<=(y2-2); y++)
 		{
 			total+=getPixel(x1,y);
 			total+=getPixel(x2,y);
 			count+=2;
 		}
 
-		HeU32 mean = total / count;
-		HeU32 difficulty = (mean * mDifficultyScale)>>8;
+		NxU32 mean = total / count;
+		NxU32 difficulty = (mean * mDifficultyScale)>>8;
 		if ( difficulty >= MAX_DIFFICULTY )
 			difficulty = 255;
 
 		return ret;
 	}
 
-  void FRAC_vline(HeU32 x,HeU32 y1,HeU32 y2)
+  void FRAC_vline(NxU32 x,NxU32 y1,NxU32 y2)
   {
-    for (HeU32 y=y1; y<=y2; y++)
+    for (NxU32 y=y1; y<=y2; y++)
       add(x,y);
   }
 
-  void add(HeU32 x,HeU32 y)
+  void add(NxU32 x,NxU32 y)
   {
-    HeU32 color = mFractalBuffer[y*mFractalSize+x];
+    NxU32 color = mFractalBuffer[y*mFractalSize+x];
     if ( color == 0 )
     {
       getCurrent();
@@ -1199,7 +1199,7 @@ public:
     }
   }
 
-	void setIterationCount(HeU32 icount)
+	void setIterationCount(NxU32 icount)
 	{
     mMaxIterations = icount;
 	}
@@ -1209,11 +1209,11 @@ public:
 		mUseRectangleSubdivision = state;
 	}
 
-  HeU32 getMaxIterations(void) const { return mMaxIterations; };
+  NxU32 getMaxIterations(void) const { return mMaxIterations; };
 
   void createQueueTask(RectTask &rt)
   {
-    HeU32 difficulty = computeDifficulty(rt.mX1,rt.mY1,rt.mX2,rt.mY2);
+    NxU32 difficulty = computeDifficulty(rt.mX1,rt.mY1,rt.mX2,rt.mY2);
     QueueTask *qt = mQueueTasks.GetFreeLink();
     new ( qt ) QueueTask(rt);
     QueueTask *next = mPending[difficulty];
@@ -1251,7 +1251,7 @@ public:
     ytop = mY1;
   }
 
-  HeU32 * getData(HeU32 &wid,HeU32 &hit)
+  NxU32 * getData(NxU32 &wid,NxU32 &hit)
   {
     wid = mFractalSize;
     hit = mFractalSize;
@@ -1260,12 +1260,12 @@ public:
 
   void redraw(void)
   {
-    const HeU32 *source = mFractalBuffer;
-    for (HeU32 y=0; y<mFractalSize; y++)
+    const NxU32 *source = mFractalBuffer;
+    for (NxU32 y=0; y<mFractalSize; y++)
     {
-      for (HeU32 x=0; x<mFractalSize; x++)
+      for (NxU32 x=0; x<mFractalSize; x++)
       {
-        HeU32 color = *source++;
+        NxU32 color = *source++;
         if ( color )
         {
           mCallback->fractalPixel(this,x,y,color);
@@ -1289,22 +1289,22 @@ public:
   }
 
 private:
-  HeU32                 mFractalSize;
-  HeU32                 mScreenWidth;
-  HeU32                 mScreenHeight;
-  HeU32                 mMaxIterations;
-	HeU32                 mDifficultyScale;
-  HeI32                 mActiveJobs;
+  NxU32                 mFractalSize;
+  NxU32                 mScreenWidth;
+  NxU32                 mScreenHeight;
+  NxU32                 mMaxIterations;
+	NxU32                 mDifficultyScale;
+  NxI32                 mActiveJobs;
   BigFloat              mFractalScale;
   BigFloat              mX1;
   BigFloat              mY1;
   BigFloat              mX2;
   BigFloat              mY2;
   bool                  mUseRectangleSubdivision;
-  HeU32                 mSolveCount;
-  HeU32                 mSolvePer;
-  HeU32                 mSolveX;
-  HeU32                 mSolveY;
+  NxU32                 mSolveCount;
+  NxU32                 mSolvePer;
+  NxU32                 mSolveX;
+  NxU32                 mSolveY;
 
 	FractalInterface     *mCallback;
   FractalThread        *mCurrent;
@@ -1313,9 +1313,9 @@ private:
 
   QueueTask            *mPending[MAX_DIFFICULTY];
 
-  HeU32                 mMemSize;
-  HeU32                *mFractalBuffer;
-  HeU32                *mFractalBackBuffer;
+  NxU32                 mMemSize;
+  NxU32                *mFractalBuffer;
+  NxU32                *mFractalBackBuffer;
 
   Frame                *mReferenceFrame;
 
@@ -1330,14 +1330,14 @@ private:
 
 void FractalThread::job_process(void * /*userData*/,int /*userId*/)  // RUNS IN ANOTHER THREAD!! MUST BE THREAD SAFE!
 {
-  HeU32 maxiter = mParent->getMaxIterations();
+  NxU32 maxiter = mParent->getMaxIterations();
 
   switch ( mLastType )
   {
     case MFT_SMALL:
       {
         FractalPixelSmall *pixel = &mPixelsSmall[0];
-        for (HeU32 i=0; i<mCount; i++)
+        for (NxU32 i=0; i<mCount; i++)
         {
           pixel->solve(maxiter);
           pixel++;
@@ -1348,7 +1348,7 @@ void FractalThread::job_process(void * /*userData*/,int /*userId*/)  // RUNS IN 
     case MFT_MEDIUM:
       {
         FractalPixelMedium *pixel = &mPixelsMedium[0];
-        for (HeU32 i=0; i<mCount; i++)
+        for (NxU32 i=0; i<mCount; i++)
         {
           pixel->solve(maxiter);
           pixel++;
@@ -1359,7 +1359,7 @@ void FractalThread::job_process(void * /*userData*/,int /*userId*/)  // RUNS IN 
     case MFT_BIG:
       {
         FractalPixelBig *pixel = &mPixelsBig[0];
-        for (HeU32 i=0; i<mCount; i++)
+        for (NxU32 i=0; i<mCount; i++)
         {
           pixel->solve(maxiter);
           pixel++;
@@ -1370,7 +1370,7 @@ void FractalThread::job_process(void * /*userData*/,int /*userId*/)  // RUNS IN 
     case MFT_FIXED32:
       {
         FractalPixelFixed32 *pixel = &mPixelsFixed32[0];
-        for (HeU32 i=0; i<mCount; i++)
+        for (NxU32 i=0; i<mCount; i++)
         {
           pixel->solve(maxiter);
           pixel++;
@@ -1391,7 +1391,7 @@ void FractalThread::job_onFinish(void * /*userData*/,int /*userId*/)
     case MFT_SMALL:
       {
         FractalPixelSmall *pixel = &mPixelsSmall[0];
-        for (HeU32 i=0; i<mCount; i++)
+        for (NxU32 i=0; i<mCount; i++)
         {
           mParent->fractalPixel(pixel->mX,pixel->mY,pixel->mIterationCount);
           pixel++;
@@ -1401,7 +1401,7 @@ void FractalThread::job_onFinish(void * /*userData*/,int /*userId*/)
     case MFT_MEDIUM:
       {
         FractalPixelMedium *pixel = &mPixelsMedium[0];
-        for (HeU32 i=0; i<mCount; i++)
+        for (NxU32 i=0; i<mCount; i++)
         {
           mParent->fractalPixel(pixel->mX,pixel->mY,pixel->mIterationCount);
           pixel++;
@@ -1411,7 +1411,7 @@ void FractalThread::job_onFinish(void * /*userData*/,int /*userId*/)
     case MFT_BIG:
       {
         FractalPixelBig *pixel = &mPixelsBig[0];
-        for (HeU32 i=0; i<mCount; i++)
+        for (NxU32 i=0; i<mCount; i++)
         {
           mParent->fractalPixel(pixel->mX,pixel->mY,pixel->mIterationCount);
           pixel++;
@@ -1421,7 +1421,7 @@ void FractalThread::job_onFinish(void * /*userData*/,int /*userId*/)
     case MFT_FIXED32:
       {
         FractalPixelFixed32 *pixel = &mPixelsFixed32[0];
-        for (HeU32 i=0; i<mCount; i++)
+        for (NxU32 i=0; i<mCount; i++)
         {
           mParent->fractalPixel(pixel->mX,pixel->mY,pixel->mIterationCount);
           pixel++;
@@ -1431,7 +1431,7 @@ void FractalThread::job_onFinish(void * /*userData*/,int /*userId*/)
   }
 
   RectTask *rt = mRectangles;
-  for (HeU32 i=0; i<mRectCount; i++)
+  for (NxU32 i=0; i<mRectCount; i++)
   {
     mParent->createQueueTask(*rt);
     rt++;
@@ -1460,7 +1460,7 @@ void FractalThread::cancel(void)
 }
 
 
-Fractal * fc_create(FractalInterface *iface,HeU32 fractalSize,HeU32 swidth,HeU32 sheight,HeU32 maxIterations,const BigFloat &xleft,const BigFloat &xright,const BigFloat &ytop,bool useRectangleSubdivision)
+Fractal * fc_create(FractalInterface *iface,NxU32 fractalSize,NxU32 swidth,NxU32 sheight,NxU32 maxIterations,const BigFloat &xleft,const BigFloat &xright,const BigFloat &ytop,bool useRectangleSubdivision)
 {
   Fractal *f = MEMALLOC_NEW(Fractal)(iface,fractalSize,swidth,sheight,maxIterations,xleft,xright,ytop,useRectangleSubdivision);
   return f;
@@ -1472,29 +1472,29 @@ void      fc_release(Fractal *f)
 }
 
 
-bool      fc_process(Fractal *f,HeF32 dtime)
+bool      fc_process(Fractal *f,NxF32 dtime)
 {
   return f->process(dtime);
 }
 
 
-void      fc_action(Fractal *f,FractalAction faction,bool astate,HeI32 mx,HeI32 my,HeI32 zoomFactor,HeI32 &dx,HeI32 &dy)
+void      fc_action(Fractal *f,FractalAction faction,bool astate,NxI32 mx,NxI32 my,NxI32 zoomFactor,NxI32 &dx,NxI32 &dy)
 {
   f->action(faction,astate,mx,my,zoomFactor,dx,dy);
 }
 
-Fractal * fc_create(Fractal *f,FractalInterface *iface,HeU32 fractalSize,HeU32 maxIterations)
+Fractal * fc_create(Fractal *f,FractalInterface *iface,NxU32 fractalSize,NxU32 maxIterations)
 {
   Fractal *ret = MEMALLOC_NEW(Fractal)(*f,iface,fractalSize,maxIterations);
   return ret;
 }
 
-void      fc_copy(const Fractal *source,Fractal *dest,HeI32 mdx,HeI32 mdy)
+void      fc_copy(const Fractal *source,Fractal *dest,NxI32 mdx,NxI32 mdy)
 {
   dest->copy(*source,mdx,mdy);
 }
 
-void      fc_setIterationCount(Fractal *f,HeU32 icount)
+void      fc_setIterationCount(Fractal *f,NxU32 icount)
 {
 	f->setIterationCount(icount);
 }
@@ -1527,7 +1527,7 @@ void      fc_getCoordinates(Fractal *f,BigFloat &xleft,BigFloat &xright,BigFloat
   f->getCoordinates(xleft,xright,ytop);
 }
 
-HeU32 * fc_getData(Fractal *f,HeU32 &wid,HeU32 &hit)
+NxU32 * fc_getData(Fractal *f,NxU32 &wid,NxU32 &hit)
 {
   return f->getData(wid,hit);
 }

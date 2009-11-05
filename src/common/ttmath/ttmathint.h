@@ -710,7 +710,7 @@ public:
 		***this operator is created only on a 64bit platform***
 		it takes one argument of 32bit
 	*/
-	Int<value_size> & operator=(HeI32 i)
+	Int<value_size> & operator=(NxI32 i)
 	{
 		FromInt(sint(i));
 
@@ -724,7 +724,7 @@ public:
 		***this constructor is created only on a 64bit platform***
 		it takes one argument of 32bit
 	*/
-	Int(HeI32 i)
+	Int(NxI32 i)
 	{
 		FromInt(sint(i));
 	}
@@ -736,7 +736,7 @@ public:
 		***this operator is created only on a 64bit platform***
 		it takes one argument of 32bit
 	*/
-	Int<value_size> & operator=(HeU32 i)
+	Int<value_size> & operator=(NxU32 i)
 	{
 		FromUInt(uint(i));
 
@@ -750,7 +750,7 @@ public:
 		***this constructor is created only on a 64bit platform***
 		it takes one argument of 32bit
 	*/
-	Int(HeU32 i)
+	Int(NxU32 i)
 	{
 		FromUInt(uint(i));
 	}
@@ -1165,7 +1165,7 @@ public:
 	/*!
 		Postfix operator e.g. variable++
 	*/
-	UInt<value_size> operator++(HeI32)
+	UInt<value_size> operator++(NxI32)
 	{
 	UInt<value_size> temp( *this );
 
@@ -1183,7 +1183,7 @@ public:
 	}
 
 
-	UInt<value_size> operator--(HeI32)
+	UInt<value_size> operator--(NxI32)
 	{
 	UInt<value_size> temp( *this );
 
@@ -1217,7 +1217,7 @@ public:
 	std::string ss;
 	
 	// char for operator>>
-	HeU8 z;
+	NxU8 z;
 	
 		// operator>> omits white characters if they're set for ommiting
 		s >> z;

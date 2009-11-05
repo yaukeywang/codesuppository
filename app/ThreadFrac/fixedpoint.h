@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "common/snippets/HeSimpleTypes.h"
+#include "common/snippets/UserMemAlloc.h"
 
 #define PRECISION_BITS 21
 
@@ -30,70 +30,70 @@ public:
 
   }
 
-  inline Fixed32(HeI32 value)
+  inline Fixed32(NxI32 value)
   {
-    mValue = (HeI32)(value<<PRECISION_BITS);
+    mValue = (NxI32)(value<<PRECISION_BITS);
 
   }
 
-  inline Fixed32(HeU32 value)
+  inline Fixed32(NxU32 value)
   {
-    mValue = (HeI32)(value<<PRECISION_BITS);
+    mValue = (NxI32)(value<<PRECISION_BITS);
 
   }
 
-  inline Fixed32(HeF32 value)
+  inline Fixed32(NxF32 value)
   {
-    mValue = (HeI32)(value*(HeF32)PVALUE);
+    mValue = (NxI32)(value*(NxF32)PVALUE);
 
   }
 
   inline Fixed32(HeF64 value)
   {
-    mValue = (HeI32)(value*(HeF64)PVALUE);
+    mValue = (NxI32)(value*(HeF64)PVALUE);
 
   }
 
   inline Fixed32(const char *value)
   {
     HeF64 v = atof(value);
-    mValue = (HeI32)(v*(HeF64)PVALUE);
+    mValue = (NxI32)(v*(HeF64)PVALUE);
 
   }
 
 	inline Fixed32 & operator=(const char *value)
 	{
     HeF64 v = atof(value);
-    mValue = (HeI32)(v*(HeF64)PVALUE);
+    mValue = (NxI32)(v*(HeF64)PVALUE);
 
   	return *this;
 	}
 
 
-	inline Fixed32 & operator=(HeI32 value)
+	inline Fixed32 & operator=(NxI32 value)
 	{
-    mValue = (HeI32)(value<<PRECISION_BITS);
+    mValue = (NxI32)(value<<PRECISION_BITS);
 
   	return *this;
 	}
 
 
-	inline Fixed32 & operator=(HeU32 value)
+	inline Fixed32 & operator=(NxU32 value)
 	{
-    mValue = (HeI32)(value<<PRECISION_BITS);
+    mValue = (NxI32)(value<<PRECISION_BITS);
 
   	return *this;
 	}
 
-	inline Fixed32 & operator=(HeF32 value)
+	inline Fixed32 & operator=(NxF32 value)
 	{
-    mValue = (HeI32)(value*(HeF32)PVALUE);
+    mValue = (NxI32)(value*(NxF32)PVALUE);
   	return *this;
 	}
 
 	inline Fixed32 & operator=(HeF64 value)
 	{
-    mValue = (HeI32)(value*(HeF64)PVALUE);
+    mValue = (NxI32)(value*(HeF64)PVALUE);
   	return *this;
 	}
 
@@ -110,13 +110,13 @@ public:
     return v;
   }
 
-  inline HeF32 toFloat(void) const
+  inline NxF32 toFloat(void) const
   {
-    HeF32 v = (HeF32)mValue / (HeF32)PVALUE;
+    NxF32 v = (NxF32)mValue / (NxF32)PVALUE;
     return v;
   }
 
-  inline HeI32 toInt(void) const { return mValue>>PRECISION_BITS; }
+  inline NxI32 toInt(void) const { return mValue>>PRECISION_BITS; }
 
 	inline bool operator<(const Fixed32 & ss2) const {  return mValue < ss2.mValue; }
 	inline bool operator==(const Fixed32 & ss2) const	{ return mValue == ss2.mValue; }
@@ -131,12 +131,12 @@ public:
 	inline Fixed32 & operator-=(const Fixed32 & ss2)	{	Sub(ss2);	return *this;	}
   inline void Add(const Fixed32 &ss2) { mValue+=ss2.mValue;  };
 
-  inline void getStr(HeI32 a,char *dest)
+  inline void getStr(NxI32 a,char *dest)
   {
     sprintf(dest,"%0.9f", (HeF64)a / (HeF64) PVALUE );
   }
 
-  inline void debug(HeI32 a,HeI32 b,HeI32 c,const char *symbol)
+  inline void debug(NxI32 a,NxI32 b,NxI32 c,const char *symbol)
   {
     char scratch[512];
     char s1[256];
@@ -151,8 +151,8 @@ public:
 
   inline void Mul(const Fixed32 &ss2)
   {
-    HeI32 v1 = mValue;
-    HeI32 v2 = ss2.mValue;
+    NxI32 v1 = mValue;
+    NxI32 v2 = ss2.mValue;
 
     __asm
     {
@@ -177,8 +177,8 @@ public:
 
   inline void Div(const Fixed32 &ss2)
   {
-    HeI32 v1 = mValue;
-    HeI32 v2 = ss2.mValue;
+    NxI32 v1 = mValue;
+    NxI32 v2 = ss2.mValue;
 
     __asm
     {
@@ -211,7 +211,7 @@ public:
 	inline Fixed32 operator/(const Fixed32 & ss2) const	{	Fixed32 temp(*this);	temp.Div(ss2);	return temp;	}
 	inline Fixed32 & operator/=(const Fixed32 & ss2)	{	Div(ss2);	return *this;	}
 
-  HeI32  mValue;
+  NxI32  mValue;
 };
 
 #endif

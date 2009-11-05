@@ -19,20 +19,20 @@ ErrorHeuristic::ErrorHeuristic(const RtinObj &rtin,TopoRtin &topo)
   topo.SetDistanceThreshold(8);
   topo.SetEye(0,0);
 
-  HeI32 hwid = rtin.GetWidth();
-  HeI32 hhit = rtin.GetHeight();
+  NxI32 hwid = rtin.GetWidth();
+  NxI32 hhit = rtin.GetHeight();
 
   mWidth  = hwid/SAMPLESIZE;
   mHeight = hhit/SAMPLESIZE;
 
   mError  = MEMALLOC_NEW_ARRAY(float,mWidth*mHeight)[mWidth*mHeight];
 
-  for (HeI32 y=0; y<mHeight; y++)
+  for (NxI32 y=0; y<mHeight; y++)
   {
-    for (HeI32 x=0; x<mWidth; x++)
+    for (NxI32 x=0; x<mWidth; x++)
     {
 
-      HeF32 err = GetError(x,y,rtin,topo);
+      NxF32 err = GetError(x,y,rtin,topo);
 
 
       mError[ y*mWidth+x ] = err;
@@ -49,9 +49,9 @@ ErrorHeuristic::~ErrorHeuristic(void)
 
 
 
-HeF32 ErrorHeuristic::Get(HeI32 x,HeI32 y) const  // get error from this heightfield location
+NxF32 ErrorHeuristic::Get(NxI32 x,NxI32 y) const  // get error from this heightfield location
 {
-  HeF32 e = 1;
+  NxF32 e = 1;
 
   x = x/SAMPLESIZE;
   y = y/SAMPLESIZE;
@@ -65,30 +65,30 @@ HeF32 ErrorHeuristic::Get(HeI32 x,HeI32 y) const  // get error from this heightf
   return e; // default value.
 }
 
-HeF32 ErrorHeuristic::GetError(HeI32 x,HeI32 y,const RtinObj & /*rtin*/,TopoRtin &topo) const
+NxF32 ErrorHeuristic::GetError(NxI32 x,NxI32 y,const RtinObj & /*rtin*/,TopoRtin &topo) const
 {
-  HeI32 wx = x*SAMPLESIZE;
-  HeI32 wy = y*SAMPLESIZE;
+  NxI32 wx = x*SAMPLESIZE;
+  NxI32 wy = y*SAMPLESIZE;
 
-  HeI32 icount = SAMPLELEN*SAMPLELEN*2*3;
+  NxI32 icount = SAMPLELEN*SAMPLELEN*2*3;
 
-  HeU16 *work = MEMALLOC_NEW_ARRAY(unsigned short,icount)[icount];
+  NxU16 *work = MEMALLOC_NEW_ARRAY(unsigned short,icount)[icount];
 
-  HeU16 *result = topo.BuildIndices(work,wx,wy);
+  NxU16 *result = topo.BuildIndices(work,wx,wy);
 
   #define BASELINE 50
-  HeF32 tcount = BASELINE;
+  NxF32 tcount = BASELINE;
 
   if ( result )
   {
-    HeI32 count = (result-work)/3; // total number of triangles created.
+    NxI32 count = (result-work)/3; // total number of triangles created.
 //    printf("(%d,%d) = %d triangles.\n",x,y,count);
-    tcount = HeF32(count);
+    tcount = NxF32(count);
   }
 
   delete work;
 
-  HeF32 err = tcount/BASELINE;
+  NxF32 err = tcount/BASELINE;
 
   if ( err < 0.1f ) err = 0.1f;
 

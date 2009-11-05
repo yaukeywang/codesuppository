@@ -90,7 +90,7 @@ public:
 
 Int<exp>  exponent;
 UInt<man> mantissa;
-HeU8 info;
+NxU8 info;
 
 
 /*!
@@ -203,7 +203,7 @@ private:
 	// (first is the highest word)
 	// we must define this table as 'unsigned int' because 
 	// both on 32bit and 64bit platforms this table is 32bit
-	static const HeU32 temp_table[] = {
+	static const NxU32 temp_table[] = {
 		0xc90fdaa2, 0x2168c234, 0xc4c6628b, 0x80dc1cd1, 0x29024e08, 0x8a67cc74, 0x020bbea6, 0x3b139b22, 
 		0x514a0879, 0x8e3404dd, 0xef9519b3, 0xcd3a431b, 0x302b0a6d, 0xf25f1437, 0x4fe1356d, 0x6d51c245, 
 		0xe485b576, 0x625e7ec6, 0xf44c42e9, 0xa637ed6b, 0x0bff5cb6, 0xf406b7ed, 0xee386bfb, 0x5a899fa5, 
@@ -234,7 +234,7 @@ private:
 		// (TTMATH_BUILTIN_VARIABLES_SIZE on 32bit platform should have the value 128,
 		// and on 64bit platform value 64 (128/2=64))
 	
-		mantissa.SetFromTable(temp_table, sizeof(temp_table) / sizeof(HeI32));
+		mantissa.SetFromTable(temp_table, sizeof(temp_table) / sizeof(NxI32));
 	}
 
 public:
@@ -279,7 +279,7 @@ public:
 	*/
 	void SetE()
 	{
-	static const HeU32 temp_table[] = {
+	static const NxU32 temp_table[] = {
 		0xadf85458, 0xa2bb4a9a, 0xafdc5620, 0x273d3cf1, 0xd8b9c583, 0xce2d3695, 0xa9e13641, 0x146433fb, 
 		0xcc939dce, 0x249b3ef9, 0x7d2fe363, 0x630c75d8, 0xf681b202, 0xaec4617a, 0xd3df1ed5, 0xd5fd6561, 
 		0x2433f51f, 0x5f066ed0, 0x85636555, 0x3ded1af3, 0xb557135e, 0x7f57c935, 0x984f0c70, 0xe0e68b77, 
@@ -307,7 +307,7 @@ public:
 		// (TTMATH_BUILTIN_VARIABLES_SIZE on 32bit platform should have the value 128,
 		// and on 64bit platform value 64 (128/2=64))
 
-		mantissa.SetFromTable(temp_table, sizeof(temp_table) / sizeof(HeI32));
+		mantissa.SetFromTable(temp_table, sizeof(temp_table) / sizeof(NxI32));
 		exponent = -sint(man)*sint(TTMATH_BITS_PER_UINT) + 2;
 		info = 0;
 	}
@@ -319,7 +319,7 @@ public:
 	*/
 	void SetLn2()
 	{
-	static const HeU32 temp_table[] = {
+	static const NxU32 temp_table[] = {
 		0xb17217f7, 0xd1cf79ab, 0xc9e3b398, 0x03f2f6af, 0x40f34326, 0x7298b62d, 0x8a0d175b, 0x8baafa2b, 
 		0xe7b87620, 0x6debac98, 0x559552fb, 0x4afa1b10, 0xed2eae35, 0xc1382144, 0x27573b29, 0x1169b825, 
 		0x3e96ca16, 0x224ae8c5, 0x1acbda11, 0x317c387e, 0xb9ea9bc3, 0xb136603b, 0x256fa0ec, 0x7657f74b, 
@@ -348,7 +348,7 @@ public:
 		// (TTMATH_BUILTIN_VARIABLES_SIZE on 32bit platform should have the value 128,
 		// and on 64bit platform value 64 (128/2=64))
 
-		mantissa.SetFromTable(temp_table, sizeof(temp_table) / sizeof(HeI32));
+		mantissa.SetFromTable(temp_table, sizeof(temp_table) / sizeof(NxI32));
 		exponent = -sint(man)*sint(TTMATH_BITS_PER_UINT);
 		info = 0;
 	}
@@ -370,7 +370,7 @@ public:
 	*/
 	void SetLn10()
 	{
-	static const HeU32 temp_table[] = {
+	static const NxU32 temp_table[] = {
 		0x935d8ddd, 0xaaa8ac16, 0xea56d62b, 0x82d30a28, 0xe28fecf9, 0xda5df90e, 0x83c61e82, 0x01f02d72, 
 		0x962f02d7, 0xb1a8105c, 0xcc70cbc0, 0x2c5f0d68, 0x2c622418, 0x410be2da, 0xfb8f7884, 0x02e516d6, 
 		0x782cf8a2, 0x8a8c911e, 0x765aa6c3, 0xb0d831fb, 0xef66ceb0, 0x4ab3c6fa, 0x5161bb49, 0xd219c7bb, 
@@ -402,7 +402,7 @@ public:
 		// (TTMATH_BUILTIN_VARIABLES_SIZE on 32bit platform should have the value 128,
 		// and on 64bit platform value 64 (128/2=64))
 
-		mantissa.SetFromTable(temp_table, sizeof(temp_table) / sizeof(HeI32));
+		mantissa.SetFromTable(temp_table, sizeof(temp_table) / sizeof(NxI32));
 		exponent = -sint(man)*sint(TTMATH_BITS_PER_UINT) + 2;
 		info = 0;
 	}
@@ -779,7 +779,7 @@ public:
 		// man_result = mantissa * ss2.mantissa
 		mantissa.MulInt(ss2, man_result);
 
-		HeI32 bit = UInt<man>::FindLeadingBitInWord(man_result.table[man]); // man - last word
+		NxI32 bit = UInt<man>::FindLeadingBitInWord(man_result.table[man]); // man - last word
 		
 		if( bit!=-1 && uint(bit) > (TTMATH_BITS_PER_UINT/2) )
 		{
@@ -1829,7 +1829,7 @@ public:
 
 private:
 
-	void FromDouble_SetExpAndMan(bool is_sign, HeI32 e, uint mhighest, uint m1, uint m2)
+	void FromDouble_SetExpAndMan(bool is_sign, NxI32 e, uint mhighest, uint m1, uint m2)
 	{
 		exponent = e;
 
@@ -2146,7 +2146,7 @@ public:
 
 		
 	*/
-	Big<exp, man> & operator=(HeI32 value)
+	Big<exp, man> & operator=(NxI32 value)
 	{
 		FromInt(sint(value));
 
@@ -2159,7 +2159,7 @@ public:
 		***this operator is created only on a 64bit platform***
 		it takes one argument of 32bit
 	*/
-	Big<exp, man> & operator=(HeU32 value)
+	Big<exp, man> & operator=(NxU32 value)
 	{
 		FromUInt(uint(value));
 
@@ -2172,7 +2172,7 @@ public:
 		***this constructor is created only on a 64bit platform***
 		it takes one argument of 32bit
 	*/
-	Big(HeI32 value)
+	Big(NxI32 value)
 	{
 		FromInt(sint(value));
 	}
@@ -2182,7 +2182,7 @@ public:
 		***this constructor is created only on a 64bit platform***
 		it takes one argument of 32bit
 	*/
-	Big(HeU32 value)
+	Big(NxU32 value)
 	{
 		FromUInt(uint(value));
 	}
@@ -3806,7 +3806,7 @@ public:
 	std::string ss;
 	
 	// 'char' for operator>>
-	HeU8 z;
+	NxU8 z;
 	bool was_comma = false;
 
 		// operator>> omits white characters if they're set for ommiting

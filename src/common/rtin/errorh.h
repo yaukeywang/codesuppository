@@ -2,7 +2,7 @@
 
 #define ERRORH_H
 
-#include "common/snippets/HeSimpleTypes.h"
+#include "common/snippets/UserMemAlloc.h"
 
 /** @file errorh.h
  *  @brief Used to compute a localized error heuristic on a heightfield, effectively samples the frequency at that location.
@@ -42,15 +42,15 @@ public:
 
   ~ErrorHeuristic(void);
 
-  HeF32 Get(HeI32 x,HeI32 y) const; // get error from this heightfield location
+  NxF32 Get(NxI32 x,NxI32 y) const; // get error from this heightfield location
 
 private:
 
-   HeF32 GetError(HeI32 x,HeI32 y,const RtinObj &rtin,TopoRtin &topo) const;
+   NxF32 GetError(NxI32 x,NxI32 y,const RtinObj &rtin,TopoRtin &topo) const;
 
-   HeI32  mWidth;
-   HeI32  mHeight;
-   HeF32 *mError;
+   NxI32  mWidth;
+   NxI32  mHeight;
+   NxF32 *mError;
 
 };
 

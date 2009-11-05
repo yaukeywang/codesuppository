@@ -52,30 +52,30 @@ public:
   bool         mUseThreading;
   bool         mSmallJobs;
   bool         mWireframeOverlay;
-  HeF32        mClampLow;
-  HeF32        mClampHigh;
-  HeF32        mClampScale;
-  HeU32 mMaxIterations;
+  NxF32        mClampLow;
+  NxF32        mClampHigh;
+  NxF32        mClampScale;
+  NxU32 mMaxIterations;
   char         mPalette[256];
-  HeU32 mClockCycles;
-  HeU32 mSmoothColor;
+  NxU32 mClockCycles;
+  NxU32 mSmoothColor;
 };
 
 
 class Tfrac;
 
-Tfrac * tf_create(HeU32 screenWidth,HeU32 screenHeight,const TfracSettings &settings);
+Tfrac * tf_create(NxU32 screenWidth,NxU32 screenHeight,const TfracSettings &settings);
 void    tf_release(Tfrac *t);
 
-void    tf_render(Tfrac *t,bool view3d,HeF32 dtime);
+void    tf_render(Tfrac *t,bool view3d,NxF32 dtime);
 
-void    tf_process(Tfrac *t,HeF32 dtime);
+void    tf_process(Tfrac *t,NxF32 dtime);
 void    tf_setPal(Tfrac *f,const char *fname);
 
-void    tf_action(Tfrac *f,FractalAction action,bool astate,HeI32 mx,HeI32 my,HeI32 zoomFactor=1);
+void    tf_action(Tfrac *f,FractalAction action,bool astate,NxI32 mx,NxI32 my,NxI32 zoomFactor=1);
 
 
-void    tf_state(Tfrac *f,TfracState state,bool astate=false,HeI32 ivalue=0,HeF32 fvalue=0);
+void    tf_state(Tfrac *f,TfracState state,bool astate=false,NxI32 ivalue=0,NxF32 fvalue=0);
 
 bool    tf_togglePreviewOnly(Tfrac *f);
 void    tf_setFractalCoordinates(Tfrac *f,const BigFloat &xleft,const BigFloat &xright,const BigFloat &ytop);

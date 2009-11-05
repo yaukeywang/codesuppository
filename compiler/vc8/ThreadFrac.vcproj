@@ -896,18 +896,6 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="DebugMsg"
-			>
-			<File
-				RelativePath="..\..\app\shared\debugmsg\debugmsg.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\app\shared\debugmsg\debugmsg.h"
-				>
-			</File>
-		</Filter>
-		<Filter
 			Name="Source Files"
 			>
 			<File
@@ -942,182 +930,6 @@
 		<Filter
 			Name="Common Source Files"
 			>
-			<Filter
-				Name="snippets"
-				>
-				<File
-					RelativePath="..\..\src\common\snippets\animation.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\bitmap.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\bitmap.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\bonebinding.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\encryption.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\geometry.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\geometry.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\hashtree.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\lookat.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\lookat.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\matrix.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\matrix.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\MemoryHTML.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\MemoryHTML.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\meshimporter.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\MyMessageBox.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\MyMessageBox.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\normalize.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\normalize.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\obj.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\obj.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\octree.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\octree.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\quat.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\quat.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\rect.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\rect.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\sgif.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\sgif.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\skeleton.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\skeleton.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\skeletoninstance.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\skeletoninstance.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\spline.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\spline.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\tga.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\tga.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\tga_io.c"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\tga_io.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\vector.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\vector.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\vformat.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\common\snippets\vformat.h"
-					>
-				</File>
-			</Filter>
 			<Filter
 				Name="tui"
 				>
@@ -1295,112 +1107,8 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="ResourceInterface"
-				>
-				<File
-					RelativePath="..\..\include\common\ResourceInterface\ResourceInterface.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\ResourceInterface\ResourceInterface.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\ResourceInterface\ResourceUpdate.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\ResourceInterface\ResourceUpdate.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="MemoryServices"
-				>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\ApplicationSystemServices.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\ApplicationSystemServices.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\dlmalloc.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\dlmalloc.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\GlobalNewDelete.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\He.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\HeSimpleTypes.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\htmltable.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\htmltable.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\memalloc.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\memalloc.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\MemoryContainer.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\MemoryContainer.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\memoryreport.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\MemoryServices.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\SendTextMessage.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\simplevector.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\simuhash_linux.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\MemoryServices\streamer.h"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="snippets"
 				>
-				<File
-					RelativePath="..\..\include\common\snippets\ApexUserMemAlloc.h"
-					>
-				</File>
 				<File
 					RelativePath="..\..\include\common\snippets\ArrowHead.cpp"
 					>
@@ -1423,14 +1131,6 @@
 				</File>
 				<File
 					RelativePath="..\..\include\common\snippets\AsciiPath.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\bmp.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\bmp.h"
 					>
 				</File>
 				<File
@@ -1570,10 +1270,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\include\common\snippets\gestalt.c"
-					>
-				</File>
-				<File
 					RelativePath="..\..\include\common\snippets\gestalt.h"
 					>
 				</File>
@@ -1586,19 +1282,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\include\common\snippets\He.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\include\common\snippets\HeAstar.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\..\include\common\snippets\HeAstar.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\HeSimpleTypes.h"
 					>
 				</File>
 				<File
@@ -1719,10 +1407,6 @@
 				</File>
 				<File
 					RelativePath="..\..\include\common\snippets\MeshCleanup.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\MeshImportMemAlloc.h"
 					>
 				</File>
 				<File
@@ -1963,22 +1647,6 @@
 				>
 				<File
 					RelativePath="..\..\include\Pd3d\pd3d.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="RenderDebug"
-				>
-				<File
-					RelativePath="..\..\include\RenderDebug\BaseRenderDebug.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\RenderDebug\RenderDebug.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\RenderDebug\StreamRenderDebug.h"
 					>
 				</File>
 			</Filter>

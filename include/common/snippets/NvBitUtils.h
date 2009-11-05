@@ -34,7 +34,7 @@
 #include "NvIntrinsics_Xbox360.h"
 #endif
 
-#ifndef __CELLOS_LV2__
+#ifdef __CELLOS_LV2__
 #include "NvIntrinsics_ps3.h"
 #endif
 

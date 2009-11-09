@@ -40,13 +40,6 @@ static void removePolyPoint(Edge *p,Edge **polyPoints);
 class TempTri //: public Memalloc TODO TODO TODO
 {
 public:
-  TempTri(void)
-  {
-	  mI1 = mI2 = mI3 = 0;
-	  mUV1 = mUV2 = mUV3 = 0;
-	  mId = mSubMesh = 0;
-	  mNormal.set(0,0,0);
-  }
   NxU32     mI1;
   NxU32     mI2;
   NxU32     mI3;
@@ -538,9 +531,9 @@ public:
 	t.mI2 = mVertices->getIndex(p2,np);
 	t.mI3 = mVertices->getIndex(p3,np);
 
-    if ( uv1 ) t.mUV1 = getTexel(uv1);
-    if ( uv2 ) t.mUV2 = getTexel(uv2);
-    if ( uv3 ) t.mUV3 = getTexel(uv3);
+    t.mUV1 = getTexel(uv1);
+    t.mUV2 = getTexel(uv2);
+    t.mUV3 = getTexel(uv3);
 
 	t.mId = id;
 	t.mSubMesh = subMesh;

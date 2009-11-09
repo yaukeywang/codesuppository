@@ -1,3 +1,4 @@
+#include "safestdio.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -1271,7 +1272,7 @@ const char * formatNumber(NxI32 number) // JWR  format this integer into a fancy
 
 	char scratch[512];
 
-#if defined (LINUX_GENERIC) || defined(LINUX)
+#if defined (LINUX_GENERIC) || defined(LINUX) || defined (__CELLOS_LV2__)
 	snprintf(scratch, 10, "%d", number);
 #else
 	itoa(number,scratch,10);

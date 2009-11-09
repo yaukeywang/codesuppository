@@ -1,3 +1,4 @@
+#include "safestdio.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -31,8 +32,10 @@ namespace RENDER_DEBUG_NVSHARE
 {
 
 class BlockInfo;
-
-typedef stdext::hash_map< NxU32, BlockInfo * > BlockInfoHash;
+#ifdef __CELLOS_LV2__
+#define stdext std
+#endif
+typedef stdext::hash_map<NxU32, BlockInfo*> BlockInfoHash;
 
 	//   font info:
 	//

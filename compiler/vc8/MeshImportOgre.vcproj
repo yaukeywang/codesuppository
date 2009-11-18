@@ -192,14 +192,6 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="Public Header Files"
-			>
-			<File
-				RelativePath="..\..\include\MeshImportOgre\MeshImportOgre.h"
-				>
-			</File>
-		</Filter>
-		<Filter
 			Name="Plugin Header Files"
 			>
 			<Filter

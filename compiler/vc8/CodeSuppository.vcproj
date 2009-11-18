@@ -512,6 +512,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\app\CodeSuppository\TestMarchingCubes.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\TestMarchingCubes.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\app\CodeSuppository\TestMeshCleanup.cpp"
 				>
 			</File>
@@ -1007,6 +1015,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\common\snippets\MarchingCubes.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\MarchingCubes.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\common\snippets\memory.cpp"
 					>
 				</File>
@@ -1131,15 +1147,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\include\common\snippets\NvIntrinsics_ps3.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\include\common\snippets\NvIntrinsics_Windows.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\NvIntrinsics_xbox360.h"
 					>
 				</File>
 				<File
@@ -1432,6 +1440,10 @@
 				</File>
 				<File
 					RelativePath="..\..\include\common\snippets\ResourceUpdate.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\safeStdio.h"
 					>
 				</File>
 				<File

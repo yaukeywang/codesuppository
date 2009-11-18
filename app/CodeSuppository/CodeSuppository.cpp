@@ -45,6 +45,7 @@
 #include "TestMeshConsolidation.h"
 #include "TestIslandGeneration.h"
 #include "TestVectorFont.h"
+#include "TestMarchingCubes.h"
 #include "RenderDebug.h"
 #include "SplitMeshApp.h"
 #include "JobSwarm.h"
@@ -112,6 +113,9 @@ public:
   {
     switch ( command )
     {
+    	case CSC_TEST_MARCHING_CUBES:
+    		testMarchingCubes();
+    		break;
       case CSC_TEST_VECTOR_FONT:
         testVectorFont();
         break;

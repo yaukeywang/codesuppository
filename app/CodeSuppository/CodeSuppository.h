@@ -63,6 +63,7 @@ enum CodeSuppositoryCommand
   CSC_TEST_ISLAND_GENERATION,
   CSC_TEST_MESH_CONSOLIDATION,
   CSC_TEST_VECTOR_FONT,
+  CSC_TEST_MARCHING_CUBES,
 };
 
 class CodeSuppository

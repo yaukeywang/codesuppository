@@ -923,6 +923,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\include\common\snippets\RenderDebug.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\common\snippets\RenderDebug.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\app\ThreadFrac\terrain.cpp"
 				>
 			</File>

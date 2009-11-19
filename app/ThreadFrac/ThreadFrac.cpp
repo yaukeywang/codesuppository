@@ -22,11 +22,14 @@
 #include "common/binding/binding.h"
 #include "pd3d/pd3d.h"
 #include "RenderDebug.h"
+#include "FloatMath.h"
 
 extern NxI32 gWINDOW_WIDE;
 extern NxI32 gWINDOW_TALL;
 
 #include "Tfrac.h"
+
+using namespace NVSHARE;
 
 namespace JOB_SWARM
 {
@@ -39,8 +42,9 @@ JOB_SWARM::JobSwarmContext *gJobSwarmContext=0;
 namespace NVSHARE
 {
 	class RenderDebug;
-	RenderDebug *gRenderDebug=0;
-}
+};
+
+
 using namespace NVSHARE;
 
 static NxU32 gScreenWidth=1024;
@@ -50,6 +54,55 @@ static NxU32 gScreenHeight=768;
 //#define DEBUG_PS   // Uncomment this line to debug pixel shaders
 
 #define USE_HUD 0
+
+
+class MyRenderDebugInterface : public RenderDebugInterface
+{
+public:
+	virtual void debugRenderLines(NxU32 lcount,const RenderDebugVertex *vertices,bool useZ,bool isScreenSpace)
+	{
+		NxF32 vm[16];
+		NxF32 pm[16];
+		if ( isScreenSpace )
+		{
+			memcpy(vm, gPd3d->getViewMatrix(), sizeof(NxF32)*16);
+			memcpy(pm, gPd3d->getProjectionMatrix(), sizeof(NxF32)*16);
+			NxF32 identity[16];
+			fm_identity(identity);
+			gPd3d->setViewProjectionMatrix(identity,identity);
+		}
+
+		gPd3d->renderLines( lcount, (const NVSHARE::Pd3dLineVertex *)vertices, useZ );
+
+		if ( isScreenSpace )
+		{
+			gPd3d->setViewProjectionMatrix(vm,pm);
+		}
+	}
+
+	virtual void debugRenderTriangles(NxU32 tcount,const RenderDebugSolidVertex *vertices,bool useZ,bool isScreenSpace)
+	{
+		NxF32 vm[16];
+		NxF32 pm[16];
+
+		if ( isScreenSpace )
+		{
+			memcpy(vm, gPd3d->getViewMatrix(), sizeof(NxF32)*16);
+			memcpy(pm, gPd3d->getProjectionMatrix(), sizeof(NxF32)*16);
+			NxF32 identity[16];
+			fm_identity(identity);
+			gPd3d->setViewProjectionMatrix(identity,identity);
+		}
+
+		gPd3d->renderSolid( tcount, (const NVSHARE::Pd3dSolidVertex *)vertices );
+
+		if ( isScreenSpace )
+		{
+			gPd3d->setViewProjectionMatrix(vm,pm);
+		}
+	}
+
+};
 
 
 //--------------------------------------------------------------------------------------
@@ -78,7 +131,6 @@ NxF32 gFPS=60.0f;
 IDirect3DDevice9*    gDevice=0;
 HINSTANCE            gInstance=0;
 NVSHARE::Pd3d                 *gPd3d=0;
-RenderDebug          *gRenderDebug=0;
 
 NxI32 mLastIndex=0;
 NxF32 mSpeed=2.0f;
@@ -181,6 +233,7 @@ INT WINAPI WinMain( HINSTANCE instance, HINSTANCE, LPSTR, NxI32 )
 		gInstance = instance;
 
     gPd3d = (NVSHARE::Pd3d *)getBindingInterface("pd3d.dll","pd3d",PD3D_VERSION,0,0);
+	gRenderDebug = createRenderDebug();
 
     if ( gPd3d )
     {
@@ -624,9 +677,9 @@ void CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, NxF64 fTime, NxF32 fE
 		gPd3d->preserveRenderState();
     gPd3d->setViewProjectionMatrix( &mView, &mProj );
 
-    if ( gView3d )
+    if ( gView3d && gRenderDebug )
     {
-//      gRenderDebug->drawGrid(false);
+      gRenderDebug->drawGrid(false);
     }
 
 		NVSHARE::Pd3dTexture *texture = 	gPd3d->locateTexture("white.dds");
@@ -645,6 +698,13 @@ void CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, NxF64 fTime, NxF32 fE
     }
 
     tf_render(gTfrac,gView3d,fElapsedTime);
+
+	if ( gRenderDebug )
+	{
+		MyRenderDebugInterface mr;
+		gRenderDebug->render(fElapsedTime,&mr);
+	}
+
 
     if ( g_bShowHelp && gScreenCapture == 0 )
     {

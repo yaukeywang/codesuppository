@@ -54,7 +54,7 @@
 
 #include "UserMemAlloc.h"
 
-namespace RENDER_DEBUG
+namespace NVSHARE
 {
   class RenderDebug;
 };
@@ -105,7 +105,7 @@ public:
 // searches for NxF64-sided triangles, and either removes them or
 // extrudes them.
 
-bool meshCleanup(MeshCleanupDesc &desc,NxF32 weldDistance=0.001f,NxF32 projectDistance=0.01f,RENDER_DEBUG::RenderDebug *debug=0);
+bool meshCleanup(MeshCleanupDesc &desc,NxF32 weldDistance=0.001f,NxF32 projectDistance=0.01f,NVSHARE::RenderDebug *debug=0);
 void releaseMeshCleanup(MeshCleanupDesc &desc);
 
 };

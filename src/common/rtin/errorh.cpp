@@ -25,7 +25,7 @@ ErrorHeuristic::ErrorHeuristic(const RtinObj &rtin,TopoRtin &topo)
   mWidth  = hwid/SAMPLESIZE;
   mHeight = hhit/SAMPLESIZE;
 
-  mError  = MEMALLOC_NEW_ARRAY(float,mWidth*mHeight)[mWidth*mHeight];
+  mError  = (float *)MEMALLOC_MALLOC(sizeof(float)*mWidth*mHeight);
 
   for (NxI32 y=0; y<mHeight; y++)
   {
@@ -72,7 +72,7 @@ NxF32 ErrorHeuristic::GetError(NxI32 x,NxI32 y,const RtinObj & /*rtin*/,TopoRtin
 
   NxI32 icount = SAMPLELEN*SAMPLELEN*2*3;
 
-  NxU16 *work = MEMALLOC_NEW_ARRAY(unsigned short,icount)[icount];
+  NxU16 *work = (NxU16 *)MEMALLOC_MALLOC(sizeof(unsigned short)*icount);
 
   NxU16 *result = topo.BuildIndices(work,wx,wy);
 

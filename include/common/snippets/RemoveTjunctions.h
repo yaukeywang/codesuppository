@@ -2,7 +2,7 @@
 
 #define REMOVE_TJUNCTIONS_H
 
-#include <NxSimpleTypes.h>
+#include "NxSimpleTypes.h"
 
 class RemoveTjunctionsDesc
 {

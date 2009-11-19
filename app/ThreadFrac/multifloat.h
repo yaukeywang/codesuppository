@@ -12,7 +12,7 @@
 #include "fixedpoint.h"
 
 typedef NxF32                        SmallFloat;
-typedef HeF64                       MediumFloat;
+typedef NxF64                       MediumFloat;
 typedef ttmath::Big<1,3>             BigFloat;
 
 
@@ -33,9 +33,9 @@ inline void toString(const BigFloat &f,char *dest)
   strcpy(dest,num.c_str());
 }
 
-inline HeF64 getDouble(const BigFloat &v)
+inline NxF64 getDouble(const BigFloat &v)
 {
-  HeF64 ret;
+  NxF64 ret;
   v.ToDouble(ret);
   return ret;
 }

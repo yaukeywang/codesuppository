@@ -6,12 +6,12 @@
 
 class Terrain;
 
-namespace PD3D
+namespace NVSHARE
 {
   class Pd3dTexture;
 };
 
-Terrain * createTerrain(NxU32 wid,NxU32 hit,PD3D::Pd3dTexture *texture);
+Terrain * createTerrain(NxU32 wid,NxU32 hit,NVSHARE::Pd3dTexture *texture);
 
 void      terrainPlot(NxU32 x,NxU32 y,NxU32 iterationCount);
 void      terrainReset(Terrain *t);

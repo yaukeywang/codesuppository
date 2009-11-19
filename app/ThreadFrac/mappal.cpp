@@ -34,7 +34,7 @@ class Col
     NxU8 b;
 };
 
-typedef USER_STL::vector< Col > ColVector;
+typedef std::vector< Col > ColVector;
 
 
 

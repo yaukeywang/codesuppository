@@ -4,6 +4,7 @@
 
 
 #include "common/snippets/UserMemAlloc.h"
+#include <map>
 /*----------------------------------------------------------------------
     Copyright (c) 2004 Open Dynamics Framework Group
           www.physicstools.org
@@ -121,7 +122,7 @@ public:
   NxF32 mNormal[3]; // the accumulated mean vector normal.
 };
 
-typedef USER_STL::map< NxI32 , MeanNormal > MeanNormalMap; // lookup table for mean vector normals.
+typedef std::map< NxI32 , MeanNormal > MeanNormalMap; // lookup table for mean vector normals.
 
 class TerrainVertex
 {

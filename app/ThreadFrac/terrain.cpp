@@ -8,10 +8,12 @@
 
 #include "terrain.h"
 #include "common/rtin/rtinobj.h"
-#include "RenderDebug/RenderDebug.h"
+#include "RenderDebug.h"
 #include "Pd3d/pd3d.h"
 #include "common/snippets/floatmath.h"
 #include "common/snippets/log.h"
+
+using namespace NVSHARE;
 
 const NxF32 YSCALE = 1.0f / 10.0f;
 const NxF32 XZSCALE = 400.0f;
@@ -23,16 +25,16 @@ class TerrainMesh
 {
 public:
 
-  TerrainMesh(NxU32 vcount,const GeometryVertex *vertices,NxU32 icount,const NxU16 *indices,PD3D::Pd3dTexture *texture,NxF32 meshScale)
+  TerrainMesh(NxU32 vcount,const GeometryVertex *vertices,NxU32 icount,const NxU16 *indices,NVSHARE::Pd3dTexture *texture,NxF32 meshScale)
   {
     mMaterial.mHandle = texture;
     mTcount           = icount/3;
     mVcount           = vcount;
     mIndexBuffer = gPd3d->createIndexBuffer(icount,indices);
 
-    mVertices = MEMALLOC_NEW_ARRAY(PD3D::Pd3dGraphicsVertex,vcount)[vcount];
+    mVertices = MEMALLOC_NEW(NVSHARE::Pd3dGraphicsVertex)[vcount];
 
-    PD3D::Pd3dGraphicsVertex *dest = mVertices;
+    NVSHARE::Pd3dGraphicsVertex *dest = mVertices;
 
     for (NxU32 i=0; i<vcount; i++)
     {
@@ -77,7 +79,8 @@ public:
 
     if ( gShowNormals )
     {
-      PD3D::Pd3dGraphicsVertex *vtx = mVertices;
+      NVSHARE::Pd3dGraphicsVertex *vtx = mVertices;
+	  gRenderDebug->setCurrentColor(0x00FF00);
       for (NxU32 i=0; i<mVcount; i++)
       {
         NxF32 pos[3];
@@ -92,26 +95,26 @@ public:
         fm_transform( matrix, vtx->mPos, pos );
         fm_transform( matrix, epos,      npos );
 
-        gRenderDebug->DebugLine(pos,npos,0x00FF00);
+        gRenderDebug->DebugLine(pos,npos);
         vtx++;
       }
     }
 
   }
 
-  TerrainMesh(NxU32 vbase,NxU32 vcount,NxU32 tvcount,PD3D::Pd3dGraphicsVertex *vertices,NxU32 *indices,NxU32 tcount,PD3D::Pd3dTexture *texture)
+  TerrainMesh(NxU32 vbase,NxU32 vcount,NxU32 tvcount,NVSHARE::Pd3dGraphicsVertex *vertices,NxU32 *indices,NxU32 tcount,NVSHARE::Pd3dTexture *texture)
   {
     mMaterial.mHandle = texture;
 
 
-    PD3D::Pd3dGraphicsVertex *vtx = MEMALLOC_NEW_ARRAY(PD3D::Pd3dGraphicsVertex,65536)[65536];
+    NVSHARE::Pd3dGraphicsVertex *vtx = MEMALLOC_NEW(NVSHARE::Pd3dGraphicsVertex)[65536];
 
-    memcpy(vtx,&vertices[vbase],sizeof(PD3D::Pd3dGraphicsVertex)*vcount);
+    memcpy(vtx,&vertices[vbase],sizeof(NVSHARE::Pd3dGraphicsVertex)*vcount);
 
-    NxU32 *extra = MEMALLOC_NEW_ARRAY(unsigned int,tvcount)[tvcount];
+    NxU32 *extra = MEMALLOC_NEW(unsigned int)[tvcount];
     memset(extra,0xFF,sizeof(NxU32)*tvcount);
 
-    NxU16 *dindices = MEMALLOC_NEW_ARRAY(unsigned short,tcount*3)[tcount*3];
+    NxU16 *dindices = MEMALLOC_NEW(unsigned short)[tcount*3];
     const NxU32 *source = indices;
     NxU16 *dest = dindices;
 
@@ -196,8 +199,8 @@ public:
 
     mVertexBuffer = gPd3d->createVertexBuffer( vcount, vtx );
 
-    mVertices = MEMALLOC_NEW_ARRAY(PD3D::Pd3dGraphicsVertex,vcount)[vcount];
-    memcpy(mVertices,vtx,sizeof(PD3D::Pd3dGraphicsVertex)*vcount);
+    mVertices = MEMALLOC_NEW(NVSHARE::Pd3dGraphicsVertex)[vcount];
+    memcpy(mVertices,vtx,sizeof(NVSHARE::Pd3dGraphicsVertex)*vcount);
     mVcount = vcount;
 
     mTcount = (dest-dindices)/3;
@@ -211,12 +214,12 @@ public:
 
 
 //private:
-  PD3D::Pd3dMaterial             mMaterial;
+  NVSHARE::Pd3dMaterial             mMaterial;
   void                          *mVertexBuffer;
   void                          *mIndexBuffer;
   NxU32                   mVcount;
   NxU32                   mTcount;
-  PD3D::Pd3dGraphicsVertex     *mVertices; // backing store..
+  NVSHARE::Pd3dGraphicsVertex     *mVertices; // backing store..
 
 };
 
@@ -227,7 +230,7 @@ class Terrain : public GeometryInterface
 {
 public:
 
-  Terrain(NxU32 wid,NxU32 hit,PD3D::Pd3dTexture *texture)
+  Terrain(NxU32 wid,NxU32 hit,NVSHARE::Pd3dTexture *texture)
   {
     mRebuild = false;
 		mClampLow = 0;
@@ -247,14 +250,14 @@ public:
     mIndices  = 0;
 
     mVcount   = mWidth*mHeight;
-    mVertices = MEMALLOC_NEW_ARRAY(PD3D::Pd3dGraphicsVertex,mVcount)[mVcount];
+    mVertices = MEMALLOC_NEW(NVSHARE::Pd3dGraphicsVertex)[mVcount];
     mTcount   = (mWidth-1)*(mHeight-1)*2;
-    mIndices  = MEMALLOC_NEW_ARRAY(unsigned int,mTcount*3)[mTcount*3];
+    mIndices  = MEMALLOC_NEW(unsigned int)[mTcount*3];
     mVertexBuffer = 0;
     mIndexBuffer = 0;
 
 
-    PD3D::Pd3dGraphicsVertex *dest = mVertices;
+    NVSHARE::Pd3dGraphicsVertex *dest = mVertices;
 
     NxF32 recipx = 1.0f / (NxF32) mWidth;
     NxF32 recipy = 1.0f / (NxF32) mHeight;
@@ -529,7 +532,7 @@ public:
     if ( mHeight > side ) side = mHeight;
     side = getPower(side);
 
-    NxF32 *hf = MEMALLOC_NEW_ARRAY(float,side*side)[side*side];
+    NxF32 *hf = MEMALLOC_NEW(float)[side*side];
     memset(hf,0,sizeof(NxF32)*side);
 
     mMeshScale = (NxF32) XZSCALE / side;
@@ -605,9 +608,9 @@ public:
       NxU32 i2 = indices[1];
       NxU32 i3 = indices[2];
 
-      PD3D::Pd3dGraphicsVertex &v1 = mVertices[i1];
-      PD3D::Pd3dGraphicsVertex &v2 = mVertices[i2];
-      PD3D::Pd3dGraphicsVertex &v3 = mVertices[i3];
+      NVSHARE::Pd3dGraphicsVertex &v1 = mVertices[i1];
+      NVSHARE::Pd3dGraphicsVertex &v2 = mVertices[i2];
+      NVSHARE::Pd3dGraphicsVertex &v3 = mVertices[i3];
 
       NxF32 p1[3];
       NxF32 p2[3];
@@ -685,7 +688,7 @@ public:
 
     meshRelease();
 
-    NxF32 *data = MEMALLOC_NEW_ARRAY(float,mWidth*mHeight)[mWidth*mHeight];
+    NxF32 *data = MEMALLOC_NEW(float)[mWidth*mHeight];
     for (NxU32 y=0; y<mHeight; y++)
     {
       for (NxU32 x=0; x<mWidth; x++)
@@ -708,8 +711,8 @@ public:
   }
 
 private:
-  PD3D::Pd3dMaterial             mMaterial;
-  PD3D::Pd3dTexture             *mTexture;
+  NVSHARE::Pd3dMaterial             mMaterial;
+  NVSHARE::Pd3dTexture             *mTexture;
 
   TerrainMeshVector              mMeshes;
   TerrainMeshVector              mSplitMeshes;
@@ -718,7 +721,7 @@ private:
   NxU32                   mHeight;
   NxU32                   mVcount;
   NxU32                   mTcount;
-  PD3D::Pd3dGraphicsVertex      *mVertices;
+  NVSHARE::Pd3dGraphicsVertex      *mVertices;
   NxU32                  *mIndices;
 
   void                          *mVertexBuffer;
@@ -744,7 +747,7 @@ private:
 
 
 
-Terrain * createTerrain(NxU32 wid,NxU32 hit,PD3D::Pd3dTexture *texture)
+Terrain * createTerrain(NxU32 wid,NxU32 hit,NVSHARE::Pd3dTexture *texture)
 {
   Terrain *t=0;
   t = MEMALLOC_NEW(Terrain)(wid,hit,texture);

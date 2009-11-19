@@ -1750,18 +1750,18 @@ public:
 
 #ifdef TTMATH_PLATFORM32
 
-	void FromDouble(HeF64 value)
+	void FromDouble(NxF64 value)
 	{
 		// sizeof(double) should be 8 (64 bits), this is actually not a runtime
 		// error but I leave it at the moment as is
-		TTMATH_ASSERT( sizeof(HeF64) == 8 )
+		TTMATH_ASSERT( sizeof(NxF64) == 8 )
 
 		// I am not sure what will be on a plaltform which has 
 		// a different endianness... but we use this library only
 		// on x86 and amd (intel) 64 bits (as there's a lot of assembler code)
 		union 
 		{
-			HeF64 d;
+			NxF64 d;
 			uint u[2]; // two 32bit words
 		} temp;
 
@@ -1860,18 +1860,18 @@ private:
 public:
 
 	// 64bit platforms
-	void FromDouble(HeF64 value)
+	void FromDouble(NxF64 value)
 	{
 		// sizeof(double) should be 8 (64 bits), this is actually not a runtime
 		// error but I leave it at the moment as is
-		TTMATH_ASSERT( sizeof(HeF64) == 8 )
+		TTMATH_ASSERT( sizeof(NxF64) == 8 )
 
 		// I am not sure what will be on a plaltform which has 
 		// a different endianness... but we use this library only
 		// on x86 and amd (intel) 64 bits (as there's a lot of assembler code)
 		union 
 		{
-			HeF64 d;
+			NxF64 d;
 			uint u; // one 64bit word
 		} temp;
 
@@ -1962,11 +1962,11 @@ public:
 			'result' will be 0
 			and the method returns 1
 	*/
-	uint ToDouble(HeF64 & result) const
+	uint ToDouble(NxF64 & result) const
 	{
 		// sizeof(double) should be 8 (64 bits), this is actually not a runtime
 		// error but I leave it at the moment as is
-		TTMATH_ASSERT( sizeof(HeF64) == 8 )
+		TTMATH_ASSERT( sizeof(NxF64) == 8 )
 
 		if( IsZero() )
 		{
@@ -2014,11 +2014,11 @@ private:
 #ifdef TTMATH_PLATFORM32
 
 	// 32bit platforms
-	HeF64 ToDouble_SetDouble(bool is_sign, uint e, sint move, bool infinity = false) const
+	NxF64 ToDouble_SetDouble(bool is_sign, uint e, sint move, bool infinity = false) const
 	{
 		union 
 		{
-			HeF64 d;
+			NxF64 d;
 			uint u[2]; // two 32bit words
 		} temp;
 
@@ -2051,11 +2051,11 @@ private:
 #else
 
 	// 64bit platforms
-	HeF64 ToDouble_SetDouble(bool is_sign, uint e, sint move, bool infinity = false) const
+	NxF64 ToDouble_SetDouble(bool is_sign, uint e, sint move, bool infinity = false) const
 	{
 		union 
 		{
-			HeF64 d;
+			NxF64 d;
 			uint u; // 64bit word
 		} temp;
 

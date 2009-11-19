@@ -32,9 +32,6 @@ PLUGIN_INTERFACE_HASH & getHash(void)
 #include <windows.h>
 #endif
 
-extern "C"
-{
-
 static bool gSuppressLoadError = true;
 
 void setSuppressLoadError(bool state) // whether or not to suppress load error dialog boxes under windows.
@@ -142,4 +139,3 @@ bool unloadModule(void *module)
   return ret;
 }
 
-};

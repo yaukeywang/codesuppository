@@ -20,9 +20,8 @@
 #include "common/snippets/ffind.h"
 #include "mappal.h"
 #include "Pd3d/pd3d.h"
-#include "RenderDebug/RenderDebug.h"
+#include "RenderDebug.h"
 #include "terrain.h"
-#include "common/MemoryServices/MemoryReport.h"
 #include "common/snippets/MyMessageBox.h"
 
 extern Tfrac *gTfrac;
@@ -293,15 +292,6 @@ public:
   	return ret;
   }
 
-  void report(MemoryReport &mr,MemoryReport &summary,const char *header,MemoryServices *mservice)
-  {
-    mr.summaryReport(header,mservice);
-    summary.summaryReport(header,mservice);
-    mr.reportByClass(header,mservice);
-    mr.reportBySourceFile(header,mservice);
-    mr.fixedPoolReport(header,mservice);
-  }
-
   NxI32 CommandCallback(NxI32 token,NxI32 count,const char **arglist)
   {
   	NxI32 ret = 0;
@@ -311,16 +301,6 @@ public:
 		switch ( token )
 		{
       case MC_MEMORY_REPORT:
-        if ( !mStartup ) 
-        {
-          MemoryReport summary;
-          MemoryReport mr;
-          report(mr,summary,"ThreadFrac",0);
-          summary.echoText(this,HTML_TABLE::HST_TEXT);
-          SEND_TEXT_MESSAGE(0,"Saving detailed memory report to 'memory_report.txt'\r\n");
-          mr.saveFile("memory_report.txt",HTML_TABLE::HST_TEXT);
-
-        }
         break;
 
       case MC_FLOATING_POINT_RESOLUTION:
@@ -580,17 +560,12 @@ public:
   	CPARSER.Parse("TuiCheckboxEnd");
   }
 
-  bool         sendTextMessage(NxU32 priority,const char * fmt,...)
+  void   sendTextMessage(NxU32 priority,const char * fmt,...)
   {
-    bool ret = false;
-
     char wbuff[8192];
     wbuff[8191] = 0;
     _vsnprintf(wbuff,8191, fmt, (char *)(&fmt+1));
     gLog->Display("%s",wbuff);
-
-
-    return ret;
   }
 
 

@@ -33,7 +33,7 @@
 
 #include "rtinobj.h"
 #include "errorh.h"
-#include "common/snippets/matrix.h"
+#include <NxMat34.h>
 
 #define MULTI_TEXTURE 1
 #define TILE_RATE 32
@@ -116,7 +116,7 @@ void RtinObj::CreateRtin(const char * /*_name*/,
 
 
     NxI32 isize = BLOCKLEN*BLOCKLEN*2*3;
-    NxU16 *indices = MEMALLOC_NEW_ARRAY(unsigned short,isize)[isize];
+    NxU16 *indices = (NxU16 *)MEMALLOC_MALLOC(sizeof(unsigned short)*isize);
 
     for (NxI32 y=0; y<mHeight; y+=BLOCKSIZE)
     {
@@ -284,11 +284,11 @@ void RtinObj::SaveBlock(const char *fname,GeometryInterface *iface,NxI32 basex,N
   NxI32 isize = BLOCKLEN*BLOCKLEN*2*3;
   NxI32 vsize = BLOCKLEN*BLOCKLEN;
 
-  NxF32 *verts = MEMALLOC_NEW_ARRAY(float,vsize*3)[vsize*3]; // location of vertices.
-  NxU16 *workspace = MEMALLOC_NEW_ARRAY(unsigned short,vsize)[vsize];
-  memset(workspace,0xff,vsize*sizeof(HeI16));
+  NxF32 *verts = (NxF32 *)MEMALLOC_MALLOC(sizeof(float)*vsize*3); // location of vertices.
+  NxU16 *workspace = (unsigned short *)MEMALLOC_MALLOC(sizeof(unsigned short)*vsize);
+  memset(workspace,0xff,vsize*sizeof(NxI16));
 
-  NxU16 *indices = MEMALLOC_NEW_ARRAY(unsigned short,isize)[isize];
+  NxU16 *indices = (NxU16 *)MEMALLOC_MALLOC(sizeof(unsigned short)*isize);
 
   NxU16 *result = mRtin->BuildIndices(indices,mBaseX,mBaseY);
 
@@ -389,14 +389,14 @@ void RtinObj::SaveBlock(const char *fname,GeometryInterface *iface,NxI32 basex,N
         //sprintf(meshname,"%s%02d%02d", fname, gridx,gridy);
         iface->NodeMesh(meshname,0);
 
-        MyMatrix m;
+        NxMat34 m;
         if ( mZup )
         {
-          m.SetTranslation(translatex+basex,translatey+basey,0);
+          m.t.set(translatex+basex,translatey+basey,0);
         }
         else
         {
-          m.SetTranslation(translatex+basex,0,translatey+basey);
+          m.t.set(translatex+basex,0,translatey+basey);
         }
 
         {
@@ -411,7 +411,7 @@ void RtinObj::SaveBlock(const char *fname,GeometryInterface *iface,NxI32 basex,N
         }
       }
 
-      GeometryVertex *gverts = MEMALLOC_NEW_ARRAY(GeometryVertex,vcount)[vcount];
+      GeometryVertex *gverts = (GeometryVertex *)MEMALLOC_MALLOC(sizeof(GeometryVertex)*vcount);
 
       for (NxI32 i=0; i<vcount; i++)
       {
@@ -488,7 +488,7 @@ void RtinObj::SaveBlock(const char *fname,GeometryInterface *iface,NxI32 basex,N
       }
 
 
-      NxU16 *outindices = MEMALLOC_NEW_ARRAY(unsigned short,tcount*3)[tcount*3];
+      NxU16 *outindices = (NxU16 *)MEMALLOC_MALLOC(sizeof(unsigned short)*tcount*3);
 
 
       NxU16 *dst = indices;

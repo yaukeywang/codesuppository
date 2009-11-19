@@ -198,7 +198,7 @@ public:
   }
 
 #if SHOW_DEBUG
-  void debugMe(RENDER_DEBUG::RenderDebug *debug,const NxF32 *vertices,NxU32 i1,NxU32 i2,NxU32 i3)
+  void debugMe(NVSHARE::RenderDebug *debug,const NxF32 *vertices,NxU32 i1,NxU32 i2,NxU32 i3)
   {
     if ( debug )
     {
@@ -209,7 +209,7 @@ public:
     }
   }
 
-  void debugSphere(RENDER_DEBUG::RenderDebug *debug,const NxF32 *vertices,NxU32 i,NxU32 color)
+  void debugSphere(NVSHARE::RenderDebug *debug,const NxF32 *vertices,NxU32 i,NxU32 color)
   {
     if ( debug )
     {
@@ -219,7 +219,7 @@ public:
   }
 #endif
 
-  void performProject(fm_VertexIndex *vlook,const NxF32 *vertices,QuickTri *join,std::vector< NxU32 > &indices,NxF32 projectDistance,RENDER_DEBUG::RenderDebug * /* debug */)
+  void performProject(fm_VertexIndex *vlook,const NxF32 *vertices,QuickTri *join,std::vector< NxU32 > &indices,NxF32 projectDistance,NVSHARE::RenderDebug * /* debug */)
   {
 
     const NxF32 *p1 = &vertices[mI[0]*3];
@@ -369,7 +369,7 @@ static bool skipTriangle(const NxF32 * /* p1 */,const NxF32 * /* p2 */,const NxF
 
 
 
-bool meshCleanup(MeshCleanupDesc &desc,NxF32 weldDistance,NxF32 projectDistance,RENDER_DEBUG::RenderDebug *debug)
+bool meshCleanup(MeshCleanupDesc &desc,NxF32 weldDistance,NxF32 projectDistance,NVSHARE::RenderDebug *debug)
 {
   bool ret = false;
 

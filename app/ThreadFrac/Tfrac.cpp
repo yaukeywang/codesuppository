@@ -18,7 +18,9 @@
 
 #define PREVIEW_ONLY false
 
-static HeU64 gMaxClockCycles=50000000;
+static NxU64 gMaxClockCycles=50000000;
+
+using namespace NVSHARE;
 
 typedef std::vector< NxU32 > PixelVector;
 
@@ -52,7 +54,7 @@ public:
     mIterationCount        = settings.mMaxIterations;
     mUseThreading          = settings.mUseThreading;
     mClockCycles           = settings.mClockCycles;
-    gMaxClockCycles = (HeU64) mClockCycles*1000000;
+    gMaxClockCycles = (NxU64) mClockCycles*1000000;
 
     fc_useThreading(mUseThreading);
 
@@ -210,7 +212,7 @@ public:
         }
       }
 
-      HeU64 cycles = c.End();
+      NxU64 cycles = c.End();
       if ( cycles > gMaxClockCycles )
         break;
     }

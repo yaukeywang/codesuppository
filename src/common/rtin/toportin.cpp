@@ -1038,8 +1038,8 @@ void TopoRtin::initHier(void)
 		}
 	}
 
-	mErr    = MEMALLOC_NEW_ARRAY(NxU16,mSize)[mSize];
-	mInfo   = MEMALLOC_NEW_ARRAY(NxU8,mSize)[mSize];
+	mErr    = (NxU16 *)MEMALLOC_MALLOC(sizeof(NxU16)*mSize);
+	mInfo   = (NxU8 *) MEMALLOC_MALLOC(sizeof(NxU8)*mSize);
 
 	sw[0] = 0;
 	sw[1] = 0;

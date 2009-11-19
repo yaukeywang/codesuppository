@@ -3,6 +3,7 @@
 #include <string.h>
 #include <assert.h>
 #include <float.h>
+#define NOMINMAX
 
 #include <windows.h>
 
@@ -10,6 +11,8 @@
 #include "common/snippets/pool.h"
 #include "common/snippets/JobSwarm.h"
 #include "common/snippets/StringDict.h"
+
+using namespace NVSHARE;
 
 #define SOLVER_PER 32768
 
@@ -65,11 +68,11 @@ public:
 
   MultiFloatType getType(void) const { return MFT_MEDIUM; };
 
-  HeF64  mX1;
-  HeF64  mY1;
-  HeF64  mX2;
-  HeF64  mY2;
-  HeF64  mFractalScale;
+  NxF64  mX1;
+  NxF64  mY1;
+  NxF64  mX2;
+  NxF64  mY2;
+  NxF64  mFractalScale;
 };
 
 class FrameSmall : public Frame
@@ -192,12 +195,12 @@ static inline NxU32 MandelbrotPoint(NxU32 iterations,NxF32 real,NxF32 imaginary)
 	return count;
 }
 
-static inline NxU32 MandelbrotPoint(NxU32 iterations,HeF64 real,HeF64 imaginary)
+static inline NxU32 MandelbrotPoint(NxU32 iterations,NxF64 real,NxF64 imaginary)
 {
-	HeF64 fx,fy,xs,ys;
+	NxF64 fx,fy,xs,ys;
 	NxU32 count;
 
-  HeF64 two(2.0);
+  NxF64 two(2.0);
 
 	fx = real;
 	fy = imaginary;
@@ -244,8 +247,8 @@ static inline NxU32 MandelbrotPoint(NxU32 iterations,const Fixed32 &real,const F
   Fixed32 fx,fy,xs,ys;
   NxU32 count;
 
-  Fixed32 two = (HeF64)2.0;
-  Fixed32 limit = (HeF64)4.0;
+  Fixed32 two = (NxF64)2.0;
+  Fixed32 limit = (NxF64)4.0;
 
   fx = real;
   fy = imaginary;
@@ -319,13 +322,13 @@ public:
     FrameMedium *fs = (FrameMedium *)frameReference;
     mX = x;
     mY = y;
-    mFX = (HeF64)x*fs->mFractalScale + fs->mX1;
-    mFY = (HeF64)y*fs->mFractalScale + fs->mY1;
+    mFX = (NxF64)x*fs->mFractalScale + fs->mX1;
+    mFY = (NxF64)y*fs->mFractalScale + fs->mY1;
 		mIterationCount = 0;
 	}
 
-  HeF64        mFX;
-  HeF64        mFY;
+  NxF64        mFX;
+  NxF64        mFY;
 };
 
 class FractalPixelBig : public FractalPixel
@@ -430,16 +433,16 @@ public:
       switch ( mLastType )
       {
         case MFT_SMALL:
-          mPixelsSmall = MEMALLOC_NEW_ARRAY(FractalPixelSmall,PIXEL_PER)[PIXEL_PER];
+          mPixelsSmall = MEMALLOC_NEW(FractalPixelSmall)[PIXEL_PER];
           break;
         case MFT_MEDIUM:
-          mPixelsMedium = MEMALLOC_NEW_ARRAY(FractalPixelMedium,PIXEL_PER)[PIXEL_PER];
+          mPixelsMedium = MEMALLOC_NEW(FractalPixelMedium)[PIXEL_PER];
           break;
         case MFT_BIG:
-          mPixelsBig = MEMALLOC_NEW_ARRAY(FractalPixelBig,PIXEL_PER)[PIXEL_PER];
+          mPixelsBig = MEMALLOC_NEW(FractalPixelBig)[PIXEL_PER];
           break;
         case MFT_FIXED32:
-          mPixelsFixed32 = MEMALLOC_NEW_ARRAY(FractalPixelFixed32,PIXEL_PER)[PIXEL_PER];
+          mPixelsFixed32 = MEMALLOC_NEW(FractalPixelFixed32)[PIXEL_PER];
           break;
       }
     }
@@ -573,8 +576,8 @@ public:
     mThreads.Set(256,256,10000000,"FractalThread",__FILE__,__LINE__);
     mQueueTasks.Set(256,256,10000000,"QueueTask",__FILE__,__LINE__);
 
-    mFractalBuffer     = MEMALLOC_NEW_ARRAY(NxU32,mFractalSize*mFractalSize)[mFractalSize*mFractalSize];
-    mFractalBackBuffer = MEMALLOC_NEW_ARRAY(NxU32,mFractalSize*mFractalSize)[mFractalSize*mFractalSize];
+    mFractalBuffer     = MEMALLOC_NEW(NxU32)[mFractalSize*mFractalSize];
+    mFractalBackBuffer = MEMALLOC_NEW(NxU32)[mFractalSize*mFractalSize];
 
     mActiveJobs = 0;
 
@@ -625,8 +628,8 @@ public:
     mThreads.Set(256,256,1000000,"FractalThread",__FILE__,__LINE__);
     mQueueTasks.Set(256,256,1000000,"QueueTask",__FILE__,__LINE__);
 
-    mFractalBuffer     = MEMALLOC_NEW_ARRAY(NxU32,mFractalSize*mFractalSize)[mFractalSize*mFractalSize];
-    mFractalBackBuffer = MEMALLOC_NEW_ARRAY(NxU32,mFractalSize*mFractalSize)[mFractalSize*mFractalSize];
+    mFractalBuffer     = MEMALLOC_NEW(NxU32)[mFractalSize*mFractalSize];
+    mFractalBackBuffer = MEMALLOC_NEW(NxU32)[mFractalSize*mFractalSize];
 
     mMemSize = sizeof(NxU32)*mFractalSize*mFractalSize;
 

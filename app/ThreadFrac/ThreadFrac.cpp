@@ -17,17 +17,31 @@
 #include "Shlwapi.h"
 #include "common/snippets/log.h"
 #include "common/snippets/sutil.h"
-#include "debugmsg.h"
 #include <direct.h>
 #include "common/tui/tui.h"
 #include "common/binding/binding.h"
 #include "pd3d/pd3d.h"
-#include "RenderDebug/RenderDebug.h"
+#include "RenderDebug.h"
 
 extern NxI32 gWINDOW_WIDE;
 extern NxI32 gWINDOW_TALL;
 
 #include "Tfrac.h"
+
+namespace JOB_SWARM
+{
+	class JobSwarmContext;
+};
+
+JOB_SWARM::JobSwarmContext *gJobSwarmContext=0;
+
+
+namespace NVSHARE
+{
+	class RenderDebug;
+	RenderDebug *gRenderDebug=0;
+}
+using namespace NVSHARE;
 
 static NxU32 gScreenWidth=1024;
 static NxU32 gScreenHeight=768;
@@ -63,8 +77,8 @@ NxF32 gFPS=60.0f;
 
 IDirect3DDevice9*    gDevice=0;
 HINSTANCE            gInstance=0;
-PD3D::Pd3d                 *gPd3d=0;
-RENDER_DEBUG::RenderDebug          *gRenderDebug=0;
+NVSHARE::Pd3d                 *gPd3d=0;
+RenderDebug          *gRenderDebug=0;
 
 NxI32 mLastIndex=0;
 NxF32 mSpeed=2.0f;
@@ -74,7 +88,6 @@ static NxI32 gMovieFrame=0;
 
 TfracSettings gSettings;
 Tfrac *gTfrac=0;
-
 
 //--------------------------------------------------------------------------------------
 // UI control IDs
@@ -99,8 +112,8 @@ bool    CALLBACK IsDeviceAcceptable( D3DCAPS9* pCaps, D3DFORMAT AdapterFormat, D
 bool    CALLBACK ModifyDeviceSettings( DXUTDeviceSettings* pDeviceSettings, const D3DCAPS9* pCaps, void* pUserContext );
 HRESULT CALLBACK OnCreateDevice( IDirect3DDevice9* pd3dDevice, const D3DSURFACE_DESC* pBackBufferSurfaceDesc, void* pUserContext );
 HRESULT CALLBACK OnResetDevice( IDirect3DDevice9* pd3dDevice, const D3DSURFACE_DESC* pBackBufferSurfaceDesc, void* pUserContext );
-void    CALLBACK OnFrameMove( IDirect3DDevice9* pd3dDevice, HeF64 fTime, NxF32 fElapsedTime, void* pUserContext );
-void    CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, HeF64 fTime, NxF32 fElapsedTime, void* pUserContext );
+void    CALLBACK OnFrameMove( IDirect3DDevice9* pd3dDevice, NxF64 fTime, NxF32 fElapsedTime, void* pUserContext );
+void    CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, NxF64 fTime, NxF32 fElapsedTime, void* pUserContext );
 LRESULT CALLBACK MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bool* pbNoFurtherProcessing, void* pUserContext );
 void    CALLBACK KeyboardProc( UINT nChar, bool bKeyDown, bool bAltDown, void* pUserContext );
 void    CALLBACK OnGUIEvent( UINT nEvent, NxI32 nControlID, CDXUTControl* pControl, void* pUserContext );
@@ -109,7 +122,7 @@ void    CALLBACK OnDestroyDevice( void* pUserContext );
 
 void    InitApp();
 HRESULT LoadMesh( IDirect3DDevice9* pd3dDevice, WCHAR* strFileName, ID3DXMesh** ppMesh );
-void    RenderText( HeF64 fTime );
+void    RenderText( NxF64 fTime );
 
 
 void myOnDeviceReset(void *device)
@@ -167,14 +180,10 @@ INT WINAPI WinMain( HINSTANCE instance, HINSTANCE, LPSTR, NxI32 )
 
 		gInstance = instance;
 
-    gPd3d = (PD3D::Pd3d *)getBindingInterface("pd3d.dll","pd3d",PD3D_VERSION,SYSTEM_SERVICES::gSystemServices,0);
-		gRenderDebug = (RENDER_DEBUG::RenderDebug *)getBindingInterface("RenderDebugPd3d.dll","RenderDebugPd3d",RENDER_DEBUG_VERSION,SYSTEM_SERVICES::gSystemServices,0);
+    gPd3d = (NVSHARE::Pd3d *)getBindingInterface("pd3d.dll","pd3d",PD3D_VERSION,0,0);
 
-    if ( gPd3d && gRenderDebug )
+    if ( gPd3d )
     {
-      gRenderDebug->setPd3d(gPd3d);
-
-      openDebug();
 
       InitApp();
 
@@ -201,8 +210,6 @@ INT WINAPI WinMain( HINSTANCE instance, HINSTANCE, LPSTR, NxI32 )
 
 
       saveMenuState();
-
-      closeDebug();
 
 //      tf_release(gTfrac);
 
@@ -413,7 +420,7 @@ HRESULT LoadMesh( IDirect3DDevice9* pd3dDevice, WCHAR* strFileName, ID3DXMesh** 
     // so when rendering the mesh's triangle list the vertices will
     // cache hit more often so it won't have to re-execute the vertex shader
     // on those vertices so it will improve perf.
-    rgdwAdjacency = MEMALLOC_NEW_ARRAY(DWORD,pMesh->GetNumFaces() * 3)[pMesh->GetNumFaces() * 3];
+    rgdwAdjacency = MEMALLOC_NEW(DWORD)[pMesh->GetNumFaces() * 3];
     if( rgdwAdjacency == NULL )
         return E_OUTOFMEMORY;
     V( pMesh->GenerateAdjacency(1e-6f,rgdwAdjacency) );
@@ -474,7 +481,7 @@ HRESULT CALLBACK OnResetDevice( IDirect3DDevice9* pd3dDevice,
 // intended to contain actual rendering calls, which should instead be placed in the
 // OnFrameRender callback.
 //--------------------------------------------------------------------------------------
-void CALLBACK OnFrameMove( IDirect3DDevice9* pd3dDevice, HeF64 fTime, NxF32 fElapsedTime, void* pUserContext )
+void CALLBACK OnFrameMove( IDirect3DDevice9* pd3dDevice, NxF64 fTime, NxF32 fElapsedTime, void* pUserContext )
 {
 
   g_Camera.SetScalers(0.01f,mSpeed);
@@ -581,7 +588,7 @@ void ScreenGrab(LPDIRECT3DDEVICE9 pDev,const char *_strNamePrefix,NxI32 frameNo,
 // repainted. After this function has returned, DXUT will call
 // IDirect3DDevice9::Present to display the contents of the next buffer in the swap chain
 //--------------------------------------------------------------------------------------
-void CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, HeF64 fTime, NxF32 fElapsedTime, void* pUserContext )
+void CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, NxF64 fTime, NxF32 fElapsedTime, void* pUserContext )
 {
   // If the settings dialog is being shown, then
   // render it instead of rendering the app's scene
@@ -619,12 +626,10 @@ void CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, HeF64 fTime, NxF32 fE
 
     if ( gView3d )
     {
-      gRenderDebug->drawGrid(false);
+//      gRenderDebug->drawGrid(false);
     }
 
-    processDebug();
-
-		PD3D::Pd3dTexture *texture = 	gPd3d->locateTexture("white.dds");
+		NVSHARE::Pd3dTexture *texture = 	gPd3d->locateTexture("white.dds");
 
     if ( gTfrac == 0 )
     {
@@ -649,8 +654,8 @@ void CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, HeF64 fTime, NxF32 fE
     }
 
     //ok..now let's render the debug visualization data.
-    gRenderDebug->Render(fElapsedTime,true,true);   // do the z-buffered pass
-    gRenderDebug->Render(fElapsedTime,true,false);   // do the non-zbuffered pass
+//    gRenderDebug->Render(fElapsedTime,true,true);   // do the z-buffered pass
+//    gRenderDebug->Render(fElapsedTime,true,false);   // do the non-zbuffered pass
 		gPd3d->restoreRenderState();
 
     if ( gScreenCapture == 0 )
@@ -678,7 +683,7 @@ void CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, HeF64 fTime, NxF32 fE
 // Render the help and statistics text. This function uses the ID3DXFont interface for
 // efficient text rendering.
 //--------------------------------------------------------------------------------------
-void RenderText( HeF64 fTime )
+void RenderText( NxF64 fTime )
 {
 }
 
@@ -730,8 +735,8 @@ LRESULT CALLBACK MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bo
 
       bool astate = false;
 
-  		NxI32 iMouseX = (HeI16)LOWORD(lParam);
-  		NxI32 iMouseY = (HeI16)HIWORD(lParam);
+  		NxI32 iMouseX = (NxI16)LOWORD(lParam);
+  		NxI32 iMouseY = (NxI16)HIWORD(lParam);
       static NxI32 gLastMouseX = 512;
       static NxI32 gLastMouseY = 378;
       static NxI32 gLastCenterX = 512;
@@ -750,7 +755,7 @@ LRESULT CALLBACK MsgProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam, bo
     		{
   				case WM_MOUSEWHEEL:
 			    {
-				    NxI32 iDelta        = ((HeI16)HIWORD(wParam));
+				    NxI32 iDelta        = ((NxI16)HIWORD(wParam));
 
 						if ( iDelta < 0 )
 						{
@@ -976,7 +981,7 @@ void CALLBACK KeyboardProc( UINT nChar, bool bKeyDown, bool bAltDown, void* pUse
         }
         break;
       case 'R':
-        gRenderDebug->Reset();
+//        gRenderDebug->Reset();
 				{
 					TfracSettings settings;
           tf_setFractalCoordinates(gTfrac,settings.mXleft,settings.mXright,settings.mYtop);

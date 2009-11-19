@@ -48,23 +48,23 @@ public:
 
   }
 
-  inline Fixed32(HeF64 value)
+  inline Fixed32(NxF64 value)
   {
-    mValue = (NxI32)(value*(HeF64)PVALUE);
+    mValue = (NxI32)(value*(NxF64)PVALUE);
 
   }
 
   inline Fixed32(const char *value)
   {
-    HeF64 v = atof(value);
-    mValue = (NxI32)(v*(HeF64)PVALUE);
+    NxF64 v = atof(value);
+    mValue = (NxI32)(v*(NxF64)PVALUE);
 
   }
 
 	inline Fixed32 & operator=(const char *value)
 	{
-    HeF64 v = atof(value);
-    mValue = (NxI32)(v*(HeF64)PVALUE);
+    NxF64 v = atof(value);
+    mValue = (NxI32)(v*(NxF64)PVALUE);
 
   	return *this;
 	}
@@ -91,22 +91,22 @@ public:
   	return *this;
 	}
 
-	inline Fixed32 & operator=(HeF64 value)
+	inline Fixed32 & operator=(NxF64 value)
 	{
-    mValue = (NxI32)(value*(HeF64)PVALUE);
+    mValue = (NxI32)(value*(NxF64)PVALUE);
   	return *this;
 	}
 
 
   void toString(char *dest) const
   {
-    HeF64 v = (HeF64)mValue / (HeF64)PVALUE;
+    NxF64 v = (NxF64)mValue / (NxF64)PVALUE;
     sprintf(dest,"%0.24f",v);
   }
 
-  inline HeF64 toDouble(void) const
+  inline NxF64 toDouble(void) const
   {
-    HeF64 v = (HeF64)mValue / (HeF64)PVALUE;
+    NxF64 v = (NxF64)mValue / (NxF64)PVALUE;
     return v;
   }
 
@@ -133,7 +133,7 @@ public:
 
   inline void getStr(NxI32 a,char *dest)
   {
-    sprintf(dest,"%0.9f", (HeF64)a / (HeF64) PVALUE );
+    sprintf(dest,"%0.9f", (NxF64)a / (NxF64) PVALUE );
   }
 
   inline void debug(NxI32 a,NxI32 b,NxI32 c,const char *symbol)

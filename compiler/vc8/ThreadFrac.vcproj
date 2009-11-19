@@ -4,6 +4,10 @@
 	Version="8.00"
 	Name="ThreadFrac"
 	ProjectGUID="{D433FEBE-B07E-DBBE-C2CC-C336DE06DBE8}"
+	RootNamespace="ThreadFrac"
+	SccProjectName="Perforce Project"
+	SccLocalPath="."
+	SccProvider="MSCCI:Perforce SCM"
 	>
 	<Platforms>
 		<Platform
@@ -39,7 +43,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/wd4996 /WX /W4 /fp:fast /WX /MDd /ZI "
 				Optimization="4"
-				AdditionalIncludeDirectories="&quot;../../app/ThreadFrac&quot;;&quot;../../src&quot;;&quot;../../ext/DirectX_October2006&quot;;&quot;../../include&quot;;&quot;../../app/shared/debugmsg&quot;;&quot;../../ext/deja_insight&quot;;&quot;../../ext/boost/include&quot;;"
+				AdditionalIncludeDirectories="../../app/ThreadFrac;../../src;../../ext/DirectX_October2006;../../include/common/snippets;../../include;../../app/shared/debugmsg;../../ext/deja_insight;../../ext/boost/include"
 				PreprocessorDefinitions="WIN32;_WINDOWS;UNICODE=1;_CRT_SECURE_NO_DEPRECATE;DEBUG_SERVER;USE_MEMORY_TRAPPING=1;OPEN_SOURCE=1;_DEBUG;"
 				ExceptionHandling="1"
 				WarningLevel="3"
@@ -69,7 +73,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
-				EmbedManifest="false"
+				EmbedManifest="true"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -116,7 +120,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/wd4996 /WX /W4 /fp:fast /WX /MD /O2 /Zi "
 				Optimization="4"
-				AdditionalIncludeDirectories="&quot;../../app/ThreadFrac&quot;;&quot;../../src&quot;;&quot;../../ext/DirectX_October2006&quot;;&quot;../../include&quot;;&quot;../../app/shared/debugmsg&quot;;&quot;../../ext/deja_insight&quot;;&quot;../../ext/boost/include&quot;;"
+				AdditionalIncludeDirectories="../../app/ThreadFrac;../../src;../../ext/DirectX_October2006;../../include/common/snippets;../../include;../../app/shared/debugmsg;../../ext/deja_insight;../../ext/boost/include"
 				PreprocessorDefinitions="WIN32;_WINDOWS;UNICODE=1;_CRT_SECURE_NO_DEPRECATE;DEBUG_SERVER;USE_MEMORY_TRAPPING=1;OPEN_SOURCE=1;NDEBUG;"
 				ExceptionHandling="1"
 				WarningLevel="3"
@@ -146,7 +150,7 @@
 			/>
 			<Tool
 				Name="VCManifestTool"
-				EmbedManifest="false"
+				EmbedManifest="true"
 			/>
 			<Tool
 				Name="VCXDCMakeTool"
@@ -911,6 +915,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\include\common\snippets\nvstl.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\app\ThreadFrac\PlotTexture.cpp"
 				>
 			</File>
@@ -1499,10 +1507,6 @@
 				</File>
 				<File
 					RelativePath="..\..\include\common\snippets\sendmail.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\SendTextMessage.h"
 					>
 				</File>
 				<File

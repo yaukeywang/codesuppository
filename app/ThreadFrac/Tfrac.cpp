@@ -15,6 +15,7 @@
 #include "common/snippets/clock.h"
 #include "terrain.h"
 #include "common/snippets/JobSwarm.h"
+#include "MandelBulb.h"
 
 #define PREVIEW_ONLY false
 
@@ -68,6 +69,7 @@ public:
     mPreviewTexture        = pt_createPlotTexture("preview_fractal",mPreviewSize,mPreviewSize);
     mTerrain               = createTerrain(mFractalSize,mFractalSize,pt_getTexture(mTexture));
     mPreviewTerrain        = createTerrain(mPreviewSize,mPreviewSize,pt_getTexture(mPreviewTexture));
+    mMandelBulb			   = createMandelBulb();
     mColorScale            = 1.0f / (NxF32)mIterationCount;
     mPreviewColorScale     = 1.0f / (NxF32)mPreviewIterationCount;
 
@@ -107,6 +109,7 @@ public:
 		pt_releasePlotTexture(mPreviewTexture);
     releaseTerrain(mTerrain);
     releaseTerrain(mPreviewTerrain);
+    releaseMandelBulb(mMandelBulb);
     JOB_SWARM::releaseJobSwarmContext(gJobSwarmContext);
   }
 
@@ -114,22 +117,31 @@ public:
   {
     if ( view3d )
     {
-      if ( mPreview || mPreviewOnly || !mFinished )
+      if ( mMandelBulb )
       {
-        pt_getTexture(mPreviewTexture);
-        renderTerrain(mPreviewTerrain,mWireframe,dtime);
+      	TfracSettings s;
+      	getSettings(s);
+      	mMandelBulb->render(&s);
       }
       else
       {
-        pt_getTexture(mTexture);
-        renderTerrain(mTerrain,mWireframe,dtime);
+        if ( mPreview || mPreviewOnly || !mFinished )
+        {
+          pt_getTexture(mPreviewTexture);
+          renderTerrain(mPreviewTerrain,mWireframe,dtime);
+        }
+        else
+        {
+          pt_getTexture(mTexture);
+          renderTerrain(mTerrain,mWireframe,dtime);
+        }
       }
     }
     else
     {
       pt_renderScreenQuad(mPreviewTexture,0,0,1024,768,0xFFFFFFFF);
-			if ( !mPreviewOnly && !mPreview )
-			{
+	  if ( !mPreviewOnly && !mPreview )
+	  {
         pt_renderScreenQuad(mTexture,0,0,1024,768,0xFFFFFFFF);
       }
     }
@@ -457,6 +469,7 @@ private:
   NxU32  mScreenWidth;
   NxU32  mScreenHeight;
   char          mPalette[256];
+  iMandelBulb	*mMandelBulb;
 };
 
 

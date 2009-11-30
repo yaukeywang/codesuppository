@@ -691,7 +691,7 @@ public:
 
   size_t buildPolygons(bool collapseColinear,bool edgeIntersect,bool saveResults)
   {
-	  assert(0);
+//	  assert(0);
 #if 1 // TODO
 	  return 0;
 #else

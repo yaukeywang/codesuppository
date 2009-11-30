@@ -46,6 +46,7 @@
 #include "TestIslandGeneration.h"
 #include "TestVectorFont.h"
 #include "TestMarchingCubes.h"
+#include "TestConcavity.h"
 #include "RenderDebug.h"
 #include "SplitMeshApp.h"
 #include "JobSwarm.h"
@@ -170,6 +171,9 @@ public:
           mMeshSystemHelper->exportEZM();
         }
         break;
+      case CSC_TEST_CONCAVITY:
+      	testConcavity(mMeshSystemHelper);
+      	break;
       case CSC_EXPORT_OBJ:
         if ( mMeshSystemHelper )
         {

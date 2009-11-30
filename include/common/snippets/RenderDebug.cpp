@@ -1637,8 +1637,8 @@ public:
 	MyRenderDebug(void)
 	{
 
-		mDebugTris.Set(8192,8192,100000,"RenderDebug->SolidTri",__FILE__,__LINE__); // initialize the wireframe triangle pool.
-		mDebugLines.Set(8192,8192,100000,"RenderDebug->LineTri",__FILE__,__LINE__); // initialize the wireframe triangle pool.
+		mDebugTris.Set(8192,8192,10000000,"RenderDebug->SolidTri",__FILE__,__LINE__); // initialize the wireframe triangle pool.
+		mDebugLines.Set(8192,8192,10000000,"RenderDebug->LineTri",__FILE__,__LINE__); // initialize the wireframe triangle pool.
 
 		mUpdateCount = 0;
 		mStackIndex = 0;

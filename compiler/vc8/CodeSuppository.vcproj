@@ -460,6 +460,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\app\CodeSuppository\TestConcavity.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\TestConcavity.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\app\CodeSuppository\TestConvexDecomposition.cpp"
 				>
 			</File>
@@ -1639,6 +1647,98 @@
 					>
 				</File>
 			</Filter>
+		</Filter>
+		<Filter
+			Name="ConvexDecomposition"
+			>
+			<File
+				RelativePath="..\..\app\CodeSuppository\convexdecomposition\NvConcavityVolume.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\convexdecomposition\NvConcavityVolume.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\convexdecomposition\NvConvexDecomposition.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\convexdecomposition\NvConvexDecomposition.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\convexdecomposition\NvFloatMath.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\convexdecomposition\NvFloatMath.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\convexdecomposition\NvFloatMath.inl"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\convexdecomposition\NvHashMap.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\convexdecomposition\NvMeshIslandGeneration.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\convexdecomposition\NvMeshIslandGeneration.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\convexdecomposition\NvRayCast.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\convexdecomposition\NvRayCast.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\convexdecomposition\NvRemoveTjunctions.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\convexdecomposition\NvRemoveTjunctions.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\convexdecomposition\NvSimpleTypes.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\convexdecomposition\NvSplitMesh.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\convexdecomposition\NvSplitMesh.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\convexdecomposition\NvStanHull.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\convexdecomposition\NvStanHull.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\convexdecomposition\NvThreadConfig.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\convexdecomposition\NvThreadConfig.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\convexdecomposition\NvUserMemAlloc.h"
+				>
+			</File>
 		</Filter>
 	</Files>
 	<Globals>

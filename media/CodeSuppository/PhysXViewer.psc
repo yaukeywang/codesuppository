@@ -38,7 +38,7 @@
 /DebugView false 
 /SelectCollision 0.000000 
 /AnimationSpeed 4.000000 
-/PlayAnimation false 
+/PlayAnimation true 
 /FlipWinding false 
 /ShowWireframe false 
 /ShowCollision true 

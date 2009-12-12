@@ -10,7 +10,6 @@
 #include <Nx.h>
 #include <NxVec3.h>
 #include <NxMat34.h>
-#include "NvArray.h"
 #include "NvHashMap.h"
 
 #pragma warning(disable:4100)

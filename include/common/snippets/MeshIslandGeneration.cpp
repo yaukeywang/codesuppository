@@ -8,7 +8,6 @@
 #pragma warning(disable:4100 4288)
 #include "MeshIslandGeneration.h"
 #include "FloatMath.h"
-#include "NvArray.h"
 #include "NvHashMap.h"
 #include "NxSimpleTypes.h"
 

@@ -114,7 +114,7 @@ public:
 //          gRenderDebug->DebugBound(mMeshSystem->mAABB.mMin, mMeshSystem->mAABB.mMax, 0xFFFFFF );
         for (NxU32 i=0; i<mMeshSystem->mMeshCount; i++)
         {
-//          debugRender( mMeshSystem->mMeshes[i] );
+          debugRender( mMeshSystem->mMeshes[i] );
         }
       }
       if ( mSkeleton && showSkeleton )
@@ -269,7 +269,7 @@ public:
   void debugRender(NVSHARE::Mesh *m,NVSHARE::MeshSkeletonInstance *skeleton)
   {
     NxI32 vcount = m->mVertexCount;
-    NVSHARE::MeshVertex *vertices = MEMALLOC_NEW(NVSHARE::MeshVertex);
+    NVSHARE::MeshVertex *vertices = MEMALLOC_NEW(NVSHARE::MeshVertex)[vcount];
     gMeshImport->transformVertices(vcount,m->mVertices,vertices,skeleton);
 
     NxU32 color = gRenderDebug->getDebugColor(true);
@@ -341,6 +341,17 @@ public:
 
   void debugRender(NVSHARE::SubMesh *m,NxU32 color,const NVSHARE::MeshVertex *vertices)
   {
+	  gRenderDebug->setCurrentColor(color,0xFFFFFF);
+	  if ( mShowWireframe )
+	  {
+		  gRenderDebug->removeFromCurrentState(NVSHARE::DebugRenderState::SolidShaded);
+		  gRenderDebug->removeFromCurrentState(NVSHARE::DebugRenderState::SolidWireShaded);
+	  }
+	  else
+	  {
+		  gRenderDebug->addToCurrentState(NVSHARE::DebugRenderState::SolidWireShaded);
+	  }
+
     for (NxU32 i=0; i<m->mTriCount; i++)
     {
       NxU32 i1 = m->mIndices[i*3+0];
@@ -351,16 +362,7 @@ public:
       const NVSHARE::MeshVertex &v2 = vertices[i2];
       const NVSHARE::MeshVertex &v3 = vertices[i3];
 
-//      if ( mShowWireframe )
-//        gRenderDebug->DebugTri(v1.mPos,v2.mPos,v3.mPos, color );
-//      else
-//      {
-//        if ( mFlipWinding )
-//          gRenderDebug->DebugSolidTri(v3.mPos,v2.mPos,v1.mPos, color );
-//        else
-//          gRenderDebug->DebugSolidTri(v1.mPos,v2.mPos,v3.mPos, color );
-//      }
-
+      gRenderDebug->DebugTri(v1.mPos,v2.mPos,v3.mPos);
     }
   }
 

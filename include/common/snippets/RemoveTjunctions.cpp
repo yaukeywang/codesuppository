@@ -7,7 +7,6 @@
 #include <vector>
 #include <hash_map>
 #include "UserMemAlloc.h"
-#include "NvArray.h"
 #include "NvHashMap.h"
 #include "RemoveTjunctions.h"
 #include "FloatMath.h"

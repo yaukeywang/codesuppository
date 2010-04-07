@@ -37,8 +37,8 @@
 /RemoveTjunctions false 
 /DebugView false 
 /SelectCollision 0.000000 
-/AnimationSpeed 60.300 
-/PlayAnimation true 
+/AnimationSpeed 4.000000 
+/PlayAnimation false 
 /FlipWinding false 
 /ShowWireframe false 
 /ShowCollision true 

@@ -4,6 +4,7 @@
 #include <assert.h>
 #include <vector>
 
+#include "RenderPacket.h"
 #include "UserMemAlloc.h"
 #include "fmem.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
@@ -55,6 +56,8 @@ using namespace NVSHARE;
 
 CodeSuppository *gCodeSuppository=0;
 
+typedef std::vector< RenderPacket * > RenderPacketVector;
+
 class MyCodeSuppository : public CodeSuppository, public NVSHARE::Memalloc
 {
 public:
@@ -81,8 +84,7 @@ public:
     mIslandGeneration = false;
 	if ( NVSHARE::gMeshImport )
     {
-        //mCommLayer = gMeshImport->createCommLayerTelent();
-		mCommLayer = gMeshImport->createCommLayerWindowsMessage("CodeSuppository","ClothingTool");
+        mCommLayer = gMeshImport->createCommLayerTelent();
     }
   }
 
@@ -92,6 +94,12 @@ public:
     if ( mCommLayer )
     {
         gMeshImport->releaseCommLayer(mCommLayer);
+    }
+
+    for (RenderPacketVector::iterator i=mRenderPacketsCurrent.begin(); i!=mRenderPacketsCurrent.end(); ++i)
+    {
+    	RenderPacket *rp = (*i);
+    	delete rp;
     }
   }
 
@@ -188,11 +196,6 @@ public:
         break;
       case CSC_FLIP_WINDING:
         mFlipWinding = state;
-        {
-            const char *test = "This is a test of the emergency blob cast system.";
-            NxU32 len = strlen(test);
-            mCommLayer->sendBlob(0,"testBlob", test, len+1 );
-        }
         break;
       case CSC_PLAY_ANIMATION:
         mPlayAnimation = state;
@@ -344,9 +347,17 @@ public:
             if ( strcmp(msg,"NewConnection") == 0 )
             {
                 mCommLayer->sendMessage(client,"Welecome to the Code Suppository.\r\n");
-				char *temp = "This is a test of sending a blob of data";
-				mCommLayer->sendBlob(client,"BlobTest",temp,strlen(temp)+1);
             }
+            else if ( strcmp(msg,"NewFrame") == 0 )
+            {
+            	for (RenderPacketVector::iterator i=mRenderPacketsCurrent.begin(); i!=mRenderPacketsCurrent.end(); ++i)
+            	{
+            		RenderPacket *rp = (*i);
+            		delete rp;
+            	}
+            	mRenderPacketsCurrent = mRenderPacketsLast;
+            	mRenderPacketsLast.clear();
+			}
             SEND_TEXT_MESSAGE(0,"%s\r\n", msg );
         }
 		const void *data;
@@ -354,9 +365,61 @@ public:
 		const char *blobType = mCommLayer->receiveBlob(client,data,dlen);
 		if ( blobType )
 		{
-			printf("Debug me");
+			if ( strcmp(blobType,"RenderPacket") == 0 )
+			{
+				const NxU32 *type = (const NxU32 *)data;
+				switch ( *type )
+				{
+					case RPT_INDEXED_TRIANGLE_LIST:
+						{
+							RenderPacketIndexedTriangleList *rpt = new RenderPacketIndexedTriangleList(data,dlen);
+							RenderPacket *rp = static_cast< RenderPacket *>(rpt);
+							mRenderPacketsLast.push_back(rp);
+						}
+						break;
+				}
+				mCommLayer->sendMessage(client,"AckRenderPacket\r\n");
+			}
 		}
     }
+
+	if ( !mRenderPacketsCurrent.empty() )
+	{
+		for (RenderPacketVector::iterator i=mRenderPacketsCurrent.begin(); i!=mRenderPacketsCurrent.end(); ++i)
+		{
+			RenderPacket *rp = (*i);
+    		switch ( rp->mType )
+    		{
+    			case RPT_INDEXED_TRIANGLE_LIST:
+    				{
+						gRenderDebug->pushRenderState();
+						gRenderDebug->addToCurrentState(DebugRenderState::SolidWireShaded);
+						gRenderDebug->setCurrentColor(0x00FFFF,0xFFFFFF);
+    					RenderPacketIndexedTriangleList *rpt = static_cast< RenderPacketIndexedTriangleList *>(rp);
+    					for (NxU32 i=0; i<rpt->mTriCount; i++)
+    					{
+    						NxU32 i1 = rpt->mIndices[i*3+0];
+    						NxU32 i2 = rpt->mIndices[i*3+1];
+    						NxU32 i3 = rpt->mIndices[i*3+2];
+
+    						const NxF32 *p1 = &rpt->mPositions[i1*3];
+    						const NxF32 *p2 = &rpt->mPositions[i2*3];
+    						const NxF32 *p3 = &rpt->mPositions[i3*3];
+
+							const NxF32 *n1 = &rpt->mNormals[i1*3];
+							const NxF32 *n2 = &rpt->mNormals[i2*3];
+							const NxF32 *n3 = &rpt->mNormals[i3*3];
+
+
+    						gRenderDebug->DebugTri(p1,p2,p3,n1,n2,n3);
+
+    					}
+						gRenderDebug->popRenderState();
+    				}
+    				break;
+   			}
+		}
+	}
 
     {
       if ( mMeshSystemHelper )
@@ -420,6 +483,8 @@ private:
   bool mIslandGeneration;
   TestAutoGeometry *mTestAutoGeometry;
   NVSHARE::CommLayer *mCommLayer;
+  RenderPacketVector 	mRenderPacketsCurrent;
+  RenderPacketVector	mRenderPacketsLast;
 };
 
 CodeSuppository * createCodeSuppository(void)

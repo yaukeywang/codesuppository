@@ -51,6 +51,7 @@
 #include "RenderDebug.h"
 #include "SplitMeshApp.h"
 #include "JobSwarm.h"
+#include "fastipc.h"
 
 using namespace NVSHARE;
 
@@ -82,10 +83,8 @@ public:
     mRemoveTjunctions = false;
     mInitialIslandGeneration = false;
     mIslandGeneration = false;
-	if ( NVSHARE::gMeshImport )
-    {
-        mCommLayer = gMeshImport->createCommLayerTelent();
-    }
+    iFastIPC::ErrorCode err;
+    mCommLayer = createFastIPC(err,iFastIPC::CT_SERVER,"Global\\CodeSuppository",1024*256,1024*256);
   }
 
   ~MyCodeSuppository(void)
@@ -93,7 +92,7 @@ public:
     resetMeshSystem();
     if ( mCommLayer )
     {
-        gMeshImport->releaseCommLayer(mCommLayer);
+    	releaseFastIPC(mCommLayer);
     }
 
     for (RenderPacketVector::iterator i=mRenderPacketsCurrent.begin(); i!=mRenderPacketsCurrent.end(); ++i)
@@ -340,15 +339,12 @@ public:
 
     if ( mCommLayer )
     {
-        NxU32 client;
-        const char *msg = mCommLayer->receiveMessage(client);
+    	mCommLayer->pumpPendingSends();
+    	mCommLayer->pumpPendingReceives();
+        const char *msg = mCommLayer->receiveMessage();
         if ( msg )
         {
-            if ( strcmp(msg,"NewConnection") == 0 )
-            {
-                mCommLayer->sendMessage(client,"Welecome to the Code Suppository.\r\n");
-            }
-            else if ( strcmp(msg,"NewFrame") == 0 )
+            if ( strcmp(msg,"NewFrame") == 0 )
             {
             	for (RenderPacketVector::iterator i=mRenderPacketsCurrent.begin(); i!=mRenderPacketsCurrent.end(); ++i)
             	{
@@ -358,14 +354,14 @@ public:
             	mRenderPacketsCurrent = mRenderPacketsLast;
             	mRenderPacketsLast.clear();
 			}
-            SEND_TEXT_MESSAGE(0,"%s\r\n", msg );
+			mCommLayer->receiveAcknowledge();
         }
 		const void *data;
 		NxU32 dlen;
-		const char *blobType = mCommLayer->receiveBlob(client,data,dlen);
-		if ( blobType )
+		iFastIPC::MessageType mt = mCommLayer->receiveData(data,dlen);
+		if ( mt != iFastIPC::MT_NONE )
 		{
-			if ( strcmp(blobType,"RenderPacket") == 0 )
+			if ( mt == iFastIPC::MT_APP )
 			{
 				const NxU32 *type = (const NxU32 *)data;
 				switch ( *type )
@@ -378,8 +374,8 @@ public:
 						}
 						break;
 				}
-				mCommLayer->sendMessage(client,"AckRenderPacket\r\n");
 			}
+            mCommLayer->receiveAcknowledge();
 		}
     }
 
@@ -409,7 +405,6 @@ public:
 							const NxF32 *n1 = &rpt->mNormals[i1*3];
 							const NxF32 *n2 = &rpt->mNormals[i2*3];
 							const NxF32 *n3 = &rpt->mNormals[i3*3];
-
 
     						gRenderDebug->DebugTri(p1,p2,p3,n1,n2,n3);
 
@@ -482,7 +477,7 @@ private:
   bool mInitialIslandGeneration;
   bool mIslandGeneration;
   TestAutoGeometry *mTestAutoGeometry;
-  NVSHARE::CommLayer *mCommLayer;
+  iFastIPC				*mCommLayer;
   RenderPacketVector 	mRenderPacketsCurrent;
   RenderPacketVector	mRenderPacketsLast;
 };

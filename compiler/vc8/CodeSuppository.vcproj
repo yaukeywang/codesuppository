@@ -843,6 +843,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\common\snippets\fastipc.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\fastipc.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\common\snippets\FastXml.cpp"
 					>
 				</File>

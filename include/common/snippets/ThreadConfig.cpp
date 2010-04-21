@@ -81,7 +81,7 @@
 namespace THREAD_CONFIG
 {
 
-NxU32 tc_timeGetTime(void)
+unsigned int tc_timeGetTime(void)
 {
    #if defined(__linux__)
       struct timespec ts;
@@ -92,7 +92,7 @@ NxU32 tc_timeGetTime(void)
    #endif
 }
 
-void   tc_sleep(NxU32 ms)
+void   tc_sleep(unsigned int ms)
 {
    #if defined(__linux__)
       usleep(ms * 1000);
@@ -134,7 +134,7 @@ void tc_interlockedExchange(void *dest, const int64_t exchange)
    #endif
 }
 
-NxI32 tc_interlockedCompareExchange(void *dest, NxI32 exchange, NxI32 compare)
+int tc_interlockedCompareExchange(void *dest, int exchange, int compare)
 {
    #ifdef __linux__
 	  // not working
@@ -161,7 +161,7 @@ NxI32 tc_interlockedCompareExchange(void *dest, NxI32 exchange, NxI32 compare)
    #endif
 }
 
-NxI32 tc_interlockedCompareExchange(void *dest, const NxI32 exchange1, const NxI32 exchange2, const NxI32 compare1, const NxI32 compare2)
+int tc_interlockedCompareExchange(void *dest, const int exchange1, const int exchange2, const int compare1, const int compare2)
 {
    #ifdef __linux__
 	  // not working
@@ -231,7 +231,7 @@ public:
   	bRet = TryEnterCriticalSection(&m_Mutex) ? true : false;
   	return bRet;
     #elif defined(__APPLE__) || defined(__linux__)
-  	NxI32 result = pthread_mutex_trylock(&m_Mutex);
+  	int result = pthread_mutex_trylock(&m_Mutex);
   	return (result == 0);
     #endif
   }
@@ -388,7 +388,7 @@ public:
 	#endif
   }
 
-  virtual void waitForSingleObject(NxU32 ms)
+  virtual void waitForSingleObject(unsigned int ms)
   {
 	#if defined(WIN32) || defined(_XBOX)
     if ( mEvent )
@@ -408,7 +408,7 @@ public:
 	      ts.tv_nsec += ms * 1000000;
 	      ts.tv_sec += ts.tv_nsec / 1000000000;
 	      ts.tv_nsec %= 1000000000;
-		  NxI32 result = pthread_cond_timedwait(&mEvent, &mEventMutex, &ts);
+		  int result = pthread_cond_timedwait(&mEvent, &mEventMutex, &ts);
 		  assert(result == 0 || result == ETIMEDOUT);
 	  }
 	  VERIFY( pthread_mutex_unlock(&mEventMutex) == 0 );
@@ -434,6 +434,89 @@ void  tc_releaseThreadEvent(ThreadEvent *t)
 {
   MyThreadEvent *m = static_cast< MyThreadEvent *>(t);
   delete m;
+}
+
+class MyMemoryMappedFile : public MemoryMappedFile
+{
+public:
+
+	MyMemoryMappedFile(const char *mappingObject,unsigned int mapSize)
+	{
+		mMapFile = 0;
+		mHeader = 0;
+   		#ifdef WIN32
+   		mMapFile = OpenFileMappingA(FILE_MAP_ALL_ACCESS,FALSE,mappingObject);
+   		if ( mMapFile == NULL )
+   		{
+      			mMapFile = CreateFileMappingA(
+       				INVALID_HANDLE_VALUE,    // use paging file
+       				NULL,                    // default security
+       				PAGE_READWRITE,          // read/write access
+       				0,                       // maximum object size (high-order DWORD)
+       				mapSize,                // maximum object size (low-order DWORD)
+       				mappingObject);
+   		}
+   		if ( mMapFile )
+   		{
+   			mHeader = MapViewOfFile(mMapFile,FILE_MAP_ALL_ACCESS,0,0,mapSize);
+   		}
+   		#endif
+	}
+
+	~MyMemoryMappedFile(void)
+	{
+		#ifdef WIN32
+		if ( mHeader )
+		{
+			UnmapViewOfFile(mHeader);
+			if ( mMapFile )
+			{
+				CloseHandle(mMapFile);
+			}
+		}
+		#endif
+	}
+
+	virtual void * getBaseAddress(void)
+	{
+		return mHeader;
+	}
+private:
+	void	*mHeader;
+#ifdef WIN32
+	HANDLE	mMapFile;
+#endif
+};
+
+MemoryMappedFile	* tc_createMemoryMappedFile(const char *name,unsigned int maxLen)
+{
+	MemoryMappedFile *ret = 0;
+	MyMemoryMappedFile *mmf = new MyMemoryMappedFile(name,maxLen);
+	if ( mmf->getBaseAddress() )
+	{
+		ret = static_cast< MemoryMappedFile *>(mmf);
+	}
+	else
+	{
+		delete mmf;
+	}
+	return ret;
+}
+
+void				  tc_releaseMemoryMappedFile(MemoryMappedFile *mmf)
+{
+	MyMemoryMappedFile *mmmf = static_cast< MyMemoryMappedFile *>(mmf);
+	delete mmmf;
+}
+
+
+unsigned int tc_getCurrentThreadId(void)
+{
+	unsigned int ret = 0;
+#ifdef WIN32
+	ret = (unsigned int)GetCurrentThreadId();
+#endif
+	return ret;
 }
 
 }; // end of namespace

@@ -5,6 +5,9 @@
 	Name="CodeSuppository"
 	ProjectGUID="{3C667553-6365-118B-1B30-CD3053732760}"
 	RootNamespace="CodeSuppository"
+	SccProjectName="Perforce Project"
+	SccLocalPath="."
+	SccProvider="MSCCI:Perforce SCM"
 	>
 	<Platforms>
 		<Platform
@@ -188,6 +191,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\app\CodeSuppository\fastipc.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\app\CodeSuppository\menu.h"
 				>
 			</File>
@@ -205,6 +212,10 @@
 			</File>
 			<File
 				RelativePath="..\..\app\CodeSuppository\plugins.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\renderpacket.h"
 				>
 			</File>
 			<File
@@ -408,6 +419,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\app\CodeSuppository\fastipc.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\app\CodeSuppository\menu.cpp"
 				>
 			</File>
@@ -581,18 +596,6 @@
 			</File>
 			<File
 				RelativePath="..\..\app\CodeSuppository\TestWinMsg.cpp"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="MeshImport Files"
-			>
-			<File
-				RelativePath="..\..\include\MeshImport\MeshImport.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\include\MeshImport\MeshImport.h"
 				>
 			</File>
 		</Filter>
@@ -847,10 +850,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\include\common\snippets\fastipc.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\include\common\snippets\FastXml.cpp"
 					>
 				</File>
@@ -1083,11 +1082,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\include\common\snippets\MeshImport.cpp"
+					RelativePath="..\..\include\common\snippets\MeshImport.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\include\common\snippets\MeshImport.h"
+					RelativePath="..\..\include\common\snippets\MeshImportLoader.cpp"
 					>
 				</File>
 				<File

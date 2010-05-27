@@ -50,23 +50,6 @@ typedef unsigned char NxU8;
 namespace NVSHARE
 {
 
-class SystemServices;
-
-class CommLayer
-{
-public:
-  virtual bool          sendMessage(NxU32 client,const char *fmt,...) = 0; // send a message to the server, all clients (client=0) or just a specific client.
-  virtual const char *  receiveMessage(NxU32 &client) = 0; // receive an incoming message (client=0) means it came from the server, otherwise it designates a specific client.
-  virtual const char ** getArgs(const char *input,NxU32 &argc) = 0; // parse string into a series of arguments.
-
-  virtual bool          sendBlob(NxU32 client,const char *blobType,const void *data,NxU32 dlen) = 0;
-  virtual const char *  receiveBlob(NxU32 &client,const void *&data,NxU32 &dlen) = 0;
-
-protected:
-  virtual ~CommLayer(void) { };
-};
-
-
 inline NxF32 fmi_computePlane(const NxF32 *A,const NxF32 *B,const NxF32 *C,NxF32 *n) // returns D
 {
 	NxF32 vx = (B[0] - C[0]);
@@ -1475,10 +1458,6 @@ public:
   virtual void scale(MeshSystemContainer *msc,NxF32 scale) = 0;
   virtual void rotate(MeshSystemContainer *msc,NxF32 rotX,NxF32 rotY,NxF32 rotZ) = 0; // rotate mesh system using these euler angles expressed as degrees.
 
-  virtual CommLayer *      createCommLayerTelent(const char *address="LOCALHOST",NxU32 port=23) =  0;
-  virtual CommLayer *      createCommLayerWindowsMessage(const char *appName="MeshImport",const char *destApp="DestTool") = 0;
-  virtual void             releaseCommLayer(CommLayer *t) = 0;
-
   virtual VertexIndex *            createVertexIndex(NxF32 granularity) = 0;  // create an indexed vertext system for floats
   virtual void                     releaseVertexIndex(VertexIndex *vindex) = 0;
 protected:
@@ -1487,15 +1466,12 @@ protected:
 };
 
 
-#define MESHIMPORT_VERSION 10  // version 0.01  increase this version number whenever an interface change occurs.
+#define MESHIMPORT_VERSION 11  // version 0.01  increase this version number whenever an interface change occurs.
 
 
 extern MeshImport *gMeshImport; // This is an optional global variable that can be used by the application.  If the application uses it, it should define it somewhere in its codespace.
 
-MeshImport * loadMeshImporters(const char *directory,SystemServices *services); // loads the mesh import library (dll) and all available importers from the same directory.
-
-extern CommLayer *gCommLayer;
-
+MeshImport * loadMeshImporters(const char *directory); // loads the mesh import library (dll) and all available importers from the same directory.
 
 }; // End of namespace for NVSHARE
 

@@ -29,7 +29,7 @@ bool loadPlugins(void)
 	gRenderDebug = createRenderDebug();
   if ( gPd3d && gRenderDebug )
     ok = true;
-  gMeshImport            = loadMeshImporters(0,NVSHARE::gSystemServices);
+  gMeshImport            = loadMeshImporters(0);
 
   gPd3d->setResourceInterface(gResourceInterface);
 

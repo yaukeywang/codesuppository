@@ -1,6 +1,7 @@
 <XPJ version="4">
 
 	<Project name="ThreadFrac" version="1">
+		<Export platform="win32" tool="vc9">../vc9</Export>
 		<Export platform="win32" tool="vc8">../vc8</Export>
 		<Export platform="win32" tool="vc7">../vc7</Export>
 		<Import root=".\" file="Pd3d.xpj"/>
@@ -8,6 +9,7 @@
 		<Import root=".\" file="Pgraphics.xpj"/>
 
 		<Target name="ThreadFrac">
+			<Export platform="win32" tool="vc9">../vc9</Export>
 			<Export platform="win32" tool="vc8">../vc8</Export>
 			<Export platform="win32" tool="vc7">../vc7</Export>
 

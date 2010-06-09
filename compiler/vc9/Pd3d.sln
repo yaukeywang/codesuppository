@@ -1,0 +1,22 @@
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Pd3d", "Pd3d.vcproj", "{4B098AAC-BDE4-A37E-9077-D544BD9A6CBE}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		debug|Win32 = debug|Win32
+		release|Win32 = release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4B098AAC-BDE4-A37E-9077-D544BD9A6CBE}.debug|Win32.ActiveCfg = debug|Win32
+		{4B098AAC-BDE4-A37E-9077-D544BD9A6CBE}.debug|Win32.Build.0 = debug|Win32
+		{4B098AAC-BDE4-A37E-9077-D544BD9A6CBE}.release|Win32.ActiveCfg = release|Win32
+		{4B098AAC-BDE4-A37E-9077-D544BD9A6CBE}.release|Win32.Build.0 = release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddins) = postSolution
+	EndGlobalSection
+EndGlobal

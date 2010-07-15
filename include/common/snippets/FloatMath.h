@@ -112,6 +112,9 @@ const NxF32 FM_RAD_TO_DEG = (360.0f / (2.0f * FM_PI));
 //*** bounding volumes are expressed as two sets of 3 floats/NxF64 representing bmin(x,y,z) and bmax(x,y,z)
 //*** Plane equations are assumed to be 4 floats or 4 doubles representing Ax,By,Cz,D
 
+bool	fm_invert(const NxF32 matrix[16]);
+bool	fm_invert(const NxF64 matrix[16]);
+
 FM_Axis fm_getDominantAxis(const NxF32 normal[3]);
 FM_Axis fm_getDominantAxis(const NxF64 normal[3]);
 

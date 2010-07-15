@@ -113,23 +113,28 @@
                *.h
 			</Files>
 			<Files name="Common Source Files" root="../../src/common" type="source">
-        tui/*.cpp
-        tui/*.h
-        Dxut/*.cpp
-        Dxut/*.h
+		        tui/*.cpp
+		        tui/*.h
+		        Dxut/*.cpp
+		        Dxut/*.h
+			</Files>
+
+			<Files name="MeshImport Files" root="../../include/MeshImport" type="source">
+				*.cpp
+				*.h
 			</Files>
 			<Files name="Depenency Files" root="../../include/common" type="source">
 				binding/*.cpp
-        binding/*.h
+        		binding/*.h
 				ResourceInterface/*.cpp
-        ResourceInterface/*.h
-         snippets/*.inl
-         snippets/*.c
-         snippets/*.cpp
-         snippets/*.h
-        compression/*.cpp
-        compression/*.c
-        compression/*.h
+        		ResourceInterface/*.h
+         		snippets/*.inl
+         		snippets/*.c
+         		snippets/*.cpp
+         		snippets/*.h
+        		compression/*.cpp
+        		compression/*.c
+        		compression/*.h
 			</Files>
 			<Files name="Plugin Dependencies" root="../../include" type="source">
         Pd3d/*.h
@@ -137,12 +142,6 @@
 			</Files>
 			<Dependencies type="link">
 			  Pd3d
-            RenderDebug
-            Pgraphics
-     		MeshImport
-    		MeshImportEzm
-    		MeshImportObj
-    		MeshImportOgre
 			</Dependencies>
 
 		</Target>

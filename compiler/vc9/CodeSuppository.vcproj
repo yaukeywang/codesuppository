@@ -665,6 +665,26 @@
 			</File>
 		</Filter>
 		<Filter
+			Name="MeshImport Files"
+			>
+			<File
+				RelativePath="..\..\include\MeshImport\MeshImport.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\MeshImport\MeshImport.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\MeshImport\MeshImport.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\MeshImport\MeshImport.h"
+				>
+			</File>
+		</Filter>
+		<Filter
 			Name="Common Source Files"
 			>
 			<Filter
@@ -915,6 +935,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\common\snippets\fastipc.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\common\snippets\FastXml.cpp"
 					>
 				</File>
@@ -1144,14 +1168,6 @@
 				</File>
 				<File
 					RelativePath="..\..\include\common\snippets\MeshConsolidate.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\MeshImport.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\include\common\snippets\MeshImportLoader.cpp"
 					>
 				</File>
 				<File

@@ -1,5 +1,5 @@
 /EnvironmentTexture cubemap.dds 
-/View3d true 
+/View3d false 
 /FloatingPointResolution MEDIUM 
 /WireframeOverlay false 
 /RectangleSubdivision false 

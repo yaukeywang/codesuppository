@@ -52,9 +52,8 @@ Section "ThreadFrac Executable and Data" sec1
   # ----------Executables and DLLs---------
   SetOutPath "$INSTDIR\bin\win32"
 
-## Install the two executables.
+## Install the executable.
   File "${RootDir}\bin\win32\ThreadFrac.exe"
-  File "${RootDir}\bin\win32\ThreadFrac.exe.Manifest"
 
 ## Install the various DLL components
 

@@ -2,7 +2,7 @@
 /View3d false 
 /FloatingPointResolution MEDIUM 
 /WireframeOverlay false 
-/RectangleSubdivision false 
+/RectangleSubdivision true 
 /ColorPalette default.pal 
 /RotationSpeed 1.860 
 /ClampScale 0.708 

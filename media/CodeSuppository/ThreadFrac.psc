@@ -13,6 +13,6 @@
 /SmoothColor 16.000000 
 /ShowNormals false 
 /UseThreading true 
-/PreviewOnly true 
+/PreviewOnly false 
 FractalCoordinates -2.5 0.75 -1.5
 PsLookAt 200.000000000 250.000000000 200.000000000  199.470184326 249.337738037 199.470184326

@@ -9,7 +9,7 @@
 /ClampHigh 0.196 
 /ClampLow 0.153 
 /ClockCycles 100.000000 
-/IterationCount 3338.680 
+/IterationCount 1024.000 
 /SmoothColor 16.000000 
 /ShowNormals false 
 /UseThreading true 

@@ -254,6 +254,12 @@ Name="CodeSuppository"
     <File RelativePath="..\..\app\CodeSuppository\TestWildCard.cpp"/>
     <File RelativePath="..\..\app\CodeSuppository\TestWinMsg.cpp"/>
   </Filter>
+  <Filter Name="MeshImport Files" Filter=""> <!--  -->
+    <File RelativePath="..\..\include\MeshImport\MeshImport.cpp"/>
+    <File RelativePath="..\..\include\MeshImport\MeshImport.h"/>
+    <File RelativePath="..\..\include\MeshImport\MeshImport.cpp"/>
+    <File RelativePath="..\..\include\MeshImport\MeshImport.h"/>
+  </Filter>
   <Filter Name="Common Source Files" Filter=""> <!--  -->
     <Filter Name="tui" Filter=""> <!--  -->
       <File RelativePath="..\..\src\common\tui\tui.cpp"/>
@@ -332,7 +338,6 @@ Name="CodeSuppository"
       <File RelativePath="..\..\include\common\snippets\MergedPath.cpp"/>
       <File RelativePath="..\..\include\common\snippets\MeshCleanup.cpp"/>
       <File RelativePath="..\..\include\common\snippets\MeshConsolidate.cpp"/>
-      <File RelativePath="..\..\include\common\snippets\MeshImportLoader.cpp"/>
       <File RelativePath="..\..\include\common\snippets\MeshIslandGeneration.cpp"/>
       <File RelativePath="..\..\include\common\snippets\MicroAllocator.cpp"/>
       <File RelativePath="..\..\include\common\snippets\MyMessageBox.cpp"/>
@@ -414,7 +419,6 @@ Name="CodeSuppository"
       <File RelativePath="..\..\include\common\snippets\MergedPath.h"/>
       <File RelativePath="..\..\include\common\snippets\MeshCleanup.h"/>
       <File RelativePath="..\..\include\common\snippets\MeshConsolidate.h"/>
-      <File RelativePath="..\..\include\common\snippets\MeshImport.h"/>
       <File RelativePath="..\..\include\common\snippets\MeshIslandGeneration.h"/>
       <File RelativePath="..\..\include\common\snippets\MicroAllocator.h"/>
       <File RelativePath="..\..\include\common\snippets\MyMessageBox.h"/>

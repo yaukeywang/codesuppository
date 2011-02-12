@@ -257,8 +257,6 @@ Name="CodeSuppository"
   <Filter Name="MeshImport Files" Filter=""> <!--  -->
     <File RelativePath="..\..\include\MeshImport\MeshImport.cpp"/>
     <File RelativePath="..\..\include\MeshImport\MeshImport.h"/>
-    <File RelativePath="..\..\include\MeshImport\MeshImport.cpp"/>
-    <File RelativePath="..\..\include\MeshImport\MeshImport.h"/>
   </Filter>
   <Filter Name="Common Source Files" Filter=""> <!--  -->
     <Filter Name="tui" Filter=""> <!--  -->

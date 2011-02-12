@@ -119,10 +119,6 @@
 		        Dxut/*.h
 			</Files>
 
-			<Files name="MeshImport Files" root="../../include/MeshImport" type="source">
-				*.cpp
-				*.h
-			</Files>
 			<Files name="Depenency Files" root="../../include/common" type="source">
 				binding/*.cpp
         		binding/*.h

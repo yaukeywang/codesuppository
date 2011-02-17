@@ -55,10 +55,12 @@ processUntileUV( MeshImportInterface *mii, UntileUV* uuv, const char* meshName, 
 		convertVertFromUUV( v[1], verts[i2] );
 		convertVertFromUUV( v[2], verts[i3] );
 
+#if 0
 		gRenderDebug->DebugTri(
 			v[0].mPos,
 			v[1].mPos,
 			v[2].mPos );
+#endif
 
 		mii->importTriangle( meshName, materialName,
 			NVSHARE::MIVF_POSITION | NVSHARE::MIVF_NORMAL | NVSHARE::MIVF_TEXEL1 | NVSHARE::MIVF_TEXEL2,

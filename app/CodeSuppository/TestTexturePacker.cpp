@@ -274,7 +274,7 @@ public:
 				m->mVertices[i3]
 			};
 
-#if 1
+#if 0
 			gRenderDebug->DebugTri(
 				verts[0].mPos,
 				verts[1].mPos,

@@ -136,7 +136,6 @@
 				AdditionalDependencies="&quot;odbc32.lib&quot; &quot;odbccp32.lib&quot; &quot;winmm.lib&quot; &quot;comctl32.lib&quot; &quot;pdh.lib&quot; &quot;shlwapi.lib&quot; &quot;OpenGL32.lib&quot; &quot;GLU32.lib&quot; &quot;Ws2_32.lib&quot; &quot;dbghelp.lib&quot; &quot;d3d9.lib&quot; &quot;d3dx9.lib&quot; &quot;dxerr9.lib&quot; &quot;dxguid.lib&quot; &quot;dinput8.lib&quot; &quot;dsound.lib&quot; &quot;Strmiids.lib&quot; &quot;Quartz.lib&quot; "
 				OutputFile="$(OutDir)/Pd3d.dll"
 				AdditionalLibraryDirectories="&quot;../../ext/DirectX_October2006&quot;;&quot;C:/Program Files/Microsoft DirectX SDK (October 2006)/Lib/x86&quot;;"
-				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/Pd3d.dll.pdb"
 				GenerateMapFile="true"
 				MapFileName="$(OutDir)/Pd3d.dll.map"

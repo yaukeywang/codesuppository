@@ -381,104 +381,6 @@ namespace UNTILE_UV
 			return 0;
 		}
 
-#if 0
-		bool		split( const Line2D& line, Polygon& front, Polygon& back )
-		{
-			assert( mVertices.size() >= 3 );
-			if ( mVertices.size() < 3 )
-				return false;
-
-			front.reset();
-			back.reset();
-
-			Polygon* polys[2];
-			NxF32 d = line.dot( mVertices[0].mUV[0], mVertices[0].mUV[1] );
-			if ( d == 0.0f )
-			{
-				d = line.dot( mVertices[1].mUV[0], mVertices[1].mUV[1] );
-			}
-
-			if ( d >= 0.0f )
-			{
-				polys[0] = &front;
-				polys[1] = &back;
-			}
-			else
-			{
-				polys[0] = &back;
-				polys[1] = &front;
-			}
-			NxU32 total = getVertexCount();
-
-			NxU32 Si( (NxU32)-1 );
-
-			NxU32 Ai;
-			NxF32 At;
-			if ( !findSplit( Ai, At, 0, getVertexCount(), line ) )
-				return false;
-
-			NxU32 Bi;
-			NxF32 Bt;
-
-			if ( !findSplit( Bi, Bt, Ai + 1, getVertexCount(), line ) )
-			{
-				for ( Si = 0; ; ++Si )
-				{
-					assert( Si <= getVertexCount() );
-					if ( Si > getVertexCount() )
-						return false;
-
-					const UntileUVMeshVertex& p( getVertex( Si ) );
-					if ( line.dot( p.mUV[0], p.mUV[1] ) == 0.0f )
-						break;
-				}
-
-				if ( Si <= Ai )
-				{
-					Bi = Ai;
-					Bt = At;
-					Ai = Si;
-					At = 0.0f;
-				}
-				else
-				{
-					Bi = Si;
-					Bt = 0.0f;
-				}
-			}
-			UntileUVMeshVertex v;
-			NxU32 i = 0;
-
-			for ( i; i <= Ai; ++i )
-				polys[0]->addVertex( getVertex( i ) );
-
-			if ( At == 0.0f )
-				v = getVertex( Ai );
-			else
-				v.interpolate( getVertex( Ai ), getVertex( Ai + 1 ), At );
-			polys[0]->addVertex( v );
-			polys[1]->addVertex( v );
-
-			for ( i; i <= Bi; ++i )
-				polys[1]->addVertex( getVertex( i ) );
-
-			if ( Bt == 0.0f )
-				v = getVertex( Bi );
-			else
-				v.interpolate( getVertex( Bi ), getVertex( Bi + 1 ), Bt );
-			polys[1]->addVertex( v );
-			polys[0]->addVertex( v );
-
-			for ( i; i < total; ++i )
-				polys[0]->addVertex( getVertex( i ) );
-
-			assert( polys[0]->getVertexCount() >= 3 );
-			assert( polys[1]->getVertexCount() >= 3 );
-
-			return true;
-		}
-#endif
-
 		void		translate( NxF32 u, NxF32 v )
 		{
 			for ( size_t i = 0; i < mVertices.size(); ++i )
@@ -489,25 +391,6 @@ namespace UNTILE_UV
 		}
 
 	private:
-
-		bool		findSplit( NxU32& outIdx, NxF32& outPercent,
-			NxU32 startIdx, NxU32 endIdx,
-			const Line2D& line )
-		{
-			for ( NxU32 i = startIdx; i < endIdx; ++i )
-			{
-				const UntileUVMeshVertex* vA = &getVertex( i );
-				const UntileUVMeshVertex* vB = &getVertex( i + 1 );
-
-				Edge edge( vA, vB );
-				if ( edge.intersect( outPercent, line ) )
-				{
-					outIdx = i;
-					return true;
-				}
-			}
-			return false;
-		}
 
 		VertexVector		mVertices;
 		NxF32				mU;
@@ -536,18 +419,16 @@ namespace UNTILE_UV
 		}
 
 		NxU32	untile(
-			const UntileUVMeshVertex* vA,
-			const UntileUVMeshVertex* vB,
-			const UntileUVMeshVertex* vC,
+			const UntileUVMeshVertex* verts,
+			NxU32 vcount,
 			NxF32 epsilon )
 		{
 			reset();
 			_epsilon = epsilon;
 
 			Extents2D extents;
-			extents.add( vA->mUV );
-			extents.add( vB->mUV );
-			extents.add( vC->mUV );
+			for ( NxU32 i = 0; i < vcount; ++i )
+				extents.add( verts[i].mUV );
 
 			NxF32 fMinU = extents.getMin()[0];
 			NxF32 fMaxU = extents.getMax()[0];
@@ -560,9 +441,8 @@ namespace UNTILE_UV
 			NxF32 iMaxV = Ceil( fMaxV );
 
 			Polygon tri;
-			tri.addVertex( *vA );
-			tri.addVertex( *vB );
-			tri.addVertex( *vC );
+			for ( NxU32 i = 0; i < vcount; ++i )
+				tri.addVertex( verts[i] );
 			tri.setU( iMaxU );
 			tri.setV( iMaxV );
 
@@ -600,13 +480,6 @@ namespace UNTILE_UV
 				polys.push_back( tri );
 			}
 
-#if 0
-			for ( size_t i = 0; i < polys.size(); ++i )
-			{
-				tri = polys[i];
-				addPoly( tri );
-			}
-#else
 			for ( size_t i = 0; i < polys.size(); ++i )
 			{
 				tri = polys[i];
@@ -642,7 +515,6 @@ namespace UNTILE_UV
 					addPoly( tri );
 				}
 			}
-#endif
 
 			return _indices.size() / 3;
 		}

@@ -128,7 +128,7 @@ testUntileUV( MeshImport* mimport, MeshSystemHelper * msh )
 						convertVertToUUV( v[2], *verts[2] );
 
 						UntileUV* uuv = createUntileUV();
-						uuv->untile( v+0, v+1, v+2 );
+						uuv->untile( v, 3 );
 
 						processUntileUV( omii, uuv, m->mName, sm->mMaterialName );
 

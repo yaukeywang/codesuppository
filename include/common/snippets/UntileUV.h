@@ -55,9 +55,8 @@ class UntileUV
 {
 public:
 	virtual NxU32	untile(
-		const UntileUVMeshVertex* vA,
-		const UntileUVMeshVertex* vB,
-		const UntileUVMeshVertex* vC,
+		const UntileUVMeshVertex* verts,
+		NxU32 vcount,
 		NxF32 epsilon = 1.0f / 1024.0f
 		)=0;
 

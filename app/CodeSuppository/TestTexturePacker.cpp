@@ -100,10 +100,58 @@ struct MyTextureInfo
 };
 
 
+class TexturePackerScanline
+{
+public:
+	TexturePackerScanline( NxU32 maxWidth )
+	{
+		mMaxWidth = maxWidth;
+		mWidth = 0;
+		mScanline = (NxU32*)malloc( sizeof( NxU32 ) * maxWidth );
+	}
+
+	~TexturePackerScanline()
+	{
+		free( mScanline );
+	}
+
+	void	set( const NxU32* texel, NxU32 stride, NxU32 count, bool border )
+	{
+		mWidth = count;
+		if ( border )
+			mWidth += 2;
+		assert( mWidth <= mMaxWidth );
+
+		NxU32* dst = mScanline;
+		const NxU32* src = texel;
+
+		if ( border )
+			*dst++ = texel[stride*(count - 1)];
+
+		for ( NxU32 i = 0; i < count; ++i, src += stride )
+		{
+			*dst++ = *src;
+		}
+
+		if ( border )
+			*dst++ = texel[0];
+	}
+
+	NxU32	getWidth() const { return mWidth; }
+	NxU32*	getTexels() const { return mScanline; }
+
+private:
+	NxU32*	mScanline;
+	NxU32	mWidth;
+	NxU32	mMaxWidth;
+};
+
+
 class TestTexturePacker
 {
 public:
 	TestTexturePacker( MeshSystemHelper* msh )
+		: mScanline( 65536 )
 	{
 		mTexturePacker = 0;
 		mMsh = msh;
@@ -307,16 +355,36 @@ private:
 
 	void	blitTex( LockedTexture& packed, LockedTexture& tex, int tx, int ty, int tw, int th )
 	{
-		const int bpp( 4 );
+		blitScanline( packed, tex,
+			th-1,
+			tx, ty-1, tw );
 
 		for ( int y = 0; y < th; ++y )
 		{
-			NxU8* dst = (NxU8*)mPacked.getScanline( y + ty );
-			NxU8* src = (NxU8*)tex.getScanline( y );
-
-			dst += bpp*tx;
-			memcpy( dst, src, bpp*tw );
+			blitScanline( packed, tex,
+				y,
+				tx, ty + y, tw );
 		}
+
+		blitScanline( packed, tex,
+			0,
+			tx, ty + th, tw );
+	}
+
+	void	blitScanline( LockedTexture& packed, LockedTexture& tex, int y, int tx, int ty, int tw )
+	{
+		const int bpp( sizeof( NxU32 ) );
+
+		NxU32* dst = (NxU32*)mPacked.getScanline( ty );
+		NxU32* src = (NxU32*)tex.getScanline( y );
+		bool border = true;
+
+		mScanline.set( src, 1, tw, border );
+
+		dst += tx;
+		if ( border )
+			dst -= 1;
+		memcpy( dst, mScanline.getTexels(), bpp * mScanline.getWidth() );
 	}
 
 	MeshSystemHelper*	mMsh;
@@ -329,6 +397,7 @@ private:
 	Pd3dTexture*		mPackedTexture;
 	int					mPackedW;
 	int					mPackedH;
+	TexturePackerScanline	mScanline;
 
 	NxU32				mTexCount;
 };

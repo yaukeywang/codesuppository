@@ -441,6 +441,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\app\CodeSuppository\TestTexturePacker.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\app\CodeSuppository\TestTjunctions.h"
 				>
 			</File>
@@ -654,6 +658,10 @@
 			</File>
 			<File
 				RelativePath="..\..\app\CodeSuppository\TestStanHull.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\TestTexturePacker.cpp"
 				>
 			</File>
 			<File

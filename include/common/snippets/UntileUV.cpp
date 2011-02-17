@@ -13,12 +13,6 @@
 #include "FloatMath.h"
 #include <cmath>
 
-#if 1
-#pragma warning(disable:4189)
-#pragma warning(disable:4100)
-#pragma warning(disable:4101)
-#endif
-
 using namespace NVSHARE;
 
 //typedef NVSHARE::Array< NxU32 > NxU32Vector;
@@ -339,57 +333,6 @@ namespace UNTILE_UV
 	typedef std::vector< Polygon > PolygonVector;
 
 
-	class SplitPolygon
-	{
-	public:
-		SplitPolygon()
-		{
-			mFront = 0;
-			mBack = 0;
-			mPoly = 0;
-			mLeaf = 0;
-		}
-
-		~SplitPolygon()
-		{
-			reset();
-		}
-
-		void	reset( const Polygon* init = 0 )
-		{
-			delete mLeaf; mLeaf = 0;
-			delete mPoly; mPoly = 0;
-			delete mFront; mFront = 0;
-			delete mBack; mBack = 0;
-
-			if ( init )
-			{
-				mLeaf = new Polygon( *init );
-			}
-		}
-
-		bool	isLeaf() const	{ return mLeaf != 0; }
-
-		Polygon*		getPoly() const	{ return mLeaf; }
-		SplitPolygon*	getFront() const { return mFront; }
-		SplitPolygon*	getBack() const { return mBack; }
-		Line2D*			getLine() const { return mPoly; }
-
-		void	split( const Line2D& line )
-		{
-			if ( isLeaf() )
-			{
-			}
-		}
-
-	private:
-		SplitPolygon*	mFront;
-		SplitPolygon*	mBack;
-		Line2D*			mPoly;
-		Polygon*		mLeaf;
-	};
-
-
 	class MyUntileUV : public UntileUV
 	{
 	public:
@@ -435,45 +378,6 @@ namespace UNTILE_UV
 			tri.addVertex( *vB );
 			tri.addVertex( *vC );
 
-#if 0
-			addPoly( tri );
-#elif 0
-			Polygon front;
-			Polygon back;
-
-			Line2D line;
-			line.set(
-				fMinU, fMinV,
-				fMinV, fMaxV );
-			if ( tri.split( line, front, back ) )
-			{
-				addPoly( front );
-				addPoly( back );
-			}
-			else
-			{
-				addPoly( tri );
-			}
-#elif 0
-			Polygon front;
-			Polygon back;
-
-			PolygonVector polys;
-			for ( NxF32 u = iMinU; u <= iMaxU; u += 1.0f )
-			{
-				Line2D line;
-				line.set(
-					u, iMinV,
-					u, iMaxV );
-
-				if ( tri.split( line, front, back ) )
-				{
-					addPoly( front );
-					tri = back;
-				}
-			}
-			addPoly( tri );
-#else
 			Polygon front;
 			Polygon back;
 
@@ -511,7 +415,6 @@ namespace UNTILE_UV
 				}
 				addPoly( tri );
 			}
-#endif
 
 			return _indices.size() / 3;
 		}

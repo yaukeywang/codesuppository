@@ -71,9 +71,9 @@ testUntileUV( MeshSystemHelper * msh )
 						for ( NxU32 ii = 0; ii < 3; ++ii )
 						{
 							const MeshVertex* vert = verts[ii];
-							v[ii].SetUV( vert->mTexel1[0], vert->mTexel1[1] );
-							v[ii].SetAttribXYZ( 0, vert->mPos );
-							v[ii].SetAttribXY( 1, vert->mTexel2 );
+							v[ii].setUV( vert->mTexel1[0], vert->mTexel1[1] );
+							v[ii].setAttribXYZ( 0, vert->mPos );
+							v[ii].setAttribXY( 1, vert->mTexel2 );
 						}
 
 						UntileUV* uuv = createUntileUV();

@@ -57,7 +57,9 @@ public:
 	virtual NxU32	untile(
 		const UntileUVMeshVertex* vA,
 		const UntileUVMeshVertex* vB,
-		const UntileUVMeshVertex* vC )=0;
+		const UntileUVMeshVertex* vC,
+		NxF32 epsilon = 1.0f / 1024.0f
+		)=0;
 
 	virtual const UntileUVMeshVertex*	getVerts()=0;
 	virtual const NxU32*				getIndices()=0;

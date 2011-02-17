@@ -401,9 +401,12 @@ public:
 		for ( NxU32 i = 0; i < mMeshSystem->mMaterialCount; ++i )
 		{
 			const MeshMaterial& meshMaterial = mMeshSystem->mMaterials[i];
-			NVSHARE::Pd3dMaterial d3dMat( mMaterial );
-			strcpy( d3dMat.mTexture, meshMaterial.mName );
-			mMaterials.pushBack( d3dMat );
+			if ( strlen( meshMaterial.mName ) > 0 )
+			{
+				NVSHARE::Pd3dMaterial d3dMat( mMaterial );
+				strcpy( d3dMat.mTexture, meshMaterial.mName );
+				mMaterials.pushBack( d3dMat );
+			}
 		}
 
         ret = true;

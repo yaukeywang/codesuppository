@@ -36,8 +36,6 @@ public:
 			gPd3d->unlockTexture( mHandle );
 			mMem = 0;
 			mPitch = 0;
-			mWidth = 0;
-			mHeight = 0;
 		}
 	}
 
@@ -71,6 +69,37 @@ public:
 };
 
 
+struct MyTextureInfo
+{
+	MyTextureInfo()
+	{
+		mHandle = 0;
+		mName[0] = 0;
+	}
+
+	bool	set( Pd3dTexture* tex, const char* name )
+	{
+		mHandle = 0;
+		mName[0] = 0;
+		mMem.unlock();
+
+		if ( !mMem.lock( tex ) )
+		{
+			assert( false );
+			return false;
+		}
+
+		mHandle = tex;
+		strcpy( mName, name );
+		return true;
+	}
+
+	Pd3dTexture*	mHandle;
+	LockedTexture	mMem;
+	char			mName[ 512 ];
+};
+
+
 class TestTexturePacker
 {
 public:
@@ -80,7 +109,6 @@ public:
 		mMsh = msh;
 		mPackedTexture = 0;
 		mTextures = 0;
-		mTexturesMem = 0;
 		mTexCount = 0;
 	}
 
@@ -91,13 +119,13 @@ public:
 
 	void release()
 	{
-		delete [] mTexturesMem;
-		mTexturesMem = 0;
-
 		if ( mTextures )
 		{
 			for ( NxU32 i = 0; i < mTexCount; ++i )
-				gPd3d->releaseTexture( mTextures[i] );
+			{
+				mTextures[i].mMem.unlock();
+				gPd3d->releaseTexture( mTextures[i].mHandle );
+			}
 
 			delete [] mTextures;
 			mTextures = 0;
@@ -128,14 +156,10 @@ public:
 
 		mTexturePacker->setTextureCount( mTexCount );
 
-		mTextures = new Pd3dTexture*[ mTexCount ];
-
-		mTexturesMem = new LockedTexture[ mTexCount ];
+		mTextures = new MyTextureInfo[ mTexCount ];
 
 		for ( NxU32 i = 0; i < mTexCount; ++i )
 		{
-			mTextures[i] = 0;
-
 			NVSHARE::Pd3dMaterial* mat = mMsh->getMaterial( i );
 			assert( mat && mat->mHandle );
 			if ( mat && mat->mHandle )
@@ -151,23 +175,19 @@ public:
 				char name[512];
 				strcpy( name, mat->mTexture );
 				strcat( name, ".argb" );
-				mTextures[i] = gPd3d->createTexture( name, tex.mWidth, tex.mHeight, 4, true );
+				Pd3dTexture* uncompressedTex = gPd3d->createTexture( name, tex.mWidth, tex.mHeight, 4, true );
 
 				tex.unlock();
 
-				if ( !gPd3d->copyTexture( mat->mHandle, mTextures[i] ) )
+				if ( !gPd3d->copyTexture( mat->mHandle, uncompressedTex ) )
 				{
 					assert( false );
 					return false;
 				}
 
-				if ( !mTexturesMem[i].lock( mTextures[i] ) )
-				{
-					assert( false );
-					return false;
-				}
+				mTextures[i].set( uncompressedTex, mat->mTexture );
 
-				mTexturePacker->addTexture( mTexturesMem[i].mWidth, mTexturesMem[i].mHeight );
+				mTexturePacker->addTexture( mTextures[i].mMem.mWidth, mTextures[i].mMem.mHeight );
 			}
 		}
 
@@ -176,6 +196,9 @@ public:
 		int area = mTexturePacker->packTextures( wid, hit, true, true );
 		area = area;
 
+		mPackedW = wid;
+		mPackedH = hit;
+
 		return createPackedTexture( (NxU32)wid, (NxU32)hit );
 	}
 
@@ -183,6 +206,75 @@ public:
 	{
 		mPacked.unlock();
 		return gPd3d->saveTextureDDS( mPackedTexture, fname );
+	}
+
+	bool	remapUVs( NVSHARE::MeshImportInterface* omii, Mesh* m, SubMesh* sm )
+	{
+		NxI32 texIdx = getTexIdx( sm->mMaterialName );
+		assert( texIdx >= 0 && texIdx < (NxI32)mTexCount );
+		if ( texIdx < 0 || texIdx >= (NxI32)mTexCount )
+			return false;
+
+		for ( NxU32 k = 0; k < sm->mTriCount; ++k )
+		{
+			NxU32 i1 = sm->mIndices[k*3+0];
+			NxU32 i2 = sm->mIndices[k*3+1];
+			NxU32 i3 = sm->mIndices[k*3+2];
+			MeshVertex verts[] = {
+				m->mVertices[i1],
+				m->mVertices[i2],
+				m->mVertices[i3]
+			};
+
+#if 1
+			gRenderDebug->DebugTri(
+				verts[0].mPos,
+				verts[1].mPos,
+				verts[2].mPos );
+#endif
+
+			remapVert( texIdx, verts[0] );
+			remapVert( texIdx, verts[1] );
+			remapVert( texIdx, verts[2] );
+
+			omii->importTriangle( m->mName, "atlas.dds",
+				NVSHARE::MIVF_POSITION | NVSHARE::MIVF_NORMAL | NVSHARE::MIVF_TEXEL1 | NVSHARE::MIVF_TEXEL2,
+				verts[0], verts[1], verts[2] );
+		}
+
+		return true;
+	}
+
+	void	remapVert( NxI32 idx, MeshVertex& v )
+	{
+		int x, y, w, h;
+		if ( mTexturePacker->getTextureLocation( idx, x, y, w, h ) )
+		{
+			assert( !"TODO: handle rotated" );
+		}
+		else
+		{
+			float scaleU = w / (NxF32)mPackedW;
+			float scaleV = h / (NxF32)mPackedH;
+			float offU = x / (NxF32)mPackedW;
+			float offV = y / (NxF32)mPackedH;
+
+			v.mTexel1[0] *= scaleU;
+			v.mTexel1[0] += offU;
+
+			v.mTexel1[1] *= scaleV;
+			v.mTexel1[1] += offV;
+		}
+	}
+
+	NxI32	getTexIdx( const char* name )
+	{
+		for ( NxU32 i = 0; i < mTexCount; ++i )
+		{
+			if ( strcmp( mTextures[i].mName, name ) == 0 )
+				return i;
+		}
+		return -1;
 	}
 
 private:
@@ -199,9 +291,9 @@ private:
 		{
 			int x, y, wid, hit;
 			if ( mTexturePacker->getTextureLocation( i, x, y, wid, hit ) )
-				blitTexRotated( mPacked, mTexturesMem[ i ], x, y, wid, hit );
+				blitTexRotated( mPacked, mTextures[ i ].mMem, x, y, wid, hit );
 			else
-				blitTex( mPacked, mTexturesMem[ i ], x, y, wid, hit );
+				blitTex( mPacked, mTextures[ i ].mMem, x, y, wid, hit );
 		}
 
 		return true;
@@ -231,11 +323,12 @@ private:
 
 	TexturePacker*		mTexturePacker;
 
-	Pd3dTexture**		mTextures;
-	LockedTexture*		mTexturesMem;
+	MyTextureInfo*		mTextures;
 
 	LockedTexture		mPacked;
 	Pd3dTexture*		mPackedTexture;
+	int					mPackedW;
+	int					mPackedH;
 
 	NxU32				mTexCount;
 };
@@ -267,14 +360,12 @@ testTexturePacker( MeshImport* mimport, MeshSystemHelper * msh )
 			omii->importAssetName( ms->mAssetName, ms->mAssetInfo );
 
 			{
-				NVSHARE::MeshSystemContainer* msc = msh->getMeshSystemContainer();
-				NVSHARE::MeshImportInterface* mii = mimport->getMeshImportInterface(msc);
 				for ( NxU32 i = 0; i < ms->mMeshCount; ++i )
 				{
-					const MeshMaterial& mat = ms->mMaterials[i];
+					//const MeshMaterial& mat = ms->mMaterials[i];
 
 					// specify the name of a material and any associated material meta data
-					mii->importMaterial( mat.mName, mat.mMetaData );
+					//omii->importMaterial( mat.mName, mat.mMetaData );
 				}
 			}
 
@@ -287,28 +378,7 @@ testTexturePacker( MeshImport* mimport, MeshSystemHelper * msh )
 				for ( NxU32 j = 0; j < m->mSubMeshCount; ++j )
 				{
 					SubMesh* sm = m->mSubMeshes[j];
-					for ( NxU32 k = 0; k < sm->mTriCount; ++k )
-					{
-						NxU32 i1 = sm->mIndices[k*3+0];
-						NxU32 i2 = sm->mIndices[k*3+1];
-						NxU32 i3 = sm->mIndices[k*3+2];
-						const MeshVertex* verts[] = {
-							&m->mVertices[i1],
-							&m->mVertices[i2],
-							&m->mVertices[i3]
-						};
-
-#if 1
-						gRenderDebug->DebugTri(
-							verts[0]->mPos,
-							verts[1]->mPos,
-							verts[2]->mPos );
-#endif
-
-						omii->importTriangle( m->mName, sm->mMaterialName,
-							NVSHARE::MIVF_POSITION | NVSHARE::MIVF_NORMAL | NVSHARE::MIVF_TEXEL1 | NVSHARE::MIVF_TEXEL2,
-							*verts[0], *verts[1], *verts[2] );
-					}
+					ttp.remapUVs( omii, m, sm );
 				}
 			}
 		}

@@ -125,6 +125,27 @@ namespace UNTILE_UV
 			return mA*x + mB*y + mC;
 		}
 
+		NxF32	dot( const NxF32* xy ) const
+		{
+			return dot( xy[0], xy[1] );
+		}
+
+		NxF32	intersect( const NxF32* pA, const NxF32* pB ) const
+		{
+			NxF32 dpA = dot( pA );
+
+			NxF32 dir[2];
+
+			dir[0] = pB[0] - pA[0];
+			dir[1] = pB[1] - pA[1];
+
+			NxF32 dot1 = dir[0]*mA + dir[1]*mB;
+			NxF32 dot2 = dpA - mC;
+
+			NxF32    t = -(mC + dot2 ) / dot1;
+			return t;
+		}
+
 		NxF32	mA;
 		NxF32	mB;
 		NxF32	mC;
@@ -182,11 +203,8 @@ namespace UNTILE_UV
 	public:
 		Polygon()
 		{
-		}
-
-		Polygon( const Polygon& poly )
-		{
-			mVertices = poly.mVertices;
+			mU = 0;
+			mV = 0;
 		}
 
 		~Polygon()
@@ -199,24 +217,171 @@ namespace UNTILE_UV
 			mVertices.clear();
 		}
 
+		NxF32	getU() const { return mU; }
+		NxF32	getV() const { return mV; }
+		void	setU( NxF32 u ) { mU = u; }
+		void	setV( NxF32 v ) { mV = v; }
+
 		NxU32	getVertexCount() const { return (NxU32)mVertices.size(); }
 
-		const UntileUVMeshVertex&	getVertex( NxU32 idx ) const
+		const UntileUVMeshVertex&	getVertex( NxI32 idx ) const
 		{
-			assert( idx <= mVertices.size() );
+			assert( idx >= -1 && idx <= (NxI32)mVertices.size() );
 
 			// wraparound
-			if ( idx == mVertices.size() )
+			if ( idx == -1 )
+				return mVertices[ mVertices.size() - 1 ];
+			if ( idx == (NxI32)mVertices.size() )
 				return mVertices[ 0 ];
 			else
 				return mVertices[ idx ];
 		}
 
-		void	addVertex( const UntileUVMeshVertex& v )
+		void		addVertex( const UntileUVMeshVertex& v )
 		{
 			mVertices.push_back( v );
 		}
 
+		void		set( const UntileUVMeshVertex* verts, NxU32 count )
+		{
+			mVertices.clear();
+			for ( NxU32 i = 0; i < count; ++i )
+				mVertices.push_back( verts[i] );
+		}
+
+		NxF32		dot( NxU32 idx, const Line2D& line, NxF32 epsilon )
+		{
+			return line.dot( mVertices[idx].mUV ) + epsilon;
+		}
+
+		NxI32		classify( NxU32 idx, const Line2D& line, NxF32 epsilon )
+		{
+			if ( dot( idx, line, epsilon ) > 0 )
+				return 1;
+			else
+				return -1;
+		}
+
+		int		split( const Line2D& line, Polygon& front, Polygon& back, NxF32 epsilon )
+		{
+			assert( mVertices.size() >= 3 );
+			if ( mVertices.size() < 3 )
+				return -2;
+
+			front.reset();
+			back.reset();
+
+			NxI32 c;
+
+#if 0
+			c = classify( 0, line, epsilon );
+			size_t i;
+			for ( i = 1; i < mVertices.size(); ++i )
+				if ( c != classify( i, line, epsilon ) )
+					break;
+
+			// all on one side?
+			if ( i == mVertices.size() )
+			{
+				if ( c == 1 )
+				{
+					// all in front?
+					front = *this;
+				}
+				else
+				{
+					// all behind?
+					assert( c == -1 );
+					back = *this;
+				}
+
+				return c;
+			}
+#else
+			c = classify( 0, line, epsilon );
+			if ( c == 1 )
+			{
+				size_t i;
+				for ( i = 1; i < mVertices.size(); ++i )
+					if ( c != classify( i, line, epsilon ) )
+						break;
+
+				// all in front?
+				if ( i == mVertices.size() )
+				{
+					front = *this;
+					return c;
+				}
+			}
+
+			c = classify( 0, line, -epsilon );
+			if ( c == -1 )
+			{
+				size_t i;
+				for ( i = 1; i < mVertices.size(); ++i )
+					if ( c != classify( i, line, -epsilon ) )
+						break;
+
+				// all behind?
+				if ( i == mVertices.size() )
+				{
+					back = *this;
+					return c;
+				}
+			}
+#endif
+
+			NxI32 count = (NxI32)getVertexCount();
+			NxI32 out_c = 0, in_c = 0;
+
+			const int MAXPTS( 256 );
+			UntileUVMeshVertex ptA, ptB, outpts[MAXPTS],inpts[MAXPTS];
+
+			NxF32 sideA, sideB;
+
+			ptA = getVertex( count - 1 );
+			sideA = line.dot( ptA.mUV );
+			for ( NxI32 i = -1; ++i < count; )
+			{
+				ptB = getVertex( i );
+				sideB = line.dot( ptB.mUV );
+				if ( sideB > 0 )
+				{
+					if ( sideA < 0 )
+					{
+						UntileUVMeshVertex v;
+						NxF32 t = line.intersect( ptB.mUV, ptA.mUV );
+						v.interpolate( ptB, ptA, t );
+						outpts[ out_c++ ] = inpts[ in_c++ ] = v;
+					}
+					outpts[ out_c++ ] = ptB;
+				}
+				else if ( sideB < 0 )
+				{
+					if ( sideA > 0 )
+					{
+						UntileUVMeshVertex v;
+						NxF32 t = line.intersect( ptB.mUV, ptA.mUV );
+						v.interpolate( ptB, ptA, t ); // hmm...
+						outpts[ out_c++ ] = inpts[ in_c++ ] = v;
+					}
+					inpts[ in_c++ ] = ptB;
+				}
+				else
+				{
+					outpts[ out_c++ ] = inpts[ in_c++ ] = ptB;
+				}
+				ptA = ptB;
+				sideA = sideB;
+			}
+
+			front.set( &outpts[0], out_c );
+			back.set( &inpts[0], in_c );
+
+			return 0;
+		}
+
+#if 0
 		bool		split( const Line2D& line, Polygon& front, Polygon& back )
 		{
 			assert( mVertices.size() >= 3 );
@@ -227,7 +392,13 @@ namespace UNTILE_UV
 			back.reset();
 
 			Polygon* polys[2];
-			if ( line.dot( mVertices[0].mUV[0], mVertices[0].mUV[1] ) >= 0.0f )
+			NxF32 d = line.dot( mVertices[0].mUV[0], mVertices[0].mUV[1] );
+			if ( d == 0.0f )
+			{
+				d = line.dot( mVertices[1].mUV[0], mVertices[1].mUV[1] );
+			}
+
+			if ( d >= 0.0f )
 			{
 				polys[0] = &front;
 				polys[1] = &back;
@@ -306,8 +477,19 @@ namespace UNTILE_UV
 
 			return true;
 		}
+#endif
+
+		void		translate( NxF32 u, NxF32 v )
+		{
+			for ( size_t i = 0; i < mVertices.size(); ++i )
+			{
+				mVertices[i].mUV[0] += u;
+				mVertices[i].mUV[1] += v;
+			}
+		}
 
 	private:
+
 		bool		findSplit( NxU32& outIdx, NxF32& outPercent,
 			NxU32 startIdx, NxU32 endIdx,
 			const Line2D& line )
@@ -328,6 +510,8 @@ namespace UNTILE_UV
 		}
 
 		VertexVector		mVertices;
+		NxF32				mU;
+		NxF32				mV;
 	};
 	//typedef NVSHARE::Array< Polygon > PolygonVector;
 	typedef std::vector< Polygon > PolygonVector;
@@ -354,9 +538,11 @@ namespace UNTILE_UV
 		NxU32	untile(
 			const UntileUVMeshVertex* vA,
 			const UntileUVMeshVertex* vB,
-			const UntileUVMeshVertex* vC )
+			const UntileUVMeshVertex* vC,
+			NxF32 epsilon )
 		{
 			reset();
+			_epsilon = epsilon;
 
 			Extents2D extents;
 			extents.add( vA->mUV );
@@ -377,6 +563,8 @@ namespace UNTILE_UV
 			tri.addVertex( *vA );
 			tri.addVertex( *vB );
 			tri.addVertex( *vC );
+			tri.setU( iMaxU );
+			tri.setV( iMaxV );
 
 			Polygon front;
 			Polygon back;
@@ -384,37 +572,77 @@ namespace UNTILE_UV
 			PolygonVector polys;
 			for ( NxF32 u = iMinU; u <= iMaxU; u += 1.0f )
 			{
+				if ( tri.getVertexCount() == 0 )
+					break;
+				assert( tri.getVertexCount() >= 3 );
+
 				Line2D line;
 				line.set(
-					u, iMinV,
-					u, iMaxV );
+					u, 0.0f,
+					u, 1.0f );
 
-				if ( tri.split( line, front, back ) )
+				tri.split( line, front, back, epsilon );
+				front.setU( u - 1.0f );
+				front.setV( tri.getV() );
+				back.setU( u );
+				back.setV( tri.getV() );
+				if ( front.getVertexCount() > 0 )
 				{
+					assert( front.getVertexCount() >= 3 );
 					polys.push_back( front );
-					tri = back;
 				}
+				tri = back;
 			}
-			polys.push_back( tri );
+			if ( tri.getVertexCount() > 0 )
+			{
+				assert( tri.getVertexCount() >= 3 );
+				//tri.setU( iMaxU );
+				polys.push_back( tri );
+			}
 
+#if 0
 			for ( size_t i = 0; i < polys.size(); ++i )
 			{
 				tri = polys[i];
-				for ( NxF32 v = iMinV; v < iMaxV; v += 1.0f )
-				{
-					Line2D line;
-					line.set(
-						iMaxU, v,
-						iMinU, v );
-
-					if ( tri.split( line, front, back ) )
-					{
-						addPoly( front );
-						tri = back;
-					}
-				}
 				addPoly( tri );
 			}
+#else
+			for ( size_t i = 0; i < polys.size(); ++i )
+			{
+				tri = polys[i];
+
+				for ( NxF32 v = iMinV; v <= iMaxV; v += 1.0f )
+				{
+					if ( tri.getVertexCount() == 0 )
+						break;
+					assert( tri.getVertexCount() >= 3 );
+
+					Line2D line;
+					line.set(
+						1.0f, v,
+						0.0f, v );
+
+					tri.split( line, front, back, epsilon );
+					front.setU( tri.getU() );
+					front.setV( v - 1.0f );
+					back.setU( tri.getU() );
+					back.setV( v );
+					if ( front.getVertexCount() > 0 )
+					{
+						assert( front.getVertexCount() >= 3 );
+						front.translate( -front.getU(), -front.getV() );
+						addPoly( front );
+					}
+					tri = back;
+				}
+				if ( tri.getVertexCount() > 0 )
+				{
+					assert( tri.getVertexCount() >= 3 );
+					tri.translate( -tri.getU(), -tri.getV() );
+					addPoly( tri );
+				}
+			}
+#endif
 
 			return _indices.size() / 3;
 		}
@@ -445,18 +673,27 @@ namespace UNTILE_UV
 
 			NxU32 start = _vertices.size();
 
-			_vertices.push_back( poly.getVertex( 0 ) );
-			_vertices.push_back( poly.getVertex( 1 ) );
+			_vertices.push_back( checkRange( poly, 0 ) );
+			_vertices.push_back( checkRange( poly, 1 ) );
 
 			for ( NxU32 i = 2; i < vertCount; ++i )
 			{
-				_vertices.push_back( poly.getVertex( i ) );
+				_vertices.push_back( checkRange( poly, i ) );
 				_indices.push_back( start );
 				_indices.push_back( start + i - 1 );
 				_indices.push_back( start + i );
 			}
 		}
 
+		const UntileUVMeshVertex&	checkRange( const Polygon& poly, NxU32 idx )
+		{
+			const UntileUVMeshVertex& vert = poly.getVertex( idx );
+			assert( vert.mUV[0] >= -_epsilon && vert.mUV[0] <= 1.0f+_epsilon );
+			assert( vert.mUV[1] >= -_epsilon && vert.mUV[1] <= 1.0f+_epsilon );
+			return vert;
+		}
+
+		NxF32			_epsilon;
 		NxU32Vector		_indices;
 		VertexVector	_vertices;
 	};

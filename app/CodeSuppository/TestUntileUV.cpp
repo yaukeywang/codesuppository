@@ -72,9 +72,6 @@ testUntileUV( MeshImport* mimport, MeshSystemHelper * msh )
 	SEND_TEXT_MESSAGE(0,"Demonstrates how to remove tiling UVs from a mesh\r\n");
 
 	assert( mimport );
-	NVSHARE::MeshSystemContainer* msc = msh->getMeshSystemContainer();
-	NVSHARE::MeshImportInterface* mii = mimport->getMeshImportInterface(msc);
-
 	NVSHARE::MeshSystemContainer* omsc = mimport->createMeshSystemContainer(); // create an empty mesh system container.
 	NVSHARE::MeshImportInterface* omii = mimport->getMeshImportInterface(omsc); // get an importer interface for this mesh system container.
 
@@ -93,10 +90,10 @@ testUntileUV( MeshImport* mimport, MeshSystemHelper * msh )
 
 			for ( NxU32 i = 0; i < ms->mMeshCount; ++i )
 			{
-				const MeshMaterial& mat = ms->mMaterials[i];
+				//const MeshMaterial& mat = ms->mMaterials[i];
 
 				// specify the name of a material and any associated material meta data
-				mii->importMaterial( mat.mName, mat.mMetaData );
+				//omii->importMaterial( mat.mName, mat.mMetaData );
 			}
 
 			for ( NxU32 i = 0; i < ms->mMeshCount; ++i )

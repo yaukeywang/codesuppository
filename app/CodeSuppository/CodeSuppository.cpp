@@ -43,6 +43,7 @@
 #include "TestErosion.h"
 #include "TestAutoGeometry.h"
 #include "TestTjunctions.h"
+#include "TestUntileUV.h"
 #include "TestMeshConsolidation.h"
 #include "TestIslandGeneration.h"
 #include "TestVectorFont.h"
@@ -318,6 +319,9 @@ public:
         break;
 	  case CSC_TEST_REMOVE_TJUNCTIONS:
 		  testTjunctions(mMeshSystemHelper);
+		  break;
+	  case CSC_TEST_UNTILE_UV:
+		  testUntileUV(mMeshSystemHelper);
 		  break;
 	  case CSC_TEST_ISLAND_GENERATION:
 		  testIslandGeneration(mMeshSystemHelper);

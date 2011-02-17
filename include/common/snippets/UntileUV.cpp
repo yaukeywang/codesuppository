@@ -45,6 +45,7 @@ namespace UNTILE_UV
 		{
 			reset();
 
+#if 0
 			_vertices.pushBack( *vA );
 			_vertices.pushBack( *vB );
 			_vertices.pushBack( *vC );
@@ -52,8 +53,27 @@ namespace UNTILE_UV
 			_indices.pushBack( 0 );
 			_indices.pushBack( 1 );
 			_indices.pushBack( 2 );
+#else
 
-			return 1;
+			_vertices.pushBack( *vA );
+			_vertices.pushBack( *vB );
+
+			UntileUVMeshVertex v;
+			v.Interpolate( *vB, *vC, 0.5f );
+			_vertices.pushBack( v );
+
+			_vertices.pushBack( *vC );
+
+			_indices.pushBack( 0 );
+			_indices.pushBack( 1 );
+			_indices.pushBack( 2 );
+
+			_indices.pushBack( 0 );
+			_indices.pushBack( 2 );
+			_indices.pushBack( 3 );
+#endif
+
+			return 2;
 		}
 
 		virtual const UntileUVMeshVertex*	getVerts()

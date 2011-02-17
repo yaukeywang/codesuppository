@@ -14,13 +14,13 @@ public:
 				mAttributes[i][j] = 0.0f;
 	}
 
-	void		SetUV( float u, float v )
+	void	SetUV( float u, float v )
 	{
 		mUV[0] = u;
 		mUV[1] = v;
 	}
 
-	void		SetAttrib( int idx, float x = 0.0f, float y = 0.0f, float z = 0.0f, float w = 0.0f )
+	void	SetAttrib( int idx, float x = 0.0f, float y = 0.0f, float z = 0.0f, float w = 0.0f )
 	{
 		mAttributes[idx][0] = x;
 		mAttributes[idx][1] = y;
@@ -28,11 +28,24 @@ public:
 		mAttributes[idx][3] = w;
 	}
 
-	void		SetAttribX( int idx, const float* p ) { SetAttrib( idx, p[0], 0.0f, 0.0f, 0.0f ); }
-	void		SetAttribXY( int idx, const float* p ) { SetAttrib( idx, p[0], p[1], 0.0f, 0.0f ); }
-	void		SetAttribXYZ( int idx, const float* p ) { SetAttrib( idx, p[0], p[1], p[2], 0.0f ); }
-	void		SetAttribXYZW( int idx, const float* p ) { SetAttrib( idx, p[0], p[1], p[2], p[3] ); }
+	void	SetAttribX( int idx, const float* p ) { SetAttrib( idx, p[0], 0.0f, 0.0f, 0.0f ); }
+	void	SetAttribXY( int idx, const float* p ) { SetAttrib( idx, p[0], p[1], 0.0f, 0.0f ); }
+	void	SetAttribXYZ( int idx, const float* p ) { SetAttrib( idx, p[0], p[1], p[2], 0.0f ); }
+	void	SetAttribXYZW( int idx, const float* p ) { SetAttrib( idx, p[0], p[1], p[2], p[3] ); }
 
+	void	Interpolate( const UntileUVMeshVertex& vA, const UntileUVMeshVertex& vB, float t )
+	{
+		mUV[0] = vA.mUV[0] + t*(vB.mUV[0] - vA.mUV[0]);
+		mUV[1] = vA.mUV[1] + t*(vB.mUV[1] - vA.mUV[1]);
+
+		for ( int i = 0; i < 16; ++i )
+		{
+			mAttributes[i][0] = vA.mAttributes[i][0] + t*(vB.mAttributes[i][0] - vA.mAttributes[i][0]);
+			mAttributes[i][1] = vA.mAttributes[i][1] + t*(vB.mAttributes[i][1] - vA.mAttributes[i][1]);
+			mAttributes[i][2] = vA.mAttributes[i][2] + t*(vB.mAttributes[i][2] - vA.mAttributes[i][2]);
+			mAttributes[i][3] = vA.mAttributes[i][3] + t*(vB.mAttributes[i][3] - vA.mAttributes[i][3]);
+		}
+	}
 
 	NxF32	mUV[2];
 	NxF32	mAttributes[16][4];

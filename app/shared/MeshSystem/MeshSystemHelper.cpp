@@ -20,6 +20,8 @@ using namespace NVSHARE;
 
 #pragma warning(disable:4100 4189)
 
+typedef NVSHARE::Array< NVSHARE::Pd3dMaterial >	MaterialVector;
+
 class MyMeshSystemHelper : public MeshSystemHelper, public NVSHARE::Memalloc
 {
 public:
@@ -57,6 +59,8 @@ public:
       mMeshSystemContainer = 0;
       mMeshSystem = 0;
     }
+
+	mMaterials.clear();
   }
 
   virtual NVSHARE::MeshSystem * getMeshSystem(void) const
@@ -320,13 +324,28 @@ public:
       }
     }
     else
-    {
-      gPd3d->renderSection(&mMaterial,vertices,m->mIndices,pm->mVertexCount,m->mTriCount);
-    }
+	{
+		NVSHARE::Pd3dMaterial* mat = &mMaterial;
+		NxI32 idx = getMatIdx( m->mMaterialName );
+		if ( idx >= 0 )
+			mat = &mMaterials[ idx ];
+		gPd3d->renderSection(mat,vertices,m->mIndices,pm->mVertexCount,m->mTriCount);
+	}
 	vertices;
 
     delete []vertices;
 
+  }
+
+  NxI32 getMatIdx(const char* matName)
+  {
+	  for ( NxU32 i = 0; i < mMeshSystem->mMaterialCount; ++i )
+	  {
+		  if ( matName == mMeshSystem->mMaterials[i].mName )
+			  return i;
+	  }
+
+	  return -1;
   }
 
   void debugSkeleton(const NVSHARE::MeshVertex &vtx)
@@ -388,6 +407,15 @@ public:
         {
           mSkeleton = gMeshImport->createMeshSkeletonInstance( *mMeshSystem->mSkeletons[0] );
         }
+
+		mMaterials.clear();
+		for ( NxU32 i = 0; i < mMeshSystem->mMaterialCount; ++i )
+		{
+			const MeshMaterial& meshMaterial = mMeshSystem->mMaterials[i];
+			NVSHARE::Pd3dMaterial d3dMat( mMaterial );
+			strcpy( d3dMat.mTexture, meshMaterial.mName );
+			mMaterials.pushBack( d3dMat );
+		}
 
         ret = true;
       }
@@ -708,6 +736,7 @@ private:
   StringDict mStrings;
   HeMat44Vector mTransforms;
   NVSHARE::Pd3dMaterial mMaterial;
+  MaterialVector mMaterials;
   NxI32 mSelectCollision;
 };
 

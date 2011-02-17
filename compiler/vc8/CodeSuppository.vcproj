@@ -1536,6 +1536,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\common\snippets\TexturePacker.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\TexturePacker.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\common\snippets\ThreadConfig.cpp"
 					>
 				</File>

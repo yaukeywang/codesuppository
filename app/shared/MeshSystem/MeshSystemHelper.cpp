@@ -337,17 +337,6 @@ public:
 
   }
 
-  NxI32 getMatIdx(const char* matName)
-  {
-	  for ( NxU32 i = 0; i < mMeshSystem->mMaterialCount; ++i )
-	  {
-		  if ( matName == mMeshSystem->mMaterials[i].mName )
-			  return i;
-	  }
-
-	  return -1;
-  }
-
   void debugSkeleton(const NVSHARE::MeshVertex &vtx)
   {
     if ( mSkeleton )
@@ -723,6 +712,29 @@ public:
       MEMALLOC_FREE(mr->mIndices);
       delete mr;
     }
+  }
+
+  NxI32 getMatIdx(const char* matName)
+  {
+	  for ( NxU32 i = 0; i < mMeshSystem->mMaterialCount; ++i )
+	  {
+		  if ( matName == mMeshSystem->mMaterials[i].mName )
+			  return i;
+	  }
+
+	  return -1;
+  }
+
+  NxU32 getMaterialCount()
+  {
+	  return mMaterials.size();
+  }
+
+  NVSHARE::Pd3dMaterial* getMaterial(NxU32 idx)
+  {
+	  if ( idx < 0 || idx >= mMaterials.size() )
+		  return &mMaterial;
+	  return &mMaterials[idx];
   }
 
 private:

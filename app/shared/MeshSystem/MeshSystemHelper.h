@@ -8,6 +8,7 @@ namespace NVSHARE
 {
 class MeshSystem;
 class MeshSystemContainer;
+class Pd3dMaterial;
 };
 
 class MeshSystemRaw : public NVSHARE::Memalloc
@@ -48,6 +49,8 @@ public:
   virtual MeshSystemRaw * getMeshSystemRaw(void) = 0;
   virtual void            releaseMeshSystemRaw(MeshSystemRaw *mr) = 0;
   virtual void setSelectCollision(NxI32 sc) = 0;
+  virtual NxU32 getMaterialCount() = 0;
+  virtual NVSHARE::Pd3dMaterial* getMaterial(NxU32 idx) = 0;
 };
 
 MeshSystemHelper * createMeshSystemHelper(void);

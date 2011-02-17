@@ -328,6 +328,7 @@ public:
   virtual void        * lockTexture(Pd3dTexture *texture,NxU32 &width,NxU32 &height,NxU32 &pitch) = 0;
   virtual void          unlockTexture(Pd3dTexture *texture) = 0;
   virtual bool          releaseTexture(Pd3dTexture *texture) = 0;
+  virtual bool			saveTextureDDS(Pd3dTexture *texture, const char* fname) = 0;
 
   virtual void  flush(void) = 0; // flush pending draw calls
 
@@ -356,7 +357,7 @@ public:
 
 }; // end of namespace
 
-#define PD3D_VERSION 6  // version 0.01
+#define PD3D_VERSION 7  // version 0.01
 
 extern NVSHARE::Pd3d *gPd3d;
 

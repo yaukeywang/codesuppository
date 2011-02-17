@@ -381,6 +381,8 @@ public:
   }
 
   const StringRef& getName(void) const { return mName; };
+  NxU32 getWidth(void) const { return mWidth; }
+  NxU32 getHeight(void) const { return mHeight; }
 
   static LPDIRECT3DTEXTURE9 getWoodHandle(void)
   {
@@ -570,6 +572,7 @@ public:
   {
     bool ret = false;
 
+#if 0
     NxU32 swidth,sheight,spitch;
     NxU32 dwidth,dheight,dpitch;
 
@@ -589,7 +592,41 @@ public:
       unlockTexture(tsource);
     if ( dest )
       unlockTexture(tdest);
+#else
+	HRESULT hr;
 
+	LPDIRECT3DTEXTURE9 src = (LPDIRECT3DTEXTURE9)tsource->getHandle();
+	LPDIRECT3DTEXTURE9 dst = (LPDIRECT3DTEXTURE9)tdest->getHandle();
+	assert( src && dst );
+	if ( src && dst )
+	{
+		LPDIRECT3DSURFACE9 srcSurf = 0;
+		LPDIRECT3DSURFACE9 dstSurf = 0;
+
+		hr = src->GetSurfaceLevel( 0, &srcSurf );
+		assert( hr == D3D_OK );
+		if ( hr != D3D_OK )
+			return false;
+
+		hr = dst->GetSurfaceLevel( 0, &dstSurf );
+		assert( hr == D3D_OK );
+		if ( hr != D3D_OK )
+			return false;
+
+		NxU32 swidth = tsource->getWidth();
+		NxU32 sheight = tsource->getHeight();
+		NxU32 dwidth = tdest->getWidth();
+		NxU32 dheight = tdest->getHeight();
+
+		DWORD filter = D3DX_FILTER_LINEAR;
+		if ( swidth == dwidth && sheight == dheight )
+			filter = D3DX_FILTER_NONE;
+
+		HRESULT hr = D3DXLoadSurfaceFromSurface( dstSurf, NULL, NULL, srcSurf, NULL, NULL, filter, 0 );
+		assert( hr == D3D_OK );
+		ret = ( hr == D3D_OK );
+	}
+#endif
 
     return ret;
   }
@@ -1534,6 +1571,13 @@ public:
     }
 
     return ret;
+  }
+
+  bool			saveTextureDDS(Pd3dTexture *texture, const char* fname)
+  {
+	  HRESULT hr = D3DXSaveTextureToFileA( fname, D3DXIFF_DDS, texture->getHandle(), NULL );
+	  assert( hr == D3D_OK );
+	  return ( hr == D3D_OK );
   }
 
   void          setClampConstants(NxF32 clampLow,NxF32 clampHigh,NxF32 clampScale)

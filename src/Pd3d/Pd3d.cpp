@@ -203,6 +203,7 @@ public:
   		  mHandle = pptex;
         if ( mHandle == 0 ) mIsOk = false;
       }
+	  calcDimensions();
 
       if ( rhandle )
       {
@@ -221,6 +222,22 @@ public:
 
     release();
 
+  }
+
+  void calcDimensions(void)
+  {
+    if ( mHandle )
+    {
+		LPDIRECT3DTEXTURE9 pptex=(LPDIRECT3DTEXTURE9) mHandle;
+		D3DSURFACE_DESC desc;
+		HRESULT hr = pptex->GetLevelDesc( 0, &desc );
+		assert( hr == D3D_OK );
+		if ( hr == D3D_OK )
+		{
+			mWidth = desc.Width;
+			mHeight = desc.Height;
+		}
+    }
   }
 
   void release(void)

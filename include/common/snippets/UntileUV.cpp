@@ -415,37 +415,6 @@ namespace UNTILE_UV
 		{
 			reset();
 
-#if 0
-			_vertices.push_back( *vA );
-			_vertices.push_back( *vB );
-			_vertices.push_back( *vC );
-
-			_indices.push_back( 0 );
-			_indices.push_back( 1 );
-			_indices.push_back( 2 );
-
-			return 1;
-#elif 0
-
-			_vertices.push_back( *vA );
-			_vertices.push_back( *vB );
-
-			UntileUVMeshVertex v;
-			v.interpolate( *vB, *vC, 0.5f );
-			_vertices.push_back( v );
-
-			_vertices.push_back( *vC );
-
-			_indices.push_back( 0 );
-			_indices.push_back( 1 );
-			_indices.push_back( 2 );
-
-			_indices.push_back( 0 );
-			_indices.push_back( 2 );
-			_indices.push_back( 3 );
-
-			return 2;
-#else
 			Extents2D extents;
 			extents.add( vA->mUV );
 			extents.add( vB->mUV );
@@ -531,8 +500,8 @@ namespace UNTILE_UV
 				{
 					Line2D line;
 					line.set(
-						iMinU, v,
-						iMaxU, v );
+						iMaxU, v,
+						iMinU, v );
 
 					if ( tri.split( line, front, back ) )
 					{
@@ -544,8 +513,7 @@ namespace UNTILE_UV
 			}
 #endif
 
-			return 0;
-#endif
+			return _indices.size() / 3;
 		}
 
 		virtual const UntileUVMeshVertex*	getVerts()

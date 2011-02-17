@@ -321,7 +321,26 @@ public:
 		  testTjunctions(mMeshSystemHelper);
 		  break;
 	  case CSC_TEST_UNTILE_UV:
-		  testUntileUV(mMeshSystemHelper);
+		  {
+			  NVSHARE::MeshSystemContainer *msc = testUntileUV(gMeshImport, mMeshSystemHelper);
+			  if (msc)
+			  {
+				  NVSHARE::MeshSystem *msexp = gMeshImport->getMeshSystem(msc); // get the mesh system data.
+				  NVSHARE::MeshSerialize data(NVSHARE::MSF_EZMESH);
+				  bool ok = gMeshImport->serializeMeshSystem(msexp,data); // serialize it in EZ-MESH
+				  if ( ok && data.mBaseData )
+				  {
+					  FILE *fph = fopen("untiled.ezm", "wb");
+					  if ( fph )
+					  {
+						  fwrite(data.mBaseData, data.mBaseLen, 1, fph );
+						  fclose(fph);
+					  }
+				  }
+				  gMeshImport->releaseSerializeMemory(data);
+				  gMeshImport->releaseMeshSystemContainer(msc);
+			  }
+		  }
 		  break;
 	  case CSC_TEST_ISLAND_GENERATION:
 		  testIslandGeneration(mMeshSystemHelper);

@@ -3,6 +3,12 @@
 #include "UserMemAlloc.h"
 class MeshSystemHelper;
 
-void testUntileUV( MeshSystemHelper *mhelper );
+namespace NVSHARE
+{
+	class MeshSystemContainer;
+	class MeshImport;
+}
+
+NVSHARE::MeshSystemContainer* testUntileUV( NVSHARE::MeshImport* mimport, MeshSystemHelper *mhelper );
 
 #endif

@@ -2937,6 +2937,7 @@ public:
 		dir[1] = p2[1] - p1[1];
 		dir[2] = p2[2] - p1[2];
 
+		fm_normalize(dir);
 
 		NxF32 ref[3] = { 0, 1, 0 };
 

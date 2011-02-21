@@ -90,12 +90,12 @@ public:
           NVSHARE::MeshBoneInstance &b = mSkeleton->mBones[i];
           if ( b.mParentIndex != -1 )
           {
-//            NVSHARE::MeshBoneInstance &p = mSkeleton->mBones[b.mParentIndex];
-//            gRenderDebug->DebugThickRay(&p.mAnimTransform[12],&b.mAnimTransform[12],0.02f,0.05f, 0xFFFF00, 0xFF0000, 0.001f, true );
+            NVSHARE::MeshBoneInstance &p = mSkeleton->mBones[b.mParentIndex];
+            gRenderDebug->DebugThickRay(&p.mAnimTransform[12],&b.mAnimTransform[12],0.05f);
           }
           else
           {
-//            gRenderDebug->DebugDetailedSphere(&b.mAnimTransform[12], 0.1f, 16, 0xFFFFFF, 0.001f, true, true );
+            gRenderDebug->debugDetailedSphere(&b.mAnimTransform[12], 0.1f, 16);
           }
         }
       }

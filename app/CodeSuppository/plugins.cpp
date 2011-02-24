@@ -17,7 +17,10 @@ bool loadPlugins(void)
 {
   bool ok = false;
 
+  // disable this jobswarm context for now, since it's unused anywhere...
+#if 0
   gJobSwarmContext = JOB_SWARM::createJobSwarmContext(4); // create a jobswarm context
+#endif
 
   gResourceInterface = createDefaultResourceInterface();
 

@@ -851,6 +851,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\common\snippets\BinaryReader.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\BinaryReader.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\common\snippets\BlobIO.cpp"
 					>
 				</File>

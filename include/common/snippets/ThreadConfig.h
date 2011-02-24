@@ -97,6 +97,8 @@ void          tc_releaseThread(Thread *t);
 class ThreadEvent
 {
 public:
+  static const unsigned int kWaitForever = 0xFFFFFFFF;
+
   virtual void setEvent(void) = 0; // signal the event
   virtual void resetEvent(void) = 0;
   virtual void waitForSingleObject(unsigned int ms) = 0;

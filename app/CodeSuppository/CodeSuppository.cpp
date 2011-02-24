@@ -183,6 +183,13 @@ public:
       case CSC_TEST_CONCAVITY:
       	testConcavity(mMeshSystemHelper);
       	break;
+	  case CSC_TEST_SQLITE_FS:
+		  testSqliteFS();
+		  break;
+	  case CSC_TEST_DEBUG:
+		  // put various debugging tests here.
+		  testFileInterface();
+		  break;
       case CSC_EXPORT_OBJ:
         if ( mMeshSystemHelper )
         {
@@ -501,6 +508,7 @@ public:
     {
       gJobSwarmContext->processSwarmJobs();
     }
+	testSqliteFS_frame();
   }
 
 private:

@@ -67,6 +67,8 @@ enum CodeSuppositoryCommand
   CSC_TEST_VECTOR_FONT,
   CSC_TEST_MARCHING_CUBES,
   CSC_TEST_CONCAVITY,
+  CSC_TEST_SQLITE_FS,
+  CSC_TEST_DEBUG
 };
 
 class CodeSuppository

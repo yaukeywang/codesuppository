@@ -102,16 +102,15 @@ public:
 class SQLiteFS
 {
 public:
-	// asynchronously delete a file from the database.  Currently no callback
-	// is supported.
-	virtual void	delFile( const char *fqn, size_t fqnSize )=0;
-
-	// asynchronously inserts a file into the database.  If a file exists with the same FQN,
-	// then the existing file is deleted and the new file is inserted.
+	// asynchronously inserts a file into the database.  Replaces any existing file.
 	virtual void	putFile( IWriteFile* fp )=0;
 
 	// asynchronously fetches a file from the database.
 	virtual void	getFile( IReadFile *fp )=0;
+
+	// asynchronously delete a file from the database.  Currently no callback
+	// is supported.
+	virtual void	delFile( const char *fqn, size_t fqnSize )=0;
 
 	// call this once per frame.
 	virtual void	pump()=0;

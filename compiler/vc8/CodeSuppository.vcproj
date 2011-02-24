@@ -975,6 +975,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\common\snippets\FileInterfaceExt.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\FileInterfaceExt.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\common\snippets\filesystem.cpp"
 					>
 				</File>
@@ -1068,6 +1076,10 @@
 				</File>
 				<File
 					RelativePath="..\..\include\common\snippets\ImportHeightMap.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\IncludeWindows.h"
 					>
 				</File>
 				<File
@@ -1487,6 +1499,34 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\include\common\snippets\sqlite3.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\sqlite3.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\sqlite3async.c"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\sqlite3async.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\sqlite3ext.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\SQLiteFS.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\SQLiteFS.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\include\common\snippets\stable.h"
 					>
 				</File>
@@ -1604,6 +1644,14 @@
 				</File>
 				<File
 					RelativePath="..\..\include\common\snippets\UserMemAlloc.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\utf.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\utf.h"
 					>
 				</File>
 				<File

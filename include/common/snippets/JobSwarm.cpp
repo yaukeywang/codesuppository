@@ -222,6 +222,7 @@ namespace JOB_SWARM
     ~JobScheduler(void)
     {
       waitFinish();
+	  processSwarmJobs();
       delete []mThreads;
       LOCK_FREE_Q::releaseLockFreeQ(mPending);
     }

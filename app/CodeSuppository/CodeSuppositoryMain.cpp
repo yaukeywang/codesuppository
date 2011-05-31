@@ -901,6 +901,13 @@ void CALLBACK KeyboardProc( UINT nChar, bool bKeyDown, bool bAltDown, void* pUse
     		}
     		break;
 **/
+	case 'O':
+		{
+			NxF32 eye[3];
+			gPd3d->getEyePos(eye);
+			gLog->Display("EyePos: %0.4f %0.4f %0.4f\r\n", eye[0], eye[1], eye[2] );
+		}
+		break;
       case 'P':
         gScreenCapture = 1;
         break;

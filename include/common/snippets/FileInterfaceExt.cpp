@@ -1,4 +1,5 @@
 #include "safestdio.h"
+#include "Shlobj.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>

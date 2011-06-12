@@ -104,6 +104,7 @@ public:
   NxF32        mNormal[3];
   NxF32        mTexel1[2];
   NxF32			mTexel2[2];
+  NxF32			mTexel3[2];
 };
 
 class Pd3dDeformVertex
@@ -133,6 +134,7 @@ public:
     strcpy(mEffect,DEFAULT_EFFECT);
   	mHandle = 0;
 	mLightMapHandle = 0;
+	mDetailMapHandle = 0;
     setDiffuseColor(0xFFFFFFFF);
     setAmbientColor(0xFF606060);
     setSpecularColor(0xFFFFFFFF);
@@ -156,6 +158,7 @@ public:
 
   	mHandle = 0;
 	mLightMapHandle = 0;
+	mDetailMapHandle = 0;
     setDiffuseColor(diffuse);
     setAmbientColor(ambient);
     setSpecularColor(specular);
@@ -171,6 +174,7 @@ public:
     strcpy(mEffect,DEFAULT_EFFECT);
   	mHandle = 0;
 	mLightMapHandle = 0;
+	mDetailMapHandle = 0;
     setDiffuseColor(0xFFFFFFFF);
     setAmbientColor(0xFF606060);
     setSpecularColor(0xFFFFFFFF);
@@ -193,6 +197,7 @@ public:
 	  }
 	  mHandle = 0;
 	  mLightMapHandle = 0;
+	  mDetailMapHandle = 0;
     mExternalEffectSpec = 0;
     mExternalMaterialSpec = 0;
 	}
@@ -263,6 +268,7 @@ public:
 	NxF32                     mSpecularColor[4];
 	Pd3dTexture             *mHandle; // handle to the device version
 	Pd3dTexture             *mLightMapHandle; // handle to the device version
+	Pd3dTexture             *mDetailMapHandle; // handle to the device version
 	ExternalEffectSpec       *mExternalEffectSpec;
 	ExternalMaterialSpec     *mExternalMaterialSpec;
 };

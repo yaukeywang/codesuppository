@@ -110,7 +110,7 @@ namespace NVSHARE
 
 
 
-#define D3DFVF_TETRAVERTEX         ( D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1 | D3DFVF_TEX2 )
+#define D3DFVF_TETRAVERTEX         ( D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1 | D3DFVF_TEX2| D3DFVF_TEX3 )
 #define D3DFVF_LINEVERTEX       ( D3DFVF_XYZ | D3DFVF_DIFFUSE )
 #define D3DFVF_SOLIDVERTEX       ( D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE )
 #define D3DFVF_SCREENVERTEX       ( D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE )
@@ -513,6 +513,7 @@ public:
     mWorldViewProjectionHandle = 0;
     mDiffuseHandle = 0;
     mLightMapHandle = 0;
+    mDetailMapHandle = 0;
     mWorldHandle = 0;
     mViewProjectionHandle = 0;
     mProjectionHandle = 0;
@@ -559,6 +560,7 @@ public:
         mEyePosHandle                     = mEffect->GetParameterByName(0,"EyePos");
      	  mDiffuseHandle                    = mEffect->GetParameterByName(0,"DiffuseMap");
      	  mLightMapHandle                    = mEffect->GetParameterByName(0,"LightMap");
+     	  mDetailMapHandle                    = mEffect->GetParameterByName(0,"DetailMap");
         mEnvironmentHandle                = mEffect->GetParameterByName(0,"EnvironmentMap");
      	  mAmbientColorHandle               = mEffect->GetParameterByName(0,"AmbientColor");
      	  mDiffuseColorHandle               = mEffect->GetParameterByName(0,"DiffuseColor");
@@ -653,6 +655,7 @@ public:
       mWorldViewProjectionHandle = 0;
       mDiffuseHandle = 0;
       mLightMapHandle = 0;
+      mDetailMapHandle = 0;
       mEnvironmentHandle = 0;
       mWorldHandle = 0;
       mViewProjectionHandle = 0;
@@ -957,7 +960,18 @@ public:
 							strcpy(scratch,material->mTexture);
 							char *plus = strchr(scratch,'+');
 							plus++;
+							char *detail = strchr(plus,'+');
+							if ( detail )
+							{
+								*detail = 0;
+								detail++;
+							}
 							material->mLightMapHandle = locateTexture(plus);
+							if ( material->mDetailMapHandle == 0 && detail )
+							{
+								material->mDetailMapHandle = locateTexture(detail);
+							}
+
 						}
 						if ( material->mHandle )
 						{
@@ -968,6 +982,11 @@ public:
 						{
 							LPDIRECT3DBASETEXTURE9 pptex = material->mLightMapHandle->getHandle();
 							mEffect->SetTexture(mLightMapHandle,pptex);
+						}
+						if ( material->mDetailMapHandle )
+						{
+							LPDIRECT3DBASETEXTURE9 pptex = material->mDetailMapHandle->getHandle();
+							mEffect->SetTexture(mDetailMapHandle,pptex);
 						}
 
 					}
@@ -1694,6 +1713,7 @@ private:
   D3DXHANDLE         mWorldViewProjectionHandle;
   D3DXHANDLE         mDiffuseHandle;
   D3DXHANDLE         mLightMapHandle;
+  D3DXHANDLE         mDetailMapHandle;
   D3DXHANDLE         mEnvironmentHandle;
   D3DXHANDLE         mWorldHandle;
   D3DXHANDLE         mViewProjectionHandle;

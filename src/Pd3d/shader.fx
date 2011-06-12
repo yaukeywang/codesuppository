@@ -24,6 +24,7 @@ float4x4 proj;
 texture DiffuseMap    : DIFFUSEMAP;
 texture EnvironmentMap: ENVIRONMENTMAP;
 texture LightMap : LIGHTMAP;
+texture DetailMap : DETAILMAP;
 
 struct VS_INPUT_SCREENQUAD
 {
@@ -38,6 +39,7 @@ struct VS_INPUT
   float3 Normal   : NORMAL;
   float2 TexCoord : TEXCOORD0;
   float2 TexCoord2 : TEXCOORD1;
+  float2 TexCoord3 : TEXCOORD2;
   float4 Diffuse  : COLOR;
 };
 
@@ -67,6 +69,16 @@ sampler2D Sampler1 = sampler_state
 sampler2D SamplerLightMap = sampler_state
 {
   Texture   = (LightMap);
+  MipFilter = LINEAR;
+  MinFilter = LINEAR;
+  MagFilter = LINEAR;
+  AddressU  = WRAP;
+  AddressV  = WRAP;
+};
+
+sampler2D SamplerDetailMap = sampler_state
+{
+  Texture   = (DetailMap);
   MipFilter = LINEAR;
   MinFilter = LINEAR;
   MagFilter = LINEAR;
@@ -154,6 +166,7 @@ VS_OUTPUT LightMapVertexShader(VS_INPUT In,uniform float3 ldir)
 
   Out.TexCoord = float3(In.TexCoord,0);
   Out.TexCoord2.xyz = float3(In.TexCoord2,0);
+  Out.TexCoord3.xyz = float3(In.TexCoord3,0)*0.1;
 
   return Out;
 }
@@ -306,7 +319,8 @@ float4 LightMapPixelShader(VS_OUTPUT In,uniform float sPower) : COLOR
 {
   float4 diffuse  = tex2D(Sampler1,In.TexCoord);
   float4 lightmap = tex2D(SamplerLightMap,In.TexCoord2);
-  return (diffuse*lightmap*2);
+  float4 detail = tex2D(SamplerDetailMap,In.TexCoord3);
+  return (diffuse*lightmap*2*detail);
 }
 
 float4 FractalPixelShader(VS_OUTPUT In,uniform float sPower) : COLOR

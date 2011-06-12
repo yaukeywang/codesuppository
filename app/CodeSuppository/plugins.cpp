@@ -28,12 +28,11 @@ bool loadPlugins(void)
   MEMALLOC::setMaxFixedMemorySize(0);
 #endif
 
-  gPd3d        = (NVSHARE::Pd3d *)getBindingInterface("pd3d.dll","pd3d",PD3D_VERSION,NVSHARE::gSystemServices,0);
+  gPd3d        = (NVSHARE::Pd3d *)NVSHARE::createPd3d(PD3D_VERSION,NVSHARE::gSystemServices);
 	gRenderDebug = createRenderDebug();
   if ( gPd3d && gRenderDebug )
     ok = true;
   gMeshImport            = loadMeshImporters(0);
-
   gPd3d->setResourceInterface(gResourceInterface);
 
   return ok;

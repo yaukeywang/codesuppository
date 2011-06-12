@@ -23,6 +23,7 @@ float4x4 proj;
 
 texture DiffuseMap    : DIFFUSEMAP;
 texture EnvironmentMap: ENVIRONMENTMAP;
+texture LightMap : LIGHTMAP;
 
 struct VS_INPUT_SCREENQUAD
 {
@@ -36,6 +37,7 @@ struct VS_INPUT
   float4 Pos      : POSITION;
   float3 Normal   : NORMAL;
   float2 TexCoord : TEXCOORD0;
+  float2 TexCoord2 : TEXCOORD1;
   float4 Diffuse  : COLOR;
 };
 
@@ -55,6 +57,16 @@ struct VS_OUTPUT
 sampler2D Sampler1 = sampler_state
 {
   Texture   = (DiffuseMap);
+  MipFilter = LINEAR;
+  MinFilter = LINEAR;
+  MagFilter = LINEAR;
+  AddressU  = WRAP;
+  AddressV  = WRAP;
+};
+
+sampler2D SamplerLightMap = sampler_state
+{
+  Texture   = (LightMap);
   MipFilter = LINEAR;
   MinFilter = LINEAR;
   MagFilter = LINEAR;
@@ -128,6 +140,20 @@ VS_OUTPUT SoftBodyVertexShader(VS_INPUT In,uniform float3 ldir)
   // Store the reflection vector in texcoord1
   //
   Out.TexCoord2.xyz = vRef;
+
+  return Out;
+}
+
+
+VS_OUTPUT LightMapVertexShader(VS_INPUT In,uniform float3 ldir)
+{
+  VS_OUTPUT Out = (VS_OUTPUT)0;
+
+  float4 opos = mul(In.Pos,wm);
+  Out.Pos     = mul(opos,vp);
+
+  Out.TexCoord = float3(In.TexCoord,0);
+  Out.TexCoord2.xyz = float3(In.TexCoord2,0);
 
   return Out;
 }
@@ -274,6 +300,13 @@ float4 SoftBodyPixelShader(VS_OUTPUT In,uniform float sPower) : COLOR
 
   return (outColor*In.Diffuse);
 
+}
+
+float4 LightMapPixelShader(VS_OUTPUT In,uniform float sPower) : COLOR
+{
+  float4 diffuse  = tex2D(Sampler1,In.TexCoord);
+  float4 lightmap = tex2D(SamplerLightMap,In.TexCoord2);
+  return (diffuse*lightmap*2);
 }
 
 float4 FractalPixelShader(VS_OUTPUT In,uniform float sPower) : COLOR
@@ -438,6 +471,18 @@ technique SkyBox
     ZEnable          = FALSE;
     VertexShader = compile vs_2_0 VertexShaderSkyBox();
     PixelShader  = compile ps_2_0 PixelShaderSkyBox();
+  }
+}
+
+technique LightMapShader
+{
+  pass P0
+  {
+    AlphaBlendEnable = FALSE;
+    ZWriteEnable     = TRUE;
+    ZEnable          = TRUE;
+    VertexShader = compile vs_2_0 LightMapVertexShader(softLdir);
+    PixelShader  = compile ps_2_0 LightMapPixelShader(SpecularPower);
   }
 }
 

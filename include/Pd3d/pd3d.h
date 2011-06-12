@@ -102,7 +102,8 @@ class Pd3dGraphicsVertex : public NVSHARE::Memalloc
 public:
   NxF32	       mPos[3];
   NxF32        mNormal[3];
-  NxF32        mTexel[2];
+  NxF32        mTexel1[2];
+  NxF32			mTexel2[2];
 };
 
 class Pd3dDeformVertex
@@ -131,6 +132,7 @@ public:
   	mTexture[0] = 0;
     strcpy(mEffect,DEFAULT_EFFECT);
   	mHandle = 0;
+	mLightMapHandle = 0;
     setDiffuseColor(0xFFFFFFFF);
     setAmbientColor(0xFF606060);
     setSpecularColor(0xFFFFFFFF);
@@ -153,6 +155,7 @@ public:
 
 
   	mHandle = 0;
+	mLightMapHandle = 0;
     setDiffuseColor(diffuse);
     setAmbientColor(ambient);
     setSpecularColor(specular);
@@ -167,6 +170,7 @@ public:
   	mTexture[0] = 0;
     strcpy(mEffect,DEFAULT_EFFECT);
   	mHandle = 0;
+	mLightMapHandle = 0;
     setDiffuseColor(0xFFFFFFFF);
     setAmbientColor(0xFF606060);
     setSpecularColor(0xFFFFFFFF);
@@ -188,6 +192,7 @@ public:
 	  	mSpecularColor[i] = tm.mSpecularColor[i];
 	  }
 	  mHandle = 0;
+	  mLightMapHandle = 0;
     mExternalEffectSpec = 0;
     mExternalMaterialSpec = 0;
 	}
@@ -257,6 +262,7 @@ public:
 	NxF32                     mDiffuseColor[4];
 	NxF32                     mSpecularColor[4];
 	Pd3dTexture             *mHandle; // handle to the device version
+	Pd3dTexture             *mLightMapHandle; // handle to the device version
 	ExternalEffectSpec       *mExternalEffectSpec;
 	ExternalMaterialSpec     *mExternalMaterialSpec;
 };
@@ -353,11 +359,17 @@ public:
 
   virtual void          setEnvironmentTexture(const char *t) = 0;
 
+
+
 };
+
+Pd3d * createPd3d(NxI32 version_number,NVSHARE::SystemServices *services);
+
 
 }; // end of namespace
 
 #define PD3D_VERSION 7  // version 0.01
+
 
 extern NVSHARE::Pd3d *gPd3d;
 

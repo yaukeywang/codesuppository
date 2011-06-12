@@ -299,8 +299,10 @@ public:
       dest->mPos[0] = src->mPos[0];
       dest->mPos[1] = src->mPos[1];
       dest->mPos[2] = src->mPos[2];
-      dest->mTexel[0] = src->mTexel1[0];
-      dest->mTexel[1] = src->mTexel1[1];
+      dest->mTexel1[0] = src->mTexel1[0];
+      dest->mTexel1[1] = src->mTexel1[1];
+	  dest->mTexel2[0] = src->mTexel2[0];
+	  dest->mTexel2[1] = src->mTexel2[1];
       dest->mNormal[0] = src->mNormal[0];
       dest->mNormal[1] = src->mNormal[1];
       dest->mNormal[2] = src->mNormal[2];

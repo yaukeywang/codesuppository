@@ -57,7 +57,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions=""
-				AdditionalDependencies="&quot;odbc32.lib&quot; &quot;odbccp32.lib&quot; &quot;winmm.lib&quot; &quot;comctl32.lib&quot; &quot;pdh.lib&quot; &quot;shlwapi.lib&quot; &quot;OpenGL32.lib&quot; &quot;GLU32.lib&quot; &quot;Ws2_32.lib&quot; &quot;dbghelp.lib&quot; &quot;d3d9.lib&quot; &quot;d3dx9.lib&quot; &quot;dxerr9.lib&quot; &quot;dxguid.lib&quot; &quot;dinput8.lib&quot; &quot;dsound.lib&quot; &quot;odbc32.lib&quot; &quot;odbccp32.lib&quot; &quot;winmm.lib&quot; &quot;comctl32.lib&quot; &quot;pdh.lib&quot; &quot;shlwapi.lib&quot; &quot;OpenGL32.lib&quot; &quot;GLU32.lib&quot; &quot;Ws2_32.lib&quot; &quot;dbghelp.lib&quot; &quot;d3d9.lib&quot; &quot;d3dx9.lib&quot; &quot;dxerr9.lib&quot; &quot;dxguid.lib&quot; &quot;dinput8.lib&quot; &quot;dsound.lib&quot; "
+				AdditionalDependencies="&quot;odbc32.lib&quot; &quot;odbccp32.lib&quot; &quot;winmm.lib&quot; &quot;comctl32.lib&quot; &quot;pdh.lib&quot; &quot;shlwapi.lib&quot; &quot;OpenGL32.lib&quot; &quot;GLU32.lib&quot; &quot;Ws2_32.lib&quot; &quot;dbghelp.lib&quot; &quot;d3d9.lib&quot; &quot;d3dx9.lib&quot; &quot;dxerr9.lib&quot; &quot;dxguid.lib&quot; &quot;dinput8.lib&quot; &quot;dsound.lib&quot; &quot;Strmiids.lib&quot; &quot;Quartz.lib&quot; &quot;odbc32.lib&quot; &quot;odbccp32.lib&quot; &quot;winmm.lib&quot; &quot;comctl32.lib&quot; &quot;pdh.lib&quot; &quot;shlwapi.lib&quot; &quot;OpenGL32.lib&quot; &quot;GLU32.lib&quot; &quot;Ws2_32.lib&quot; &quot;dbghelp.lib&quot; &quot;d3d9.lib&quot; &quot;d3dx9.lib&quot; &quot;dxerr9.lib&quot; &quot;dxguid.lib&quot; &quot;dinput8.lib&quot; &quot;dsound.lib&quot; &quot;Strmiids.lib&quot; &quot;Quartz.lib&quot; "
 				OutputFile="$(OutDir)/.exe"
 				AdditionalLibraryDirectories=""
 				ProgramDatabaseFile="$(OutDir)/.exe.pdb"
@@ -131,7 +131,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/DEBUG "
-				AdditionalDependencies="&quot;odbc32.lib&quot; &quot;odbccp32.lib&quot; &quot;winmm.lib&quot; &quot;comctl32.lib&quot; &quot;pdh.lib&quot; &quot;shlwapi.lib&quot; &quot;OpenGL32.lib&quot; &quot;GLU32.lib&quot; &quot;Ws2_32.lib&quot; &quot;dbghelp.lib&quot; &quot;d3d9.lib&quot; &quot;d3dx9.lib&quot; &quot;dxerr9.lib&quot; &quot;dxguid.lib&quot; &quot;dinput8.lib&quot; &quot;dsound.lib&quot; "
+				AdditionalDependencies="&quot;odbc32.lib&quot; &quot;odbccp32.lib&quot; &quot;winmm.lib&quot; &quot;comctl32.lib&quot; &quot;pdh.lib&quot; &quot;shlwapi.lib&quot; &quot;OpenGL32.lib&quot; &quot;GLU32.lib&quot; &quot;Ws2_32.lib&quot; &quot;dbghelp.lib&quot; &quot;d3d9.lib&quot; &quot;d3dx9.lib&quot; &quot;dxerr9.lib&quot; &quot;dxguid.lib&quot; &quot;dinput8.lib&quot; &quot;dsound.lib&quot; &quot;Strmiids.lib&quot; &quot;Quartz.lib&quot; "
 				OutputFile="$(OutDir)/CodeSuppositoryDEBUG.exe"
 				AdditionalLibraryDirectories="&quot;../../ext/DirectX_October2006&quot;;"
 				ProgramDatabaseFile="$(OutDir)/CodeSuppositoryDEBUG.exe.pdb"
@@ -205,7 +205,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/DEBUG "
-				AdditionalDependencies="&quot;odbc32.lib&quot; &quot;odbccp32.lib&quot; &quot;winmm.lib&quot; &quot;comctl32.lib&quot; &quot;pdh.lib&quot; &quot;shlwapi.lib&quot; &quot;OpenGL32.lib&quot; &quot;GLU32.lib&quot; &quot;Ws2_32.lib&quot; &quot;dbghelp.lib&quot; &quot;d3d9.lib&quot; &quot;d3dx9.lib&quot; &quot;dxerr9.lib&quot; &quot;dxguid.lib&quot; &quot;dinput8.lib&quot; &quot;dsound.lib&quot; "
+				AdditionalDependencies="&quot;odbc32.lib&quot; &quot;odbccp32.lib&quot; &quot;winmm.lib&quot; &quot;comctl32.lib&quot; &quot;pdh.lib&quot; &quot;shlwapi.lib&quot; &quot;OpenGL32.lib&quot; &quot;GLU32.lib&quot; &quot;Ws2_32.lib&quot; &quot;dbghelp.lib&quot; &quot;d3d9.lib&quot; &quot;d3dx9.lib&quot; &quot;dxerr9.lib&quot; &quot;dxguid.lib&quot; &quot;dinput8.lib&quot; &quot;dsound.lib&quot; &quot;Strmiids.lib&quot; &quot;Quartz.lib&quot; "
 				OutputFile="$(OutDir)/CodeSuppository.exe"
 				AdditionalLibraryDirectories="&quot;../../ext/DirectX_October2006&quot;;"
 				ProgramDatabaseFile="$(OutDir)/CodeSuppository.exe.pdb"
@@ -475,6 +475,74 @@
 					>
 				</File>
 			</Filter>
+		</Filter>
+		<Filter
+			Name="PD3D"
+			>
+			<File
+				RelativePath="..\..\src\pd3d\Ag.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\pd3d\AgScreenPipe.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\pd3d\AgScreenPipe.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\pd3d\Pd3d.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\pd3d\shader.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\pd3d\shader.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\pd3d\terrain.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\pd3d\terrain.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\pd3d\water.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\pd3d\water.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\pd3d\wood.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\pd3d\wood.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\pd3d\zvidcap.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\pd3d\zvidcap.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="PD3D Header"
+			>
+			<File
+				RelativePath="..\..\include\pd3d\pd3d.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Source Files"

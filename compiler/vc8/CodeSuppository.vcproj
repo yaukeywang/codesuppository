@@ -33,7 +33,7 @@ Name="CodeSuppository"
       OutputFile="$(OutDir)/.exe" 
       ProgramDatabaseFile="$(OutDir)/.exe.pdb" 
       AdditionalOptions="/NODEFAULTLIB:libcp.lib /NODEFAULTLIB:libcp.lib "
-      AdditionalDependencies="&quot;odbc32.lib&quot; &quot;odbccp32.lib&quot; &quot;winmm.lib&quot; &quot;comctl32.lib&quot; &quot;pdh.lib&quot; &quot;shlwapi.lib&quot; &quot;OpenGL32.lib&quot; &quot;GLU32.lib&quot; &quot;Ws2_32.lib&quot; &quot;dbghelp.lib&quot; &quot;d3d9.lib&quot; &quot;d3dx9.lib&quot; &quot;dxerr9.lib&quot; &quot;dxguid.lib&quot; &quot;dinput8.lib&quot; &quot;dsound.lib&quot; &quot;odbc32.lib&quot; &quot;odbccp32.lib&quot; &quot;winmm.lib&quot; &quot;comctl32.lib&quot; &quot;pdh.lib&quot; &quot;shlwapi.lib&quot; &quot;OpenGL32.lib&quot; &quot;GLU32.lib&quot; &quot;Ws2_32.lib&quot; &quot;dbghelp.lib&quot; &quot;d3d9.lib&quot; &quot;d3dx9.lib&quot; &quot;dxerr9.lib&quot; &quot;dxguid.lib&quot; &quot;dinput8.lib&quot; &quot;dsound.lib&quot; "
+      AdditionalDependencies="&quot;odbc32.lib&quot; &quot;odbccp32.lib&quot; &quot;winmm.lib&quot; &quot;comctl32.lib&quot; &quot;pdh.lib&quot; &quot;shlwapi.lib&quot; &quot;OpenGL32.lib&quot; &quot;GLU32.lib&quot; &quot;Ws2_32.lib&quot; &quot;dbghelp.lib&quot; &quot;d3d9.lib&quot; &quot;d3dx9.lib&quot; &quot;dxerr9.lib&quot; &quot;dxguid.lib&quot; &quot;dinput8.lib&quot; &quot;dsound.lib&quot; &quot;Strmiids.lib&quot; &quot;Quartz.lib&quot; &quot;odbc32.lib&quot; &quot;odbccp32.lib&quot; &quot;winmm.lib&quot; &quot;comctl32.lib&quot; &quot;pdh.lib&quot; &quot;shlwapi.lib&quot; &quot;OpenGL32.lib&quot; &quot;GLU32.lib&quot; &quot;Ws2_32.lib&quot; &quot;dbghelp.lib&quot; &quot;d3d9.lib&quot; &quot;d3dx9.lib&quot; &quot;dxerr9.lib&quot; &quot;dxguid.lib&quot; &quot;dinput8.lib&quot; &quot;dsound.lib&quot; &quot;Strmiids.lib&quot; &quot;Quartz.lib&quot; "
       AdditionalLibraryDirectories=""
       ImportLibrary="$(OutDir)/$(TargetName).lib"
       GenerateMapFile="TRUE"
@@ -77,7 +77,7 @@ Name="CodeSuppository"
       OutputFile="$(OutDir)/CodeSuppositoryDEBUG.exe" 
       ProgramDatabaseFile="$(OutDir)/CodeSuppositoryDEBUG.exe.pdb" 
       AdditionalOptions="/NODEFAULTLIB:libcp.lib /DEBUG "
-      AdditionalDependencies="&quot;odbc32.lib&quot; &quot;odbccp32.lib&quot; &quot;winmm.lib&quot; &quot;comctl32.lib&quot; &quot;pdh.lib&quot; &quot;shlwapi.lib&quot; &quot;OpenGL32.lib&quot; &quot;GLU32.lib&quot; &quot;Ws2_32.lib&quot; &quot;dbghelp.lib&quot; &quot;d3d9.lib&quot; &quot;d3dx9.lib&quot; &quot;dxerr9.lib&quot; &quot;dxguid.lib&quot; &quot;dinput8.lib&quot; &quot;dsound.lib&quot; "
+      AdditionalDependencies="&quot;odbc32.lib&quot; &quot;odbccp32.lib&quot; &quot;winmm.lib&quot; &quot;comctl32.lib&quot; &quot;pdh.lib&quot; &quot;shlwapi.lib&quot; &quot;OpenGL32.lib&quot; &quot;GLU32.lib&quot; &quot;Ws2_32.lib&quot; &quot;dbghelp.lib&quot; &quot;d3d9.lib&quot; &quot;d3dx9.lib&quot; &quot;dxerr9.lib&quot; &quot;dxguid.lib&quot; &quot;dinput8.lib&quot; &quot;dsound.lib&quot; &quot;Strmiids.lib&quot; &quot;Quartz.lib&quot; "
       AdditionalLibraryDirectories="&quot;../../ext/DirectX_October2006&quot;;"
       ImportLibrary="$(OutDir)/$(TargetName).lib"
       GenerateMapFile="TRUE"
@@ -121,7 +121,7 @@ Name="CodeSuppository"
       OutputFile="$(OutDir)/CodeSuppository.exe" 
       ProgramDatabaseFile="$(OutDir)/CodeSuppository.exe.pdb" 
       AdditionalOptions="/NODEFAULTLIB:libcp.lib /DEBUG "
-      AdditionalDependencies="&quot;odbc32.lib&quot; &quot;odbccp32.lib&quot; &quot;winmm.lib&quot; &quot;comctl32.lib&quot; &quot;pdh.lib&quot; &quot;shlwapi.lib&quot; &quot;OpenGL32.lib&quot; &quot;GLU32.lib&quot; &quot;Ws2_32.lib&quot; &quot;dbghelp.lib&quot; &quot;d3d9.lib&quot; &quot;d3dx9.lib&quot; &quot;dxerr9.lib&quot; &quot;dxguid.lib&quot; &quot;dinput8.lib&quot; &quot;dsound.lib&quot; "
+      AdditionalDependencies="&quot;odbc32.lib&quot; &quot;odbccp32.lib&quot; &quot;winmm.lib&quot; &quot;comctl32.lib&quot; &quot;pdh.lib&quot; &quot;shlwapi.lib&quot; &quot;OpenGL32.lib&quot; &quot;GLU32.lib&quot; &quot;Ws2_32.lib&quot; &quot;dbghelp.lib&quot; &quot;d3d9.lib&quot; &quot;d3dx9.lib&quot; &quot;dxerr9.lib&quot; &quot;dxguid.lib&quot; &quot;dinput8.lib&quot; &quot;dsound.lib&quot; &quot;Strmiids.lib&quot; &quot;Quartz.lib&quot; "
       AdditionalLibraryDirectories="&quot;../../ext/DirectX_October2006&quot;;"
       ImportLibrary="$(OutDir)/$(TargetName).lib"
       GenerateMapFile="TRUE"
@@ -205,6 +205,25 @@ Name="CodeSuppository"
       <File RelativePath="..\..\app\shared\MeshSystem\MeshSystemHelper.cpp"/>
       <File RelativePath="..\..\app\shared\MeshSystem\MeshSystemHelper.h"/>
     </Filter>
+  </Filter>
+  <Filter Name="PD3D" Filter=""> <!--  -->
+    <File RelativePath="..\..\src\pd3d\AgScreenPipe.cpp"/>
+    <File RelativePath="..\..\src\pd3d\Pd3d.cpp"/>
+    <File RelativePath="..\..\src\pd3d\shader.cpp"/>
+    <File RelativePath="..\..\src\pd3d\terrain.cpp"/>
+    <File RelativePath="..\..\src\pd3d\water.cpp"/>
+    <File RelativePath="..\..\src\pd3d\wood.cpp"/>
+    <File RelativePath="..\..\src\pd3d\zvidcap.cpp"/>
+    <File RelativePath="..\..\src\pd3d\Ag.h"/>
+    <File RelativePath="..\..\src\pd3d\AgScreenPipe.h"/>
+    <File RelativePath="..\..\src\pd3d\shader.h"/>
+    <File RelativePath="..\..\src\pd3d\terrain.h"/>
+    <File RelativePath="..\..\src\pd3d\water.h"/>
+    <File RelativePath="..\..\src\pd3d\wood.h"/>
+    <File RelativePath="..\..\src\pd3d\zvidcap.h"/>
+  </Filter>
+  <Filter Name="PD3D Header" Filter=""> <!--  -->
+    <File RelativePath="..\..\include\pd3d\pd3d.h"/>
   </Filter>
   <Filter Name="Source Files" Filter=""> <!--  -->
     <File RelativePath="..\..\app\CodeSuppository\BestFit.cpp"/>

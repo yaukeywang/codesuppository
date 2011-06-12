@@ -4,7 +4,6 @@
 		<Export platform="win32" tool="vc7">../vc7</Export>
 		<Export platform="win32" tool="vc8">../vc8</Export>
 		<Export platform="win32" tool="vc9">../vc9</Export>
-		<Import root=".\" file="Pd3d.xpj"/>
 
 		<Target name="CodeSuppository">
 			<Export platform="win32" tool="vc7">../vc7</Export>
@@ -85,6 +84,8 @@
 				dxguid.lib
 				dinput8.lib
 				dsound.lib
+        	Strmiids.lib
+        	Quartz.lib
 			</Libraries>
 
 			<SearchPaths type="header">
@@ -105,6 +106,16 @@
         MeshSystem/*.cpp
         MeshSystem/*.h
 			</Files>
+
+			<Files name="PD3D" root="../../src/pd3d" type="header">
+			 *.cpp
+			 *.h
+			</Files>
+
+			<Files name="PD3D Header" root="../../include/pd3d" type="header">
+			 *.h
+			</Files>
+
 			<Files name="Source Files" root="../../app/CodeSuppository" type="source">
 				*.cpp
 			</Files>

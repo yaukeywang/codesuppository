@@ -83,8 +83,8 @@
 #include "shader.h"
 #include "ResourceInterface.h"
 
-RESOURCE_INTERFACE::ResourceInterface *gResourceInterface=0;
-NVSHARE::Pd3d *gPd3d=0;
+//RESOURCE_INTERFACE::ResourceInterface *gResourceInterface=0;
+//NVSHARE::Pd3d *gPd3d=0;
 
 #ifdef WIN32
 #ifdef PD3D_EXPORTS
@@ -110,7 +110,7 @@ namespace NVSHARE
 
 
 
-#define D3DFVF_TETRAVERTEX         ( D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1 )
+#define D3DFVF_TETRAVERTEX         ( D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_TEX1 | D3DFVF_TEX2 )
 #define D3DFVF_LINEVERTEX       ( D3DFVF_XYZ | D3DFVF_DIFFUSE )
 #define D3DFVF_SOLIDVERTEX       ( D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE )
 #define D3DFVF_SCREENVERTEX       ( D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE )
@@ -508,9 +508,11 @@ public:
     mDevice = 0;
     mEffect = 0;
     mTechnique = 0;
+	mLightMapTechnique = 0;
     mWorldViewHandle = 0;
     mWorldViewProjectionHandle = 0;
     mDiffuseHandle = 0;
+    mLightMapHandle = 0;
     mWorldHandle = 0;
     mViewProjectionHandle = 0;
     mProjectionHandle = 0;
@@ -540,6 +542,7 @@ public:
 
   		if ( mEffect )
   		{
+			mLightMapTechnique              = mEffect->GetTechniqueByName("LightMapShader");
      	  mTechnique                        = mEffect->GetTechniqueByName("SoftBodyShader");
      	  mWireFrameTechnique               = mEffect->GetTechniqueByName("SoftBodyWireFrameShader");
      	  mSolidTechnique                   = mEffect->GetTechniqueByName("SoftBodySolidShader");
@@ -555,6 +558,7 @@ public:
         mProjectionHandle                 = mEffect->GetParameterByName(0,"proj");
         mEyePosHandle                     = mEffect->GetParameterByName(0,"EyePos");
      	  mDiffuseHandle                    = mEffect->GetParameterByName(0,"DiffuseMap");
+     	  mLightMapHandle                    = mEffect->GetParameterByName(0,"LightMap");
         mEnvironmentHandle                = mEffect->GetParameterByName(0,"EnvironmentMap");
      	  mAmbientColorHandle               = mEffect->GetParameterByName(0,"AmbientColor");
      	  mDiffuseColorHandle               = mEffect->GetParameterByName(0,"DiffuseColor");
@@ -641,12 +645,14 @@ public:
       mEffect->Release();
       mEffect = 0;
       mTechnique = 0;
+	  mLightMapTechnique = 0;
       mWireFrameTechnique = 0;
       mFractalTechnique = 0;
       mSolidTechnique = 0;
       mWorldViewHandle = 0;
       mWorldViewProjectionHandle = 0;
       mDiffuseHandle = 0;
+      mLightMapHandle = 0;
       mEnvironmentHandle = 0;
       mWorldHandle = 0;
       mViewProjectionHandle = 0;
@@ -904,62 +910,110 @@ public:
   	return ret;
   }
 
-  D3DXHANDLE getTechnique(void)
-  {
-    D3DXHANDLE ret = mTechnique;
-    if ( mWireFrame ) ret = mWireFrameWhiteTechnique;
-    if ( mFractalMode ) ret = mFractalTechnique;
-    return ret;
-  }
+	D3DXHANDLE getTechnique(Pd3dMaterial *material,bool &isLightMap)
+	{
+		isLightMap = false;
+		D3DXHANDLE ret = mTechnique;
+		if ( mWireFrame ) 
+			ret = mWireFrameWhiteTechnique;
+		else
+		{
+			char *plus = strchr(material->mTexture,'+');
+			if ( plus )
+			{
+				isLightMap = true;
+				ret = mLightMapTechnique;
+			}
+		}
+		return ret;
+	}
 
-  bool shaderSetup(Pd3dMaterial *material)
-  {
-    bool ret = false;
+	bool shaderSetup(Pd3dMaterial *material)
+	{
+		bool ret = false;
 
-    mDevice->SetRenderState(D3DRS_ALPHABLENDENABLE,FALSE);
-    mDevice->SetRenderState(D3DRS_ALPHATESTENABLE,FALSE);
+		mDevice->SetRenderState(D3DRS_ALPHABLENDENABLE,FALSE);
+		mDevice->SetRenderState(D3DRS_ALPHATESTENABLE,FALSE);		
+		{
+			bool isLightMap;
+			D3DXHANDLE tech = getTechnique(material,isLightMap);
+			if ( tech )
+			{
+				if ( material )
+				{
+					if ( isLightMap )
+					{
+						if ( material->mHandle == 0 )
+						{
+							char scratch[512];
+							strcpy(scratch,material->mTexture);
+							char *plus = strchr(scratch,'+');
+							*plus = 0;
+							material->mHandle = locateTexture(scratch);
+						}
+						if ( material->mLightMapHandle == 0 )
+						{
+							char scratch[512];
+							strcpy(scratch,material->mTexture);
+							char *plus = strchr(scratch,'+');
+							plus++;
+							material->mLightMapHandle = locateTexture(plus);
+						}
+						if ( material->mHandle )
+						{
+							LPDIRECT3DBASETEXTURE9 pptex = material->mHandle->getHandle();
+							mEffect->SetTexture(mDiffuseHandle,pptex);
+						}
+						if ( material->mLightMapHandle )
+						{
+							LPDIRECT3DBASETEXTURE9 pptex = material->mLightMapHandle->getHandle();
+							mEffect->SetTexture(mLightMapHandle,pptex);
+						}
 
-    {
-      D3DXHANDLE tech = getTechnique();
-      if ( tech )
-      {
-  			if ( material )
-  			{
-  				if ( material->mHandle == 0 )
-  				{
-            material->mHandle = locateTexture(material->mTexture);
-  				}
+					}
+					else
+					{
+						if ( material->mHandle == 0 )
+						{
+							material->mHandle = locateTexture(material->mTexture);
+						}
 
-  				if ( material->mHandle )
-          {
-            LPDIRECT3DBASETEXTURE9 pptex = material->mHandle->getHandle();
-  					mEffect->SetTexture(mDiffuseHandle,pptex);
-          }
+						if ( material->mHandle )
+						{
+							LPDIRECT3DBASETEXTURE9 pptex = material->mHandle->getHandle();
+							mEffect->SetTexture(mDiffuseHandle,pptex);
+						}
 
-  				if ( mAmbientColorHandle )
-            mEffect->SetFloatArray(mAmbientColorHandle,material->mAmbientColor,4);
+						if ( mAmbientColorHandle )
+						{
+							mEffect->SetFloatArray(mAmbientColorHandle,material->mAmbientColor,4);
+						}
 
-          if ( mDiffuseColorHandle )
-            mEffect->SetFloatArray(mDiffuseColorHandle,material->mDiffuseColor,4);
+						if ( mDiffuseColorHandle )
+						{
+							mEffect->SetFloatArray(mDiffuseColorHandle,material->mDiffuseColor,4);
+						}
 
-          if ( mSpecularColorHandle )
-            mEffect->SetFloatArray(mSpecularColorHandle,material->mSpecularColor,4);
+						if ( mSpecularColorHandle )
+						{
+							mEffect->SetFloatArray(mSpecularColorHandle,material->mSpecularColor,4);
+						}
 
-          if ( mSpecularPowerHandle )
-            mEffect->SetFloat(mSpecularPowerHandle, material->mSpecularPower );
+						if ( mSpecularPowerHandle )
+						{
+							mEffect->SetFloat(mSpecularPowerHandle, material->mSpecularPower );
+						}
+					}
+				}
+				mEffect->SetTechnique(tech);
+			}
+			mDevice->SetFVF(D3DFVF_TETRAVERTEX);
 
+			ret = true;
+		}
 
-  			}
-        mEffect->SetTechnique(tech);
-      }
-
-      mDevice->SetFVF(D3DFVF_TETRAVERTEX);
-
-      ret = true;
-    }
-
-    return ret;
-  }
+		return ret;
+	}
 
   bool shaderSetup(Pd3dTexture *texture)
   {
@@ -1629,7 +1683,7 @@ private:
   D3DXVECTOR3        mEyePos;
   ID3DXEffect       *mEffect;
   D3DXVECTOR3        mRenderGameScale;
-
+  D3DXHANDLE		mLightMapTechnique;
   D3DXHANDLE         mTechnique;
   D3DXHANDLE         mWireFrameTechnique;
   D3DXHANDLE         mSolidTechnique;
@@ -1639,6 +1693,7 @@ private:
   D3DXHANDLE         mWorldViewHandle;
   D3DXHANDLE         mWorldViewProjectionHandle;
   D3DXHANDLE         mDiffuseHandle;
+  D3DXHANDLE         mLightMapHandle;
   D3DXHANDLE         mEnvironmentHandle;
   D3DXHANDLE         mWorldHandle;
   D3DXHANDLE         mViewProjectionHandle;
@@ -1661,37 +1716,34 @@ private:
 
 static MyPd3d *gInterface=0;
 
+#define MEGABYTE (1024*1024)
+
+Pd3d * createPd3d(NxI32 version_number,NVSHARE::SystemServices *services)
+{
+	Pd3d *ret = 0;
+
+	if ( services )
+	{
+		NVSHARE::gSystemServices = services;
+	}
+
+	assert( gInterface == 0 );
+	if ( gInterface == 0 && version_number == PD3D_VERSION )
+	{
+		gInterface = MEMALLOC_NEW(MyPd3d);
+		ret = static_cast<Pd3d *>(gInterface);
+	}
+
+	gPd3d = ret;
+
+	return ret;
+}
+
 
 
 };
 
 using namespace NVSHARE;
-
-#define MEGABYTE (1024*1024)
-
-extern "C"
-{
-  PD3D_API Pd3d * getInterface(NxI32 version_number,NVSHARE::SystemServices *services)
-{
-  Pd3d *ret = 0;
-
-  if ( services )
-  {
-    NVSHARE::gSystemServices = services;
-  }
-
-  assert( gInterface == 0 );
-  if ( gInterface == 0 && version_number == PD3D_VERSION )
-  {
-    gInterface = MEMALLOC_NEW(MyPd3d);
-    ret = static_cast<Pd3d *>(gInterface);
-  }
-
-  gPd3d = ret;
-
-  return ret;
-}
-};
 
 
 bool doShutdown(void)
@@ -1705,33 +1757,4 @@ bool doShutdown(void)
   }
   return ret;
 }
-
-#ifdef WIN32
-
-#include <windows.h>
-
-BOOL APIENTRY DllMain( HANDLE /* hModule */,
-                       DWORD  ul_reason_for_call,
-                       LPVOID /* lpReserved */)
-{
-  NxI32 ret = 0;
-
-  switch (ul_reason_for_call)
-	{
-		case DLL_PROCESS_ATTACH:
-      ret = 1;
-			break;
-		case DLL_THREAD_ATTACH:
-      ret = 2;
-			break;
-		case DLL_THREAD_DETACH:
-      ret = 3;
-			break;
-		case DLL_PROCESS_DETACH:
-			break;
-    }
-    return TRUE;
-}
-
-#endif
 

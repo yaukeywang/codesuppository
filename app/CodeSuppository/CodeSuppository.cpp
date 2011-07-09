@@ -54,12 +54,99 @@
 #include "SplitMeshApp.h"
 #include "JobSwarm.h"
 #include "fastipc.h"
+#include "FastXml.h"
+#include "sutil.h"
+
+#pragma warning(disable:4100)
 
 using namespace NVSHARE;
 
 CodeSuppository *gCodeSuppository=0;
 
 typedef std::vector< RenderPacket * > RenderPacketVector;
+
+class Light
+{
+public:
+	NxVec3	mPosition;
+	NxVec3	mNormal;
+	PxU32	mColor;
+};
+
+typedef std::vector< Light > LightVector;
+
+class LevelLights : public FastXmlInterface
+{
+public:
+	LevelLights(const char *fname)
+	{
+		FastXml *xml = createFastXml();
+		xml->processXmlFile(fname,this);
+		releaseFastXml(xml);
+	}
+	NxVec3 getVec3(const char *v)
+	{
+		NxVec3 ret(0,0,0);
+
+		ret.x = (PxF32)atof(v);
+		v = strchr(v,',');
+		if ( v )
+		{
+			v++;
+			ret.y = (PxF32)atof(v);
+			v = strchr(v,',');
+			if ( v )
+			{
+				v++;
+				ret.z = (PxF32)atof(v);
+			}
+		}
+		return ret;
+	}
+
+	virtual bool processElement(const char *elementName,         // name of the element
+		NxI32         argc,                // number of attributes
+		const char **argv,               // list of attributes.
+		const char  *elementData,        // element data, null if none
+		NxI32         lineno)         // line number in the source XML file
+	{
+		if ( strcmp(elementName,"light") == 0 )
+		{
+			Light l;
+			for (PxI32 i=0; i<(argc/2); i++)
+			{
+				const char *key = argv[i*2+0];
+				const char *value = argv[i*2+1];
+				if ( strcmp(key,"position") == 0 )
+				{
+					l.mPosition = getVec3(value);
+				}
+				else if ( strcmp(key,"normal") == 0 )
+				{
+					l.mNormal = getVec3(value);
+				}
+				else if ( strcmp(key,"color") == 0 )
+				{
+					l.mColor = GetHEX(value);
+				}
+			}
+			mLights.push_back(l);
+		}
+		return true;
+	}
+
+	void render(void)
+	{
+		for (LightVector::iterator i=mLights.begin(); i!=mLights.end(); ++i)
+		{
+			Light &l = (*i);
+			NxVec3 to = l.mPosition+l.mNormal;
+			gRenderDebug->debugRay(l.mPosition,to);
+		}
+	}
+
+	LightVector	mLights;
+};
 
 class MyCodeSuppository : public CodeSuppository, public NVSHARE::Memalloc
 {
@@ -85,6 +172,7 @@ public:
     mRemoveTjunctions = false;
     mInitialIslandGeneration = false;
     mIslandGeneration = false;
+	mLevelLights = NULL;
     iFastIPC::ErrorCode err;
     mCommLayer = createFastIPC(err,iFastIPC::CT_SERVER,"Global\\CodeSuppository",1024*256,1024*256);
   }
@@ -102,6 +190,7 @@ public:
     	RenderPacket *rp = (*i);
     	delete rp;
     }
+	delete mLevelLights;
   }
 
   void resetMeshSystem(void)
@@ -479,6 +568,10 @@ public:
         mMeshSystemHelper->debugRender(mShowMesh,mShowSkeleton,mShowWireframe,mPlayAnimation,mShowCollision,mFlipWinding);
       }
     }
+	if ( mLevelLights )
+	{
+		mLevelLights->render();
+	}
   }
 
   virtual void importMesh(const char *fname)
@@ -511,6 +604,12 @@ public:
 	testSqliteFS_frame();
   }
 
+  virtual void importLevelLights(const char *fname)
+  {
+	  delete mLevelLights;
+	  mLevelLights = new LevelLights(fname);
+  }
+
 private:
   bool               mShowSkeleton;
   bool               mShowMesh;
@@ -534,6 +633,7 @@ private:
   iFastIPC				*mCommLayer;
   RenderPacketVector 	mRenderPacketsCurrent;
   RenderPacketVector	mRenderPacketsLast;
+  LevelLights			*mLevelLights;
 };
 
 CodeSuppository * createCodeSuppository(void)

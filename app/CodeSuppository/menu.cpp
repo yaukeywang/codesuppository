@@ -33,6 +33,7 @@ enum MenuOptions
 {
   MO_RUN_SCRIPT = 10000,
   MO_IMPORT_MESH,
+  MO_IMPORT_LIGHTS,
   MO_EXPORT_OBJ,
   MO_EXPORT_EZM,
   MO_EXPORT_OGRE,
@@ -84,6 +85,7 @@ public:
 
   	AppendMenu( mMainMenu, MF_POPUP, (UINT_PTR)m, L"&File" );
       AppendMenu( m, MF_STRING, MO_IMPORT_MESH, L"Import Mesh Data");
+	  AppendMenu( m, MF_STRING, MO_IMPORT_LIGHTS, L"Import Level Lights");
       AppendMenu( m, MF_STRING, MO_EXPORT_EZM,  L"Export as EZ-Mesh");
       AppendMenu( m, MF_STRING, MO_EXPORT_OBJ,  L"Export as Wavefront OBJ");
       AppendMenu( m, MF_STRING, MO_EXPORT_OGRE, L"Export as Ogre3D XML");
@@ -566,6 +568,15 @@ public:
       case MO_EXPORT_OGRE:
         gCodeSuppository->processCommand(CSC_EXPORT_OGRE);
         break;
+	  case MO_IMPORT_LIGHTS:
+		  {
+			  const char * fname = getFileName("Light Level Files (Lights*.xml)|Lights*.xml","MeshImport compatible data files", 0, false );
+			  if ( fname )
+			  {
+				  gCodeSuppository->importLevelLights(fname);
+			  }
+		  }
+		  break;
       case MO_IMPORT_MESH:
 		  if ( physx::gMeshImport )
         {

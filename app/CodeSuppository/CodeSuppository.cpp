@@ -330,12 +330,12 @@ public:
 		  break;
 	  case CSC_TEST_UNTILE_UV:
 		  {
-			  NVSHARE::MeshSystemContainer *msc = testUntileUV(gMeshImport, mMeshSystemHelper);
+			  physx::MeshSystemContainer *msc = testUntileUV(physx::gMeshImport, mMeshSystemHelper);
 			  if (msc)
 			  {
-				  NVSHARE::MeshSystem *msexp = gMeshImport->getMeshSystem(msc); // get the mesh system data.
-				  NVSHARE::MeshSerialize data(NVSHARE::MSF_EZMESH);
-				  bool ok = gMeshImport->serializeMeshSystem(msexp,data); // serialize it in EZ-MESH
+				  physx::MeshSystem *msexp = physx::gMeshImport->getMeshSystem(msc); // get the mesh system data.
+				  physx::MeshSerialize data(physx::MSF_EZMESH);
+				  bool ok = physx::gMeshImport->serializeMeshSystem(msexp,data); // serialize it in EZ-MESH
 				  if ( ok && data.mBaseData )
 				  {
 					  FILE *fph = fopen("untiled.ezm", "wb");
@@ -345,19 +345,19 @@ public:
 						  fclose(fph);
 					  }
 				  }
-				  gMeshImport->releaseSerializeMemory(data);
-				  gMeshImport->releaseMeshSystemContainer(msc);
+				  physx::gMeshImport->releaseSerializeMemory(data);
+				  physx::gMeshImport->releaseMeshSystemContainer(msc);
 			  }
 		  }
 		  break;
 	  case CSC_TEST_TEXTURE_PACKER:
 		  {
-			  NVSHARE::MeshSystemContainer *msc = testTexturePacker(gMeshImport, mMeshSystemHelper);
+			  physx::MeshSystemContainer *msc = testTexturePacker(physx::gMeshImport, mMeshSystemHelper);
 			  if (msc)
 			  {
-				  NVSHARE::MeshSystem *msexp = gMeshImport->getMeshSystem(msc); // get the mesh system data.
-				  NVSHARE::MeshSerialize data(NVSHARE::MSF_EZMESH);
-				  bool ok = gMeshImport->serializeMeshSystem(msexp,data); // serialize it in EZ-MESH
+				  physx::MeshSystem *msexp = physx::gMeshImport->getMeshSystem(msc); // get the mesh system data.
+				  physx::MeshSerialize data(physx::MSF_EZMESH);
+				  bool ok = physx::gMeshImport->serializeMeshSystem(msexp,data); // serialize it in EZ-MESH
 				  if ( ok && data.mBaseData )
 				  {
 					  FILE *fph = fopen("packed.ezm", "wb");
@@ -367,8 +367,8 @@ public:
 						  fclose(fph);
 					  }
 				  }
-				  gMeshImport->releaseSerializeMemory(data);
-				  gMeshImport->releaseMeshSystemContainer(msc);
+				  physx::gMeshImport->releaseSerializeMemory(data);
+				  physx::gMeshImport->releaseMeshSystemContainer(msc);
 			  }
 		  }
 		  break;

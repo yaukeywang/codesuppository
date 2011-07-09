@@ -28,19 +28,19 @@ public:
     mAutoGeometry = 0;
     mHelper = h;
 
-    NVSHARE::MeshSystem *ms = h->getMeshSystem();
+    physx::MeshSystem *ms = h->getMeshSystem();
     if ( ms )
     {
       if ( ms->mSkeletonCount && ms->mMeshCount )
       {
-        NVSHARE::MeshSkeleton *sk = ms->mSkeletons[0];
-        NVSHARE::MeshSkeletonInstance *msk = gMeshImport->createMeshSkeletonInstance(*sk); // create a world-space instance of the skeleton.
+        physx::MeshSkeleton *sk = ms->mSkeletons[0];
+        physx::MeshSkeletonInstance *msk = gMeshImport->createMeshSkeletonInstance(*sk); // create a world-space instance of the skeleton.
         if ( msk )
         {
           NVSHARE::AutoGeometry *ag = NVSHARE::createAutoGeometry();
           mAutoGeometry = ag;
 
-          NVSHARE::MeshBoneInstance *binst = msk->mBones;
+          physx::MeshBoneInstance *binst = msk->mBones;
           for (NxI32 i=0; i<msk->mBoneCount; i++)
           {
             NVSHARE::SimpleBone b;
@@ -64,11 +64,11 @@ public:
 
           for (NxU32 k=0; k<ms->mMeshCount; k++)
           {
-            NVSHARE::Mesh *m = ms->mMeshes[k];
+            physx::Mesh *m = ms->mMeshes[k];
             NxU32 base_index = vertices.size();
             for (NxU32 i=0; i<m->mVertexCount; i++)
             {
-              NVSHARE::MeshVertex &v = m->mVertices[i];
+              physx::MeshVertex &v = m->mVertices[i];
               NVSHARE::SimpleSkinnedVertex s;
               s.mPos[0]    = v.mPos[0];
               s.mPos[1]    = v.mPos[1];
@@ -86,7 +86,7 @@ public:
 
             for (NxU32 i=0; i<m->mSubMeshCount; i++)
             {
-              NVSHARE::SubMesh *sm = m->mSubMeshes[i];
+              physx::SubMesh *sm = m->mSubMeshes[i];
 
               if ( stristr(sm->mMaterialName,"__cloth") == 0 ) // if not cloth
               {
@@ -144,14 +144,14 @@ public:
       {
         if ( hulls )
         {
-          NVSHARE::MeshSystemContainer *msc = mHelper->getMeshSystemContainer();
-          NVSHARE::MeshImportInterface *iface = gMeshImport->getMeshImportInterface(msc);
+          physx::MeshSystemContainer *msc = mHelper->getMeshSystemContainer();
+          physx::MeshImportInterface *iface = gMeshImport->getMeshImportInterface(msc);
           iface->importCollisionRepresentation("ClothCollision",0);
           for (NxU32 i=0; i<geom_count; i++)
           {
             NVSHARE::SimpleHull *h = hulls[i];
 
-            NVSHARE::MeshCollisionType t = NVSHARE::MCT_CAPSULE;
+            physx::MeshCollisionType t = NVSHARE::MCT_CAPSULE;
 
             if ( (h->mSphereVolume*0.9f) < h->mOBBVolume )
             {

@@ -17,6 +17,7 @@
 #include <vector>
 
 using namespace NVSHARE;
+using namespace physx;
 
 #pragma warning(disable:4100 4189)
 
@@ -50,12 +51,12 @@ public:
   {
     if ( mSkeleton )
     {
-      gMeshImport->releaseMeshSkeletonInstance(mSkeleton);
+		physx::gMeshImport->releaseMeshSkeletonInstance(mSkeleton);
       mSkeleton = 0;
     }
     if ( mMeshSystemContainer )
     {
-      gMeshImport->releaseMeshSystemContainer(mMeshSystemContainer);
+		physx::gMeshImport->releaseMeshSystemContainer(mMeshSystemContainer);
       mMeshSystemContainer = 0;
       mMeshSystem = 0;
     }
@@ -63,7 +64,7 @@ public:
 	mMaterials.clear();
   }
 
-  virtual NVSHARE::MeshSystem * getMeshSystem(void) const
+  virtual physx::MeshSystem * getMeshSystem(void) const
   {
     return mMeshSystem;
   }
@@ -87,10 +88,10 @@ public:
       {
         for (NxI32 i=0; i<mSkeleton->mBoneCount; i++)
         {
-          NVSHARE::MeshBoneInstance &b = mSkeleton->mBones[i];
+          physx::MeshBoneInstance &b = mSkeleton->mBones[i];
           if ( b.mParentIndex != -1 )
           {
-            NVSHARE::MeshBoneInstance &p = mSkeleton->mBones[b.mParentIndex];
+            physx::MeshBoneInstance &p = mSkeleton->mBones[b.mParentIndex];
             gRenderDebug->DebugThickRay(&p.mAnimTransform[12],&b.mAnimTransform[12],0.05f);
           }
           else
@@ -125,10 +126,10 @@ public:
       {
         for (NxI32 i=0; i<mSkeleton->mBoneCount; i++)
         {
-          NVSHARE::MeshBoneInstance &b = mSkeleton->mBones[i];
+          physx::MeshBoneInstance &b = mSkeleton->mBones[i];
           if ( b.mParentIndex != -1 )
           {
-            NVSHARE::MeshBoneInstance &p = mSkeleton->mBones[b.mParentIndex];
+            physx::MeshBoneInstance &p = mSkeleton->mBones[b.mParentIndex];
             gRenderDebug->DebugThickRay(&p.mTransform[12],&b.mTransform[12],0.05f);
           }
           else
@@ -159,10 +160,10 @@ public:
       {
         if ( mSelectCollision >= 0 )
         {
-          NVSHARE::MeshCollisionRepresentation *cr = mMeshSystem->mMeshCollisionRepresentations[0];
+          physx::MeshCollisionRepresentation *cr = mMeshSystem->mMeshCollisionRepresentations[0];
           if ( mSelectCollision < (NxI32)cr->mCollisionCount )
           {
-            NVSHARE::MeshCollision *c = cr->mCollisionGeometry[mSelectCollision];
+            physx::MeshCollision *c = cr->mCollisionGeometry[mSelectCollision];
             SEND_TEXT_MESSAGE(0,"Selected collision %s\r\n", c->mName );
           }
         }
@@ -170,13 +171,13 @@ public:
     }
   }
 
-  void debugRender(NVSHARE::MeshCollisionRepresentation *m,NVSHARE::MeshSkeletonInstance *skeleton,NxI32 selectCollision)
+  void debugRender(physx::MeshCollisionRepresentation *m,physx::MeshSkeletonInstance *skeleton,NxI32 selectCollision)
   {
     if ( selectCollision >= 0 )
     {
       if ( selectCollision < (NxI32)m->mCollisionCount )
       {
-        NVSHARE::MeshCollision *c = m->mCollisionGeometry[selectCollision];
+        physx::MeshCollision *c = m->mCollisionGeometry[selectCollision];
         debugRender(c,skeleton);
       }
     }
@@ -184,13 +185,13 @@ public:
     {
       for (NxU32 i=0; i<m->mCollisionCount; i++)
       {
-        NVSHARE::MeshCollision *c = m->mCollisionGeometry[i];
+        physx::MeshCollision *c = m->mCollisionGeometry[i];
         debugRender(c,skeleton);
       }
     }
   }
 
-  void debugRender(NVSHARE::MeshCollision *m,NVSHARE::MeshSkeletonInstance *skeleton)
+  void debugRender(physx::MeshCollision *m,physx::MeshSkeletonInstance *skeleton)
   {
     NxU32 color = gRenderDebug->getDebugColor();
 
@@ -201,7 +202,7 @@ public:
     {
       for (NxI32 i=0; i<skeleton->mBoneCount; i++)
       {
-        NVSHARE::MeshBoneInstance &b = mSkeleton->mBones[i];
+        physx::MeshBoneInstance &b = mSkeleton->mBones[i];
         if ( strcmp(b.mBoneName,m->mName) == 0 )
         {
           fm_multiplyTransform(m->mTransform,b.mAnimTransform,combined);
@@ -213,28 +214,28 @@ public:
 
     switch ( m->getType() )
     {
-      case NVSHARE::MCT_CAPSULE:
+      case physx::MCT_CAPSULE:
         {
-//          NVSHARE::MeshCollisionCapsule *c = static_cast< NVSHARE::MeshCollisionCapsule *>(m);
+//          physx::MeshCollisionCapsule *c = static_cast< physx::MeshCollisionCapsule *>(m);
 //          gRenderDebug->DebugOrientedCapsule(c->mRadius, c->mHeight, transform, color );
         }
         break;
-      case NVSHARE::MCT_SPHERE:
+      case physx::MCT_SPHERE:
         {
-//          NVSHARE::MeshCollisionSphere *c = static_cast< NVSHARE::MeshCollisionSphere *>(m);
+//          physx::MeshCollisionSphere *c = static_cast< physx::MeshCollisionSphere *>(m);
 //          gRenderDebug->DebugSphere(&transform[12],c->mRadius, color );
         }
         break;
-      case NVSHARE::MCT_BOX:
+      case physx::MCT_BOX:
         {
-//          NVSHARE::MeshCollisionBox *c = static_cast< NVSHARE::MeshCollisionBox *>(m);
+//          physx::MeshCollisionBox *c = static_cast< physx::MeshCollisionBox *>(m);
 //          gRenderDebug->DebugOrientedBound(c->mSides,transform,color);
         }
         break;
 
-      case NVSHARE::MCT_CONVEX:
+      case physx::MCT_CONVEX:
         {
-          NVSHARE::MeshCollisionConvex *c = static_cast< NVSHARE::MeshCollisionConvex *>(m);
+          physx::MeshCollisionConvex *c = static_cast< physx::MeshCollisionConvex *>(m);
           for (NxU32 i=0; i<c->mTriCount; i++)
           {
             NxU32 i1 = c->mIndices[i*3+0];
@@ -258,7 +259,7 @@ public:
     }
   }
 
-  void debugRender(NVSHARE::Mesh *m)
+  void debugRender(physx::Mesh *m)
   {
     NxU32 color = gRenderDebug->getDebugColor();
 //    if ( mShowBounds )
@@ -270,10 +271,10 @@ public:
     }
   }
 
-  void debugRender(NVSHARE::Mesh *m,NVSHARE::MeshSkeletonInstance *skeleton)
+  void debugRender(physx::Mesh *m,physx::MeshSkeletonInstance *skeleton)
   {
     NxI32 vcount = m->mVertexCount;
-    NVSHARE::MeshVertex *vertices = MEMALLOC_NEW(NVSHARE::MeshVertex)[vcount];
+    physx::MeshVertex *vertices = MEMALLOC_NEW(physx::MeshVertex)[vcount];
     gMeshImport->transformVertices(vcount,m->mVertices,vertices,skeleton);
 
     NxU32 color = gRenderDebug->getDebugColor(true);
@@ -286,14 +287,14 @@ public:
     delete []vertices;
   }
 
-  void debugRender(NVSHARE::SubMesh *m,NxU32 color,NVSHARE::Mesh *pm)
+  void debugRender(physx::SubMesh *m,NxU32 color,physx::Mesh *pm)
   {
 //    if ( mShowBounds )
 //      gRenderDebug->DebugBound(m->mAABB.mMin, m->mAABB.mMax, color);
 
     NVSHARE::Pd3dGraphicsVertex *vertices = MEMALLOC_NEW(NVSHARE::Pd3dGraphicsVertex)[pm->mVertexCount];
     NVSHARE::Pd3dGraphicsVertex *dest = vertices;
-    const NVSHARE::MeshVertex *src = pm->mVertices;
+    const physx::MeshVertex *src = pm->mVertices;
     for (NxU32 i=0; i<pm->mVertexCount; i++)
     {
       dest->mPos[0] = src->mPos[0];
@@ -324,9 +325,9 @@ public:
         assert( i1 >= 0 && i1 < pm->mVertexCount );
         assert( i2 >= 0 && i2 < pm->mVertexCount );
         assert( i3 >= 0 && i3 < pm->mVertexCount );
-        const NVSHARE::MeshVertex &v1 = pm->mVertices[i1];
-        const NVSHARE::MeshVertex &v2 = pm->mVertices[i2];
-        const NVSHARE::MeshVertex &v3 = pm->mVertices[i3];
+        const physx::MeshVertex &v1 = pm->mVertices[i1];
+        const physx::MeshVertex &v2 = pm->mVertices[i2];
+        const physx::MeshVertex &v3 = pm->mVertices[i3];
         gRenderDebug->DebugTri(v1.mPos,v2.mPos,v3.mPos);
       }
     }
@@ -344,17 +345,17 @@ public:
 
   }
 
-  void debugSkeleton(const NVSHARE::MeshVertex &vtx)
+  void debugSkeleton(const physx::MeshVertex &vtx)
   {
     if ( mSkeleton )
     {
-      NVSHARE::MeshBoneInstance &b = mSkeleton->mBones[vtx.mBone[0]];
+      physx::MeshBoneInstance &b = mSkeleton->mBones[vtx.mBone[0]];
       gRenderDebug->DebugLine(vtx.mPos,&b.mTransform[12]);
     }
 
   }
 
-  void debugRender(NVSHARE::SubMesh *m,NxU32 color,const NVSHARE::MeshVertex *vertices)
+  void debugRender(physx::SubMesh *m,NxU32 color,const physx::MeshVertex *vertices)
   {
 	  gRenderDebug->setCurrentColor(color,0xFFFFFF);
 	  if ( mShowWireframe )
@@ -373,9 +374,9 @@ public:
       NxU32 i2 = m->mIndices[i*3+1];
       NxU32 i3 = m->mIndices[i*3+2];
 
-      const NVSHARE::MeshVertex &v1 = vertices[i1];
-      const NVSHARE::MeshVertex &v2 = vertices[i2];
-      const NVSHARE::MeshVertex &v3 = vertices[i3];
+      const physx::MeshVertex &v1 = vertices[i1];
+      const physx::MeshVertex &v2 = vertices[i2];
+      const physx::MeshVertex &v3 = vertices[i3];
 
       gRenderDebug->DebugTri(v1.mPos,v2.mPos,v3.mPos);
     }
@@ -445,7 +446,7 @@ public:
       mTransforms.clear();
       for (NxI32 i=0; i<mSkeleton->mBoneCount; i++)
       {
-        NVSHARE::MeshBoneInstance &bi = mSkeleton->mBones[i];
+        physx::MeshBoneInstance &bi = mSkeleton->mBones[i];
         NxMat44 m;
         m.set(bi.mCompositeAnimTransform);
         mTransforms.push_back(m);
@@ -485,7 +486,7 @@ public:
           StringRef ref = mStrings.Get(export_name);
           SEND_TEXT_MESSAGE(0,"Serializing mesh '%s' to '%s'\r\n", mMeshSystem->mAssetName, export_name );
           mMeshSystem->mAssetName = ref.Get(); // the new asset name...
-          NVSHARE::MeshSerialize ms(NVSHARE::MSF_EZMESH);
+          physx::MeshSerialize ms(physx::MSF_EZMESH);
           bool ok = gMeshImport->serializeMeshSystem(mMeshSystem,ms);
           if ( ok )
           {
@@ -548,7 +549,7 @@ public:
           StringRef ref = mStrings.Get(export_name);
           SEND_TEXT_MESSAGE(0,"Serializing mesh '%s' to '%s'\r\n", mMeshSystem->mAssetName, export_name );
           mMeshSystem->mAssetName = ref.Get(); // the new asset name...
-          NVSHARE::MeshSerialize ms(NVSHARE::MSF_OGRE3D);
+          physx::MeshSerialize ms(physx::MSF_OGRE3D);
           ms.mSaveFileName = export_name;
 
           bool ok = gMeshImport->serializeMeshSystem(mMeshSystem,ms);
@@ -616,7 +617,7 @@ public:
         StringRef ref = mStrings.Get(export_name);
         SEND_TEXT_MESSAGE(0,"Serializing mesh '%s' to '%s'\r\n", mMeshSystem->mAssetName, export_name );
         mMeshSystem->mAssetName = ref.Get(); // the new asset name...
-        NVSHARE::MeshSerialize ms(NVSHARE::MSF_WAVEFRONT);
+        physx::MeshSerialize ms(physx::MSF_WAVEFRONT);
         ms.mSaveFileName = export_name;
 
         bool ok = gMeshImport->serializeMeshSystem(mMeshSystem,ms);
@@ -660,7 +661,7 @@ public:
     return ret;
   }
 
-  NVSHARE::MeshSystemContainer * getMeshSystemContainer(void) { return mMeshSystemContainer; };
+  physx::MeshSystemContainer * getMeshSystemContainer(void) { return mMeshSystemContainer; };
 
   virtual MeshSystemRaw * getMeshSystemRaw(void)
   {
@@ -673,10 +674,10 @@ public:
       fm_VertexIndex *vi = fm_createVertexIndex(0.0001f,false);
       for (NxU32 i=0; i<mMeshSystem->mMeshCount; i++)
       {
-        NVSHARE::Mesh *m = mMeshSystem->mMeshes[i];
+        physx::Mesh *m = mMeshSystem->mMeshes[i];
         for (NxU32 j=0; j<m->mSubMeshCount; j++)
         {
-          NVSHARE::SubMesh *sm = m->mSubMeshes[j];
+          physx::SubMesh *sm = m->mSubMeshes[j];
           for (NxU32 k=0; k<sm->mTriCount; k++)
           {
             NxU32 i1 = sm->mIndices[k*3+0];
@@ -685,9 +686,9 @@ public:
             assert( i1 >= 0 && i1 < m->mVertexCount );
             assert( i2 >= 0 && i2 < m->mVertexCount );
             assert( i3 >= 0 && i3 < m->mVertexCount );
-            const NVSHARE::MeshVertex &v1 = m->mVertices[i1];
-            const NVSHARE::MeshVertex &v2 = m->mVertices[i2];
-            const NVSHARE::MeshVertex &v3 = m->mVertices[i3];
+            const physx::MeshVertex &v1 = m->mVertices[i1];
+            const physx::MeshVertex &v2 = m->mVertices[i2];
+            const physx::MeshVertex &v3 = m->mVertices[i3];
             bool newPos;
 
             i1 = vi->getIndex(v1.mPos,newPos);
@@ -752,9 +753,9 @@ private:
   bool mShowWireframe;
   bool mFlipWinding;
   bool mShowBounds;
-  NVSHARE::MeshSkeletonInstance *mSkeleton;
-  NVSHARE::MeshSystemContainer *mMeshSystemContainer;
-  NVSHARE::MeshSystem  *mMeshSystem;
+  physx::MeshSkeletonInstance *mSkeleton;
+  physx::MeshSystemContainer *mMeshSystemContainer;
+  physx::MeshSystem  *mMeshSystem;
   StringDict mStrings;
   HeMat44Vector mTransforms;
   NVSHARE::Pd3dMaterial mMaterial;

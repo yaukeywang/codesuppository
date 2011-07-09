@@ -3,12 +3,12 @@
 #include "UserMemAlloc.h"
 class MeshSystemHelper;
 
-namespace NVSHARE
+namespace physx
 {
 	class MeshSystemContainer;
 	class MeshImport;
 }
 
-NVSHARE::MeshSystemContainer* testTexturePacker( NVSHARE::MeshImport* mimport, MeshSystemHelper *mhelper );
+physx::MeshSystemContainer* testTexturePacker( physx::MeshImport* mimport, MeshSystemHelper *mhelper );
 
 #endif

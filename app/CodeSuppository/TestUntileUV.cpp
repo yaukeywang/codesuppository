@@ -6,6 +6,7 @@
 #include "TestUntileUV.h"
 #include "MeshImport.h"
 using namespace NVSHARE;
+using namespace physx;
 #include "UntileUV.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
 #include "RenderDebug.h"
@@ -63,19 +64,19 @@ processUntileUV( MeshImportInterface *mii, UntileUV* uuv, const char* meshName, 
 #endif
 
 		mii->importTriangle( meshName, materialName,
-			NVSHARE::MIVF_POSITION | NVSHARE::MIVF_NORMAL | NVSHARE::MIVF_TEXEL1 | NVSHARE::MIVF_TEXEL2,
+			physx::MIVF_POSITION | physx::MIVF_NORMAL | physx::MIVF_TEXEL1 | physx::MIVF_TEXEL2,
 			v[0], v[1], v[2] );
 	}
 }
 
-MeshSystemContainer*
-testUntileUV( MeshImport* mimport, MeshSystemHelper * msh )
+physx::MeshSystemContainer*
+testUntileUV( physx::MeshImport* mimport, MeshSystemHelper * msh )
 {
 	SEND_TEXT_MESSAGE(0,"Demonstrates how to remove tiling UVs from a mesh\r\n");
 
 	assert( mimport );
-	NVSHARE::MeshSystemContainer* omsc = mimport->createMeshSystemContainer(); // create an empty mesh system container.
-	NVSHARE::MeshImportInterface* omii = mimport->getMeshImportInterface(omsc); // get an importer interface for this mesh system container.
+	physx::MeshSystemContainer* omsc = mimport->createMeshSystemContainer(); // create an empty mesh system container.
+	physx::MeshImportInterface* omii = mimport->getMeshImportInterface(omsc); // get an importer interface for this mesh system container.
 
 	if ( msh )
 	{

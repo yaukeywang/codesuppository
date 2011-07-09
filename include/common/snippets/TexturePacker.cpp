@@ -515,6 +515,11 @@ public:
     {
       height = nextPow2(height);
     }
+    else
+    {
+        width = ((width+3)/4)*4;
+        height = ((height+3)/4)*4;
+    }
 
     return (width*height)-mTotalArea;
   }

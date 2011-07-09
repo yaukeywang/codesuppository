@@ -17,12 +17,14 @@
 #include <string.h>
 #include <assert.h>
 
-namespace NVSHARE
+namespace physx
 {
+
+MeshImport *gMeshImport=NULL;
 
 #ifdef WIN32
 
-static void *getMeshBindingInterface(const char *dll,NxI32 version_number) // loads the tetra maker DLL and returns the interface pointer.
+static void *getMeshBindingInterface(const char *dll,PxI32 version_number) // loads the tetra maker DLL and returns the interface pointer.
 {
   void *ret = 0;
 
@@ -36,7 +38,7 @@ static void *getMeshBindingInterface(const char *dll,NxI32 version_number) // lo
     void *proc = GetProcAddress(module,"getInterface");
     if ( proc )
     {
-      typedef void * (__cdecl * NX_GetToolkit)(NxI32 version);
+		typedef void * (__cdecl * NX_GetToolkit)(PxI32 version);
       ret = ((NX_GetToolkit)proc)(version_number);
     }
   }
@@ -56,9 +58,9 @@ static void *getMeshBindingInterface(const char *dll,NxI32 version_number) // lo
 
 #define MAXNAME 512
 
-#define MESHIMPORT_NVSHARE MESHIMPORT_##NVSHARE
+#define MESHIMPORT_physx MESHIMPORT_##physx
 
-namespace MESHIMPORT_NVSHARE
+namespace MESHIMPORT_physx
 {
 
 class FileFind
@@ -88,7 +90,8 @@ public:
      else
      {
        bFound = 1; // have an initial file to check.
-       ret =  FindNext(name);
+	   strncpy(name,finddata.cFileName,MAXNAME);
+       ret =  true;
      }
      #endif
      #ifdef LINUX_GENERIC
@@ -158,7 +161,7 @@ private:
 #ifdef WIN32
   WIN32_FIND_DATAA finddata;
   HANDLE hFindNext;
-  NxI32 bFound;
+  PxI32 bFound;
 #endif
 #ifdef LINUX_GENERIC
   DIR      *mDir;
@@ -167,10 +170,10 @@ private:
 
 }; // end of namespace
 
-namespace NVSHARE
+namespace physx
 {
 
-	using namespace MESHIMPORT_NVSHARE;
+	using namespace MESHIMPORT_physx;
 
 static const char *lastSlash(const char *foo)
 {
@@ -188,9 +191,9 @@ static const char *lastSlash(const char *foo)
   return ret;
 }
 
-NVSHARE::MeshImport * loadMeshImporters(const char * directory) // loads the mesh import library (dll) and all available importers from the same directory.
+physx::MeshImport * loadMeshImporters(const char * directory) // loads the mesh import library (dll) and all available importers from the same directory.
 {
-  NVSHARE::MeshImport *ret = 0;
+  physx::MeshImport *ret = 0;
 #ifdef _M_IX86
   const char *baseImporter = "MeshImport_x86.dll";
 #else
@@ -207,7 +210,7 @@ NVSHARE::MeshImport * loadMeshImporters(const char * directory) // loads the mes
   }
 
 #ifdef WIN32
-  ret = (NVSHARE::MeshImport *)getMeshBindingInterface(scratch,MESHIMPORT_VERSION);
+  ret = (physx::MeshImport *)getMeshBindingInterface(scratch,MESHIMPORT_VERSION);
 #else
   ret = 0;
 #endif
@@ -215,9 +218,9 @@ NVSHARE::MeshImport * loadMeshImporters(const char * directory) // loads the mes
   if ( ret )
   {
 #ifdef _M_IX86
-      NVSHARE::FileFind ff(directory,"MeshImport*_x86.dll");
+      physx::FileFind ff(directory,"MeshImport*_x86.dll");
 #else
-    NVSHARE::FileFind ff(directory,"MeshImport*_x64.dll");
+    physx::FileFind ff(directory,"MeshImport*_x64.dll");
 #endif
     char name[MAXNAME];
     if ( ff.FindFirst(name) )
@@ -245,9 +248,9 @@ NVSHARE::MeshImport * loadMeshImporters(const char * directory) // loads the mes
 		  }
 
 #ifdef WIN32
-          NVSHARE::MeshImporter *imp = (NVSHARE::MeshImporter *)getMeshBindingInterface(fname,MESHIMPORT_VERSION);
+          physx::MeshImporter *imp = (physx::MeshImporter *)getMeshBindingInterface(fname,MESHIMPORT_VERSION);
 #else
-		  NVSHARE::MeshImporter *imp = 0;
+		  physx::MeshImporter *imp = 0;
 #endif
           if ( imp )
           {

@@ -4,10 +4,13 @@
 
 #include "UserMemAlloc.h"
 
-namespace NVSHARE
+namespace physx
 {
 class MeshSystem;
 class MeshSystemContainer;
+};
+namespace NVSHARE
+{
 class Pd3dMaterial;
 };
 
@@ -37,8 +40,8 @@ public:
                            bool showCollision,
                            bool flipWinding) = 0;
 
-  virtual NVSHARE::MeshSystem * getMeshSystem(void) const = 0;
-  virtual NVSHARE::MeshSystemContainer * getMeshSystemContainer(void) = 0;
+  virtual physx::MeshSystem * getMeshSystem(void) const = 0;
+  virtual physx::MeshSystemContainer * getMeshSystemContainer(void) = 0;
   virtual bool importMesh(const char *fname) = 0;
   virtual void advanceAnimation(NxF32 dtime,NxF32 rate) = 0;
   virtual bool exportEZM(void) = 0;

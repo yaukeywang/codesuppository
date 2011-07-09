@@ -205,7 +205,7 @@ public:
           const NxF32 *p3 = &mr->mVertices[i3*3];
           mRobustMesh->addTriangle(p1,p2,p3,0);
         }
-		NVSHARE::MeshSystem *msh = ms->getMeshSystem();
+		physx::MeshSystem *msh = ms->getMeshSystem();
 		mPlane[0] = msh->mPlane[0];
 		mPlane[1] = msh->mPlane[1];
 		mPlane[2] = msh->mPlane[2];

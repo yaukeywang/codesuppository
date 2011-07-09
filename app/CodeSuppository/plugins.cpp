@@ -32,7 +32,7 @@ bool loadPlugins(void)
 	gRenderDebug = createRenderDebug();
   if ( gPd3d && gRenderDebug )
     ok = true;
-  gMeshImport            = loadMeshImporters(0);
+  physx::gMeshImport            = physx::loadMeshImporters(0);
   gPd3d->setResourceInterface(gResourceInterface);
 
   return ok;

@@ -66,6 +66,8 @@ public:
 
 typedef std::vector< std::string > StringVector;
 
+char searchPath[512] = "..\\..\\media\\CodeSuppository";
+
 class MyMenu : public FileSystem, public CommandParserInterface, public NVSHARE::Memalloc
 {
 public:
@@ -392,8 +394,8 @@ public:
 		const char *ret = fname;
 		if ( !isExplicit(fname) )
 		{
-  	  static char scratch[512];
-  	  sprintf(scratch,"%s\\%s", MEDIA_PATH, fname );
+  			static char scratch[512];
+  			sprintf(scratch,"%s\\%s", searchPath, fname );
 			ret = scratch;
 		}
   	return ret;
@@ -565,15 +567,27 @@ public:
         gCodeSuppository->processCommand(CSC_EXPORT_OGRE);
         break;
       case MO_IMPORT_MESH:
-        if ( gMeshImport )
+		  if ( physx::gMeshImport )
         {
-          const char *filespec = gMeshImport->getFileRequestDialogString();
+          const char *filespec = physx::gMeshImport->getFileRequestDialogString();
           if ( filespec )
           {
             const char * fname = getFileName(filespec,"MeshImport compatible data files", 0, false );
             if ( fname )
             {
               SEND_TEXT_MESSAGE(0,"Processing mesh '%s'\r\n", fname );
+
+			  strcpy(searchPath,fname);
+			  char *slash = (char *)lastSlash(searchPath);
+			  if ( slash )
+			  {
+				  *slash = 0;
+			  }
+			  else
+			  {
+				  strcpy(searchPath,"..\\..\\media\\CodeSuppository");
+			  }
+
               gCodeSuppository->importMesh(fname);
             }
           }

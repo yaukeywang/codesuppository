@@ -1,14 +1,21 @@
 #ifndef TEST_UNTILE_UV_H
 #define TEST_UNTILE_UV_H
 #include "UserMemAlloc.h"
-class MeshSystemHelper;
 
+class MeshSystemHelper;
 namespace NVSHARE
+{
+class Pd3Material;
+};
+
+namespace physx
 {
 	class MeshSystemContainer;
 	class MeshImport;
 }
 
-NVSHARE::MeshSystemContainer* testUntileUV( NVSHARE::MeshImport* mimport, MeshSystemHelper *mhelper );
+
+
+physx::MeshSystemContainer* testUntileUV( physx::MeshImport* mimport, MeshSystemHelper *mhelper );
 
 #endif

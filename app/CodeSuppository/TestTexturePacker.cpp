@@ -13,6 +13,8 @@ using namespace TEXTURE_PACKER;
 
 #include "Pd3d/pd3d.h"
 
+using namespace physx;
+
 class LockedTexture
 {
 private:
@@ -256,7 +258,7 @@ public:
 		return gPd3d->saveTextureDDS( mPackedTexture, fname );
 	}
 
-	bool	remapUVs( NVSHARE::MeshImportInterface* omii, Mesh* m, SubMesh* sm )
+	bool	remapUVs( physx::MeshImportInterface* omii, Mesh* m, SubMesh* sm )
 	{
 		NxI32 texIdx = getTexIdx( sm->mMaterialName );
 		assert( texIdx >= 0 && texIdx < (NxI32)mTexCount );
@@ -286,7 +288,7 @@ public:
 			remapVert( texIdx, verts[2] );
 
 			omii->importTriangle( m->mName, "atlas.dds",
-				NVSHARE::MIVF_POSITION | NVSHARE::MIVF_NORMAL | NVSHARE::MIVF_TEXEL1 | NVSHARE::MIVF_TEXEL2,
+				physx::MIVF_POSITION | physx::MIVF_NORMAL | physx::MIVF_TEXEL1 | physx::MIVF_TEXEL2,
 				verts[0], verts[1], verts[2] );
 		}
 
@@ -408,8 +410,8 @@ testTexturePacker( MeshImport* mimport, MeshSystemHelper * msh )
 	SEND_TEXT_MESSAGE(0,"Builds a texture atlas\r\n");
 
 	assert( mimport );
-	NVSHARE::MeshSystemContainer* omsc = mimport->createMeshSystemContainer(); // create an empty mesh system container.
-	NVSHARE::MeshImportInterface* omii = mimport->getMeshImportInterface(omsc); // get an importer interface for this mesh system container.
+	physx::MeshSystemContainer* omsc = mimport->createMeshSystemContainer(); // create an empty mesh system container.
+	physx::MeshImportInterface* omii = mimport->getMeshImportInterface(omsc); // get an importer interface for this mesh system container.
 
 	if ( msh )
 	{

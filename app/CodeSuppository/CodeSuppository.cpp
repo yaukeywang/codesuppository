@@ -71,6 +71,7 @@ public:
 	NxVec3	mPosition;
 	NxVec3	mNormal;
 	PxU32	mColor;
+	NxVec3	mCorners[4];
 };
 
 typedef std::vector< Light > LightVector;
@@ -129,10 +130,36 @@ public:
 				{
 					l.mColor = GetHEX(value);
 				}
+				else if ( strcmp(key,"p0") == 0 )
+				{
+					l.mCorners[0] = getVec3(value);
+				}
+				else if ( strcmp(key,"p1") == 0 )
+				{
+					l.mCorners[1] = getVec3(value);
+				}
+				else if ( strcmp(key,"p2") == 0 )
+				{
+					l.mCorners[2] = getVec3(value);
+				}
+				else if ( strcmp(key,"p3") == 0 )
+				{
+					l.mCorners[3] = getVec3(value);
+				}
+
 			}
 			mLights.push_back(l);
 		}
 		return true;
+	}
+
+	PxU32 convertColor(PxU32 c)
+	{
+		PxU32 r = (c>>16)&0xFF;
+		PxU32 g = (c>>8)&0xFF;
+		PxU32 b = (c)&0xFF;
+		c = (b<<16)|(g<<8)|(r);
+		return c;
 	}
 
 	void render(void)
@@ -142,6 +169,13 @@ public:
 			Light &l = (*i);
 			NxVec3 to = l.mPosition+l.mNormal;
 			gRenderDebug->debugRay(l.mPosition,to);
+			gRenderDebug->pushRenderState();
+			gRenderDebug->setCurrentColor(convertColor(l.mColor));
+			gRenderDebug->addToCurrentState(DebugRenderState::SolidWireShaded);
+			gRenderDebug->debugTri(l.mCorners[2],l.mCorners[1],l.mCorners[0]);
+			gRenderDebug->debugTri(l.mCorners[3],l.mCorners[2],l.mCorners[0]);
+
+			gRenderDebug->popRenderState();
 		}
 	}
 

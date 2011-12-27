@@ -13,7 +13,7 @@
 #include "common/snippets/cycle.h"
 #include "common/snippets/log.h"
 #include "common/snippets/clock.h"
-#include "terrain.h"
+#include "terrain3d.h"
 #include "common/snippets/JobSwarm.h"
 #include "MandelBulb.h"
 

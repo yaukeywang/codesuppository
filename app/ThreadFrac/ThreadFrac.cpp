@@ -31,6 +31,8 @@ extern NxI32 gWINDOW_TALL;
 
 using namespace NVSHARE;
 
+
+
 namespace JOB_SWARM
 {
 	class JobSwarmContext;

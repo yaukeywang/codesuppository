@@ -256,10 +256,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\app\CodeSuppository\fastipc.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\app\CodeSuppository\menu.h"
 				>
 			</File>
@@ -560,10 +556,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\app\CodeSuppository\fastipc.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\app\CodeSuppository\menu.cpp"
 				>
 			</File>
@@ -757,6 +749,10 @@
 			</File>
 			<File
 				RelativePath="..\..\include\MeshImport\MeshImport.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\include\MeshImport\MeshImportBuilder.h"
 				>
 			</File>
 		</Filter>
@@ -1016,6 +1012,10 @@
 				</File>
 				<File
 					RelativePath="..\..\include\common\snippets\fastipc.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\fastipc.h"
 					>
 				</File>
 				<File
@@ -1480,6 +1480,14 @@
 				</File>
 				<File
 					RelativePath="..\..\include\common\snippets\RandomNumbers.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\RaycastMesh.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\include\common\snippets\RaycastMesh.h"
 					>
 				</File>
 				<File

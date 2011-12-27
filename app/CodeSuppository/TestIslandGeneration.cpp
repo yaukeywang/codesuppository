@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <NxVec3.h>
 
 #include "TestIslandGeneration.h"
 #include "MeshImport.h"
@@ -9,6 +10,9 @@ using namespace NVSHARE;
 #include "MeshIslandGeneration.h"
 #include "shared/MeshSystem/MeshSystemHelper.h"
 #include "RenderDebug.h"
+#include "RaycastMesh.h"
+
+#pragma warning(disable:4702)
 
 void testIslandGeneration(MeshSystemHelper * ms)
 {
@@ -21,6 +25,51 @@ void testIslandGeneration(MeshSystemHelper * ms)
         {
 			gRenderDebug->reset();
 			gRenderDebug->pushRenderState();
+			gRenderDebug->setCurrentDisplayTime(100);
+			gRenderDebug->addToCurrentState(DebugRenderState::SolidWireShaded);
+
+#if 1
+
+			RaycastMesh *rm = createRaycastMesh(mr->mVcount,mr->mVertices,mr->mTcount,mr->mIndices);
+
+			const float *bmin = rm->getBoundMin();
+			const float *bmax = rm->getBoundMax();
+
+			#define SCAN_SIZE 16
+			gRenderDebug->setCurrentArrowSize(0.02f);
+
+			for (unsigned int y=0; y<SCAN_SIZE; y++)
+			{
+				float fractionY = (float)y/SCAN_SIZE;
+				float fy = (bmax[1]-bmin[1])*fractionY+bmin[1];
+				for (unsigned int x=0; x<SCAN_SIZE; x++)
+				{
+					float fractionZ = (float)x/SCAN_SIZE;
+					float fz = (bmax[2]-bmin[2])*fractionZ+bmin[2];
+
+					NxVec3 from(-2,fy,fz);
+					NxVec3 to(2,fy,fz);
+					NxVec3 hitLocation;
+					NxVec3 normal;
+					NxF32 hitDistance;
+
+					bool hit = rm->raycast(&from.x,&to.x,&hitLocation.x,&normal.x,&hitDistance);
+					if ( hit )
+					{
+						gRenderDebug->debugRay(from,hitLocation);
+						NxVec3 toPos = hitLocation+normal*0.1f;
+						gRenderDebug->debugRay(hitLocation,toPos);
+					}
+					else
+					{
+//						gRenderDebug->debugRay(from,to);
+					}
+				}
+			}
+
+			rm->release();
+#else
+
 			MeshIslandGeneration *mig = createMeshIslandGeneration();
 			size_t icount = mig->islandGenerate(mr->mTcount,mr->mIndices,mr->mVertices);
 			SEND_TEXT_MESSAGE(0,"Found %d unique islands.\r\n", icount);
@@ -45,6 +94,8 @@ void testIslandGeneration(MeshSystemHelper * ms)
 				}
 			}
 			releaseMeshIslandGeneration(mig);
+#endif
+
 			gRenderDebug->popRenderState();
         }
    }

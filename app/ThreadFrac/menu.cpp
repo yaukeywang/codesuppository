@@ -21,7 +21,7 @@
 #include "mappal.h"
 #include "Pd3d/pd3d.h"
 #include "RenderDebug.h"
-#include "terrain.h"
+#include "terrain3d.h"
 #include "common/snippets/MyMessageBox.h"
 
 extern Tfrac *gTfrac;

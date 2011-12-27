@@ -45,7 +45,7 @@ static NxU32 gScreenWidth=1024;
 static NxU32 gScreenHeight=768;
 
 JOB_SWARM::JobSwarmContext *gJobSwarmContext=0;
-RESOURCE_INTERFACE::ResourceInterface *gResourceInterface=0;
+//RESOURCE_INTERFACE::ResourceInterface *gResourceInterface=0;
 
 //#define DEBUG_VS   // Uncomment this line to debug vertex shaders
 //#define DEBUG_PS   // Uncomment this line to debug pixel shaders
@@ -753,7 +753,9 @@ void CALLBACK OnFrameRender( IDirect3DDevice9* pd3dDevice, NxF64 fTime, NxF32 fE
     const char *page = gGuiTui->getCurrentPage();
     if ( strcmp(page,"CodeSuppository") == 0 || strcmp(page,"Convex Decomposition") == 0 )
     {
-      gCodeSuppository->render(1.0f/60.0f); //fElapsedTime);
+		D3DVECTOR eye = *g_Camera.GetEyePt();
+		NxVec3 eyePos(eye.x,eye.y,eye.z);
+      gCodeSuppository->render(fElapsedTime,eyePos); //fElapsedTime);
     }
     else
     {

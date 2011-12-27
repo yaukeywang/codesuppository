@@ -56,6 +56,7 @@
 #include "fastipc.h"
 #include "FastXml.h"
 #include "sutil.h"
+#include "FloatMath.h"
 
 #pragma warning(disable:4100)
 
@@ -162,21 +163,24 @@ public:
 		return c;
 	}
 
-	void render(void)
+	void render(const NxVec3 &eye)
 	{
+		gRenderDebug->pushRenderState();
 		for (LightVector::iterator i=mLights.begin(); i!=mLights.end(); ++i)
 		{
 			Light &l = (*i);
-			NxVec3 to = l.mPosition+l.mNormal;
-			gRenderDebug->debugRay(l.mPosition,to);
-			gRenderDebug->pushRenderState();
-			gRenderDebug->setCurrentColor(convertColor(l.mColor));
-			gRenderDebug->addToCurrentState(DebugRenderState::SolidWireShaded);
-			gRenderDebug->debugTri(l.mCorners[2],l.mCorners[1],l.mCorners[0]);
-			gRenderDebug->debugTri(l.mCorners[3],l.mCorners[2],l.mCorners[0]);
-
-			gRenderDebug->popRenderState();
+			PxF32 distance = l.mPosition.distanceSquared(eye);
+			if ( distance < (50*50) )
+			{
+				NxVec3 to = l.mPosition+l.mNormal;
+				gRenderDebug->debugRay(l.mPosition,to);
+				gRenderDebug->setCurrentColor(convertColor(l.mColor));
+				gRenderDebug->addToCurrentState(DebugRenderState::SolidWireShaded);
+				gRenderDebug->debugTri(l.mCorners[2],l.mCorners[1],l.mCorners[0]);
+				gRenderDebug->debugTri(l.mCorners[3],l.mCorners[2],l.mCorners[0]);
+			}
 		}
+		gRenderDebug->popRenderState();
 	}
 
 	LightVector	mLights;
@@ -510,7 +514,7 @@ public:
     }
   }
 
-  void render(NxF32 dtime)
+  void render(NxF32 dtime,const NxVec3 &eye)
   {
 
     if ( mCommLayer )
@@ -604,7 +608,7 @@ public:
     }
 	if ( mLevelLights )
 	{
-		mLevelLights->render();
+		mLevelLights->render(eye);
 	}
   }
 

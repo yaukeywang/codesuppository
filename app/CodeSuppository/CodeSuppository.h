@@ -2,6 +2,8 @@
 
 #define CODE_SUPPOSITORY_H
 
+#include "NxVec3.h"
+
 enum CodeSuppositoryCommand
 {
   CSC_BEST_FIT_OBB = 4000,
@@ -75,7 +77,7 @@ class CodeSuppository
 {
 public:
   virtual void processCommand(CodeSuppositoryCommand command,bool state=true,const NxF32 *data=0) = 0;
-  virtual void render(NxF32 dtime) = 0;
+  virtual void render(NxF32 dtime,const NxVec3 &eye) = 0;
   virtual void importMesh(const char *fname) = 0;
   virtual void importLevelLights(const char *fname) = 0;
   virtual void process(NxF32 dtime) = 0;

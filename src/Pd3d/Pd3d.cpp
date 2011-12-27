@@ -83,7 +83,7 @@
 #include "shader.h"
 #include "ResourceInterface.h"
 
-//RESOURCE_INTERFACE::ResourceInterface *gResourceInterface=0;
+RESOURCE_INTERFACE::ResourceInterface *gResourceInterface=0;
 //NVSHARE::Pd3d *gPd3d=0;
 
 #ifdef WIN32

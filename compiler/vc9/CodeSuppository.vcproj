@@ -568,6 +568,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\app\CodeSuppository\PlaySpriteBuffer.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\app\CodeSuppository\PlaySpriteBuffer.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\app\CodeSuppository\PlotTexture.cpp"
 				>
 			</File>

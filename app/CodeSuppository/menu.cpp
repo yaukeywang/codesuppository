@@ -111,7 +111,7 @@ public:
    createButton("Create Apex Cloth", CSC_APEX_CLOTH, "CreateApexCloth" );
 
    createSlider("Animation Speed",CSC_ANIMATION_SPEED,"AnimationSpeed",0,100,4,false);
-   createSlider("Select Collision Hull",CSC_SELECT_COLLISION,"SelectCollision",0,100,0,true);
+   createSlider("Select Collision Hull",CSC_SELECT_COLLISION,"SelectCollision",0,200,0,true);
 
    createButton("Clear Mesh", CSC_CLEAR_MESH, "ClearMesh");
    createButton("AutoGenerate Collision Mesh", CSC_AUTO_GEOMETRY,"AutoGeometry");

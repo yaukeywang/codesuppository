@@ -57,6 +57,7 @@
 #include "FastXml.h"
 #include "sutil.h"
 #include "FloatMath.h"
+#include "PlaySpriteBuffer.h"
 
 #pragma warning(disable:4100)
 
@@ -191,6 +192,7 @@ class MyCodeSuppository : public CodeSuppository, public NVSHARE::Memalloc
 public:
   MyCodeSuppository(void)
   {
+	  mPlaySpriteBuffer = createPlaySpriteBuffer();
     mTestAutoGeometry = 0;
     mMeshSystemHelper = 0;
     mShowSkeleton = true;
@@ -233,6 +235,11 @@ public:
 
   void resetMeshSystem(void)
   {
+	  if ( mPlaySpriteBuffer )
+	  {
+		  mPlaySpriteBuffer->release();
+		  mPlaySpriteBuffer = NULL;
+	  }
     if ( mTestAutoGeometry )
     {
       releaseTestAutoGeometry(mTestAutoGeometry);
@@ -263,6 +270,10 @@ public:
           {
             mMeshSystemHelper->setSelectCollision(s);
           }
+		  if ( mPlaySpriteBuffer )
+		  {
+			  mPlaySpriteBuffer->setFrame(s);
+		  }
         }
         break;
       case CSC_MERGE_PERCENTAGE:
@@ -626,6 +637,10 @@ public:
 
   virtual void process(NxF32 /*dtime*/)
   {
+	  if ( mPlaySpriteBuffer )
+	  {
+		  mPlaySpriteBuffer->process();
+	  }
     if ( mTestAutoGeometry )
     {
       bool tcontinue = mTestAutoGeometry->pump();
@@ -672,6 +687,7 @@ private:
   RenderPacketVector 	mRenderPacketsCurrent;
   RenderPacketVector	mRenderPacketsLast;
   LevelLights			*mLevelLights;
+  PlaySpriteBuffer		*mPlaySpriteBuffer;
 };
 
 CodeSuppository * createCodeSuppository(void)

@@ -3,19 +3,19 @@
 #define VIEW_PROJ_H
 
 // This code snippet was released open-source on December 14, 2013 by John W. Ratcliff (mailto: jratcliffscarab@gmail.com)
-// If you find this code useful, please send a bitcoin tip to the following address: 
+// If you find this code useful, please send a bitcoin tip to the following address:
 //
 // BitCoin Tip Jar: 1BsD7og5WKuh8b6eh6CGYAMM9EE8H6wD6d
 //
 // This code snippet provides an implementation of three common D3DX utility functions which Microsoft does not provide source code for.
 // It has *no* dependencies on DirectX, OpenGL, or any math libraries of any kind.  You should be able to simply drop this in to any code
 // base you have and just use it as is.  You can also use it for a learning exercise.
-// 
+//
 // This code snippet implements:  D3DXMatrixPerspectiveFovLH : http://msdn.microsoft.com/en-us/library/windows/desktop/bb205350(v=vs.85).aspx
 //								  D3DXMatrixOrthoLH : http://msdn.microsoft.com/en-us/library/windows/desktop/bb204940(v=vs.85).aspx
 //								  D3DXMatrixLookAtLH : http://msdn.microsoft.com/en-us/library/windows/desktop/bb205342(v=vs.85).aspx
 //
-// This are the three essential routines needed to build a view and projection matrix, either perspective or orthographic.
+// These are the three essential routines needed to build a view and projection matrix, either perspective or orthographic.
 // 
 // Note, if you *are* using an existing math library, simply cast your 4x4 matrices and vectors as a float pointer to pass it into these routines.
 //

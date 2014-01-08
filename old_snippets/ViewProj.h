@@ -57,7 +57,7 @@ inline float vp_dot(const float *p1,const float *p2)
 }
 
 //	This code implements  D3DXMatrixLookAtLH : http://msdn.microsoft.com/en-us/library/windows/desktop/bb205342(v=vs.85).aspx
-inline void vp_matrixLookAtLH(float matrix[16],const float vFrom[3],const float vAt[3],float vWorldUp[3])
+inline void vp_matrixLookAtLH(float matrix[16],const float vFrom[3],const float vAt[3],const float vWorldUp[3])
 {
 	// Get the z basis vector, which points straight ahead. This is the
 	// difference from the eyepoint to the lookat point.

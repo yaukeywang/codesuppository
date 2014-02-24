@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+		<Filter Include="MemTracker"><!--  -->
+		</Filter>
+	</ItemGroup>
+	<ItemGroup>
+		<Filter Include="MemTracker\include"><!--  -->
+		</Filter>
+	</ItemGroup>
+	<ItemGroup>
+		<ClInclude Include="..\..\include\htmltable.h">
+			<Filter>MemTracker\include</Filter>
+		</ClInclude>
+	</ItemGroup>
+	<ItemGroup>
+		<Filter Include="MemTracker\public"><!--  -->
+		</Filter>
+	</ItemGroup>
+	<ItemGroup>
+		<ClInclude Include="..\..\public\MemTracker.h">
+			<Filter>MemTracker\public</Filter>
+		</ClInclude>
+		<ClInclude Include="..\..\public\MemTrackerBinding.h">
+			<Filter>MemTracker\public</Filter>
+		</ClInclude>
+		<ClCompile Include="..\..\public\MemTrackerBinding.cpp">
+			<Filter>MemTracker\public</Filter>
+		</ClCompile>
+	</ItemGroup>
+	<ItemGroup>
+		<Filter Include="MemTracker\src"><!--  -->
+		</Filter>
+	</ItemGroup>
+	<ItemGroup>
+		<ClCompile Include="..\..\src\htmltable.cpp">
+			<Filter>MemTracker\src</Filter>
+		</ClCompile>
+		<ClCompile Include="..\..\src\MemTracker.cpp">
+			<Filter>MemTracker\src</Filter>
+		</ClCompile>
+	</ItemGroup>
+	<ItemGroup>
+	</ItemGroup>
+</Project>

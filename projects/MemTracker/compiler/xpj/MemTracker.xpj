@@ -1,0 +1,105 @@
+<XPJ version="4">
+
+  <Project name="MemTracker" version="1">
+
+    <Export platform="win32" tool="vc9">../vc9win32</Export>
+    <Export platform="win32" tool="vc10">../vc10win32</Export>
+    <Export platform="win32" tool="vc11">../vc11win32</Export>
+
+    <Export platform="win64" tool="vc9">../vc9win64</Export>
+    <Export platform="win64" tool="vc10">../vc10win64</Export>
+    <Export platform="win64" tool="vc11">../vc11win64</Export>
+
+    <Target name="MemTracker">
+
+      <Export platform="win32" tool="vc9">../vc9win32</Export>
+      <Export platform="win32" tool="vc10">../vc10win32</Export>
+      <Export platform="win32" tool="vc11">../vc11win32</Export>
+
+      <Export platform="win64" tool="vc9">../vc9win64</Export>
+      <Export platform="win64" tool="vc10">../vc10win64</Export>
+      <Export platform="win64" tool="vc11">../vc11win64</Export>
+
+      <Files name="MemTracker" root="../../" type="header">
+        include/*.h
+        public/*.h
+        public/*.cpp
+        src/*.cpp
+      </Files>
+
+	  <SearchPaths type="header">
+	    ../../include
+	    ../../public
+	  </SearchPaths>
+
+      <Configuration name="default" type="dll">
+        <Preprocessor type="define">
+          WIN32
+          _WINDOWS
+          UNICODE=1
+          _CRT_SECURE_NO_DEPRECATE
+          MEMTRACKER_EXPORT=1
+        </Preprocessor>
+        <CFlags tool="vc8">/wd4996</CFlags>
+        <LFlags tool="vc8">/NODEFAULTLIB:libcp.lib</LFlags>
+        <SearchPaths type="header">
+        	"../../config"
+        </SearchPaths>
+        <SearchPaths type="library">
+        </SearchPaths>
+        <Libraries>
+        </Libraries>
+      </Configuration>
+
+      <Configuration name="debug" platform="win32">
+        <OutDir>../../bin/win32</OutDir>
+        <OutFile>MemTracker32DEBUG.dll</OutFile>
+        <CFlags>/fp:fast /W4 /WX /MTd /Zi</CFlags>
+        <LFlags>/DEBUG</LFlags>
+        <Preprocessor type="define">
+          _DEBUG
+        </Preprocessor>
+        <Libraries>
+        </Libraries>
+      </Configuration>
+
+      <Configuration name="release" platform="win32">
+        <OutDir>../../bin/win32</OutDir>
+        <OutFile>MemTracker32.dll</OutFile>
+        <CFlags>/fp:fast /WX /W4 /MT /Zi /O2</CFlags>
+        <LFlags>/DEBUG</LFlags>
+        <Preprocessor type="define">NDEBUG</Preprocessor>
+        <Libraries>
+        </Libraries>
+      </Configuration>
+
+      <Configuration name="debug" platform="win64">
+        <OutDir>../../bin/win64</OutDir>
+        <OutFile>MemTracker64DEBUG.dll</OutFile>
+        <CFlags>/fp:fast /W4 /WX /MTd /Zi</CFlags>
+        <LFlags>/DEBUG</LFlags>
+        <Preprocessor type="define">
+          _DEBUG
+        </Preprocessor>
+        <Libraries>
+        </Libraries>
+      </Configuration>
+
+      <Configuration name="release" platform="win64">
+        <OutDir>../../bin/win64</OutDir>
+        <OutFile>MemTracker64.dll</OutFile>
+        <CFlags>/fp:fast /WX /W4 /MT /Zi /O2</CFlags>
+        <LFlags>/DEBUG</LFlags>
+        <Preprocessor type="define">NDEBUG</Preprocessor>
+        <Libraries>
+        </Libraries>
+      </Configuration>
+
+
+      <Libraries>
+      </Libraries>
+      <Dependencies type="link">
+      </Dependencies>
+    </Target>
+  </Project>
+</XPJ>

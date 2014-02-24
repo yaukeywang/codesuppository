@@ -1,6 +1,7 @@
 /UseThreading true 
-/RectangleSubdivision false 
+/RectangleSubdivision true 
 /PreviewOnly false 
+/IterationCount 1024.000 
 /EnvironmentTexture cubemap.dds 
 /FloatingPointResolution MEDIUM 
 /ColorPalette default.pal 
@@ -13,6 +14,5 @@
 /ShowNormals false 
 /WireframeOverlay false 
 /View3d false 
-/IterationCount 1024.000 
-FractalCoordinates -1.15617926685345771981230861 -1.1561792668533199951160542 -0.27871962020454650125088584
-PsLookAt 200.000015259 250.000000000 200.000015259  200.000000000 249.000000000 200.000000000
+FractalCoordinates -1.15617926685350954059877949 -1.15617926685325100379897071 -0.278719620204626376607299223
+PsLookAt 200.000000000 250.000000000 200.000000000  199.470184326 249.337738037 199.470184326
